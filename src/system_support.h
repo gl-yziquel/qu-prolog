@@ -1,4 +1,7 @@
-// load.cc - Load and link a .qo file.
+// system_support.h 
+//
+// Functions for general system support
+
 //
 // ##Copyright##
 // 
@@ -53,57 +56,19 @@
 // 
 // ##Copyright##
 //
-// $Id: load.cc,v 1.6 2004/03/19 04:54:17 qp Exp $
+// $Id: system_support.h,v 1.1 2004/03/19 04:54:20 qp Exp $
 
-#include <unistd.h>
+#ifndef SYSTEM_SUPPORT_H
+#define SYSTEM_SUPPORT_H
 
-#include "atom_table.h"
-#include "system_support.h"
-#include "thread_qp.h"
+#include <string>
 
-extern AtomTable *atoms;
-extern Code *code;
-extern PredTab *predicates;
-extern QemOptions *qem_options;
+using namespace std;
 
-// psi_load(filename, queryname)
-// Load and link a .qo file.  If the operation is successful, 0 is returned in
-// X1.
-// mode(in, out)
 //
-Thread::ReturnValue
-Thread::psi_load(Object *& object1, Object*& object2)
-{
-  Object* val1 = heap.dereference(object1);
+// wordexp(string) - a simplified wordexp(3) that expands ~ and environment
+// variables
 
-  DEBUG_ASSERT(val1->isAtom());
+string wordexp(string);
 
-  const char *file = wordexp(atoms->getAtomString(val1)).c_str(); 
-
-  if (access(file, F_OK) == 0)
-    {
-      ObjectIndex index(*code, *atoms, *predicates);
-      StringMap string_map(qem_options->StringMapSize(), 0);
-      word32 NumQuery = 0;
-
-      //
-      // Read the file.
-      //
-      if (index.loadObjectFile(file, NumQuery, string_map, *predicates))
-	{
-	  //
-	  // Link the program.
-	  //
-	  index.resolveObject(string_map, *predicates, false, object2);
-	  
-	  return(RV_SUCCESS);
-	}
-    }
-
-  return(RV_FAIL);
-}
-
-
-
-
-
+#endif // SYSTEM_SUPPORT_H

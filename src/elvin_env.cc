@@ -1,7 +1,7 @@
 
 // elvin_env.cc - Elvin support.
 //
-// $Id: elvin_env.cc,v 1.2 2004/02/12 23:53:46 qp Exp $
+// $Id: elvin_env.cc,v 1.3 2004/03/17 21:55:05 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -466,14 +466,15 @@ ElvinHandler::callHandler(elvin_error_t error)
   uint32_t active_mask;
 
   
-  int would_block = 0;
+  int would_block;
+
   if (! elvin_io_handler_get_mask(handler,
 				  &active_mask,
 				  error)) {
     elvin_error_fprintf(stderr, error);
     exit(1);
   }
-
+  would_block = 0;
   if (! elvin_io_handler_dispatch(handler,
 				  active_mask,
 				  &would_block,
@@ -481,7 +482,6 @@ ElvinHandler::callHandler(elvin_error_t error)
     elvin_error_fprintf(stderr, error);
     exit(1);
   }
-
 }
 
 //

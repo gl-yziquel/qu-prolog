@@ -14,7 +14,7 @@ export GENERATED.qa = qa.cc lexer.cc
 all.qa: $(COMMAND.qa)
 
 $(COMMAND.qa): $(OBJECTS.qa) $(BIG_LIBRARY)
-	$(CXX) $(LDFLAGS) -o $(COMMAND.qa) $(OBJECTS.qa) -L/opt/local/gnu/lib @LIBS@ -lfl $(BIG_LIBRARY)	
+	$(CXX) $(LDFLAGS) -o $(COMMAND.qa) $(OBJECTS.qa) -L/opt/local/gnu/lib @LIBS@ $(BIG_LIBRARY)	
 
 qa.cc: lexer.cc qa.y
 	@YACC@ -oqa.cc qa.y

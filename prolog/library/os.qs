@@ -433,6 +433,17 @@ end('halt'/1):
 
 
 
+'current_prolog_flag'/2:
+
+
+$1:
+	get_constant('version', 0)
+	get_x_variable(0, 1)
+	execute_predicate('$version', 1)
+end('current_prolog_flag'/2):
+
+
+
 'abort'/0:
 
 

@@ -23,6 +23,16 @@ end('$init_interpreter'/0):
 
 
 
+'interpreter'/0:
+
+
+$1:
+	put_constant('[]', 0)
+	execute_predicate('$interpreter', 1)
+end('interpreter'/0):
+
+
+
 '$interpreter/1$0'/1:
 
 	try(1, $1)
@@ -119,6 +129,8 @@ $1:
 	pseudo_instr2(73, 1, 0)
 	get_y_variable(4, 0)
 	get_y_level(0)
+	put_y_variable(2, 19)
+	put_y_variable(1, 19)
 	call_predicate('repeat', 0, 5)
 	pseudo_instr1(28, 0)
 	put_integer(10, 1)
@@ -129,7 +141,7 @@ $1:
 	put_constant('$in_interpreter_query', 0)
 	put_constant('true', 1)
 	pseudo_instr2(3, 0, 1)
-	put_y_variable(2, 0)
+	put_y_value(2, 0)
 	put_structure(1, 1)
 	set_constant('remember_name')
 	set_constant('true')
@@ -138,7 +150,7 @@ $1:
 	set_constant('[]')
 	put_structure(1, 3)
 	set_constant('variable_names')
-	set_y_variable(1)
+	set_y_value(1)
 	put_list(1)
 	set_x_value(3)
 	set_x_value(2)
@@ -499,12 +511,15 @@ $1:
 	pseudo_instr1(28, 0)
 	put_integer(10, 1)
 	pseudo_instr2(8, 0, 1)
-	put_constant('yes', 1)
 	allocate(3)
+	put_y_variable(2, 19)
+	put_y_variable(1, 19)
+	put_y_variable(0, 19)
+	put_constant('yes', 1)
 	call_predicate('write_atom', 2, 3)
-	put_y_variable(2, 1)
-	put_y_variable(1, 2)
-	put_y_variable(0, 3)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
 	put_constant('[]', 0)
 	call_predicate('collect_constraints', 4, 3)
 	put_y_value(2, 0)
@@ -517,12 +532,15 @@ $2:
 	pseudo_instr2(111, 0, 1)
 	allocate(4)
 	get_y_variable(0, 1)
+	put_y_variable(3, 19)
+	put_y_variable(2, 19)
+	put_y_variable(1, 19)
 	put_y_value(0, 0)
 	call_predicate('$print_bindings_section', 1, 4)
 	pseudo_instr2(67, 20, 0)
-	put_y_variable(3, 1)
-	put_y_variable(2, 2)
-	put_y_variable(1, 3)
+	put_y_value(3, 1)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
 	call_predicate('collect_constraints', 4, 4)
 	put_y_value(3, 0)
 	put_y_value(2, 1)
@@ -704,10 +722,11 @@ end('$interpreter_cont_section/1$0'/2):
 $1:
 	allocate(3)
 	get_y_variable(1, 0)
+	put_y_variable(0, 19)
 	put_y_variable(2, 0)
 	call_predicate('get_line', 1, 3)
 	put_y_value(2, 0)
-	put_y_variable(0, 1)
+	put_y_value(0, 1)
 	call_predicate('$interpreter_cont_section/1$0', 2, 2)
 	put_y_value(0, 0)
 	put_y_value(1, 1)

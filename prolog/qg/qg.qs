@@ -2,9 +2,6 @@
 
 
 $1:
-	put_integer(3, 1)
-	put_integer(1, 2)
-	pseudo_instr2(10, 1, 2)
 	allocate(1)
 	put_y_variable(0, 1)
 	call_predicate('$process_qg_options', 2, 1)

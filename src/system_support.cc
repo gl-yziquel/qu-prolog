@@ -1,4 +1,7 @@
-// load.cc - Load and link a .qo file.
+// system_support.cc 
+//
+// Functions for general system support
+
 //
 // ##Copyright##
 // 
@@ -53,57 +56,33 @@
 // 
 // ##Copyright##
 //
-// $Id: load.cc,v 1.6 2004/03/19 04:54:17 qp Exp $
+// $Id: system_support.cc,v 1.1 2004/03/19 04:54:20 qp Exp $
 
-#include <unistd.h>
-
-#include "atom_table.h"
 #include "system_support.h"
-#include "thread_qp.h"
 
-extern AtomTable *atoms;
-extern Code *code;
-extern PredTab *predicates;
-extern QemOptions *qem_options;
-
-// psi_load(filename, queryname)
-// Load and link a .qo file.  If the operation is successful, 0 is returned in
-// X1.
-// mode(in, out)
-//
-Thread::ReturnValue
-Thread::psi_load(Object *& object1, Object*& object2)
+string wordexp(string str)
 {
-  Object* val1 = heap.dereference(object1);
-
-  DEBUG_ASSERT(val1->isAtom());
-
-  const char *file = wordexp(atoms->getAtomString(val1)).c_str(); 
-
-  if (access(file, F_OK) == 0)
+  // expand leading ~ to home dir
+  int pos = str.find("~/");
+  if (pos == 0)
     {
-      ObjectIndex index(*code, *atoms, *predicates);
-      StringMap string_map(qem_options->StringMapSize(), 0);
-      word32 NumQuery = 0;
-
-      //
-      // Read the file.
-      //
-      if (index.loadObjectFile(file, NumQuery, string_map, *predicates))
-	{
-	  //
-	  // Link the program.
-	  //
-	  index.resolveObject(string_map, *predicates, false, object2);
-	  
-	  return(RV_SUCCESS);
-	}
+      str.replace(0,1, getenv("HOME"));
     }
-
-  return(RV_FAIL);
+  // expand (single) environment variable
+  pos = str.find("$");
+  if (pos >= 0)
+    {
+      int end = str.find("/", pos);
+      string env = string(str, pos+1, end-pos-1);
+      char* expenv = getenv(env.c_str());
+      if (expenv == NULL)
+        {
+	  str.replace(pos, end-pos, "");
+        }
+      else
+        {
+	  str.replace(pos, end-pos, expenv);
+        }
+    }
+  return str;
 }
-
-
-
-
-

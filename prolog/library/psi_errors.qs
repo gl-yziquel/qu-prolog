@@ -46,10 +46,11 @@ $3:
 	unify_void(1)
 	pseudo_instr3(1, 24, 0, 1)
 	get_x_variable(0, 1)
+	put_y_variable(0, 19)
 	put_y_variable(1, 1)
 	call_predicate('$template_to_type', 2, 6)
 	put_y_value(5, 0)
-	put_y_variable(0, 1)
+	put_y_value(0, 1)
 	call_predicate('$psi_call_to_call', 2, 5)
 	put_y_value(2, 0)
 	get_structure('type_exception', 4, 0)
@@ -1026,7 +1027,7 @@ end('$psi_call_to_call'/2):
 
 
 
-'$query_psi_errors2004_2_19_13_5_6_905/0$0'/0:
+'$query_psi_errors2004_3_31_13_28_4_873/0$0'/0:
 
 
 $1:
@@ -1039,11 +1040,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2004_2_19_13_5_6_905/0$0'/0):
+end('$query_psi_errors2004_3_31_13_28_4_873/0$0'/0):
 
 
 
-'$query_psi_errors2004_2_19_13_5_6_905/0$1'/0:
+'$query_psi_errors2004_3_31_13_28_4_873/0$1'/0:
 
 
 $1:
@@ -1056,11 +1057,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2004_2_19_13_5_6_905/0$1'/0):
+end('$query_psi_errors2004_3_31_13_28_4_873/0$1'/0):
 
 
 
-'$query_psi_errors2004_2_19_13_5_6_905/0$2'/0:
+'$query_psi_errors2004_3_31_13_28_4_873/0$2'/0:
 
 
 $1:
@@ -1073,11 +1074,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2004_2_19_13_5_6_905/0$2'/0):
+end('$query_psi_errors2004_3_31_13_28_4_873/0$2'/0):
 
 
 
-'$query_psi_errors2004_2_19_13_5_6_905'/0:
+'$query_psi_errors2004_3_31_13_28_4_873'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1086,22 +1087,22 @@ end('$query_psi_errors2004_2_19_13_5_6_905/0$2'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_psi_errors2004_2_19_13_5_6_905/0$0', 0, 0)
+	call_predicate('$query_psi_errors2004_3_31_13_28_4_873/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_psi_errors2004_2_19_13_5_6_905/0$1', 0, 0)
+	call_predicate('$query_psi_errors2004_3_31_13_28_4_873/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_psi_errors2004_2_19_13_5_6_905/0$2', 0, 0)
+	call_predicate('$query_psi_errors2004_3_31_13_28_4_873/0$2', 0, 0)
 	fail
 
 $4:
 	proceed
-end('$query_psi_errors2004_2_19_13_5_6_905'/0):
+end('$query_psi_errors2004_3_31_13_28_4_873'/0):
 
 
 
@@ -1109,7 +1110,7 @@ end('$query_psi_errors2004_2_19_13_5_6_905'/0):
 
 
 $1:
-	execute_predicate('$query_psi_errors2004_2_19_13_5_6_905', 0)
+	execute_predicate('$query_psi_errors2004_3_31_13_28_4_873', 0)
 end('$query'/0):
 
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.cc,v 1.16 2003/07/03 04:45:45 qp Exp $
+// $Id: gc_escapes.cc,v 1.17 2004/02/25 21:25:31 qp Exp $
 
 #include <stdlib.h>
 
@@ -62,6 +62,138 @@
 #include "thread_qp.h"
  
 #ifdef DEBUG
+
+bool 
+Thread::check_env(EnvLoc env)
+{
+  while ((env != envStack.firstEnv()))
+    {
+      DEBUG_ASSERT(!envStack.gc_isMarkedEnv(env) );
+      for (int i = (int)(envStack.getNumYRegs(env))-1; i >= 0; i--)
+	{
+	  if ( envStack.yReg(env, i) == NULL || 
+	       !heap.isHeapPtr(reinterpret_cast<heapobject*>(envStack.yReg(env, i)))) continue;
+	  if (!check_term(envStack.yReg(env, i))) 
+	    {
+	      Object* start = envStack.yReg(env, i);
+	      cerr << "CE = " << currentEnvironment << " env = " << env << endl;
+	      cerr << " i = " << i << " loc = " << (word32)start << " offset = "<< reinterpret_cast<heapobject*>(start) - heap.getBase() << endl;
+for (int i = -10; i < 10; i++)
+cerr << (word32)((reinterpret_cast<heapobject*>(start) + i)) << " : " << (word32)(*(reinterpret_cast<heapobject*>(start) + i))  << endl;
+cerr << endl;
+
+	      return false;
+	    }
+	}
+      env = envStack.getPreviousEnv(env);
+    }
+  return true;
+}
+
+bool 
+Thread::check_choice(ChoiceLoc choiceloc)
+{
+  while (true)
+    { 
+      if (!check_env(choiceStack.currentEnv(choiceloc))) return false;
+      for (int i =  (int)(choiceStack.getNumArgs(choiceloc))-1; i >= 0; i--)
+	{
+	    if ( choiceStack.getXreg(choiceloc, i)== NULL || 
+		!heap.isHeapPtr(reinterpret_cast<heapobject*>(choiceStack.getXreg(choiceloc, i)))) continue;
+	  if (!check_term(choiceStack.getXreg(choiceloc, i))) return false;
+	}
+      if (choiceloc == choiceStack.firstChoice())
+	{
+	  return true;
+	}
+      choiceloc = choiceStack.previousChoicePoint(choiceloc);
+    }
+  return true;
+}
+
+bool 
+Thread::check_ip_trail()
+{
+  for (int i = 0; i < (int)(ipTrail.getTop()); i++)
+    {
+      UpdatableObject uobj = ipTrail.getEntry(i);
+      if (uobj.getOldValue() == NULL || 
+	  !heap.isHeapPtr(reinterpret_cast<heapobject*>(uobj.getOldValue()))) continue;
+      if (!check_term(uobj.getOldValue())) return false;;
+    }
+  return true;
+}
+
+bool 
+Thread::check_ips()
+{
+  for (int i = 0; i < (int)(ipTable.allocatedSize()); i++)
+    {
+      if (! ipTable.getEntry(i).isEmpty())
+	{
+  if (ipTable.getEntry(i).getValue() == NULL || 
+      !heap.isHeapPtr(reinterpret_cast<heapobject*>(ipTable.getEntry(i).getValue()))) continue;
+	  if (!check_term(ipTable.getEntry(i).getValue())) return false;
+	}
+    }
+  return true;
+}
+
+bool 
+Thread::check_name()
+{
+  for (int i = 0; i < (int)(names.allocatedSize()); i++)
+    {
+      if (! names.getEntry(i).isEmpty())
+	{	 
+	  if (names.getEntry(i).getValue() == NULL || 
+	      !heap.isHeapPtr(reinterpret_cast<heapobject*>(names.getEntry(i).getValue()))) continue;
+	  if (!check_term(names.getEntry(i).getValue())) return false;
+	}
+    }
+  return true;
+}
+
+bool 
+Thread::check_obj_trail()
+{
+  for (int i = 0; i < (int)(objectTrail.getTop()); i++)
+    {
+      UpdatableObject uobj = objectTrail.getEntry(i);
+      if (!heap.isHeapPtr(uobj.getAddress()))
+        {
+          // Must be  a name table entry
+          continue;
+        }
+      // It's a heap pointer
+      if (heap.isHeapPtr(reinterpret_cast<heapobject*>(uobj.getOldValue())))
+	{
+	  if (!check_term(uobj.getOldValue())) return false;
+	}
+    }
+  return true;
+}
+
+bool 
+Thread::check_heap2(Heap& heap)
+{
+  for (heapobject* ptr = heap.getBase(); ptr < heap.getTop(); )
+    {
+      Object* term =  reinterpret_cast<Object*>(ptr);
+      if (!check_term(term)) return false;
+      ptr += term->size_dispatch();
+    }
+
+  DEBUG_ASSERT(check_env(currentEnvironment));
+  DEBUG_ASSERT(check_choice(currentChoicePoint));
+  DEBUG_ASSERT(check_ip_trail());
+  DEBUG_ASSERT(check_ips());
+  DEBUG_ASSERT(check_name());
+  DEBUG_ASSERT(check_obj_trail());
+  return true;
+
+}
+
 //
 // Check heap for correct pointers
 //
@@ -253,6 +385,7 @@ Thread::gc_marking_phase(word32 arity, int32& total_marked)
   total_marked++;
   gc_mark_registers(arity, total_marked);
   gc_mark_environments(currentEnvironment, total_marked);
+  //DEBUG_ASSERT(check_env(currentEnvironment));
   gc_mark_choicepoints(currentChoicePoint, total_marked);
   gc_mark_ip_trail(total_marked);
   gc_mark_ips(total_marked);
@@ -638,6 +771,7 @@ Thread::gc(word32 arity)
     }
 
   DEBUG_ASSERT(check_heap(heap, atoms));
+  //  DEBUG_ASSERT(check_env(currentEnvironment));
   // DEBUG_ASSERT(check_heap2(heap));
   gc_marking_phase(arity, total_marked);
 
@@ -645,7 +779,9 @@ Thread::gc(word32 arity)
   gc_compaction_phase(arity, total_marked);
 
   DEBUG_ASSERT(check_heap(heap, atoms));
-  //  DEBUG_ASSERT(check_heap2(heap));
+  //DEBUG_ASSERT(check_env(currentEnvironment));
+  //DEBUG_ASSERT(check_heap2(heap));
+
 
   if (print_gc_stats)
     {

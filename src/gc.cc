@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.cc,v 1.9 2003/08/06 23:42:34 qp Exp $
+// $Id: gc.cc,v 1.10 2004/02/25 21:25:31 qp Exp $
 
 #include "global.h"
 #include "gc.h"
@@ -109,6 +109,7 @@ bool check_after_GC(Heap& heap)
 
 bool check_term(Object* term)
 {
+
   if (term == NULL) return false;
 
     switch (term->utag())
@@ -174,17 +175,6 @@ bool check_term(Object* term)
     }
 }
 
-bool check_heap2(Heap& heap)
-{
-  for (heapobject* ptr = heap.getBase(); ptr < heap.getTop(); )
-    {
-      Object* term =  reinterpret_cast<Object*>(ptr);
-      if (!check_term(term)) return false;
-      ptr += term->size_dispatch();
-    }
-  return true;
-
-}
 
 #endif // DEBUG
 
@@ -206,6 +196,10 @@ void gc_mark_pointer(Object* start, int32& total_marked, Heap& heap)
       {
 	//  Structure* ss = OBJECT_CAST(Structure*, start);
 	//  ss->setArgument(1, AtomTable::nil);
+        cerr << "check_term fails " << hex << endl;
+for (int i = -30; i < 10; i++)
+cerr << (word32)((reinterpret_cast<heapobject*>(start) + i)) << " : " << (word32)(*(reinterpret_cast<heapobject*>(start) + i))  << endl;
+cerr << dec << endl;
 	start->printMe_dispatch(*atoms,false);
       }
   }

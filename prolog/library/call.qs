@@ -1,3 +1,12 @@
+'initialization'/1:
+
+
+$1:
+	execute_predicate('call', 1)
+end('initialization'/1):
+
+
+
 'call'/1:
 
 

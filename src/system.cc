@@ -54,10 +54,11 @@
 // 
 // ##Copyright##
 //
-// $Id: system.cc,v 1.14 2004/02/19 03:03:27 qp Exp $
+// $Id: system.cc,v 1.15 2004/03/19 04:54:19 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
+#include "system_support.h"
 
 #include	<stdlib.h>
 #include	<string.h>
@@ -142,7 +143,7 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
   DEBUG_ASSERT(val2->isShort());
   
   object3 = 
-    heap.newNumber(access(atoms->getAtomString(val1),
+    heap.newNumber(access(wordexp(atoms->getAtomString(val1)).c_str(),
 			   val2->getNumber()));
   return(RV_SUCCESS);
 } 
@@ -160,7 +161,7 @@ Thread::psi_chdir(Object *& object1)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  return (BOOL_TO_RV(chdir(atoms->getAtomString(val1)) == 0));
+  return (BOOL_TO_RV(chdir(wordexp(atoms->getAtomString(val1)).c_str()) == 0));
 }
 
 //

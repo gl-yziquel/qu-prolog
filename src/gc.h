@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.h,v 1.3 2003/07/03 04:45:44 qp Exp $
+// $Id: gc.h,v 1.4 2004/02/25 21:25:31 qp Exp $
 
 #ifndef	GC_H
 #define	GC_H
@@ -105,4 +105,7 @@ void gc_mark_pointer(Object*, int32&, Heap&);
 
 void gc_compact_heap(int32, Heap&);
 
+#ifdef DEBUG
+bool check_term(Object* term);
+#endif //DEBUG
 #endif	// GC_H

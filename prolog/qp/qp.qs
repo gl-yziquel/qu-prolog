@@ -50,15 +50,15 @@ end('main/1$0'/1):
 $1:
 	allocate(3)
 	get_y_variable(2, 0)
-	put_integer(3, 0)
-	put_integer(1, 1)
-	pseudo_instr2(10, 0, 1)
-	put_y_variable(1, 0)
-	call_predicate('$version', 1, 3)
+	put_y_variable(0, 19)
+	put_y_variable(1, 1)
+	put_constant('version', 0)
+	call_predicate('current_prolog_flag', 2, 3)
 	put_y_value(2, 0)
 	call_predicate('main/1$0', 1, 2)
 	pseudo_instr1(28, 0)
-	get_y_variable(0, 0)
+	get_y_value(0, 0)
+	put_y_value(0, 0)
 	put_constant('Qu-Prolog Version ', 1)
 	call_predicate('write_atom', 2, 2)
 	put_y_value(0, 0)
@@ -67,9 +67,8 @@ $1:
 	call_predicate('$write_t', 3, 1)
 	put_integer(10, 0)
 	pseudo_instr2(8, 20, 0)
-	put_constant('[]', 0)
 	deallocate
-	execute_predicate('$interpreter', 1)
+	execute_predicate('interpreter', 0)
 end('main'/1):
 
 

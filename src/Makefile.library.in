@@ -21,6 +21,7 @@ export SOURCES.library	= \
 	string.cc \
 	string_map.cc \
 	string_table.cc \
+	system_support.cc \
 	tcp.cc
 
 export BASES.library	= $(basename $(SOURCES.library))

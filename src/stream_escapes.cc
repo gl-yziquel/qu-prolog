@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stream_escapes.cc,v 1.11 2002/12/13 00:19:55 qp Exp $
+// $Id: stream_escapes.cc,v 1.12 2004/03/19 04:54:19 qp Exp $
 
 #include <errno.h>
 #include <iostream>
@@ -62,6 +62,7 @@
 
 #include "atom_table.h"
 #include "io_qp.h"
+#include "system_support.h"
 #include "thread_qp.h"
 #include "unify.h"
 
@@ -131,7 +132,7 @@ Thread::psi_open(Object *& filename_arg,
   //
   // Open the file.
   //
-  const char *file = atoms->getAtomString(OBJECT_CAST(Atom*, argF));
+  const char *file = wordexp(atoms->getAtomString(OBJECT_CAST(Atom*, argF))).c_str();
 
   switch (mode)
     {

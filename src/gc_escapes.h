@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.h,v 1.3 2002/03/24 05:58:30 qp Exp $
+// $Id: gc_escapes.h,v 1.4 2004/02/25 21:25:32 qp Exp $
 
 #ifndef	GC_ESCAPES_H
 #define	GC_ESCAPES_H
@@ -61,6 +61,20 @@
 public: 
 
 #ifdef DEBUG
+bool check_env(EnvLoc env);
+
+bool check_choice(ChoiceLoc choiceloc);
+
+bool check_ip_trail();
+
+bool check_ips();
+
+bool check_name();
+
+bool check_obj_trail();
+
+bool check_heap2(Heap& heap);
+
 //
 // Check heap for correct pointers
 //

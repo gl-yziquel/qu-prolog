@@ -235,5 +235,6 @@ string_map.o: string_map.cc atom_table.h config.h ../config.h \
 string_table.o: string_table.cc area_offsets.h defs.h config.h \
   ../config.h debug.h string_table.h magic.h qem_options.h option.h \
   options.h stack_qp.h errors.h page_table.h timestamp.h
+system_support.o: system_support.cc system_support.h
 tcp.o: tcp.cc netinet_in.h config.h ../config.h tcp_qp.h errors.h \
   area_offsets.h defs.h debug.h

@@ -66,13 +66,14 @@ end('$read_option/1$0'/2):
 $1:
 	allocate(2)
 	get_y_variable(1, 0)
+	put_y_variable(0, 19)
 	call_predicate('errornl', 0, 2)
 	call_predicate('repeat', 0, 2)
 	put_constant('SIGINT interrupt [cehtpx?] ? ', 0)
 	call_predicate('error', 1, 2)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
-	put_y_variable(0, 0)
+	put_y_value(0, 0)
 	call_predicate('get_line', 1, 2)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
@@ -137,30 +138,33 @@ $4:
 
 $5:
 	get_integer(112, 0)
-	put_constant('Enter thread id  (terminate with .) ', 0)
 	allocate(2)
+	put_y_variable(1, 19)
+	put_y_variable(0, 19)
+	put_constant('Enter thread id  (terminate with .) ', 0)
 	call_predicate('error', 1, 2)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
-	put_y_variable(1, 0)
+	put_y_value(1, 0)
 	call_predicate('read', 1, 2)
 	put_constant('Enter the goal to push (terminate with .) ', 0)
 	call_predicate('error', 1, 2)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
-	put_y_variable(0, 0)
+	put_y_value(0, 0)
 	call_predicate('read', 1, 2)
 	pseudo_instr2(103, 21, 20)
 	fail
 
 $6:
 	get_integer(120, 0)
-	put_constant('Enter thread id to exit (terminate with .) ', 0)
 	allocate(1)
+	put_y_variable(0, 19)
+	put_constant('Enter thread id to exit (terminate with .) ', 0)
 	call_predicate('error', 1, 1)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
-	put_y_variable(0, 0)
+	put_y_value(0, 0)
 	call_predicate('read', 1, 1)
 	pseudo_instr1(97, 20)
 	fail
@@ -262,6 +266,8 @@ $2:
 	allocate(5)
 	unify_y_variable(2)
 	unify_y_variable(0)
+	put_y_variable(3, 19)
+	put_y_variable(1, 19)
 	put_y_value(2, 0)
 	put_y_variable(4, 1)
 	call_predicate('$display_thread_info/1$0', 2, 5)
@@ -271,13 +277,13 @@ $2:
 	put_y_value(4, 0)
 	call_predicate('error', 1, 4)
 	put_y_value(2, 0)
-	put_y_variable(3, 1)
+	put_y_value(3, 1)
 	call_predicate('$display_thread_info/1$1', 2, 4)
 	put_y_value(3, 1)
 	put_integer(16, 0)
 	call_predicate('$format', 2, 3)
 	pseudo_instr2(78, 22, 0)
-	get_y_variable(1, 0)
+	get_y_value(1, 0)
 	put_constant('stderr', 0)
 	put_integer(3, 1)
 	call_predicate('tab', 2, 2)
@@ -297,11 +303,12 @@ $1:
 	allocate(4)
 	get_y_variable(2, 0)
 	get_y_variable(0, 1)
+	put_y_variable(1, 19)
 	put_y_value(0, 0)
 	put_y_variable(3, 1)
 	call_predicate('name', 2, 4)
 	put_y_value(3, 0)
-	put_y_variable(1, 1)
+	put_y_value(1, 1)
 	call_predicate('length', 2, 3)
 	pseudo_instr3(3, 22, 21, 0)
 	get_x_variable(1, 0)
@@ -566,130 +573,6 @@ end('$get_signals_flag'/2):
 
 
 
-'set_signals_flag'/1:
-
-	switch_on_term(0, $9, $8, $8, $8, $8, $5)
-
-$5:
-	switch_on_constant(0, 4, ['$default':$8, 'off':$6, 'on':$7])
-
-$6:
-	try(1, $1)
-	retry($2)
-	trust($4)
-
-$7:
-	try(1, $1)
-	retry($3)
-	trust($4)
-
-$8:
-	try(1, $1)
-	trust($4)
-
-$9:
-	try(1, $1)
-	retry($2)
-	retry($3)
-	trust($4)
-
-$1:
-	get_x_variable(1, 0)
-	pseudo_instr1(1, 1)
-	neck_cut
-	put_structure(1, 0)
-	set_constant('set_signals_flag')
-	set_x_value(1)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 3)
-	set_constant('set_signals_flag')
-	set_x_value(1)
-	put_list(2)
-	set_x_value(3)
-	set_constant('[]')
-	put_integer(1, 1)
-	execute_predicate('instantiation_exception', 3)
-
-$2:
-	get_constant('off', 0)
-	put_integer(3, 0)
-	put_integer(0, 1)
-	pseudo_instr2(10, 0, 1)
-	neck_cut
-	proceed
-
-$3:
-	get_constant('on', 0)
-	put_integer(3, 0)
-	put_integer(1, 1)
-	pseudo_instr2(10, 0, 1)
-	neck_cut
-	proceed
-
-$4:
-	get_x_variable(1, 0)
-	put_structure(1, 0)
-	set_constant('set_signals_flag')
-	set_x_value(1)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 3)
-	set_constant('set_signals_flag')
-	set_x_value(1)
-	put_list(2)
-	set_x_value(3)
-	set_constant('[]')
-	put_integer(1, 1)
-	put_constant('atom', 3)
-	execute_predicate('type_exception', 4)
-end('set_signals_flag'/1):
-
-
-
-'enable_signals'/0:
-
-
-$1:
-	put_constant('on', 0)
-	execute_predicate('set_signals_flag', 1)
-end('enable_signals'/0):
-
-
-
-'disable_signals'/0:
-
-
-$1:
-	put_constant('off', 0)
-	execute_predicate('set_signals_flag', 1)
-end('disable_signals'/0):
-
-
-
-'with_signals_flag'/2:
-
-
-$1:
-	allocate(2)
-	get_y_variable(1, 1)
-	put_integer(3, 2)
-	pseudo_instr2(11, 2, 1)
-	get_y_variable(0, 1)
-	call_predicate('set_signals_flag', 1, 2)
-	put_y_value(1, 0)
-	put_structure(2, 1)
-	set_constant('$get_flag')
-	set_integer(3)
-	set_y_value(0)
-	deallocate
-	execute_predicate('unwind_protect', 2)
-end('with_signals_flag'/2):
-
-
-
 'clear_signal'/1:
 
 	try(1, $1)
@@ -860,6 +743,7 @@ $1:
 	get_y_variable(6, 1)
 	get_y_variable(5, 2)
 	get_y_variable(4, 3)
+	put_y_variable(1, 19)
 	put_y_value(4, 0)
 	put_y_variable(3, 1)
 	put_x_variable(2, 2)
@@ -871,7 +755,7 @@ $1:
 	put_y_value(5, 2)
 	put_y_value(2, 3)
 	put_y_value(3, 4)
-	put_y_variable(1, 5)
+	put_y_value(1, 5)
 	call_predicate('$psi0_error_handler/4$0', 6, 2)
 	put_y_value(1, 0)
 	call_predicate('call_predicate', 1, 1)
@@ -917,6 +801,7 @@ $1:
 	get_y_variable(6, 2)
 	get_y_variable(5, 3)
 	get_y_variable(4, 4)
+	put_y_variable(1, 19)
 	put_y_value(5, 0)
 	put_y_variable(3, 1)
 	put_y_value(4, 2)
@@ -930,7 +815,7 @@ $1:
 	put_y_value(2, 3)
 	put_y_value(3, 4)
 	put_y_value(4, 5)
-	put_y_variable(1, 6)
+	put_y_value(1, 6)
 	call_predicate('$psi1_error_handler/5$0', 7, 2)
 	put_y_value(1, 0)
 	call_predicate('call_predicate', 1, 1)
@@ -977,6 +862,7 @@ $1:
 	get_y_variable(6, 3)
 	get_y_variable(5, 4)
 	get_y_variable(4, 5)
+	put_y_variable(1, 19)
 	put_y_value(6, 0)
 	put_y_variable(3, 1)
 	put_y_value(5, 2)
@@ -992,7 +878,7 @@ $1:
 	put_y_value(3, 4)
 	put_y_value(5, 5)
 	put_y_value(4, 6)
-	put_y_variable(1, 7)
+	put_y_value(1, 7)
 	call_predicate('$psi2_error_handler/6$0', 8, 2)
 	put_y_value(1, 0)
 	call_predicate('call_predicate', 1, 1)
@@ -1040,6 +926,7 @@ $1:
 	get_y_variable(6, 4)
 	get_y_variable(5, 5)
 	get_y_variable(4, 6)
+	put_y_variable(1, 19)
 	put_y_value(7, 0)
 	put_y_variable(3, 1)
 	put_y_value(6, 2)
@@ -1057,7 +944,7 @@ $1:
 	put_y_value(6, 5)
 	put_y_value(5, 6)
 	put_y_value(4, 7)
-	put_y_variable(1, 8)
+	put_y_value(1, 8)
 	call_predicate('$psi3_error_handler/7$0', 9, 2)
 	put_y_value(1, 0)
 	call_predicate('call_predicate', 1, 1)
@@ -1106,6 +993,7 @@ $1:
 	get_y_variable(6, 5)
 	get_y_variable(5, 6)
 	get_y_variable(4, 7)
+	put_y_variable(1, 19)
 	put_y_value(8, 0)
 	put_y_variable(3, 1)
 	put_y_value(7, 2)
@@ -1125,7 +1013,7 @@ $1:
 	put_y_value(6, 6)
 	put_y_value(5, 7)
 	put_y_value(4, 8)
-	put_y_variable(1, 9)
+	put_y_value(1, 9)
 	call_predicate('$psi4_error_handler/8$0', 10, 2)
 	put_y_value(1, 0)
 	call_predicate('call_predicate', 1, 1)
@@ -1175,6 +1063,7 @@ $1:
 	get_y_variable(6, 6)
 	get_y_variable(5, 7)
 	get_y_variable(4, 8)
+	put_y_variable(1, 19)
 	put_y_value(9, 0)
 	put_y_variable(3, 1)
 	put_y_value(8, 2)
@@ -1196,7 +1085,7 @@ $1:
 	put_y_value(6, 7)
 	put_y_value(5, 8)
 	put_y_value(4, 9)
-	put_y_variable(1, 10)
+	put_y_value(1, 10)
 	call_predicate('$psi5_error_handler/9$0', 11, 2)
 	put_y_value(1, 0)
 	call_predicate('call_predicate', 1, 1)
@@ -1347,7 +1236,7 @@ end('$psi5_resume'/7):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803/0$0'/0:
+'$query_handlers2004_3_31_13_28_1_764/0$0'/0:
 
 
 $1:
@@ -1361,11 +1250,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803/0$0'/0):
+end('$query_handlers2004_3_31_13_28_1_764/0$0'/0):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803/0$1'/0:
+'$query_handlers2004_3_31_13_28_1_764/0$1'/0:
 
 
 $1:
@@ -1379,11 +1268,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803/0$1'/0):
+end('$query_handlers2004_3_31_13_28_1_764/0$1'/0):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803/0$2'/0:
+'$query_handlers2004_3_31_13_28_1_764/0$2'/0:
 
 
 $1:
@@ -1397,11 +1286,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803/0$2'/0):
+end('$query_handlers2004_3_31_13_28_1_764/0$2'/0):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803/0$3'/0:
+'$query_handlers2004_3_31_13_28_1_764/0$3'/0:
 
 
 $1:
@@ -1415,11 +1304,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803/0$3'/0):
+end('$query_handlers2004_3_31_13_28_1_764/0$3'/0):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803/0$4'/0:
+'$query_handlers2004_3_31_13_28_1_764/0$4'/0:
 
 
 $1:
@@ -1433,11 +1322,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803/0$4'/0):
+end('$query_handlers2004_3_31_13_28_1_764/0$4'/0):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803/0$5'/0:
+'$query_handlers2004_3_31_13_28_1_764/0$5'/0:
 
 
 $1:
@@ -1451,11 +1340,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803/0$5'/0):
+end('$query_handlers2004_3_31_13_28_1_764/0$5'/0):
 
 
 
-'$query_handlers2004_2_19_13_5_3_803'/0:
+'$query_handlers2004_3_31_13_28_1_764'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1467,37 +1356,37 @@ end('$query_handlers2004_2_19_13_5_3_803/0$5'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_handlers2004_2_19_13_5_3_803/0$0', 0, 0)
+	call_predicate('$query_handlers2004_3_31_13_28_1_764/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_handlers2004_2_19_13_5_3_803/0$1', 0, 0)
+	call_predicate('$query_handlers2004_3_31_13_28_1_764/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_handlers2004_2_19_13_5_3_803/0$2', 0, 0)
+	call_predicate('$query_handlers2004_3_31_13_28_1_764/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_handlers2004_2_19_13_5_3_803/0$3', 0, 0)
+	call_predicate('$query_handlers2004_3_31_13_28_1_764/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_handlers2004_2_19_13_5_3_803/0$4', 0, 0)
+	call_predicate('$query_handlers2004_3_31_13_28_1_764/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_handlers2004_2_19_13_5_3_803/0$5', 0, 0)
+	call_predicate('$query_handlers2004_3_31_13_28_1_764/0$5', 0, 0)
 	fail
 
 $7:
 	proceed
-end('$query_handlers2004_2_19_13_5_3_803'/0):
+end('$query_handlers2004_3_31_13_28_1_764'/0):
 
 
 
@@ -1505,7 +1394,7 @@ end('$query_handlers2004_2_19_13_5_3_803'/0):
 
 
 $1:
-	execute_predicate('$query_handlers2004_2_19_13_5_3_803', 0)
+	execute_predicate('$query_handlers2004_3_31_13_28_1_764', 0)
 end('$query'/0):
 
 

@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 6.3 Reference Manual - Built-in Predicates
+Qu-Prolog 6.4 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -306,6 +306,12 @@ Execute <KBD>Goal</KBD>. If <KBD>Goal</KBD> has an inline declaration then it wi
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="initialization"></a>initialization(Goal)</KBD>
+
+<BLOCKQUOTE>
+The same as <KBD>call(Goal)</KBD>.
+It is included for compatibility with the ISO standard.
+</BLOCKQUOTE>
 <P><KBD><a name="call_predicate"></a>call_predicate(Goal)</KBD>
 <BR><KBD>call_predicate(Goal,Arg1)</KBD>
 <BR><KBD>call_predicate(Goal,Arg1,Arg2)</KBD>
@@ -8066,7 +8072,10 @@ with <KBD>Msg</KBD>, <KBD>Address</KBD> and <KBD>RtAddress</KBD>.
 
 <P><KBD>Term1 -&#62; Goal1; Term2 -&#62; Goal2; ... ; TermN -&#62; GoalN</KBD>
 
-<P><KBD>Term1</KBD> to <KBD>TermN</KBD> are either message patterns or of the form <KBD>Msg::Goal</KBD> where <KBD>Msg</KBD> is a message pattern and <KBD>Goal</KBD> is a goal.  Message patterns take the form <KBD>Msg &#60;&#60;- Addr</KBD> or <KBD>Msg &#60;&#60;- Addr1 reply_to Addr2</KBD>.  Where <KBD>timeout(T) -&#62; TimeoutGoal</KBD> appears it should be last as any subsequent choices are ignored.
+<P><KBD>Term1</KBD> to <KBD>TermN</KBD> are either message patterns or of the 
+form <KBD>Msg::Goal</KBD> where <KBD>Msg</KBD> is a message pattern 
+and <KBD>Goal</KBD> is a goal (for compatibility with logtalk <KBD>??</KBD> can be used instead of <KBD>::</KBD>).  
+Message patterns take the form <KBD>Msg &#60;&#60;- Addr</KBD> or <KBD>Msg &#60;&#60;- Addr1 reply_to Addr2</KBD>.  Where <KBD>timeout(T) -&#62; TimeoutGoal</KBD> appears it should be last as any subsequent choices are ignored.
 
 <P>Messages in the incoming message queue are tested against the test terms <KBD>Term1</KBD> to <KBD>TermN</KBD>.  The first message to match against the test terms and the first such matching test term are chosen.  
 
@@ -8584,6 +8593,24 @@ Access the operating system.
 <BR>
 <BR>yes
 </KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="current_prolog_flag"></a>current_prolog_flag(Flag, Value)</KBD>
+
+<BLOCKQUOTE>
+Extract the <KBD>Value</KBD> of the prolog <KBD>Flag</KBD>. Currently, the only flag is <KBD>version</KBD> -- the version number of Qu-Prolog.
+
+<BR><KBD>mode current_prolog_flag(@atom, ?term)</KBD>
+
+</BLOCKQUOTE>
+
+<P><KBD><a name="interpreter"></a>interpreter</KBD>
+
+<BLOCKQUOTE>
+Start the standard Qu-Prolog interpreter. This is useful for stand-alone applications that need an interpreter as part of the processing.
+
+<BR><KBD>mode interpreter</KBD>
+
 </BLOCKQUOTE>
 
 <P><KBD><a name="chdir"></a>chdir(Dir)</KBD>

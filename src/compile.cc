@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compile.cc,v 1.6 2002/11/13 04:04:14 qp Exp $
+// $Id: compile.cc,v 1.7 2004/02/25 21:25:31 qp Exp $
 
 #include "thread_qp.h"
 #include "io_qp.h"
@@ -92,22 +92,52 @@ void addPerms(Object* tmp, WordArray& perms, int& numys)
     }
 }
 
+bool in_neck_vars(Object* perm_var, Object* neck_vars)
+{
+  perm_var = perm_var->variableDereference();
+  while(true)
+    {
+      DEBUG_ASSERT(neck_vars != NULL);
+      neck_vars = neck_vars->variableDereference();
+      if (!neck_vars->isCons()) return false;
+      Cons* listptr = OBJECT_CAST(Cons*, neck_vars);
+      if (perm_var == listptr->getHead()->variableDereference()) return true;
+      neck_vars = listptr->getTail();
+    }
+  return false;
+}
+
 //
 // Calculate the perm vars - a C++ version of permvars.ql
+//
+// As part of this calculation we need to make sure all y registers will get 
+// initialised before the first goal. This is because the garbage collector
+// requires this.
+// To do this we find all the permanent variables that are not mentioned
+// between the head and first "real" body goal (inclusively). For those
+// variables we add unifications of those variables to new variables just
+// before the first goal. These unifications will be compiled into
+// PUT_Y_VARIABLE instructions by later phases of the compiler.
 //
 void
 Thread::permvars(Object* clause, WordArray& perms, int& numys)
 {
   Object* half = AtomTable::nil;
   Object* vars = AtomTable::nil;
+  Object* neck_vars = AtomTable::nil;
+  bool body_goal_found = false;
+  Object* previous;
+  Object* goal_ptr;
+  Object* rest_ptr;
 
   numys = 0;
   DEBUG_ASSERT(clause->isCons());
   Object* head = OBJECT_CAST(Cons*, clause)->getHead()->variableDereference();
   clause = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference();
   heap.collect_term_vars(head, vars);
-  for (; clause->isCons(); 
-       clause = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference())
+
+  for (previous = clause; clause->isCons(); 
+       previous = clause, clause = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference())
     {
       Object* a = OBJECT_CAST(Cons*, clause)->getHead()->variableDereference();
       if (a->isStructure() && 
@@ -177,9 +207,41 @@ Thread::permvars(Object* clause, WordArray& perms, int& numys)
 	      continue;
 	    }
 	  half = vars;
+	  if (!body_goal_found)
+	    {
+	      neck_vars = vars;
+	      body_goal_found = true;
+	      goal_ptr = previous;
+	      rest_ptr = clause;
+	    }
 	}
     }
   heap.resetCollectedVarList(vars);
+
+  if (body_goal_found)
+    {
+      for (int i = perms.lastEntry()-1; i >= 0; i--)
+	{
+	  if (perms.Entries()[i] == 0)
+	    {
+	      continue;
+	    }	  
+	  Object* perm_var = reinterpret_cast<Object*>(perms.Entries()[i]);
+	  DEBUG_ASSERT(perm_var != NULL);
+	  if (!in_neck_vars(perm_var, neck_vars))
+	    {
+	      Structure* unif_struct = heap.newStructure(2);
+	      unif_struct->setFunctor(AtomTable::equal);
+	      unif_struct->setArgument(1, perm_var);
+	      unif_struct->setArgument(2, heap.newVariable());
+	      Cons* list_entry = heap.newCons(unif_struct, rest_ptr);
+	      rest_ptr = list_entry;
+	    }
+	}
+      Cons* goal_cons = OBJECT_CAST(Cons*, goal_ptr);
+      goal_cons->setTail(rest_ptr);
+    }
+
 }
 
 #if 0

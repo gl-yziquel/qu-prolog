@@ -55,7 +55,7 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: execute.cc,v 1.12 2002/12/05 03:39:28 qp Exp $
+// $Id: execute.cc,v 1.13 2004/02/25 21:25:31 qp Exp $
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -215,6 +215,7 @@ do {						\
 #define VMBREAK break
 #endif
 
+
 //
 // Fetch-execute cycle for the Qu-Prolog Abstract Machine.
 //
@@ -284,7 +285,7 @@ Thread::Execute(void)
 #endif
 
   CodeLoc PC = programCounter;
-                                                                                
+
   while (true)
     {
 #ifdef DEBUG
@@ -295,7 +296,7 @@ Thread::Execute(void)
 		    trace.TraceStart(*this);
 		    );
 
-     switch (getInstruction(PC))
+      switch(getInstruction(PC))
 	{
 	  //
 	  // The purpose of the "put" instructions is to create
@@ -595,7 +596,7 @@ Thread::Execute(void)
 	    // unifies the data objects in Yi and register Xj. 
 	    // Backtrack on failure. 
 	    // 
-	  
+
 	    if (! unify(envStack.yReg(currentEnvironment, i), X[j]))
 	      {
 		BACKTRACK;
@@ -1486,6 +1487,7 @@ Thread::Execute(void)
 	    //
 	    const word32 n = getNumber(PC);
 
+
 	    if (choiceStack.isEnvProtected(currentChoicePoint,
 					      currentEnvironment))
 	      {
@@ -1547,6 +1549,8 @@ Thread::Execute(void)
 			  }
 		      }
 		      );
+
+	    //      DEBUG_ASSERT(check_cps(currentChoicePoint,choiceStack,envStack,heap ));
 
 	    const PredLoc start = predicates->lookUp(predicate, arity, 
 						     atoms, code); 
@@ -2453,7 +2457,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR1, ARGS(number, register)):
 	  {
@@ -2839,6 +2843,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	    else
 	      {		
 		*StructurePointer = Object::RefTag;
+
 		envStack.yReg(currentEnvironment, i) = 
 		  reinterpret_cast<Object*>(StructurePointer);	
 		StructurePointer++;

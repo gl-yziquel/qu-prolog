@@ -22,8 +22,8 @@ static icmConn conn=NULL;
 /* Our ICM handle */
 static icmHandle ourHandle = NULL;
 
-/* Our handle name */
-static char handle_name[HANDLE_NAME_SIZE];
+/* String for general processing */
+static char tmp_string[HANDLE_NAME_SIZE];
 
 /* Tcl channel for communication */
 static Tcl_Channel channel;
@@ -38,7 +38,7 @@ static long seqNo = -LONG_MAX;
  */
 int 
 c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
-               int argc, char *argv[])     
+               int argc, const char *argv[])     
 {
     int port;
     if (argc != 3)
@@ -62,7 +62,8 @@ c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
     }
     else
     {
-      if(icmInitComms(port,argv[2],&conn)!=icmOk)
+	  strcpy(tmp_string, argv[2]); 
+      if(icmInitComms(port,tmp_string,&conn)!=icmOk)
       {
 	Tcl_SetResult(interp, "Failed to initialise process", TCL_STATIC);
         return TCL_ERROR;
@@ -82,7 +83,7 @@ c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
  * decodes them and writes them to the pipe.
  */
 int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp, 
-                       int argc, char *argv[])
+                       int argc, const char *argv[])
 {
     if (argc != 2)
     {
@@ -102,7 +103,8 @@ int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp,
 
     /* Construct handle from supplied process name */
     
-    ourHandle = icmParseHandle(argv[1]);
+	strcpy(tmp_string, argv[1]);
+    ourHandle = icmParseHandle(tmp_string);
     
     if(icmRegisterAgent(conn,ourHandle,NULL,&ourHandle)==icmOk)
       {
@@ -113,7 +115,8 @@ int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp,
 	/* Register the Tcl channel with Tcl */
         Tcl_RegisterChannel(interp, channel);
 	/* Return the channel name */
-	Tcl_SetResult(interp, Tcl_GetChannelName(channel), TCL_VOLATILE);
+	strcpy(tmp_string, Tcl_GetChannelName(channel));
+	Tcl_SetResult(interp, tmp_string, TCL_VOLATILE);
         return TCL_OK;
       }
     else
@@ -128,7 +131,7 @@ int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp,
  * The Tk-c interface to icmDeregisterAgent.
  */
 int c_icmDeregisterAgent(ClientData clientData, Tcl_Interp *interp,
-                         int argc, char *argv[])
+                         int argc, const char *argv[])
 {
   icmStatus status;
   if (argc != 1)
@@ -154,7 +157,7 @@ int c_icmDeregisterAgent(ClientData clientData, Tcl_Interp *interp,
 }
 
 int c_icmGetMsg(ClientData clientData, Tcl_Interp *interp,
-                    int argc, char *argv[])
+                    int argc, const char *argv[])
 {
   if (argc != 1)
     {
@@ -227,7 +230,7 @@ int c_icmGetMsg(ClientData clientData, Tcl_Interp *interp,
 }
 
 int c_icmMsgAvail(ClientData clientData, Tcl_Interp *interp, 
-                    int argc, char *argv[])
+                    int argc, const char *argv[])
 {
   if (argc != 1)
     {
@@ -252,7 +255,7 @@ int c_icmMsgAvail(ClientData clientData, Tcl_Interp *interp,
 
 
 int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp, 
-                    int argc, char *argv[])
+                    int argc, const char *argv[])
 {
     icmHandle tgt;
     icmHandle reply;
@@ -262,17 +265,20 @@ int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp,
 
     if (argc == 3)
     {
-      tgt = icmParseHandle(argv[1]);
+	  strcpy(tmp_string, argv[1]);
+      tgt = icmParseHandle(tmp_string);
       data.size = strlen(argv[2]);
-      data.data = argv[2];
+      data.data = (char*)argv[2];
       reply = tgt;
     }
     else if (argc == 4)
     {
-      tgt = icmParseHandle(argv[1]);
+	  strcpy(tmp_string, argv[1]);
+      tgt = icmParseHandle(tmp_string);
       data.size = strlen(argv[3]);
-      data.data = argv[3];
-      reply = icmParseHandle(argv[2]);
+      data.data = (char*)argv[3];
+	  strcpy(tmp_string, argv[2]);
+      reply = icmParseHandle(tmp_string);
     }
     else
     {
@@ -297,7 +303,11 @@ int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp,
     }
 }
 
+#if defined(MACOSX)
+int Tkicm_SafeInit(Tcl_Interp *interp)
+#else
 int Tkicm_Init(Tcl_Interp *interp)
+#endif
 {
   Tcl_CreateCommand(interp, "icmInitComms", c_icmInitComms,
 		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);

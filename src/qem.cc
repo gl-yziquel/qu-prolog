@@ -53,13 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.25 2003/12/10 21:28:05 qp Exp $
+// $Id: qem.cc,v 1.26 2004/03/29 02:42:12 qp Exp $
 
 #include <typeinfo>
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <fcntl.h>
 
 #include <sys/types.h>
 #include <string.h>

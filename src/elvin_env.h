@@ -1,6 +1,6 @@
 // elvin_env.h - Elvin support.
 //
-// $Id: elvin_env.h,v 1.2 2004/02/12 23:53:47 qp Exp $
+// $Id: elvin_env.h,v 1.3 2004/03/17 21:55:05 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -262,7 +262,7 @@ class ElvinMessageChannel : public MessageChannel
   // Add an Elvin handler to the current handlers
   void addHandler(ElvinHandler* h)
     {
-      elvin_handlers.push_back(h);
+      elvin_handlers.push_front(h);
     }
   // Add a timeout to the registered timeouts
   void addTimeout(elvin_timeout_t timeout);
