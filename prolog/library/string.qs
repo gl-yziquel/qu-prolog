@@ -1,5 +1,19 @@
 'stream_to_chars/2$0'/3:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$prop'/7:$5])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
+	try(3, $1)
+	trust($2)
+
+$6:
 	try(3, $1)
 	trust($2)
 
@@ -141,6 +155,20 @@ end('stream_to_chars'/2):
 
 'stream_to_atom/2$0'/3:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$prop'/7:$5])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
+	try(3, $1)
+	trust($2)
+
+$6:
 	try(3, $1)
 	trust($2)
 

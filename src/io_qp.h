@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: io_qp.h,v 1.3 2001/05/23 21:52:35 qp Exp $
+// $Id: io_qp.h,v 1.17 2002/12/15 08:23:50 qp Exp $
 
 #ifndef	IO_QP_H
 #define	IO_QP_H
@@ -64,42 +64,33 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <stdio.h>
-#include <stdiostream.h>
-#include <strstream.h>
-#include <fstream.h>
+#include <sstream>
+#include <fstream>
 #include <string.h>
 #include <unistd.h>
+
 
 #include "config.h"
 
 #include "defs.h"
 
 #include "icm_environment.h"
-//#include "thread.h"
 
 class Thread;
 
-enum AccessMode	{
+enum AccessMode {
   AM_READ = 0,
   AM_WRITE = 1,
   AM_APPEND = 2
 };
 
-enum IOType {
-  ISTREAM,
-  OSTREAM,
-  ISTRSTREAM,
-  OSTRSTREAM,
-  IMSTREAM,
-  OMSTREAM,
-  SOCKET
-};
 
-enum IODirection {
-  INPUT,
-  OUTPUT,
-  INPUT_OUTPUT
-};
+
+// No file descriptor
+#define NO_FD -1
+
+// Buffer size for reading from fd
+#define BUFFSIZE 1024
 
 //
 // FD is a class for forcing streams that deal with the outside world
@@ -133,7 +124,7 @@ public:
   virtual bool isEnded(void) const = 0;
 
   // Ready for action?
-  virtual bool isReady(void) const = 0;
+  // virtual bool isReady(void) const = 0;
 
 };
 
@@ -237,7 +228,7 @@ public:
   void setAccepted(Socket *, const int);
   
   // Ready for action?
-  virtual bool isReady(void) const;
+  // bool isReady(void);
 
   // Finished for IO?
   virtual bool isEnded(void) const;
@@ -249,912 +240,647 @@ public:
 //
 //-----------------------------------------------
 
-class imstream
-{
-private:
-  // a read/write buffer.
-  //
-  strstreambuf* sb;
-  istream* strin;
-  ostream* strout;
-  // the icm handle for incoming messages.
-  icmHandle sender_handle;
-  // the thread pointer to the thread that opened the stream
-  Thread* thread;
-
-  list<ICMMessage *>::iterator *iter;
-  
-  bool found;
-
-  bool msg_ready(void);
-  void get_a_msg(void);
-
-public:
-  imstream(icmHandle handle, Thread* th)
-    {
-      sb = new strstreambuf(128);
-      strin = new istream(sb);
-      strout = new ostream(sb);
-      sender_handle = handle;
-      thread = th;
-      iter = new list<ICMMessage *>::iterator;
-      found = false;
-    }
-      
-  virtual ~imstream(void)
-    {
-      delete strin;
-      delete strout;
-      delete sb;
-    }
-
-  inline Thread*  getThread(void)
-    {
-      return thread;
-    }
-
-  inline bool isFound(void)
-    {
-      return found;
-    }
-
-  inline void setFound(void)
-    {
-      found = true;
-    }
-
-  inline icmHandle getSenderHandle(void)
-    {
-      return sender_handle;
-    }
-
-  inline list<ICMMessage *>::iterator * getIter(void)
-    {
-      return iter;
-    }
-
-  inline bool seekg(streampos pos, ios::seekdir d = ios::beg)
-    {
-      return (!strin->seekg(pos, d).fail());
-    }
-
-  inline bool eof(void)
-    {
-      return (strin->eof());
-    }
-
-  inline bool is_at_eof(void)
-    {
-      strin->get(); 
-      strin->unget();
-      return strin->eof();
-    }
-
-  inline bool fail(void)
-    {
-      return strin->fail();
-    }
-
-  inline void clear(ios::iostate state_arg = ios::goodbit)
-    {
-      strin->clear(state_arg);
-    }
-
-  inline bool get(char& ch)
-    {
-      if (is_at_eof())
-	{
-	  get_a_msg();
-	}
-      return (!strin->get(ch).fail());
-    }
-
-  inline int get(void)
-    {
-      if (is_at_eof())
-	{
-	  get_a_msg();
-	}
-      return (strin->get());
-    }
-
-  inline bool unget(void)
-    {
-      return (!strin->unget().fail());
-    }
-  
-  inline int peek(void)
-    {
-      return strin->peek();
-    }
-
-  inline bool good(void)
-    {
-      return strin->good();
-    }
-
-};
-
-class omstream
-{
-private:
-  icmHandle to_handle;
-  Thread* sender_thread;
-  ICMEnvironment* icm_environment;
-  
-  ostrstream* ostrm;
-
-  void send_msg(void);
-
-public:
-  omstream(icmHandle thandle, Thread* thread, ICMEnvironment* icm_env)
-    {
-      to_handle = thandle;
-      sender_thread = thread;
-      icm_environment = icm_env;
-      ostrm = new ostrstream();
-    }
-
-  virtual ~omstream(void)
-    {
-      delete ostrm;
-    }
-
-  inline bool fail(void)
-    {
-      return ostrm->fail();
-    }
-
-  inline void clear(ios::iostate state_arg = ios::goodbit)
-    {
-      ostrm->clear(state_arg);
-    }
-
-  inline bool put(char ch)
-    {
-      if (ostrm->put(ch).fail())
-	{
-	  return false;
-	}
-      send_msg();
-      return true;
-    }
-  
-  inline void operator<<(const char c)
-    {
-      (*ostrm) << c;
-      send_msg();
-    }
-
-  inline void operator<<(const char* s)
-    {
-      (*ostrm) << s;
-      send_msg();
-    }
-
-  inline void operator<<(const int n)
-    {
-      (*ostrm) << n;
-      send_msg();
-    }
-
-  inline void form(const char* formstr, const word32 data)
-    {
-      ostrm->form(formstr, data);
-      send_msg();
-    }
-
-  inline int tell(void)
-    {
-      return (ostrm->tellp());
-    }
-
-  inline bool good(void)
-    {
-      return (ostrm->good());
-    }
-
-};
+using namespace std;
 
 //
-// Basic stream class. These streams aren't capable of dealing with
-// the outside world, and are only intended as a base class for
-// further refinement.
+// QPStream - an abstract class to be inherited by different
+// kinds of streams. It provides the stream interface methods.
 //
-class Stream : public FD
+
+class QPStream
 {
-private:
-  //
-  // Status of the stream.
-  //
-  union	{
-    istream	*i_stream;
-    istrstream  *i_strstream;
-    ostream	*o_stream;
-    ostrstream  *o_strstream;
-    imstream    *i_mstream;
-    omstream    *o_mstream;
-  } desc;
+ private:
+  IOType type;                // the stream type
+  word32 lineCounter;         // line counter for input streams
+  heapobject* properties;     // a stream properties structure
+  
+ public:
+  QPStream(IOType t);
+  
+  virtual ~QPStream()
+    { 
+      delete[] properties; 
+    }
 
-  //
-  // A closeable flag
-  //
-  bool closeable;
-
-  //
-  // Line counter.
-  //
-  word32	lineCounter;
-
-  heapobject* properties;
-
-public:
-  //
-  // An explicit fd is supplied.
-  //
-  Stream(istream *is, const int f = EOF)
-    : FD(f, ISTREAM)
-  {
-    lineCounter = 1;
-    desc.i_stream = is;
-    closeable = (is != &cin);
-    properties = new heapobject[Structure::size(7)];
-  }
-  Stream(ostream *os, const int f = EOF)
-    : FD(f, OSTREAM)
-  {
-    lineCounter = 1;
-    desc.o_stream = os;
-    closeable = ((os != &cout) || (os != &cerr));
-    properties = new heapobject[Structure::size(7)];
-  }
-
-  //
-  // Things with a meaningful fd.
-  //
-  Stream(ifstream *is)
-    : FD(is->rdbuf()->fd(), ISTREAM)
-  {
-    lineCounter = 1;
-    desc.i_stream = is;
-    closeable = true;
-    properties = new heapobject[Structure::size(7)];
-  }
-  Stream(ofstream *os)
-    : FD(os->rdbuf()->fd(), OSTREAM)
-  {
-    lineCounter = 1;
-    desc.o_stream = os;
-    closeable = true;
-    properties = new heapobject[Structure::size(7)];
-  }
-
-  //
-  // Things without a meaningful fd.
-  //
-  Stream(istrstream *istrm)
-    : FD(EOF, ISTRSTREAM)
-  {
-    lineCounter = 1;
-    desc.i_strstream = istrm;
-    closeable = true;
-    properties = new heapobject[Structure::size(7)];
-  }
-  Stream(ostrstream *ostrm)
-    : FD(EOF, OSTRSTREAM)
-  {
-    lineCounter = 1;
-    desc.o_strstream = ostrm;
-    closeable = true;
-    properties = new heapobject[Structure::size(7)];
-  }
-
-  Stream(imstream *imstrm)
-    : FD(EOF, IMSTREAM)
-  {
-    lineCounter = 1;
-    desc.i_mstream = imstrm;
-    closeable = true;
-    properties = new heapobject[Structure::size(7)];
-  }
-
-  Stream(omstream *omstrm)
-    : FD(EOF, OMSTREAM)
-  {
-    lineCounter = 1;
-    desc.o_mstream = omstrm;
-    closeable = true;
-    properties = new heapobject[Structure::size(7)];
-  }
-
-  ~Stream(void)
-  {
-    delete[] properties;
-
-    if (closeable)
-      {
-	close();
-      }
-  }
-
+  IOType Type(void) { return type; }
+  
+  bool isInput(void) const 
+    { return (type == ISTREAM) || (type == ISTRSTREAM) 
+	|| (type == IFDSTREAM) || (type == IMSTREAM); }
+  bool isOutput(void) const 
+    { return (type == OSTREAM) || (type == OSTRSTREAM) 
+	|| (type == OFDSTREAM) || (type == OMSTREAM); }
+  
   void setProperties(Object* prop);
   // set the properties for a default read string stream.
   void setRSProperties(void);
 
-  Object* getProperties(void)
-    {
-      return (reinterpret_cast<Object*>(properties));
-    }
-
-  //
-  // Close the active stream.
-  //
-  void close(void)
-  {
-    switch (type)
-      {
-      case ISTREAM:
-	{
-	  delete desc.i_stream;
-	  desc.i_stream = NULL;
-	}
-	break;
-      case OSTREAM:
-	{
-	  delete desc.o_stream;
-	  desc.o_stream = NULL;
-	}
-	break;
-      case ISTRSTREAM:
-	{
-	  delete desc.i_strstream;
-	  desc.i_strstream = NULL;
-	}
-	break;
-      case OSTRSTREAM:
-	{
-	  delete desc.o_strstream;
-	  desc.o_strstream = NULL;
-	}
-	break;
-      case IMSTREAM:
-	{
-	  delete desc.i_mstream;
-	  desc.i_mstream = NULL;
-	}
-	break;
-     case OMSTREAM:
-	{
-	  delete desc.o_mstream;
-	  desc.o_mstream = NULL;
-	}
-	break;
-      default:
-	DEBUG_ASSERT(false);
-	break;
-      }
-  }
-
-  //
-  // Change the line counter.
-  //
-  void	newline(void);
-  void	unnewline(void);
+  Object* getProperties(void);
   
-  //
-  // Return the current line number.
-  //
-  word32 lineNumber(void)	{ return(lineCounter); }
-
-  //
-  // Is the stream finished?
-  //
-  virtual bool isEnded(void) const;
-
-  // Ready for action?
-  virtual bool isReady(void) const;
-
-  // 
-  // Is the streem NULL?
-  //
-  inline bool isEmpty(void)
+  virtual int getFD(void) const
     {
-      return (desc.i_stream == NULL);
+      abort(); return 0;
     }
 
-  // 
-  //  Get the stream direction.
-  //
-  inline IODirection getDirection(void)
+  virtual void setFD(int f) {}
+  
+  virtual void get_read(void) 
+    {  DEBUG_ASSERT((type == IFDSTREAM) || (type = IMSTREAM)); }
+
+  void newline(void) { lineCounter++; }
+  void unline(void) { lineCounter--; }
+
+  word32 lineNumber(void) const { return lineCounter; }
+
+  virtual bool isReady(void) { return true; }
+
+  virtual bool msgReady(void) { abort(); return true; }
+
+  IODirection getDirection(void) const
+    { return (isInput()? INPUT : OUTPUT); }
+
+  virtual void pushString(string*) { abort(); }
+
+  virtual bool seekg(streampos pos, ios::seekdir d = ios::beg)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	case ISTRSTREAM:
-	case IMSTREAM:
-	  return INPUT;
-	  break;
-	case OSTREAM:
-	case OSTRSTREAM:
-	case OMSTREAM:
-	  return OUTPUT;
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return OUTPUT;
-	  break;
-	}
+      DEBUG_ASSERT(isInput());
+      abort();
+      return true;
     }
 
-  // support for imstreams
-  //
-  inline bool is_at_eof(void)
-  {
-  	DEBUG_ASSERT(type == IMSTREAM);
-	return desc.i_mstream->is_at_eof();
-  }
-
-  inline list<ICMMessage *>::iterator * getIter(void)
+  virtual bool eof(void)
     {
-  	DEBUG_ASSERT(type == IMSTREAM);
-	return desc.i_mstream->getIter();
+      DEBUG_ASSERT(isInput());
+      abort();
+      return true;
     }
 
-  inline Thread* getThread(void)
+  virtual bool bad(void) = 0;
+
+  virtual bool fail(void) = 0;
+
+  virtual void clear(ios::iostate state_arg = ios::goodbit) = 0;
+
+  virtual bool get(char& ch)
     {
-  	DEBUG_ASSERT(type == IMSTREAM);
-	return desc.i_mstream->getThread();
+      DEBUG_ASSERT(isInput());
+      abort();
+      return true;
     }
 
-  inline bool isFound(void)
+  virtual int get(void)
     {
-  	DEBUG_ASSERT(type == IMSTREAM);
-	return desc.i_mstream->isFound();
+      DEBUG_ASSERT(isInput());
+      abort();
+      return 0;
     }
 
-  inline void setFound(void)
+  virtual bool unget(void)
     {
-  	DEBUG_ASSERT(type == IMSTREAM);
-	desc.i_mstream->setFound();
-    }                                
-
-  //
-  // Versions of the standard IO methods for this class.
-  //
-  inline bool seekg(streampos pos, ios::seekdir d = ios::beg)
-    {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (!desc.i_stream->seekg(pos, d).fail());
-	  break;
-	case ISTRSTREAM:
-	  return (!desc.i_strstream->seekg(pos, d).fail());
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->seekg(pos, d));
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT(isInput());
+      abort();
+      return true;
     }
 
-  inline bool eof(void)
+  virtual int peek(void)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  //return (desc.i_stream->eof());
-	  return (desc.i_stream->peek() == EOF);
-	  break;
-	case ISTRSTREAM:
-	  //return (desc.i_strstream->eof());
-	  return (desc.i_strstream->peek() == EOF);
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->eof());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT(isInput());
+      abort();
+      return 0;
     }
 
-  inline bool fail(void)
+  virtual bool seekp(streampos pos, ios::seekdir d = ios::beg)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (desc.i_stream->fail());
-	  break;
-	case OSTREAM:
-	  return (desc.o_stream->fail());
-	  break;
-	case ISTRSTREAM:
-	  return (desc.i_strstream->fail());
-	  break;
-	case OSTRSTREAM:
-	  return (desc.o_strstream->fail());
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->fail());
-	  break;
-	case OMSTREAM:
-	  return (desc.o_mstream->fail());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT(isOutput());
+      abort();
+      return true;
     }
 
-
-  inline void clear(ios::iostate state_arg = ios::goodbit)
+  virtual bool put(char ch)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  desc.i_stream->clear(state_arg);
-	  break;
-	case OSTREAM:
-	  desc.o_stream->clear(state_arg);
-	  break;
-	case ISTRSTREAM:
-	  desc.i_strstream->clear(state_arg);
-	  break;
-	case OSTRSTREAM:
-	  desc.o_strstream->clear(state_arg);
-	  break;
-	case IMSTREAM:
-	  desc.i_mstream->clear(state_arg);
-	  break;
-	case OMSTREAM:
-	  desc.o_mstream->clear(state_arg);
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
+      DEBUG_ASSERT(isOutput());
+      abort();
+      return true;
     }
 
-  inline bool get(char& ch)
+  virtual const string str(void)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (!desc.i_stream->get(ch).fail());
-	  break;
-	case ISTRSTREAM:
-	  return (!desc.i_strstream->get(ch).fail());
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->get(ch));
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT((type == OSTRSTREAM) || (type == OFDSTREAM));
+      abort();
+      return "";
     }
 
-  inline int get(void)
+  virtual void operator<<(const char c)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (desc.i_stream->get());
-	  break;
-	case ISTRSTREAM:
-	  return (desc.i_strstream->get());
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->get());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return -1;
-	  break;
-	}
+      DEBUG_ASSERT(isOutput());
+      abort();
     }
 
-  inline bool unget(void)
+  virtual void operator<<(const char* s)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (!desc.i_stream->unget().fail());
-	  break;
-	case ISTRSTREAM:
-	  return (!desc.i_strstream->unget().fail());
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->unget());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT(isOutput());
+      abort();
     }
 
-  inline bool seekp(streampos pos, ios::seekdir d = ios::beg)
+  virtual void operator<<(const int n)
     {
-      switch (type)
-	{
-	case OSTREAM:
-	  return (!desc.o_stream->seekp(pos, d).fail());
-	  break;
-	case OSTRSTREAM:
-	  return (!desc.o_strstream->seekp(pos, d).fail());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT(isOutput());
+      abort();
     }
 
-
-  inline int peek(void)
+  virtual void flush(void)
     {
-      switch (type)
-	{
-	case ISTREAM:
-	  return desc.i_stream->peek();
-	  break;
-	case ISTRSTREAM:
-	  return desc.i_strstream->peek();
-	  break;
-	case IMSTREAM:
-	  return desc.i_mstream->peek();
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      DEBUG_ASSERT(isOutput());
+      abort();
     }
 
-  inline bool put(char ch)
+  virtual bool set_autoflush(void)
     {
-      switch (type)
-	{
-	case OSTREAM:
-	  return (!desc.o_stream->put(ch).fail());
-	  break;
-	case OSTRSTREAM:
-	  return (!desc.o_strstream->put(ch).fail());
-	  break;
-	case OMSTREAM:
-	  return (desc.o_mstream->put(ch));
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
+      return false;
     }
 
-  inline char* str(void)
-    {
-      switch (type)
-	{
-	case OSTRSTREAM:
-	  return desc.o_strstream->str();
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return NULL;
-	  break;
-	}
-    }
+  virtual int tell(void) = 0;
 
-  inline int pcount(void)
-    {
-      switch (type)
-	{
-	case OSTRSTREAM:
-	  return desc.o_strstream->pcount();
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return 0;
-	  break;
-	}
-    }
+  virtual bool good(void) = 0;
 
-  inline void operator<<(const char c)
+  virtual icmHandle getSenderHandle(void)
     {
-      switch (type)
-	{
-	case OSTREAM:
-	  *(desc.o_stream) << c;
-	  break;
-	case OSTRSTREAM:
-	  *(desc.o_strstream) << c;
-	  break;
-	case OMSTREAM:
-	  *(desc.o_mstream) << c;
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
-    }
-
-  inline void operator<<(const char* s)
-    {
-      switch (type)
-	{
-	case OSTREAM:
-	  *(desc.o_stream) << s;
-	  break;
-	case OSTRSTREAM:
-	  *(desc.o_strstream) << s;
-	  break;
-	case OMSTREAM:
-	  *(desc.o_mstream) << s;
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
-    }
-
-  inline void operator<<(const int n)
-    {
-      switch (type)
-	{
-	case OSTREAM:
-	  *(desc.o_stream) << n;
-	  break;
-	case OSTRSTREAM:
-	  *(desc.o_strstream) << n;
-	  break;
-	case OMSTREAM:
-	  *(desc.o_mstream) << n;
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
-    }
-
-  inline void form(const char* formstr, const word32 data)
-    {
-      switch (type)
-	{
-	case OSTREAM:
-	  desc.o_stream->form(formstr, data);
-	  break;
-	case OSTRSTREAM:
-	  desc.o_strstream->form(formstr, data);
-	  break;
-	case OMSTREAM:
-	  desc.o_mstream->form(formstr, data);
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
-    }
-
-  inline void flush(void)
-    {
-      switch (type)
-	{
-	case OSTREAM:
-	  desc.o_stream->flush();
-	  break;
-	case OSTRSTREAM:
-	  desc.o_strstream->flush();
-	  break;
-	case OMSTREAM:
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
-    }
-
-  inline bool frozen(void)
-    {
-      switch (type)
-	{
-	case OSTRSTREAM:
-	  return (desc.o_strstream->frozen());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
-    }
-
-  inline void freeze(int fr = 1)
-    {
-      switch (type)
-	{
-	case OSTRSTREAM:
-	  desc.o_strstream->freeze(fr);
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  break;
-	}
-    }
-
-  inline int tell(void)
-    {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (desc.i_stream->tellg());
-	  break;
-	case OSTREAM:
-	  return (desc.o_stream->tellp());
-	  break;
-	case ISTRSTREAM:
-	  return (desc.i_strstream->tellg());
-	  break;
-	case OSTRSTREAM:
-	  return (desc.o_strstream->tellp());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return -1;
-	  break;
-	}
-    }
-
-  inline bool good(void)
-    {
-      switch (type)
-	{
-	case ISTREAM:
-	  return (desc.i_stream->good());
-	  break;
-	case OSTREAM:
-	  return (desc.o_stream->good());
-	  break;
-	case ISTRSTREAM:
-	  return (desc.i_strstream->good());
-	  break;
-	case OSTRSTREAM:
-	  return (desc.o_strstream->good());
-	  break;
-	case IMSTREAM:
-	  return (desc.i_mstream->good());
-	  break;
-	case OMSTREAM:
-	  return (desc.o_mstream->good());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	  break;
-	}
-    }
-
-  inline icmHandle getSenderHandle(void)
-    {
-      switch (type)
-	{
-	case IMSTREAM:
-	  return (desc.i_mstream->getSenderHandle());
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return (desc.i_mstream->getSenderHandle());
-	  break;
-	}
+      abort(); return icmDummyHandle();
     }
 
 };
+
+// ---------------------------------------
+// Streams derived from the QPStream class
+// ---------------------------------------
+
+// INPUT STREAMS
+
+//
+// QP version of istream
+//
+class QPistream: public QPStream
+{
+ private:
+  ifstream stream;
+
+ public:
+  QPistream(const char* file);
+
+  ~QPistream() {}
+
+  bool seekg(streampos pos, ios::seekdir d = ios::beg);
+
+  bool eof(void)
+   { return (stream.peek() == EOF); }
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void) 
+   { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  bool get(char& ch)
+    { return (!stream.get(ch).fail()); }
+  
+  int get(void)
+    { return stream.get(); }
+
+  bool unget(void)
+    { return (!stream.unget().fail()); }
+
+  int peek(void)
+    { return (stream.peek()); }
+
+  int tell(void)
+    { return stream.tellg(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+};
+
+
+//
+// QP version of istringstream
+//
+class QPistringstream: public QPStream
+{
+ private:
+  istringstream stream;
+
+ public:
+  QPistringstream(const string& buff);
+
+  ~QPistringstream() {}
+
+  bool seekg(streampos pos, ios::seekdir d = ios::beg)
+    { return (!stream.seekg(pos, d).fail()); }
+
+  bool eof(void)
+   { return (stream.peek() == EOF); }
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void) 
+   { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  bool get(char& ch)
+    { return (!stream.get(ch).fail()); }
+  
+  int get(void)
+    { return stream.get(); }
+
+  bool unget(void)
+    { return (!stream.unget().fail()); }
+
+  int peek(void)
+    { return (stream.peek()); }
+
+  int tell(void)
+    { return stream.tellg(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+
+};
+
+//
+// QP version of streams with file descriptors - an istringstream is
+// used as a buffer - select is used to determine if stream is
+// ready and read is used to "load up" the istringstream
+//
+class QPifdstream: public QPStream
+{
+ private:
+  istringstream stream;
+  int fd;
+  bool done_get;
+
+ public:
+  QPifdstream(int f);
+
+  ~QPifdstream() {}
+
+  int getFD(void) const 
+    { return fd; } 
+
+  bool isReady(void);
+
+  void get_read(void);
+
+  bool seekg(streampos pos, ios::seekdir d = ios::beg)
+    { return (!stream.seekg(pos, d).fail()); }
+
+  bool eof(void)
+   { return (stream.peek() == EOF); }
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void) 
+   { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  bool get(char& ch);
+
+  int get(void);
+
+  bool unget(void)
+    { return (!stream.unget().fail()); }
+
+  int peek(void)
+    { return (stream.peek()); }
+
+  int tell(void)
+    { return stream.tellg(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+};
+
+//
+// QP version of streams using ICM messages - an istringstream is
+// used as a buffer.
+//
+class QPimstream: public QPStream
+{
+ private:
+  istringstream stream;
+  // the icm handle for incoming messages.
+  icmHandle sender_handle;
+  int iom_fd;
+
+  list<string *> message_strings;
+
+  bool done_get;
+
+ public:
+  QPimstream(icmHandle handle); 
+
+  ~QPimstream() { }
+  
+  int getFD(void) const { return iom_fd; }
+
+  void setFD(int fd) { iom_fd = fd; }
+
+  bool msgReady(void);
+
+  bool isReady(void);
+  
+  void get_read(void);
+  
+  void pushString(string* st);
+
+  bool seekg(streampos pos, ios::seekdir d = ios::beg)
+  { return (!stream.seekg(pos, d).fail()); }
+  
+  bool eof(void)
+  { return (stream.peek() == EOF); }
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void) 
+   { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  bool get(char& ch);
+
+  int get(void);
+
+  bool unget(void)
+    { return (!stream.unget().fail()); }
+
+  int peek(void)
+    { return (stream.peek()); }
+
+  int tell(void)
+    { return stream.tellg(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+  icmHandle getSenderHandle(void);
+
+};
+
+
+// OUTPUT STREAMS
+
+//
+// QP version of ostream
+//
+class QPostream: public QPStream
+{
+ private:
+  ostream* stream;
+  bool can_delete;
+
+
+ public:
+  QPostream(const char* file, ios::openmode mode);
+  QPostream(ostream* strmptr);
+
+  ~QPostream() { if (can_delete) delete stream;}
+
+  bool bad(void) 
+   { return (stream->bad()); }
+
+  bool fail(void)
+    { return (stream->fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream->clear(state_arg); }
+
+  int tell(void)
+    { return stream->tellp(); }
+
+  bool good(void)
+    { return stream->good(); }
+
+  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+    {
+      return stream->seekp(pos, d);
+    }
+
+  bool put(char ch)
+    {
+      return !stream->put(ch).fail();
+    }
+
+  void operator<<(const char c)
+    {
+      (*stream) << c;
+    }
+
+  void operator<<(const char* s)
+    {
+      (*stream) << s;
+    }
+
+  void operator<<(const int n)
+    {
+      (*stream) << n;
+    }
+
+  void flush(void)
+    {
+      stream->flush();
+    }
+};
+
+
+//
+// QP version of ostringstream
+//
+class QPostringstream: public QPStream
+{
+ private:
+  ostringstream stream;
+
+
+ public:
+  QPostringstream();
+
+  ~QPostringstream() {}
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void)
+    { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  int tell(void)
+    { return stream.tellp(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+    {
+      return stream.seekp(pos, d);
+    }
+
+  bool put(char ch)
+    {
+      return !stream.put(ch).fail();
+    }
+
+  void operator<<(const char c)
+    {
+      stream << c;
+    }
+
+  void operator<<(const char* s)
+    {
+      stream << s;
+    }
+
+  void operator<<(const int n)
+    {
+      stream << n;
+    }
+
+ const string str(void)
+    {
+      return stream.str();
+    }
+
+  void flush(void)
+    {
+      stream.flush();
+    }
+};
+
+//
+// QP version of streams with file descriptors - an ostringstream is
+// used as a buffer.
+//
+class QPofdstream: public QPStream
+{
+ private:
+  ostringstream stream;
+  int fd;
+  bool auto_flush;
+  void send(void);
+
+
+ public:
+  QPofdstream(int n);
+
+  ~QPofdstream() {}
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void)
+    { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  int tell(void)
+    { return stream.tellp(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+    {
+      return stream.seekp(pos, d);
+    }
+
+  bool put(char ch);
+
+  void operator<<(const char c);
+
+  void operator<<(const char* s);
+
+  void operator<<(const int n);
+
+  const string str(void);
+
+  void flush(void);
+
+  bool set_autoflush(void);
+
+};
+
+//
+// QP version of streams using ICM messages - an ostringstream is
+// used as a buffer.
+//
+class QPomstream: public QPStream
+{
+ private:
+  ostringstream stream;
+  icmHandle to_handle;
+  Thread* sender_thread;
+  ICMEnvironment* icm_environment;
+
+  bool auto_flush;
+  void send(void);
+
+
+ public:
+  QPomstream(icmHandle handle, Thread* thread, 
+	     ICMEnvironment* icm_env); 
+
+  ~QPomstream() {}
+
+  bool bad(void) 
+   { return (stream.bad()); }
+
+  bool fail(void)
+    { return (stream.fail()); }
+
+  void clear(ios::iostate state_arg = ios::goodbit)
+    { stream.clear(state_arg); }
+
+  int tell(void)
+    { return stream.tellp(); }
+
+  bool good(void)
+    { return stream.good(); }
+
+  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+    {
+      return stream.seekp(pos, d);
+    }
+
+  bool put(char ch);
+
+  void operator<<(const char c);
+
+  void operator<<(const char* s);
+
+  void operator<<(const int n);
+
+  const string str(void);
+
+  void flush(void);
+
+  bool set_autoflush(void);
+
+};
+
 
 //
 // Maintains a record of the current streams.
@@ -1163,40 +889,22 @@ public:
 class IOManager
 {
 private:
-  Stream* open_streams[NUM_OPEN_STREAMS];
+  QPStream* open_streams[NUM_OPEN_STREAMS];
   int current_input;
   int current_output;
   int current_error;
-  Stream* save_stdin;
-  Stream* save_stdout;
-  Stream* save_stderr;
+  QPStream* save_stdin;
+  QPStream* save_stdout;
+  QPStream* save_stderr;
   
 public:
-  IOManager(Stream *in, Stream *out, Stream *error)
-  {
-    for (u_int i = 0; i < NUM_OPEN_STREAMS; i++)
-      {
-	open_streams[i] = NULL;
-      }
-    DEBUG_ASSERT(in != NULL);
-    DEBUG_ASSERT(out != NULL);
-    DEBUG_ASSERT(error != NULL);
-    save_stdin = in;
-    save_stdout = out;
-    save_stderr = error;
-    open_streams[0] = in;
-    open_streams[1] = out;
-    open_streams[2] = error;
-    current_input = 0;
-    current_output = 1;
-    current_error = 2;
-  }
+  IOManager(QPStream *in, QPStream *out, QPStream *error);
   
   ~IOManager(void) { }
   
-  const Stream *StdIn(void) { return open_streams[0]; }
-  const Stream *StdOut(void) { return open_streams[1]; }
-  const Stream *StdErr(void) { return open_streams[2]; }
+  QPStream *StdIn(void) { return open_streams[0]; }
+  QPStream *StdOut(void) { return open_streams[1]; }
+  QPStream *StdErr(void) { return open_streams[2]; }
 
   int CurrentInput(void) { return current_input; }
   int CurrentOutput(void) { return current_output; }
@@ -1220,90 +928,17 @@ public:
     DEBUG_ASSERT(open_streams[error] != NULL);
     current_error = error;
   }
-  int OpenStream(Stream* strm)
-    {
-      u_int i;
-      for (i = 0; i < NUM_OPEN_STREAMS; i++)
-	{
-	  if (open_streams[i] == NULL)
-	    {
-	      break;
-	    }
-	}
-      if (i == NUM_OPEN_STREAMS)
-	{
-	  return -1;
-	}
-      open_streams[i] = strm;
-      return i;
-    }
-  void CloseStream(u_int i)
-    {
-      DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_STREAMS);
-      DEBUG_ASSERT(open_streams[i] != NULL);
-      open_streams[i] = NULL;
-    }
+  int OpenStream(QPStream* strm);
+
+  bool CloseStream(u_int i);
   
-  Stream* GetStream(u_int i)
-    {
-      DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_STREAMS);
-      return (open_streams[i]);
-    }
+  QPStream* GetStream(u_int i);
 
-  bool set_std_stream(int stdstrm, u_int i)
-    {
-      if (stdstrm < 0 || stdstrm > 2)
-	{
-	  return false;
-	}
-      if (i < 0 || i >=  NUM_OPEN_STREAMS || open_streams[i] == NULL)
-	{
-	  return false;
-	}
-      if (open_streams[i]->getDirection() == 
-	  open_streams[stdstrm]->getDirection())
-	{
-	  open_streams[stdstrm] = open_streams[i];
-	  open_streams[i] = NULL;
-	  return true;
-	}
-      return false;
-    }
+  bool set_std_stream(int stdstrm, u_int i);
 
-  bool reset_std_stream(int stdstrm)
-    {
-      switch (stdstrm)
-	{
-	case 0:
-	  if (open_streams[0] == save_stdin)
-	    {
-	      return false;
-	    }
-	  open_streams[0]->close();
-	  open_streams[0] = save_stdin;
-	  break;
-	case 1:
-	  if (open_streams[1] == save_stdout)
-	    {
-	      return false;
-	    }
-	  open_streams[1]->close();
-	  open_streams[1] = save_stdout;
-	  break;
-	case 2:
-	  if (open_streams[2] == save_stderr)
-	    {
-	      return false;
-	    }
-	  open_streams[2]->close();
-	  open_streams[2] = save_stderr;
-	  break;
-	default:
-	  DEBUG_ASSERT(false);
-	  return false;
-	}
-      return true;
-    }
+  bool reset_std_stream(int stdstrm);
+
+  bool updateStreamMessages(icmHandle, icmMsg);
   
 };
 
@@ -1356,9 +991,6 @@ public:
 
 };
 
-
-inline int qp_fileno(const istream& istrm) { return istrm.rdbuf()->_fileno; }
-inline int qp_fileno(const ostream& ostrm) { return ostrm.rdbuf()->_fileno; }
 
 // Returns true if the fd is ready for I/O in the appropriate direction.
 extern bool is_ready(const int fd, const IOType type);

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: obj_index.cc,v 1.4 2002/06/30 05:29:58 qp Exp $
+// $Id: obj_index.cc,v 1.8 2003/06/18 04:33:36 qp Exp $
 
 //
 // Format of a .qo file
@@ -101,8 +101,8 @@
 //	+-------+
 //
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 
 #include "config.h"
 
@@ -146,8 +146,8 @@ ObjectIndex::loadObjectFile(const char *file, word32& NumQuery,
       //
       // Fail to open the file.
       //
-      name = NULL_LOC;
-      Warning(__FUNCTION__, "cannot open the file %s for linking", file);
+      name = NULL;
+      WarningS(__FUNCTION__, "cannot open the file ", file);
       istrm.close();
       return(false);
     }

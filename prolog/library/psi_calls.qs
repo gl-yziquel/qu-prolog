@@ -118,6 +118,16 @@ end('gc'/0):
 
 
 
+'$icm_deregister'/0:
+
+
+$1:
+	pseudo_instr0(12)
+	proceed
+end('$icm_deregister'/0):
+
+
+
 'compound'/1:
 
 
@@ -1168,6 +1178,37 @@ $1:
 	get_x_value(0, 1)
 	proceed
 end('$psi_make_iterator'/1):
+
+
+
+'set_autoflush'/1:
+
+
+$1:
+	pseudo_instr1(102, 0)
+	proceed
+end('set_autoflush'/1):
+
+
+
+'get_open_streams'/1:
+
+
+$1:
+	pseudo_instr1(103, 1)
+	get_x_value(0, 1)
+	proceed
+end('get_open_streams'/1):
+
+
+
+'broadcast'/1:
+
+
+$1:
+	pseudo_instr1(104, 0)
+	proceed
+end('broadcast'/1):
 
 
 
@@ -2382,6 +2423,17 @@ end('$put_line'/2):
 
 
 
+'$symbolic_address_to_icm_handle'/2:
+
+
+$1:
+	pseudo_instr2(114, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$symbolic_address_to_icm_handle'/2):
+
+
+
 'functor'/3:
 
 
@@ -2544,14 +2596,13 @@ end('$get_next_clause'/3):
 
 
 
-'$new_sub'/3:
+'$icm_register'/3:
 
 
 $1:
-	pseudo_instr3(14, 0, 1, 3)
-	get_x_value(2, 3)
+	pseudo_instr3(14, 0, 1, 2)
 	proceed
-end('$new_sub'/3):
+end('$icm_register'/3):
 
 
 
@@ -3325,6 +3376,17 @@ $1:
 	pseudo_instr4(14, 0, 1, 2, 3)
 	proceed
 end('$set_domains_apart'/4):
+
+
+
+'$new_sub'/4:
+
+
+$1:
+	pseudo_instr4(15, 0, 1, 2, 4)
+	get_x_value(3, 4)
+	proceed
+end('$new_sub'/4):
 
 
 

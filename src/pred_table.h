@@ -56,12 +56,12 @@
 // 
 // ##Copyright##
 //
-// $Id: pred_table.h,v 1.2 2000/12/12 03:36:20 qp Exp $
+// $Id: pred_table.h,v 1.3 2002/11/03 08:37:30 qp Exp $
 
 #ifndef	PRED_TABLE_H
 #define	PRED_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "config.h"
 

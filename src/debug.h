@@ -53,28 +53,30 @@
 // 
 // ##Copyright##
 //
-// $Id: debug.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: debug.h,v 1.3 2002/11/03 08:37:25 qp Exp $
 
 #ifndef DEBUG_H
 #define DEBUG_H
 
 #ifdef DEBUG
 
-#include <iostream.h>
+#include <iostream>
 #include <pthread.h>
 #include <stdlib.h>
 
 // Every program in the suite has to define its own name.
 extern const char *Program;
 
-#define	DEBUG_ASSERT(cond)						      \
-  do {									      \
-    if (! (cond))							      \
-      {									      \
-	cerr.form("%s(%ld): %s: debug error at %ld in %s",		      \
-		  Program, pthread_self(), __FUNCTION__, __LINE__, __FILE__); \
-        abort();							      \
-      }									      \
+#define	DEBUG_ASSERT(cond)					        \
+  do {								        \
+	  using namespace std;		                                \
+    if (! (cond))						        \
+      {								        \
+	cerr << Program << "(" << pthread_self() << "): ";		\
+	cerr << __FUNCTION__ << ": debug error at ";			\
+        cerr << __LINE__ << " in " << __FILE__;				\
+        abort();				       		        \
+      }									\
   } while (0)
 
 #define	DEBUG_CODE(s)				\
@@ -83,32 +85,15 @@ do {						\
 } while (0)
 
 #define DEBUG_ENTER							\
-do {									\
-  cerr.form("%s(%ld):->%s\n", Program, pthread_self(), __FUNCTION__);	\
+do {                                                                    \
+  cerr << Program << "(" << pthread_self() << "):->";		        \
+  cerr << __FUNCTION__ << endl;		                	        \
 } while (0)
 
 #define DEBUG_EXIT							\
 do {									\
-  cerr.form("%s(%ld):<-%s\n", Program, pthread_self(), __FUNCTION__);	\
-} while (0)
-
-#define DEBUG_CALL(c)							\
-do {									\
-  cerr.form("%s(%ld): Before %s\n", __FUNCTION__, pthread_self(), #c);	\
-  c;									\
-  cerr.form("%s(%ld): After %s\n", __FUNCTION__, pthread_self(), #c);	\
-} while (0)
-
-#define DEBUG_DISPLAY(h, c, a) 				     \
-do {									     \
-  cerr.form("%s(%ld): %s %s\n", Program, pthread_self(), __FUNCTION__ , #c); \
-  h.DisplayTerm(cerr, a, c);					     \
-  cerr << endl;								     \
-} while (0)
-
-#define DEBUG_PTR(p)							   \
-do {									   \
-  cerr.form("%s(%ld): %s %p\n", Program, pthread_self(), __FUNCTION__, p); \
+  cerr << Program << "(" << pthread_self() << "):<-";		        \
+  cerr << __FUNCTION__ << endl;		                	        \
 } while (0)
 
 #else	// DEBUG
@@ -117,9 +102,6 @@ do {									   \
 #define	DEBUG_CODE(s)
 #define DEBUG_ENTER
 #define DEBUG_EXIT
-#define DEBUG_CALL(c) do { c; } while (0)
-#define DEBUG_DISPLAY(h, c)
-
 #endif	// DEBUG
 
 #endif	// DEBUG_H

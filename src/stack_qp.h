@@ -53,12 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: stack_qp.h,v 1.2 2001/06/07 05:18:12 qp Exp $
+// $Id: stack_qp.h,v 1.8 2003/09/28 07:53:36 qp Exp $
 
 #ifndef	STACK_QP_H
 #define	STACK_QP_H
 
-#include <iostream.h>
+#include <stdlib.h>
+#include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
@@ -70,6 +71,10 @@
 #include "timestamp.h"
 
 typedef	word32	StackWord;
+
+extern const char *Program;
+
+using namespace std;
 
 //
 // This is primary used for stack inspection by statistics.
@@ -99,7 +104,7 @@ virtual	word32		maxUsage(void) const		{ return(0); }
 //
 // StoredType is the data type stored in the stack.
 // Error messages that can be reported:
-//	OutOfMemory, OutOfPage, BadReset, BadReference, EmptyStack.
+//	OutOfPage, BadReset, BadReference, EmptyStack.
 //
 template <class StoredType>
 class	PrologStack : private PageTable <StoredType>,
@@ -124,7 +129,7 @@ private:
   void		stackWillOverflow(void) const
     {
       ErrArea = getAreaName();
-      Fatal(__FUNCTION__, "stack overflow %s", ErrArea);
+      FatalS(__FUNCTION__, "stack overflow ", ErrArea);
     }
   
   //
@@ -173,6 +178,7 @@ protected:
   //
   void		setTopOfStack(const StackLoc NewTop)
     {
+/*
       DEBUG_CODE(if (NewTop > top)
 		    {
 		      BadReset(__FUNCTION__,
@@ -180,6 +186,7 @@ protected:
 			       NewTop);
 		    }
 		    );
+*/
       top = NewTop;
     }
   
@@ -203,7 +210,6 @@ protected:
   //
   // Push an element onto the stack.
   // OutOfPage is reported if the index table is run out; or
-  // OutOfMemory is reported if new page cannot be allocated.
   //
   void	pushElement(const StoredType word)
     {
@@ -237,7 +243,6 @@ protected:
   //
   // Allocate 'n' elements of StoredType in the stack.
   // OutOfPage is reported if the index table is run out; or
-  // OutOfMemory is reported if new page cannot be allocated.
   //
   StackLoc allocateElements(const word32 n)
     {
@@ -259,7 +264,6 @@ protected:
   // Push a record onto the stack and return a pointer to it.
   // 'size' is given in bytes.
   // OutOfPage is reported if the index table is run out; or
-  // OutOfMemory is reported if new page cannot be allocated.
   //
   StackLoc	allocateBlock(const word32 size)
     {
@@ -290,19 +294,19 @@ protected:
   //
   // Write the stack to a stream.
   //
-  void		saveStack(ostream& ostrm, const u_long magic) const;
+  void		saveStack(std::ostream& ostrm, const u_long magic) const;
   
   //
   // Load a file segment into the stack.
   //
-  void		loadFileSegment(istream& istrm, const char *file,
+  void		loadFileSegment(std::istream& istrm, const char *file,
 				const word32 size)
     { readData(istrm, file, size, allocateElements(size)); }
   
   //
   // Load the stack from a stream.
   //
-  void		loadStack(istream& istrm);
+  void		loadStack(std::istream& istrm);
   
 public:
 
@@ -313,15 +317,13 @@ public:
   //
   StoredType *fetchAddr(const StackLoc loc)
     {
-      DEBUG_CODE(if (loc >= top)
-		    {
-		      cerr.form("%s %lx %lx\n", __FUNCTION__, loc, top);
-
-		      BadReference(__FUNCTION__,
-				   getAreaName(),
-				   loc);
-		    }
-		    );
+      DEBUG_CODE(if ((top > 0) && (loc >= top))
+      {
+	cerr << __FUNCTION__ << " " << loc << " " << top << endl;
+	
+	BadReference(__FUNCTION__, getAreaName(), loc);
+      }
+      );
       return(offsetToAddress(loc));
     }
 
@@ -346,10 +348,6 @@ public:
       return(getItem(s));
     }
 
-  //
-  // OutOfMemory is reported if there is insufficient space for the
-  // index table.
-  //
   PrologStack(word32 size, word32 boundary = 0) :
   PageTable <StoredType> (size)
     {
@@ -359,5 +357,6 @@ public:
     }
   virtual	~PrologStack(void);
 };
+
 
 #endif	// STACK_QP_H

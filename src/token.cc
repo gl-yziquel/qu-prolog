@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: token.cc,v 1.3 2002/04/11 05:07:01 qp Exp $
+// $Id: token.cc,v 1.7 2003/05/07 00:52:50 qp Exp $
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include <errno.h>
 
 #include "config.h"
@@ -109,6 +109,7 @@ static const	int32	STRING_TOKEN	= 9;	// string
 static const	int32	OBJECT_VARIABLE_TOKEN	=10;	// LOWER8 implicit object_variable
 static const	int32	OBJECT_VARIABLE_ESC_TOKEN	=11;	// !
 static const	int32	QUANT_ESC_TOKEN	=12;	// !!
+static const	int32	NEWLINE_TOKEN	=13;	// newlines
 
 //
 // Error code:
@@ -333,7 +334,7 @@ Thread::SyntaxError(int32& Integer, const int32 err)
 // Get a character.
 //
 inline int
-Thread::Get(Stream *InStrm)
+Thread::Get(QPStream *InStrm)
 {
   int c;
    c = InStrm->get();
@@ -350,7 +351,7 @@ Thread::Get(Stream *InStrm)
 // Put back a character or clear EOF.
 //
 inline void
-Thread::Putback(Stream *InStrm, const int c)
+Thread::Putback(QPStream *InStrm, const int c)
 {
   if (c == EOF)
     {
@@ -360,7 +361,7 @@ Thread::Putback(Stream *InStrm, const int c)
     {
       if (c == '\n')
 	{
-	  InStrm->unnewline();
+	  InStrm->unline();
 	}
       InStrm->unget();
     }
@@ -370,7 +371,7 @@ Thread::Putback(Stream *InStrm, const int c)
 // Recover from a numeric error.
 //
 inline void
-Thread::RecoverNumber(Stream *InStrm, const int32 base)
+Thread::RecoverNumber(QPStream *InStrm, const int32 base)
 {
   int c = Get(InStrm);
 
@@ -385,7 +386,7 @@ Thread::RecoverNumber(Stream *InStrm, const int32 base)
 // Recover from a name that is too long.
 //
 inline void
-Thread::RecoverName(Stream *InStrm)
+Thread::RecoverName(QPStream *InStrm)
 {
   int c = Get(InStrm);
 
@@ -400,7 +401,7 @@ Thread::RecoverName(Stream *InStrm)
 // Recover from a quoted name.
 //
 inline void
-Thread::RecoverQuotedName(Stream *InStrm, const bool put)
+Thread::RecoverQuotedName(QPStream *InStrm, const bool put)
 {
   int c = Get(InStrm);
 
@@ -431,7 +432,7 @@ Thread::RecoverQuotedName(Stream *InStrm, const bool put)
 //      several lines.\n".
 //
 int32
-Thread::ReadCharacter(Stream *InStrm, const char q, int32& Integer)
+Thread::ReadCharacter(QPStream *InStrm, const char q, int32& Integer)
 {
   int c = Get(InStrm);
 
@@ -636,7 +637,7 @@ DOERR:
 // variables: Integer, Simple, String.
 //
 int32
-Thread::GetToken(Stream *InStrm, int32& Integer, char *Simple, Object*& String)
+Thread::GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String)
 {
   int32		digit, base, BaseMax, BaseDigit, n, i;
   int d, e;
@@ -979,10 +980,10 @@ Thread::GetToken(Stream *InStrm, int32& Integer, char *Simple, Object*& String)
       break;
       
     case SPACE:
-      do
+      while ((InType(c) == SPACE) && (c != '\n'))
 	{
 	  c = Get(InStrm);
-	} while (InType(c) == SPACE);
+	} 
       
       if (c == '(')
 	{
@@ -990,6 +991,10 @@ Thread::GetToken(Stream *InStrm, int32& Integer, char *Simple, Object*& String)
 	  Simple[1] = '(';
 	  Simple[2] = '\0';
 	  return(SPECIAL_TOKEN);
+	}
+      else if (c == '\n')
+	{
+	  return(NEWLINE_TOKEN);
 	}
       else
 	{
@@ -1048,10 +1053,10 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
 {
   Object* argS = heap.dereference(stream_arg);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
 
-  IS_READY_STREAM(stream, -1);
+  IS_READY_STREAM(stream);
 
   errno = 0;
 
@@ -1085,6 +1090,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
       
     case OBJECT_VARIABLE_ESC_TOKEN:
     case QUANT_ESC_TOKEN:
+    case NEWLINE_TOKEN:
       break;
       
     case STRING_TOKEN:

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: generate_var_names.cc,v 1.3 2000/12/13 23:10:01 qp Exp $
+// $Id: generate_var_names.cc,v 1.5 2002/11/10 07:54:51 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -69,30 +69,25 @@ extern AtomTable *atoms;
 Atom*
 Thread::GenerateVarName(Thread* threadPtr, word32& counter, char* buff)
 {
-  ostrstream strm(buff, ATOM_LENGTH);
+  ostringstream strm;
   AtomLoc loc;
   
   do
     {
-      strm.seekp(0);
+      strm.str("");
       //
       // Generate a new name and check whether it is used.
       //
-      if (strm.good() && strm.form("%c", 'A' + counter % 26).fail())
-	{
-	  Fatal(__FUNCTION__, "problem in generating variable name");
-	}
+      strm << (char)('A' + counter % 26);
       //
       // Add the digit suffix when the suffix is greater than 0.
       if (counter > 25)
 	{
-	  if (strm.good() && strm.form("%d", counter / 26).fail())
-	    {
-	      Fatal(__FUNCTION__, "problem in generating variable name");
-	    }
+	  strm << (counter / 26);
 	}
       strm << ends;
       counter++;
+      const char* buff = strm.str().c_str();
       loc = atoms->lookUp(buff);
     }
   while (loc != EMPTY_LOC && 
@@ -103,6 +98,7 @@ Thread::GenerateVarName(Thread* threadPtr, word32& counter, char* buff)
   //
   if (loc == EMPTY_LOC)
     {
+      const char* buff = strm.str().c_str();
       return(atoms->add(buff));
     }
   else
@@ -125,22 +121,18 @@ Thread::GenerateVarName(Thread* threadPtr, word32& counter, char* buff)
 Atom*
 Thread::GenerateObjectVariableName(Thread* threadPtr, word32& counter, char* buff)
 {
-  ostrstream strm(buff, ATOM_LENGTH);
+  ostringstream strm;
   AtomLoc loc = EMPTY_LOC;
 
   do
     {
-      strm.seekp(0);
+      strm.str("");
       //
       // Generate a new name and check whether it is used.
       //
-      if (strm.good() && strm.form("_x%d", counter).fail())
-	{
-	  Fatal(__FUNCTION__, 
-		"problem in generating object variable name");
-	}
-      strm << ends;
+      strm << "_x" << counter << ends;
       counter++;
+      const char* buff = strm.str().c_str();
       loc = atoms->lookUp(buff);
     } while (loc != EMPTY_LOC && 
 	     threadPtr->names.getVariable(atoms->getAtom(loc)) != NULL);
@@ -150,6 +142,7 @@ Thread::GenerateObjectVariableName(Thread* threadPtr, word32& counter, char* buf
   //
   if (loc == EMPTY_LOC)
     {
+      const char* buff = strm.str().c_str();
       return(atoms->add(buff));
     }
   else
@@ -173,22 +166,18 @@ Thread::GenerateObjectVariableName(Thread* threadPtr, word32& counter, char* buf
 Atom*
 Thread::GenerateRObjectVariableName(Thread* threadPtr, word32& counter, char* buff)
 {
-  ostrstream strm(buff, ATOM_LENGTH);
+  ostringstream strm;
   AtomLoc loc = EMPTY_LOC;
 
   do
     {
-      strm.seekp(0);
+      strm.str("");
       //
       // Generate a new name and check whether it is used.
       //
-      if (strm.good() && strm.form("x%d", counter).fail())
-	{
-	  Fatal(__FUNCTION__,
-		"problem in generating object variable name");
-	}
-      strm << ends;
+      strm << "x" << counter << ends;
       counter++;
+      const char* buff = strm.str().c_str();
       loc = atoms->lookUp(buff);
      } while (loc != EMPTY_LOC && 
 	      threadPtr->names.getVariable(atoms->getAtom(loc)) != NULL);
@@ -198,6 +187,7 @@ Thread::GenerateRObjectVariableName(Thread* threadPtr, word32& counter, char* bu
   //
   if (loc == EMPTY_LOC)
     {
+      const char* buff = strm.str().c_str();
       return(atoms->add(buff));
     }
   else

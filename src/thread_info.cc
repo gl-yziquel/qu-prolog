@@ -53,16 +53,16 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_info.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: thread_info.cc,v 1.3 2002/11/10 07:54:54 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 
 #include "thread_info.h"
 
 ostream&
 ThreadInfo::Display(ostream& ostrm, AtomTable& atoms, Heap& heap)
 {
-  ostrm.form("%-20s", SymbolSet() ? Symbol().Str() : "");
+  ostrm << (SymbolSet() ? Symbol().c_str() : "");
   
   ostrm << ' ';
   

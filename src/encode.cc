@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: encode.cc,v 1.4 2002/05/03 01:32:27 qp Exp $
+// $Id: encode.cc,v 1.6 2002/11/13 04:04:14 qp Exp $
 
 #ifndef ENCODE_CC
 #define ENCODE_CC
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 #include "atom_table.h"
@@ -106,7 +106,7 @@ EncodeMap::getObjectVariableNames(Heap& heap)
 // Write a character.
 //
 bool
-EncodeWrite::writeEncodeChar(Stream& stream, word8 c)
+EncodeWrite::writeEncodeChar(QPStream& stream, word8 c)
 {
   return stream.good() && stream.put(c) && stream.good();
 }
@@ -115,7 +115,7 @@ EncodeWrite::writeEncodeChar(Stream& stream, word8 c)
 // Encode the string and write the result to the stream.
 //
 bool
-EncodeWrite::encodeWriteString(Stream& stream,
+EncodeWrite::encodeWriteString(QPStream& stream,
 			       Atom* loc,
 			       AtomTable& atoms)
 {
@@ -135,7 +135,7 @@ EncodeWrite::encodeWriteString(Stream& stream,
 //
 bool
 EncodeWrite::encodeWriteVarName(Heap& heap,
-				Stream& stream,
+				QPStream& stream,
 				Object* var,
 				AtomTable& atoms)
 {
@@ -158,7 +158,7 @@ EncodeWrite::encodeWriteVarName(Heap& heap,
 bool
 EncodeWrite::encodeWriteSub(Thread& th,
 			    Heap& heap,
-			    Stream& stream,
+			    QPStream& stream,
 			    Object* sub,
 			    AtomTable& atoms,
 			    const bool remember,
@@ -198,7 +198,7 @@ EncodeWrite::encodeWriteSub(Thread& th,
 // Encode write a number
 //
 bool
-EncodeWrite::writeEncodeNumber(Stream& stream, const int32 val)
+EncodeWrite::writeEncodeNumber(QPStream& stream, const int32 val)
 {
   return(writeEncodeChar(stream, (val & 0xff000000) >> 24) &&
 	 writeEncodeChar(stream, (val & 0x00ff0000) >> 16) &&
@@ -212,7 +212,7 @@ EncodeWrite::writeEncodeNumber(Stream& stream, const int32 val)
 bool
 EncodeWrite::encodeWriteTerm(Thread& th,
 			     Heap& heap,
-			     Stream& stream,
+			     QPStream& stream,
 			     Object* term,
 			     AtomTable& atoms,
 			     const bool remember, 
@@ -399,7 +399,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 // Read a character.
 //
 bool
-EncodeRead::encodeReadChar(Stream& stream, word8& c)
+EncodeRead::encodeReadChar(QPStream& stream, word8& c)
 {
   int ch;
   ch = stream.get();
@@ -411,7 +411,7 @@ EncodeRead::encodeReadChar(Stream& stream, word8& c)
 // Read a number.
 //
 bool
-EncodeRead::encodeReadNumber(Stream& stream, int32& num)
+EncodeRead::encodeReadNumber(QPStream& stream, int32& num)
 {
   word8 c;
   bool result;
@@ -429,7 +429,7 @@ EncodeRead::encodeReadNumber(Stream& stream, int32& num)
 // Read from a stream and decode back to a string.
 //
 bool
-EncodeRead::encodeReadString(Stream& stream,
+EncodeRead::encodeReadString(QPStream& stream,
 			     Atom*& name,
 			     AtomTable& atoms)
 {
@@ -452,7 +452,7 @@ EncodeRead::encodeReadString(Stream& stream,
 bool
 EncodeRead::encodeReadSub(Thread& th,
 			  Heap& heap,
-			  Stream& stream,
+			  QPStream& stream,
 			  Object*& sub,
 			  AtomTable& atoms,
 			  const bool remember,
@@ -491,7 +491,7 @@ EncodeRead::encodeReadSub(Thread& th,
 bool
 EncodeRead::encodeReadTerm(Thread& th,
 			   Heap& heap,
-			   Stream& stream,
+			   QPStream& stream,
 			   Object*& term,
 			   AtomTable& atoms,
 			   const bool remember,

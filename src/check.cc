@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: check.cc,v 1.6 2001/10/05 01:45:28 qp Exp $
+// $Id: check.cc,v 1.10 2003/04/21 06:11:12 qp Exp $
 
 // #include "atom_table.h"
 //#include "dereference.h"
@@ -67,12 +67,12 @@ extern AtomTable *atoms;
 ErrorValue
 Heap::decode_stream(IOManager& iom,
 		    Object* stream_cell,
-		    Stream **stream_handle,
+		    QPStream **stream_handle,
 		    const IODirection dir)
 {
   DEBUG_ASSERT(dir == INPUT || dir == OUTPUT);
 
-  FD *fd = NULL;
+  QPStream *strmptr = NULL;
 
   if (stream_cell->isNumber())
     {
@@ -81,8 +81,8 @@ Heap::decode_stream(IOManager& iom,
 	{
 	  return EV_TYPE;
 	}
-      fd = (FD *) iom.GetStream(stream_number);
-      if (fd == NULL)
+      strmptr = iom.GetStream(stream_number);
+      if (strmptr == NULL)
 	{
 	  return EV_TYPE;
 	}
@@ -96,7 +96,7 @@ Heap::decode_stream(IOManager& iom,
 	{
 	  if (dir == INPUT)
 	    {
-	      fd = (FD *) iom.StdIn();
+	      strmptr = iom.StdIn();
 	    }
 	  else
 	    {
@@ -109,7 +109,7 @@ Heap::decode_stream(IOManager& iom,
 	{
 	  if (dir == OUTPUT)
 	    {
-	      fd = (FD *) iom.StdOut();
+	      strmptr = iom.StdOut();
 	    }
 	  else
 	    {
@@ -121,7 +121,7 @@ Heap::decode_stream(IOManager& iom,
 	{
 	  if (dir == OUTPUT)
 	    {
-	     fd = (FD *) iom.StdErr();
+	     strmptr = iom.StdErr();
 	    }
 	  else
 	    {
@@ -142,16 +142,16 @@ Heap::decode_stream(IOManager& iom,
       return EV_TYPE;
     }
   
-  if (fd == NULL)
+  if (strmptr == NULL)
     {
       return EV_VALUE;
     }
-  else if (fd->Type() == SOCKET)
+  else if (strmptr->Type() == SOCKET)
     {
       return EV_TYPE;
     }
 
-  *stream_handle = (Stream *) fd;
+  *stream_handle = strmptr;
   
   return EV_NO_ERROR;
 }
@@ -159,21 +159,14 @@ Heap::decode_stream(IOManager& iom,
 ErrorValue
 Heap::decode_stream_output(IOManager& iom,
 			   Object* stream_cell,
-			   Stream **stream_handle)
+			   QPStream **stream_handle)
 {
   const ErrorValue ev = decode_stream(iom, stream_cell, stream_handle, OUTPUT);
   if (ev == EV_NO_ERROR)
     {
       if ((*stream_handle)->getDirection() != INPUT)
 	{
-	  if ((*stream_handle)->isEmpty())
-	    {
-	      return EV_VALUE;
-	    }
-	  else
-	    {
-	      return EV_NO_ERROR;
-	    }
+	  return EV_NO_ERROR;
 	}
       else 
 	{
@@ -189,21 +182,14 @@ Heap::decode_stream_output(IOManager& iom,
 ErrorValue
 Heap::decode_stream_input(IOManager& iom,
 			  Object* stream_cell,
-			  Stream **stream_handle)
+			  QPStream **stream_handle)
 {
   const ErrorValue ev = decode_stream(iom, stream_cell, stream_handle, INPUT);
   if (ev == EV_NO_ERROR)
     {
       if ((*stream_handle)->getDirection() != OUTPUT)
 	{
-	  if ((*stream_handle)->isEmpty())
-	    {
-	      return EV_VALUE;
-	    }
-	  else
-	    {
-	      return EV_NO_ERROR;
-	    }
+	  return EV_NO_ERROR;
 	}
       else 
 	{
@@ -258,72 +244,53 @@ Heap::check_functor(Object* structure,
 
 bool
 Heap::decode_send_options(Object* options,
-			  Object*& remember_names,
-			  Object*& encode)
+			  bool& remember_names,
+			  bool& encode)
 {
-  if (check_functor(options, AtomTable::ipc_send_options, 2))
+  if (options->isVariable())
     {
-      DEBUG_ASSERT(options->isStructure());
-      Structure* str = OBJECT_CAST(Structure*, options);
-      remember_names = str->getArgument(1);
-      encode = str->getArgument(2);
+      return false;
+    }
+  remember_names = true;
+  encode = true;
+  if (options == AtomTable::nil)
+    {
+      return true;
+    }
+  while(options->isCons())
+    {
+      Cons* l = OBJECT_CAST(Cons*, options);
+      Object* head = l->getHead()->variableDereference();
+      options = l->getTail()->variableDereference();
+      if (!head->isStructure())
+	{
+	  return false;
+	}
+      Structure* st = OBJECT_CAST(Structure*, head);
+      Object* func = st->getFunctor()->variableDereference();
+      if (func == atoms->add("remember_names"))
+	{
+	  remember_names = (st->getArgument(1)->variableDereference() 
+			    == AtomTable::success);
+	}
+      else if (func == atoms->add("encode"))
+	{
+	  encode = (st->getArgument(1)->variableDereference() 
+			    == AtomTable::success);
+	}
+      else
+	{
+	  return false;
+	}
+    }
+
+  if (options == AtomTable::nil)
+    {
       return true;
     }
   else
     {
       return false;
-    }
-}
-
-ErrorValue
-Heap::decode_send_options(Object* options,
-			  bool& remember_names,
-			  bool& encode)
-{
-  Object* remember_names_object;
-  Object* encode_object;
-
-  if (options->isVariable())
-    {
-      return EV_INST;
-    }
-  else if (decode_send_options(options, remember_names_object, encode_object))
-    {
-      remember_names_object = dereference(remember_names_object);
-
-      if (remember_names_object->isVariable())
-	{
-	  return EV_INST;
-	}
-      else if (remember_names_object->isAtom())
-	{
-	  remember_names = atoms->atomToBool(remember_names_object);
-	}
-      else
-	{
-	  return EV_TYPE;
-	}
-
-      encode_object = dereference(encode_object);
-
-      if (encode_object->isVariable())
-	{
-	  return EV_INST;
-	}
-      else if (encode_object->isAtom())
-	{
-	  encode = atoms->atomToBool(encode_object);
-	}
-      else
-	{
-	  return EV_TYPE;
-	}
-      
-      return EV_NO_ERROR;
-    }
-  else
-    {
-      return EV_TYPE;
     }
 }
 
@@ -446,7 +413,7 @@ Heap::decode_icm_handle(AtomTable& atoms,
       return false;
     }
 
-  char *target = NULL;
+  string target;
   if (target_object->isAtom())
     {
       ICMOutgoingTarget icm_outgoing_target(atoms.getAtomString(OBJECT_CAST(Atom*, target_object)));
@@ -462,10 +429,6 @@ Heap::decode_icm_handle(AtomTable& atoms,
   const char *home = atoms.getAtomString(OBJECT_CAST(Atom*, home_object));
 
   char **locations = new (char *)[length + 1];
-  if (locations == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
   
   for (size_t i = 0;
        i < length;
@@ -480,12 +443,11 @@ Heap::decode_icm_handle(AtomTable& atoms,
   
   locations[length] = NULL;
   
-  handle = icmMakeHandle(target, 
+  handle = icmMakeHandle(const_cast<char *>(target.c_str()), 
 			 const_cast<char *>(name),
 			 const_cast<char *>(home),
 			 length, locations);
   
-  delete [] target;
   delete [] locations;
 #if 0
   icmKeepHandle(handle);

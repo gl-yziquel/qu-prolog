@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: foreign.cc,v 1.6 2001/06/18 23:31:59 qp Exp $
+// $Id: foreign.cc,v 1.14 2002/12/24 00:03:54 qp Exp $
 
 #include "global.h"
 #include "thread_qp.h"
@@ -64,14 +64,52 @@
 extern AtomTable *atoms;
 extern PredTab *predicates;
 
-#if defined(SOLARIS) || defined(LINUX) || defined(NETBSD)
+#if defined(SOLARIS) || defined(LINUX) || defined(NETBSD) || defined(MACOSX)
 
 #include <dlfcn.h>
-#include <strstream.h>
+#include <sstream>
 #include <stdlib.h>
 #include <unistd.h>
 
+#if (defined(FREEBSD) || defined(MACOSX))
+#include        <pthread.h>
+#include        <signal.h>
+#include <sys/wait.h>
+#endif //defined(FREEBSD) || defined(MACOSX)
+
+
 extern	"C"	int mkstemp(char *);
+
+#if (defined(FREEBSD) || defined(MACOSX))
+extern char **environ;
+int local_bsd_system (char *command) {
+  int pid, status;
+  
+  if (command == 0)
+    return 1;
+  pid = fork();
+  if (pid == -1)
+    return -1;
+  if (pid == 0) {
+    signal(SIGVTALRM, SIG_IGN);
+    char *argv[4];
+    argv[0] = "sh";
+    argv[1] = "-c";
+    argv[2] = command;
+    argv[3] = 0;
+    execve("/bin/sh", argv, environ);
+    exit(127);
+  }
+  do {
+    if (waitpid(pid, &status, 0) == -1) {
+      if (errno != EINTR)
+	return -1;
+    } else
+      return status;
+  } while(1);
+}
+
+#endif //defined(FREEBSD) || defined(MACOSX)
 
 //
 // Link and load the object files and libraries.
@@ -79,7 +117,7 @@ extern	"C"	int mkstemp(char *);
 bool
 Thread::LinkLoad(Object* objects, Object* libraries)
 {
-  ostrstream strm;
+  ostringstream strm;
   char output[] = "/tmp/symXXXXXX";
   Object* file;
   void *handle;
@@ -91,11 +129,14 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   
 #ifdef SOLARIS
         strm << "ld -G ";
-#else // !SOLARIS
+#else
+#ifdef MACOSX
+	strm << "g++ -flat_namespace -undefined suppress -bundle ";
+#else
         strm << "g++ -shared -Wl,-soname," << output << " ";
+#endif // MACOSX
 #endif // SOLARIS
 
-  
   for (objects = objects->variableDereference();
        objects->isCons();
        objects = OBJECT_CAST(Cons*, objects)->getTail()->variableDereference())
@@ -109,7 +150,8 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   
   for (libraries = libraries->variableDereference();
        libraries->isCons();
-       OBJECT_CAST(Cons*, libraries)->getTail()->variableDereference())
+       libraries = 
+         OBJECT_CAST(Cons*, libraries)->getTail()->variableDereference())
     {
       file =  OBJECT_CAST(Cons*, libraries)->getHead()->variableDereference();
       
@@ -130,16 +172,18 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   //
   // Link the object files and the libraries.
   //
-  const char *command = strm.str();
+  const char *command = strm.str().data();
 
-  strm.freeze(0);
-
+#if (defined(FREEBSD) || defined(MACOSX))
+  if (local_bsd_system(command))
+#else
   if (system(command))
+#endif
     {
 #ifdef SOLARIS
-                Warning(__FUNCTION__, "cannot ld -G");
+      Warning(__FUNCTION__, "cannot ld -G");
 #else // !SOLARIS
-                Warning(__FUNCTION__, "Can't create shared object");
+      Warning(__FUNCTION__, "Can't create shared object");
 #endif // SOLARIS
       unlink(output);
       return(false);
@@ -153,11 +197,6 @@ Thread::LinkLoad(Object* objects, Object* libraries)
     }
   
   ForeignFile = new Handle(handle, ForeignFile);
-  if (ForeignFile == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  
   unlink(output);
   
   return(true);

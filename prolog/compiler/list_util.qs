@@ -7,7 +7,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$1, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$6])
 
 $6:
 	try(1, $1)
@@ -89,7 +89,7 @@ end('$length'/3):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(2, $1)

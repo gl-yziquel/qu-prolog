@@ -53,12 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: check.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: check.h,v 1.4 2003/04/21 06:11:13 qp Exp $
 
 #ifndef	CHECK_H
 #define	CHECK_H
 
 // #include "atom_table.h"
+
 
 #define DECODE_STREAM_ARG(heap, iom, cell, arg_num, stream, dir)	\
   do {									\
@@ -156,12 +157,12 @@ do {								\
 #define DECODE_SEND_OPTIONS_ARG(heap, cell, arg_num,		\
 				remember_names, encode)		\
   do {								\
-    const ErrorValue result =					\
+    const bool result =					\
       (heap).decode_send_options(cell,				\
 				 remember_names, encode);	\
-    if (result != EV_NO_ERROR)					\
+    if (!result)					\
       {								\
-        PSI_ERROR_RETURN(result, arg_num);			\
+        PSI_ERROR_RETURN(EV_TYPE, arg_num);			\
       }								\
   } while (0)
 
@@ -215,27 +216,21 @@ do {								\
   } while (0)
 
 public:
-ErrorValue decode_stream(IOManager&, Object*, Stream **,
+ErrorValue decode_stream(IOManager&, Object*, QPStream **,
 			 const IODirection);
 
 bool check_functor(Object*, Atom*, const word32);
 
-ErrorValue decode_stream_output(IOManager&, Object*, Stream **);
-ErrorValue decode_stream_input(IOManager&, Object*, Stream **);
+ErrorValue decode_stream_output(IOManager&, Object*, QPStream **);
+ErrorValue decode_stream_input(IOManager&, Object*, QPStream **);
 
 ErrorValue decode_nonneg_int(Object*, int&);
-
-//
-// Decode the options associated with outgoing
-// TCP and IPC/ICM communication.
-//
-bool decode_send_options(Object*, Object*&, Object*&);
 
 //
 // Check the options associated with outgoing 
 // TCP and IPC/ICM communication.
 //
-ErrorValue decode_send_options(Object*, bool&, bool&);
+bool decode_send_options(Object*, bool&, bool&);
 
 //
 // Decode the options associated with incoming

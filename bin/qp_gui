@@ -1,6 +1,9 @@
 #! /bin/sh
-# the next line restarts using tkICM \
-exec tkICM "$0" "$@"
+# the next line restarts using wish \
+exec wish "$0" "$@"
+
+# load icm interface functions
+load /home/pjr/qp_dev/rel/qp6.2/bin/tkICM.so tkICM
 
 #
 # A "dumb terminal" interface to the QP interpreter
@@ -16,78 +19,55 @@ set gui_name ${thread_name}_${process_id}_gui
 wm title . "${thread_name}  ${process_id}  GUI"
 wm iconname . $gui_name
 wm geometry . +30+30
+wm protocol . WM_DELETE_WINDOW {
+     if {[tk_dialog .dialog "" "Use Control-D to exit - if you select OK then the GUI will terminate but may leave some qem's running - the program kq will kill all running qem's" error 0 Cancel OK] == 1} {
+           exit
+         }
+     }
+
+
+proc show_exit_msg {} {
+  if ![winfo exists .exit_msg] {
+     toplevel .exit_msg
+     message .exit_msg.msg -text "Use Control-D to exit"
+     }
+}
+
 
 # Initialises the ICM-Comms
 icmInitComms $icm_port $icm_addr
 
 # Register the ICM-agent giving it the runtime arg as the handle
-# and returning the pipe file handle for incoming messages
-set icm_pipe [icmRegisterAgent $gui_name]
+# and returning the file handle for incoming messages
+set icm_channel [icmRegisterAgent $gui_name]
 
-# Set up the ICM pipe file event
-fconfigure $icm_pipe -blocking 0 -buffering line
-fileevent  $icm_pipe readable {eval [icm_msg_read]}
+# Set up the ICM file event
+fconfigure $icm_channel -blocking 0 -buffering line
+fileevent  $icm_channel readable {eval [icm_msg_read]}
 
 # Build the QP thread handle
-set parent_handle "${thread_name}:${process_id}"
+set parent_handle ":${process_id}"
 
 ###################################################################
-# The following function reads ICM messages from the ICM pipe
+# The following function reads ICM messages from the ICM channel
 # and calls a user defined function process_icm_message that takes
 # the message and the sender and reply-to addresses.
 # The special message $exit_gui causes the GUi to exit.
 
-# Initialise the message buffer
-set icm_msg_buffer ""
 
-# Set up the message delimiters
-set end_of_message "\$\$EICMM\$\$"
-set start_of_address "\$\$SICMA\$\$"
-set address_separator "\$\$ICMAS\$\$"
-set len_end_of_message [string length $end_of_message]
-set len_start_of_address [string length $start_of_address]
-set len_address_separator [string length $address_separator]
-
-# The function called for ICM pipe read events.
+# The function called for ICM channel read events.
 proc icm_msg_read {} {
-    global icm_msg_buffer
-    global end_of_message
-    global start_of_address
-    global address_separator
-    global len_end_of_message
-    global len_start_of_address
-    global len_address_separator
-    global icm_pipe
-
-    set term [read $icm_pipe]
-    if [eof $icm_pipe] {
-        fileevent  $icm_pipe ""
-        close $icm_pipe
-        exit 0
+    while {[icmMsgAvail] == "yes"} {
+      icm_msg_read_one
     }
-    set icm_msg_buffer $icm_msg_buffer$term
-    set end_msg [string first $end_of_message $icm_msg_buffer]
+}
 
-# Process all complete messages
-    while {$end_msg != -1} {
-        # Extract the message and sender address
-        set icm_msg [string range $icm_msg_buffer 0 [expr $end_msg - 1]]
-	set icm_msg_buffer [string range $icm_msg_buffer \
-                       [expr $end_msg + $len_end_of_message] end]
-        set end_msg [string first $end_of_message $icm_msg_buffer]
-        set end_command [string first $start_of_address $icm_msg]
-        set icm_addr [string range $icm_msg \
-                   [expr $end_command + $len_start_of_address] end]
-	set end_from [string first $address_separator $icm_addr]
-	set reply_to [string range $icm_addr \
-		   [expr $end_from + $len_address_separator] end]
-	set from [string range $icm_addr 0 [expr $end_from - 1]]
-	set icm_msg [string range $icm_msg 0 [expr $end_command -1]]
-        if { $icm_msg == "\$exit_gui"} {
-            exit 0
-        } else {
-            process_icm_message $icm_msg $from $reply_to
-        }
+proc icm_msg_read_one {} {
+    set icm_msg [icmGetMsg]
+    if { [lindex $icm_msg 0] == "\$exit_gui"} {
+        exit 0
+    } else {
+        process_icm_message [lindex $icm_msg 0] [lindex $icm_msg 1] [lindex $icm_msg 2]
     }
 }
 
@@ -126,7 +106,7 @@ proc open_qfile {} {
     pack .$qw.s -side right -fill y
     text .$qw.text -relief raised -bd 2 -yscrollcommand ".$qw.s set" -setgrid true -width 40 -height 20
     pack .$qw.text -side left -fill both -expand 1
-    .$qw.text configure -font -Adobe-Courier-Medium-R-*-*-140-*
+    .$qw.text configure -font {Courier-Adobe 12}
     set fileID [open $file r]
     while {[gets $fileID line] >= 0} {
         .$qw.text insert end "$line\n"
@@ -200,7 +180,7 @@ proc help_me {} {
     pack .help.s -side right -fill y
     text .help.text -relief raised -bd 2 -yscrollcommand ".help.s set" -setgrid true -width 60 -height 30 -wrap word
     pack .help.text -side left -fill both -expand 1
-    .help.text configure -font -Adobe-Courier-Medium-R-*-*-140-*
+    .help.text configure -font {Courier-Adobe 12}
     .help.text insert end "Using the Qu-Prolog interpreter GUI\n\n"
     .help.text insert end "The GUI behaves much like the dumb terminal interface to qp. Output (stdout and stderr) appears in the GUI text window and input added to the text window is taken as input to qp. In addition Control-D and Control-C have the same behaviour in the GUI as in the dumb terminal interface.\n\n"
     .help.text insert end "A special exception for output is when qp outputs an atom of the form '\$tk\$script' or '\$tkr\$script'. In both cases the GUI traps this output and evaluates the script. In the second case the result of evaluation is returned to qp.\n\n"
@@ -240,7 +220,7 @@ scrollbar .s -relief flat -command ".appio yview"
 pack .s -side right -fill y
 text .appio -relief raised -bd 2 -yscrollcommand ".s set" -setgrid true -width 80 -height 40
 pack .appio -side left -fill both -expand 1
-.appio configure -font -Adobe-Courier-Medium-R-*-*-140-*
+.appio configure -font {Courier-Adobe 12}
 .appio configure -foreground blue
 .appio tag configure color1 -foreground black
 
@@ -250,7 +230,7 @@ pack .appio -side left -fill both -expand 1
 .appio mark gravity startInput left
 
 
-icmFmtSendMsg $parent_handle "ready_to_go"
+icmFmtSendMsg "${thread_name}${parent_handle}" "ready_to_go"
 
 bind .appio <ButtonRelease-1> {
 	if {[.appio compare startInput > current]} {
@@ -333,6 +313,9 @@ bind .appio <Delete> {
         }
 }
 bind .appio <Control-d>  {
+        .appio insert end "\n"
+        .appio mark set insert end
+        .appio mark set startInput {insert}
 	set query_ready 0
         icmFmtSendMsg $parent_handle ""
 	}
@@ -397,7 +380,6 @@ proc process_icm_message {msg addr reply} {
         regexp {([^:]*)} $addr tid 
         if {$tid != $thread_name} {
           set thread_name $tid
-          set parent_handle "${thread_name}:${process_id}"
           set gui_name ${thread_name}_${process_id}_gui
           wm title . "${thread_name}  ${process_id}  GUI"
           wm iconname . $gui_name

@@ -54,16 +54,18 @@
 // 
 // ##Copyright##
 //
-// $Id: int.h,v 1.4 2001/11/21 00:21:14 qp Exp $
+// $Id: int.h,v 1.7 2002/11/26 23:51:51 qp Exp $
 
 #ifndef	INT_H
 #define	INT_H
 
-#include <iostream.h>
+#include <istream.h>
 #include <limits.h>
 //#include <netinet/in.h>
 
 #include "errors.h"
+
+using namespace std;
 
 template <class IntType>
 class Int
@@ -93,7 +95,7 @@ public:
 	
 	if (istrm.good())
 	  {
-	    istrm.get(c);
+	    c = (u_char)istrm.get();
 	  }
 	else
 	  {

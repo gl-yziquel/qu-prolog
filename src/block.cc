@@ -53,16 +53,17 @@
 // 
 // ##Copyright##
 //
-// $Id: block.cc,v 1.3 2002/06/04 04:08:14 qp Exp $
+// $Id: block.cc,v 1.13 2003/10/05 04:50:45 qp Exp $
 
 #include "config.h"
 
 #include <unistd.h>
 
 #include "block.h"
+#include "io_qp.h"
+#include "thread_qp.h"
 
-static time_t
-AbsoluteTimeout(const time_t timeout)
+time_t absoluteTimeout(const time_t timeout)
 {
   if (timeout == static_cast<time_t>(-1))
     {
@@ -74,239 +75,140 @@ AbsoluteTimeout(const time_t timeout)
     }
 }
  
-//
-// Set/clear a block waiting on a retry
-//
-//void
-//BlockStatus::setBlockRetry(const time_t r)
-//{
-//  Clear();
-//  set(BLOCK_RETRY);
-//  
-//  retry_time = r;
-//}
-
-// 
-// Set up a block waiting on an ICM message.
-//
-void 
-BlockStatus::setBlockICM(CondList<ICMMessage *>::iterator i,
-			 const size_t qs,
-			 const time_t to = 0)		// Optional timeout
+bool 
+BlockingIOObject::unblock(int& tout)
 {
-  Clear();
-  set(BLOCK_ICM);
-
-  iter = i;
-  queue_size = qs;
-  timeout = AbsoluteTimeout(to);
-
-#if defined(DEBUG_BLOCK) && defined(DEBUG_ICM)
-  cerr.form("%s queue_size = %ld timeout = %ld\n",
-	    __FUNCTION__, queue_size, timeout);
-#endif
-}
-
-//
-// Set up a block waiting on some IO.
-//
-void 
-BlockStatus::setBlockIO(const int f,
-			const IOType type,
-			const time_t to = 0)		// Optional timeout
-{
-#if defined(DEBUG_BLOCK) && defined(DEBUG_IO)
-  cerr.form("%s fd = %ld io_direction = %ld timeout %ld\n",
-	    __FUNCTION__, f, type, to);
-#endif
-
-  Clear();
-  set(BLOCK_IO);
-
-  fd = f;
-  io_type = type;
-  
-  timeout = AbsoluteTimeout(to);
-}
-
-void
-BlockStatus::setBlockWait(const word32 dbs,
-			  const word32 rdbs,
-			  const time_t to)
-{
-#if defined(DEBUG_BLOCK) && defined(DEBUG_TIMEOUT)
-  cerr.form("%s db_stamp = %ld record_db_stamp = %ld timeout = %ld\n",
-            __FUNCTION__, dbs, rdbs, to);
-#endif
-
-  Clear();
-  set(BLOCK_WAIT);
-
-  db_stamp = dbs;
-  record_db_stamp = rdbs;
-  timeout = AbsoluteTimeout(to);
-}
-
-void
-BlockStatus::Clear(void)
-{
-  clear();
-  timeout = 0;
-  timed_out = false;
-}
-
-BlockedIO::BlockedIO(void)
-{
-  // Start off with a blank slate
-  FD_ZERO(&blocked_read);
-  FD_ZERO(&blocked_write);
-  
-  FD_ZERO(&polled_read);
-  FD_ZERO(&polled_write);
-  
-  // No fds yet
-  max_blocked_fd = -1;
-
-  //
-  // Allocate and initialise the array of counts of blocked threads.
-  //
-  int max_fds = sysconf(_SC_OPEN_MAX);
-  blocked_input_counts = new int[max_fds];
-  if (blocked_input_counts == NULL)
+  if (io_type == IMSTREAM)
     {
-      Fatal("%s: Couldn't create array of blocked input counts\n",
-	    __FUNCTION__);
-    }
-  blocked_output_counts = new int[max_fds];
-  if (blocked_output_counts == NULL)
-    {
-      Fatal("%s: Couldn't create array of blocked output counts\n",
-	    __FUNCTION__);
-    }
-
-  for (int i = 0; i < max_fds; i++)
-    {
-      blocked_input_counts[i] = 0;
-      blocked_output_counts[i] = 0;
-    }
-}
-
-void
-BlockedIO::Add(const int fd, const IOType type)
-{
-#if defined(DEBUG_BLOCK) && defined(DEBUG_IO)
-  cerr.form("%s fd = %ld type = %ld\n", __FUNCTION__, fd, type);
-#endif
-
-  switch (type)
-    {
-    case ISTREAM:
-    case ISTRSTREAM:
-      FD_SET(fd, &blocked_read);
-      blocked_input_counts[fd]++;
-      break;
-    case OSTREAM:
-    case OSTRSTREAM:
-      FD_SET(fd, &blocked_write);
-      blocked_output_counts[fd]++;
-      break;
-    case SOCKET:
-      FD_SET(fd, &blocked_read);
-      blocked_input_counts[fd]++;
-      break;
-    default:
-      // This should never happen.
-      DEBUG_ASSERT(false);
-      break;
-    }
-
-  // Keep track of how many fds we need to select on in BlockedIO::Poll()
-  if (fd > max_blocked_fd)
-    {
-      max_blocked_fd = fd;
-    }
-}
-
-void
-BlockedIO::Remove(const int fd, const IOType type)
-{
-#if defined(DEBUG_BLOCK) && defined(DEBUG_IO)
-  cerr.form("%s fd = %ld type = %ld\n", __FUNCTION__, fd, type);
-#endif 
-
-  switch (type)
-    {
-    case ISTREAM:
-    case ISTRSTREAM:
-    case SOCKET:
-      blocked_input_counts[fd]--;
-      if (blocked_input_counts[fd] == 0)
+      if ((iomp->GetStream(fd) == NULL) ||
+	  (iomp->GetStream(fd)->msgReady()))
 	{
-	  FD_CLR(fd, &blocked_read);
-	}
-      break;
-    case OSTREAM:
-    case OSTRSTREAM:
-      blocked_output_counts[fd]--;
-      if (blocked_output_counts[fd] == 0)
-	{
-	  FD_CLR(fd, &blocked_write);
-	}
-      break;
-    default:
-      // This should never happen.
-      DEBUG_ASSERT(false);
-      break;
-    }
-
-  // Keep track of how many fds we need to select on in BlockedIO::Poll()
-  if (fd == max_blocked_fd)
-    {
-      max_blocked_fd = -1;
-      for (int i = fd - 1; i >= 0; i--)
-	{
-	  if (blocked_input_counts[i] > 0 ||
-	      blocked_output_counts[i] > 0)
-	    {
-	      max_blocked_fd = i;
-	      break;
-	    }
-	}
-    }
-}
-
-static void
-copy_fd_set(fd_set *copy, fd_set *original, const int max_fd)
-{
-  for (int i = 0; i <= max_fd; i++)
-    {
-      if (FD_ISSET(i, original))
-	{
-	  FD_SET(i, copy);
+	  getThread()->getBlockStatus().setRestartIO();
+	  return true;
 	}
       else
 	{
-	  FD_CLR(i, copy);
+	  return false;
+	}
+    }
+  else
+    {
+      if (is_ready(fd, io_type))
+	{
+	  getThread()->getBlockStatus().setRestartIO();
+	  return true;
+	}
+      else
+	{
+	  return false;
 	}
     }
 }
 
-bool
-BlockedIO::Poll(const int msec = 0)		// Maximum time to wait
+void
+BlockingIOObject::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
 {
-  copy_fd_set(&polled_read, &blocked_read, max_blocked_fd);
-  copy_fd_set(&polled_write, &blocked_write, max_blocked_fd);
-  
-  timeval timeout = { 0, msec };
-
-  const int result = select(max_blocked_fd + 1,
-			    &polled_read, &polled_write, NULL, &timeout) > 0;
-  
-#if defined(DEBUG_BLOCK) && defined(DEBUG_IO)
-  cerr.form("%s max_blocked_fd = %ld result = %ld\n",
-	    __FUNCTION__, max_blocked_fd, result);
-#endif
-  
-  return result > 0;
+  if (io_type != IMSTREAM)
+    {
+      if (fd > max_fd) max_fd = fd;
+      FD_SET(fd, rfds);
+    }
 }
 
+bool 
+BlockingTimeoutObject::unblock(int& tout)
+{
+  const time_t now = time(NULL);
+  if (timeout > 0 && timeout <= now)
+    {
+      getThread()->getBlockStatus().setRestartTime();
+      return true;
+    }
+  else
+    {
+      if (timeout > 0)
+	{
+	  int delta = timeout - now;
+	  if ((tout == 0) || tout > delta) tout = delta;
+	}
+      return false;
+    }
+}
+
+BlockingMessageObject::BlockingMessageObject(Thread* const t, time_t to, 
+					     list<Message *>::iterator *i)
+  : BlockingObject(t), iter(i)
+{
+  timeout = absoluteTimeout(to);
+  size = t->MessageQueue().size();
+}
+
+void
+BlockingMessageObject::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
+{
+}
+
+bool 
+BlockingMessageObject::unblock(int& tout)
+{
+  const time_t now = time(NULL);
+
+  if (size != getThread()->MessageQueue().size())
+    {
+       *iter = getThread()->MessageQueue().begin();
+      for (u_int i = 1; i < size; i++)
+	{
+	  (*iter)++;
+	}
+      getThread()->getBlockStatus().setRestartMsg();
+      return true;
+    }
+  else if (timeout > 0 && timeout <= now)
+    {
+      getThread()->getBlockStatus().setRestartTime();
+      return true;
+    }
+  else
+    {      
+      if (timeout > 0)
+	{
+	  int delta = timeout - now;
+	  if ((tout == 0) || tout > delta) tout = delta;
+	}
+      return false;
+    }
+}
+
+BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, time_t to) 
+  :  BlockingObject(t), code(c)
+{
+  timeout = absoluteTimeout(to);
+  stamp = c->GetStamp();
+}
+
+
+bool 
+BlockingWaitObject::unblock(int& tout)
+{
+  const time_t now = time(NULL);
+
+  if (stamp < code->GetStamp())
+    {
+      getThread()->getBlockStatus().setRestartWait();
+      return true;
+    }
+  else if (timeout > 0 && timeout <= now)
+    {
+      getThread()->getBlockStatus().setRestartTime();
+      return true;
+    }
+  else
+    {
+      if (timeout > 0)
+	{
+	  int delta = timeout - now;
+	  if ((tout == 0) || tout > delta) tout = delta;
+	}
+      return false;
+    }
+}

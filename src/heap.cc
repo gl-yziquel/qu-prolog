@@ -56,12 +56,12 @@
 // 
 // ##Copyright##
 //
-// $Id: heap.cc,v 1.4 2001/11/21 00:21:14 qp Exp $
+// $Id: heap.cc,v 1.9 2002/12/23 00:22:10 qp Exp $
 
 // Standard C++ header files
 
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 
 // Qu-Prolog debugging
@@ -75,7 +75,7 @@ void Heap::outOfSpace(void)
     
       cerr << "Out of " << heapname << " space ("
            << (top - data) * sizeof (heapobject) / K
-           << endl;
+           << ")" << endl;
 }
 
 //
@@ -233,7 +233,7 @@ Heap::save(ostream& ostrm) const
     //
     // Write out the heap.
     //
-    ostrm.write(data, size * sizeof(heapobject));
+    ostrm.write((char*)data, size * sizeof(heapobject));
     if (ostrm.fail())
     {
       SaveFailure(__FUNCTION__, "data segment", getAreaName());
@@ -255,7 +255,7 @@ Heap::load(istream& istrm)
 	//
 	// Wrong size.
 	//
-	Fatal(__FUNCTION__, "wrong size for %s: actual %d allocated %d", getAreaName(), ReadSize, allocatedSize());
+	FatalS(__FUNCTION__, "wrong size for ", getAreaName());
       }
 #endif // 0
 
@@ -265,11 +265,15 @@ Heap::load(istream& istrm)
 
     heapobject* here = next;
     allocateHeapSpace(ReadSize);
+#if defined(MACOSX)
+    istrm.read((char*)here, ReadSize * sizeof(heapobject));
+#else
     if (istrm.good() &&
-	istrm.read(here, ReadSize * sizeof(heapobject)).fail())
+	istrm.read((char*)here, ReadSize * sizeof(heapobject)).fail())
       {
 	ReadFailure(__FUNCTION__, "data segment", getAreaName());
       }
+#endif //defined(MACOSX)
 
 }
 

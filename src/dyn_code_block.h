@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: dyn_code_block.h,v 1.2 2001/12/06 02:56:06 qp Exp $  
+// $Id: dyn_code_block.h,v 1.3 2002/11/03 08:37:25 qp Exp $  
 
 #ifndef DYN_CODE_BLOCK_H
 #define DYN_CODE_BLOCK_H
 
-#include <list.h>
+#include <list>
 //#include "atom_table.h"
 //#include "code.h"
 #include "dynamic_code.h"

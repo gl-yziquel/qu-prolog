@@ -53,89 +53,100 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_table.h,v 1.3 2001/02/22 21:47:00 qp Exp $
+// $Id: thread_table.h,v 1.7 2003/10/03 01:19:40 qp Exp $
 
 #ifndef	THREAD_TABLE_H
 #define	THREAD_TABLE_H
 
 #include <sys/types.h>
 
-#include "cond_list.h"
 #include "defs.h"
 #include "hash_qp.h"
-#include "hash_table.h"
-#include "string_qp.h"
+#include "dynamic_hash_table.h"
+//#include "string_qp.h"
 #include "thread_table_loc.h"
 
 class Thread;
 
-class ThreadTable
+class ThreadHashTableEntry
 {
-  //
-  // Hash table for associating thread names with thread id's.
-  //
+ private:
+  bool removed;		// Has the entry been removed?
+  ThreadTableLoc loc;	// Location of thread.
+  string *symbol;		// The symbol.
+ public:
+  ThreadHashTableEntry(void) : removed(false), loc(0), symbol(NULL) { }
+  
+  ThreadHashTableEntry(string* s) : removed(false), loc(0), symbol(s) { }
+  
+  
+  bool isEmpty(void) const { return (symbol == NULL); }
+  
+  bool isRemoved(void) const { return removed; }
 
-  class HashTableEntry
+  void makeRemoved(void) { removed = true; }  
+
+  ThreadTableLoc Loc(void) const
     {
-    private:
-      bool empty;		// Is the entry empty?
-      ThreadTableLoc loc;	// Location of thread.
-      String *symbol;		// The symbol.
-    public:
-      HashTableEntry(void) : empty(true) { }
-      
-      bool isEmpty(void) const { return empty; }
-      
-      ThreadTableLoc Loc(void) const
-      {
-	DEBUG_ASSERT(! empty);
-	return loc;
-      }
-      String& Symbol(void)
-      {
-	DEBUG_ASSERT(! empty);
-	return *symbol;
-      }
-      const String& InspectSymbol(void) const
-      {
-	DEBUG_ASSERT(! empty);
-	return *symbol;
-      }
+      DEBUG_ASSERT(! removed);
+      return loc;
+    }
+  string& Symbol(void)
+    {
+      DEBUG_ASSERT(! removed);
+      DEBUG_ASSERT(symbol != NULL);
+      return *symbol;
+    }
+  const string& InspectSymbol(void) const
+    {
+      DEBUG_ASSERT(! removed);
+      DEBUG_ASSERT(symbol != NULL);
+      return *symbol;
+    }
+  
+  void clearEntry(void)
+    {
+      removed = false;
+      delete symbol;
+      symbol = NULL;
+    }
+  
+  void setSymbol(string* s)
+    {
+      symbol = s;
+    }
+  
+  void Assign(const ThreadTableLoc l,
+	      const string& s)
+    {
+      removed = false;
+      loc = l;
+      symbol = new string(s);
+    }
+  
+  bool operator==(const ThreadHashTableEntry& tte) const
+    {
+      if (symbol == tte.symbol) return true;
+      if ((symbol == NULL) || (tte.symbol == NULL)) return false;
+      return (*symbol == (*tte.symbol));
+    }
+  
+  int hashFn(void) const
+    {
+      DEBUG_ASSERT(symbol != NULL);
+      return Hash(symbol->c_str(), symbol->length());
+    }
+};
 
-      void Clear(void)
-      {
-	empty = true;
-	delete symbol;
-	symbol = NULL;
-      }
-      
-      void Assign(const ThreadTableLoc l,
-		  const String& s)
-      {
-	empty = false;
-	loc = l;
-	symbol = new String(s);
-	if (symbol == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
-      }
-
-      bool operator==(const HashTableEntry& tte) const
-	{
-	  return Loc() == tte.Loc() &&
-	    InspectSymbol() == tte.InspectSymbol();
-	}
-    };
-
+/*
   class HashTableKey
     {
     private:
-      const String symbol;
+      const string symbol;
     public:
-      HashTableKey(const String& s) : symbol(s) { }
+      HashTableKey(const string& s) : symbol(s) { }
       
-      const String& InspectSymbol(void) const
+      const string& InspectSymbol(void) const
 	{
 	  return symbol;
 	}
@@ -154,39 +165,32 @@ class ThreadTable
 
       word32 hashFn(void) const
       {
-	return Hash(symbol.Str(), symbol.Length());
+	return Hash(symbol.c_str(), symbol.length());
       }
     };
+*/
 
-  class ThreadTableHashTable : public HashTable<HashTableEntry, HashTableKey>
-  {
-  public:
-    ThreadTableHashTable(const word32 size) :
-      HashTable<HashTableEntry, HashTableKey>(size) 
-      { }
-    
-    ThreadTableLoc Search(const HashTableKey key) const
-      {
-	return search(key);
-      }
+class ThreadTableHashTable : public DynamicHashTable<ThreadHashTableEntry>
+{
+ public:
+  ThreadTableHashTable(const word32 size) :
+    DynamicHashTable<ThreadHashTableEntry>(size) 
+    { }
+  
+  const char *getAreaName(void) const { return "Thread Table"; }
+  
+  int hashFunction(const ThreadHashTableEntry key) const
+    {
+      return key.hashFn();
+    }
+};
 
-    HashTableEntry& GetEntry(const ThreadTableLoc loc)
-      {
-	return getEntry(loc);
-      }
+class ThreadTable
+{
+  //
+  // Hash table for associating thread names with thread id's.
+  //
 
-    const HashTableEntry& InspectEntry(const ThreadTableLoc loc) const
-      {
-	return inspectEntry(loc);
-      }
-
-    const char *getAreaName(void) const { return "Thread Table"; }
-
-    word32 hashFunction(const HashTableKey key) const
-      {
-	return key.hashFn();
-      }
-  };
 
 private:
   // Hash table from name to thread id.
@@ -204,10 +208,10 @@ private:
   // Size of the hash table and the array.
   const word32 size;
 
-  // Buffer for constructing names of threads
-  char name_buff[ATOM_LENGTH];
-  
-public:
+  // String to hold thread name
+  string symbol;
+
+ public:
   ThreadTable(const word32 TableSize = THREAD_TABLE_SIZE)
     : hash_table(TableSize),
       live(0),
@@ -215,10 +219,6 @@ public:
       size(TableSize)
     {
       array = new (Thread *)[size];
-      if (array == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
       
       for (size_t i = 0; i < size; i++)
 	{
@@ -233,18 +233,18 @@ public:
   //
 
   // Create a name of the form threadN for the given thread
-  char* MakeName(const ThreadTableLoc loc);
+  string& MakeName(const ThreadTableLoc loc);
 
   // Add a thread's name.
-  bool AddName(const String&,		// Name of thread
+  bool AddName(const string&,	        	// Name of thread
 	       const ThreadTableLoc);	// Thread id
 
   // Lookup a thread given its name. Returns (ThreadTableLoc) -1 when
   // the name can't be found.
-  ThreadTableLoc LookupName(const String&) const;
+  ThreadTableLoc LookupName(const string&) const;
 
   // Remove a thread's name.
-  void RemoveName(const String&);
+  void RemoveName(const string&);
 
   //
   // Operations on the thread id array.

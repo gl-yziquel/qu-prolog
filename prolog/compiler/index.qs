@@ -283,12 +283,29 @@ end('$collect_labels'/2):
 
 
 
+'$getarg/3$0'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(1, 0)
+	neck_cut
+	execute_predicate('$search_body_unification', 3)
+
+$2:
+	get_x_value(2, 0)
+	proceed
+end('$getarg/3$0'/3):
+
+
+
 '$getarg'/3:
 
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, ':-'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ':-'/2:$5])
 
 $4:
 	try(3, $1)
@@ -305,11 +322,12 @@ $6:
 $1:
 	get_structure(':-', 2, 0)
 	unify_x_variable(0)
-	unify_void(1)
+	unify_x_variable(3)
 	neck_cut
-	pseudo_instr3(1, 1, 0, 3)
-	get_x_value(2, 3)
-	proceed
+	pseudo_instr3(1, 1, 0, 4)
+	get_x_variable(0, 4)
+	put_x_value(3, 1)
+	execute_predicate('$getarg/3$0', 3)
 
 $2:
 	pseudo_instr3(1, 1, 0, 3)
@@ -382,7 +400,7 @@ $1:
 $2:
 	put_x_value(2, 0)
 	get_structure('quant', 1, 0)
-	unify_constant('default')
+	unify_constant('$default')
 	proceed
 end('$classify/2$2'/3):
 
@@ -407,7 +425,7 @@ $1:
 $2:
 	put_x_value(2, 0)
 	get_structure('struct', 1, 0)
-	unify_constant('default')
+	unify_constant('$default')
 	proceed
 end('$classify/2$3'/3):
 
@@ -415,6 +433,17 @@ end('$classify/2$3'/3):
 
 '$classify'/2:
 
+	switch_on_term(0, $9, $8, $9, $8, $8, $8)
+
+$8:
+	try(2, $1)
+	retry($2)
+	retry($4)
+	retry($5)
+	retry($6)
+	trust($7)
+
+$9:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -445,7 +474,7 @@ $3:
 
 $4:
 	get_structure('quant', 1, 1)
-	unify_constant('default')
+	unify_constant('$default')
 	pseudo_instr1(6, 0)
 	pseudo_instr1(5, 0)
 	neck_cut
@@ -567,8 +596,9 @@ end('$build_index_tree'/10):
 	trust($2)
 
 $1:
-	put_constant('default', 2)
-	get_x_value(0, 2)
+	get_x_variable(2, 0)
+	put_constant('$default', 0)
+	get_x_value(2, 0)
 	neck_cut
 	put_constant('true', 0)
 	get_x_value(1, 0)
@@ -586,8 +616,9 @@ end('$update_tree/17$0'/2):
 	trust($2)
 
 $1:
-	put_constant('default', 2)
-	get_x_value(0, 2)
+	get_x_variable(2, 0)
+	put_constant('$default', 0)
+	get_x_value(2, 0)
 	neck_cut
 	put_constant('true', 0)
 	get_x_value(1, 0)
@@ -604,7 +635,7 @@ end('$update_tree/17$1'/2):
 	switch_on_term(0, $10, 'fail', 'fail', $7, 'fail', $9)
 
 $7:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$8, 'struct'/1:$4, 'quant'/1:$5, 'const'/1:$6])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$8, 'struct'/1:$4, 'quant'/1:$5, 'const'/1:$6])
 
 $8:
 	try(17, $4)
@@ -612,7 +643,7 @@ $8:
 	trust($6)
 
 $9:
-	switch_on_constant(0, 8, ['default':'fail', 'var':$1, 'obvar':$2, 'list':$3])
+	switch_on_constant(0, 8, ['$default':'fail', 'var':$1, 'obvar':$2, 'list':$3])
 
 $10:
 	try(17, $1)
@@ -817,6 +848,20 @@ end('$build_fixed_tree'/3):
 
 '$build_var_tree/4$0'/3:
 
+	switch_on_term(0, $7, $3, $4, $3, $3, $5)
+
+$4:
+	try(3, $2)
+	trust($3)
+
+$5:
+	switch_on_constant(0, 4, ['$default':$3, '[]':$6])
+
+$6:
+	try(3, $1)
+	trust($3)
+
+$7:
 	try(3, $1)
 	retry($2)
 	trust($3)
@@ -942,7 +987,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$3, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$3, '[]':$6])
 
 $6:
 	try(5, $1)
@@ -987,7 +1032,7 @@ $3:
 	unify_x_ref(3)
 	unify_x_value(0)
 	get_structure(':', 2, 3)
-	unify_constant('default')
+	unify_constant('$default')
 	unify_x_variable(0)
 	get_x_value(0, 2)
 	get_x_value(1, 4)
@@ -1036,6 +1081,20 @@ end('$generate_index_instrs'/7):
 
 '$tree_to_instrs/6$0'/1:
 
+	switch_on_term(0, $6, $1, $1, $3, $1, $1)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, 'label'/1:$5])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$6:
 	try(1, $1)
 	trust($2)
 
@@ -1279,10 +1338,10 @@ $2:
 	unify_x_ref(6)
 	unify_x_variable(0)
 	get_structure(':', 2, 6)
-	unify_constant('default')
+	unify_constant('$default')
 	unify_x_variable(6)
 	get_structure(':', 2, 5)
-	unify_constant('default')
+	unify_constant('$default')
 	unify_x_value(6)
 	pseudo_instr1(1, 6)
 	neck_cut
@@ -1295,13 +1354,13 @@ $3:
 	allocate(5)
 	unify_y_variable(4)
 	get_structure(':', 2, 0)
-	unify_constant('default')
+	unify_constant('$default')
 	unify_x_variable(0)
 	get_y_variable(3, 1)
 	get_y_variable(2, 2)
 	get_y_variable(1, 4)
 	get_structure(':', 2, 5)
-	unify_constant('default')
+	unify_constant('$default')
 	unify_x_variable(1)
 	neck_cut
 	put_y_variable(0, 4)
@@ -1355,7 +1414,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$3, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$3, '[]':$6])
 
 $6:
 	try(5, $1)
@@ -1469,7 +1528,7 @@ $5:
 	trust($4)
 
 $6:
-	switch_on_constant(0, 4, ['default':$1, '[]':$7])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$7])
 
 $7:
 	try(2, $1)
@@ -1540,7 +1599,7 @@ end('$size_table'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(3, $1)
@@ -1780,7 +1839,7 @@ end('$update_chain/4$2'/6):
 	switch_on_term(0, $7, 'fail', 'fail', $5, 'fail', $1)
 
 $5:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$6, 'struct'/1:$2, 'quant'/1:$3, 'const'/1:$4])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$6, 'struct'/1:$2, 'quant'/1:$3, 'const'/1:$4])
 
 $6:
 	try(4, $2)
@@ -2187,6 +2246,130 @@ $1:
 	deallocate
 	proceed
 end('$struct_to_atom'/4):
+
+
+
+'$search_body_unification'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	get_x_variable(3, 2)
+	allocate(1)
+	get_y_level(0)
+	put_x_variable(2, 2)
+	call_predicate('$search_body_unification_aux', 4, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	get_x_value(0, 2)
+	proceed
+end('$search_body_unification'/3):
+
+
+
+'$search_body_unification_aux/4$0'/4:
+
+	try(4, $1)
+	trust($2)
+
+$1:
+	put_constant('true', 1)
+	pseudo_instr2(110, 0, 1)
+	neck_cut
+	proceed
+
+$2:
+	get_x_variable(4, 0)
+	get_x_variable(0, 1)
+	get_x_variable(1, 2)
+	put_x_value(4, 2)
+	execute_predicate('$search_body_unification_aux', 4)
+end('$search_body_unification_aux/4$0'/4):
+
+
+
+'$search_body_unification_aux/4$1'/5:
+
+	try(5, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	pseudo_instr2(110, 0, 1)
+	neck_cut
+	put_constant('true', 0)
+	get_x_value(2, 0)
+	get_x_value(3, 4)
+	proceed
+
+$2:
+	pseudo_instr2(110, 0, 4)
+	neck_cut
+	put_constant('true', 0)
+	get_x_value(2, 0)
+	get_x_value(3, 1)
+	proceed
+
+$3:
+	proceed
+end('$search_body_unification_aux/4$1'/5):
+
+
+
+'$search_body_unification_aux'/4:
+
+	try(4, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	trust($5)
+
+$1:
+	pseudo_instr1(1, 1)
+	neck_cut
+	fail
+
+$2:
+	put_x_variable(0, 0)
+	put_x_variable(2, 2)
+	pseudo_instr3(0, 1, 0, 2)
+	pseudo_instr1(1, 0)
+	neck_cut
+	fail
+
+$3:
+	allocate(4)
+	get_y_variable(3, 0)
+	get_structure(',', 2, 1)
+	unify_x_variable(1)
+	unify_y_variable(2)
+	get_y_variable(1, 2)
+	get_y_variable(0, 3)
+	neck_cut
+	call_predicate('$search_body_unification_aux', 4, 4)
+	put_y_value(1, 0)
+	put_y_value(3, 1)
+	put_y_value(2, 2)
+	put_y_value(0, 3)
+	deallocate
+	execute_predicate('$search_body_unification_aux/4$0', 4)
+
+$4:
+	get_structure('$$get_level_ancestor$$', 1, 1)
+	unify_void(1)
+	neck_cut
+	proceed
+
+$5:
+	get_structure('=', 2, 1)
+	unify_x_variable(1)
+	unify_x_variable(4)
+	execute_predicate('$search_body_unification_aux/4$1', 5)
+end('$search_body_unification_aux'/4):
 
 
 

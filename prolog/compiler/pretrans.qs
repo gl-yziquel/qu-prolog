@@ -30,6 +30,20 @@ end('$pretrans_clauses'/2):
 
 '$pretrans/2$0'/4:
 
+	switch_on_term(0, $6, $1, $1, $3, $1, $1)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, '$$cut_ancestor$$'/1:$5])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
+	try(4, $1)
+	trust($2)
+
+$6:
 	try(4, $1)
 	trust($2)
 
@@ -63,7 +77,7 @@ end('$pretrans/2$0'/4):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, ':-'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ':-'/2:$5])
 
 $4:
 	try(2, $1)
@@ -150,6 +164,16 @@ end('$pretrans_formula/5$1/7$0'/3):
 
 '$pretrans_formula/5$1'/7:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'atom':$4])
+
+$4:
+	try(7, $1)
+	trust($2)
+
+$5:
 	try(7, $1)
 	trust($2)
 
@@ -322,7 +346,7 @@ end('$pretrans_formula1/5$3'/1):
 	switch_on_term(0, $49, $48, $48, $29, $48, $46)
 
 $29:
-	switch_on_structure(0, 32, ['default':$48, '$'/0:$30, 'write'/1:$31, 'writeq'/1:$32, 'put_code'/1:$33, 'write'/2:$34, 'writeq'/2:$35, '\\='/2:$36, '\\=='/2:$37, '=\\='/2:$38, '>='/2:$39, '>'/2:$40, 'is'/2:$41, '?='/2:$42, '->'/2:$43, ';'/2:$44, ','/2:$45])
+	switch_on_structure(0, 32, ['$default':$48, '$'/0:$30, 'write'/1:$31, 'writeq'/1:$32, 'put_code'/1:$33, 'write'/2:$34, 'writeq'/2:$35, '\\='/2:$36, '\\=='/2:$37, '=\\='/2:$38, '>='/2:$39, '>'/2:$40, 'is'/2:$41, '?='/2:$42, '->'/2:$43, ';'/2:$44, ','/2:$45])
 
 $30:
 	try(5, $1)
@@ -465,7 +489,7 @@ $45:
 	trust($28)
 
 $46:
-	switch_on_constant(0, 4, ['default':$48, '!':$47])
+	switch_on_constant(0, 4, ['$default':$48, '!':$47])
 
 $47:
 	try(5, $1)

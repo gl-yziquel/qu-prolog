@@ -222,6 +222,16 @@ end('get_char'/2):
 
 '$get_char1/2$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -292,7 +302,7 @@ end('$get_char2'/2):
 	switch_on_term(0, $7, $3, $3, $3, $3, $4)
 
 $4:
-	switch_on_constant(0, 4, ['default':$3, 'end_of_file':$5, 'past':$6])
+	switch_on_constant(0, 4, ['$default':$3, 'end_of_file':$5, 'past':$6])
 
 $5:
 	try(3, $1)
@@ -594,7 +604,7 @@ end('$get_line1'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, -1:$4])
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
 
 $4:
 	try(3, $1)
@@ -986,7 +996,7 @@ end('$get_code2'/2):
 	switch_on_term(0, $7, $3, $3, $3, $3, $4)
 
 $4:
-	switch_on_constant(0, 4, ['default':$3, -1:$5, 'past':$6])
+	switch_on_constant(0, 4, ['$default':$3, -1:$5, 'past':$6])
 
 $5:
 	try(3, $1)
@@ -1235,7 +1245,7 @@ end('skip'/2):
 	switch_on_term(0, $7, $6, $6, $6, $6, $4)
 
 $4:
-	switch_on_constant(0, 4, ['default':$6, -1:$5])
+	switch_on_constant(0, 4, ['$default':$6, -1:$5])
 
 $5:
 	try(3, $1)

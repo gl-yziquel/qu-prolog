@@ -3,7 +3,7 @@
 	switch_on_term(0, $75, $37, $37, $38, $37, $66)
 
 $38:
-	switch_on_structure(0, 64, ['default':$37, '$'/0:$39, 'put'/3:$40, 'get'/3:$41, 'unify_ref'/1:$42, 'unify'/2:$43, 'set'/2:$44, 'check_binder'/1:$45, 'allocate'/1:$46, 'call_predicate'/3:$47, 'call_address'/2:$48, 'call_escape'/2:$49, 'execute_predicate'/2:$50, 'execute_address'/1:$51, 'execute_escape'/1:$52, 'try_me_else'/2:$53, 'retry_me_else'/1:$54, 'try'/2:$55, 'retry'/1:$56, 'trust'/1:$57, '$$get_level$$'/1:$58, '$$cut$$'/1:$59, '$pseudo_instr0'/1:$60, '$pseudo_instr1'/2:$61, '$pseudo_instr2'/3:$62, '$pseudo_instr3'/4:$63, '$pseudo_instr4'/5:$64, '$pseudo_instr5'/6:$65])
+	switch_on_structure(0, 64, ['$default':$37, '$'/0:$39, 'put'/3:$40, 'get'/3:$41, 'unify_ref'/1:$42, 'unify'/2:$43, 'set'/2:$44, 'check_binder'/1:$45, 'allocate'/1:$46, 'call_predicate'/3:$47, 'call_address'/2:$48, 'call_escape'/2:$49, 'execute_predicate'/2:$50, 'execute_address'/1:$51, 'execute_escape'/1:$52, 'try_me_else'/2:$53, 'retry_me_else'/1:$54, 'try'/2:$55, 'retry'/1:$56, 'trust'/1:$57, '$$get_level$$'/1:$58, '$$cut$$'/1:$59, '$pseudo_instr0'/1:$60, '$pseudo_instr1'/2:$61, '$pseudo_instr2'/3:$62, '$pseudo_instr3'/4:$63, '$pseudo_instr4'/5:$64, '$pseudo_instr5'/6:$65])
 
 $39:
 	try(2, $1)
@@ -143,7 +143,7 @@ $65:
 	trust($37)
 
 $66:
-	switch_on_constant(0, 16, ['default':$37, 'deallocate':$67, 'noop':$68, 'proceed':$69, 'fail':$70, 'halt':$71, 'exit':$72, 'trust_me_else_fail':$73, 'neck_cut':$74])
+	switch_on_constant(0, 16, ['$default':$37, 'deallocate':$67, 'noop':$68, 'proceed':$69, 'fail':$70, 'halt':$71, 'exit':$72, 'trust_me_else_fail':$73, 'neck_cut':$74])
 
 $67:
 	try(2, $9)
@@ -669,7 +669,7 @@ end('$customize_ass'/2):
 	switch_on_term(0, $23, 'fail', 'fail', $17, 'fail', $20)
 
 $17:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$18, ':'/2:$19])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$18, ':'/2:$19])
 
 $18:
 	try(4, $1)
@@ -692,7 +692,7 @@ $19:
 	trust($11)
 
 $20:
-	switch_on_constant(0, 8, ['default':'fail', 'constant':$5, 'structure':$21, 'quantifier':$12, 'substitution':$22])
+	switch_on_constant(0, 8, ['$default':'fail', 'constant':$5, 'structure':$21, 'quantifier':$12, 'substitution':$22])
 
 $21:
 	try(4, $6)
@@ -956,7 +956,7 @@ end('$customize_put_ass'/4):
 	switch_on_term(0, $18, 'fail', 'fail', $13, 'fail', $16)
 
 $13:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$14, ':'/2:$15])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$14, ':'/2:$15])
 
 $14:
 	try(4, $1)
@@ -979,7 +979,7 @@ $15:
 	trust($12)
 
 $16:
-	switch_on_constant(0, 8, ['default':'fail', 'constant':$5, 'structure':$17, 'structure_frame':$8])
+	switch_on_constant(0, 8, ['$default':'fail', 'constant':$5, 'structure':$17, 'structure_frame':$8])
 
 $17:
 	try(4, $6)
@@ -1189,7 +1189,7 @@ end('$customize_get_ass'/4):
 	switch_on_term(0, $10, 'fail', 'fail', $7, 'fail', $6)
 
 $7:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$8, ':'/2:$9])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$8, ':'/2:$9])
 
 $8:
 	try(3, $1)
@@ -1287,7 +1287,7 @@ end('$customize_unify_ass'/3):
 	switch_on_term(0, $15, 'fail', 'fail', $12, 'fail', $9)
 
 $12:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$13, ':'/2:$14])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$13, ':'/2:$14])
 
 $13:
 	try(3, $1)

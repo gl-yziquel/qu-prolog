@@ -353,11 +353,11 @@ savefile=$absexecfile.qx
 # generate save file
 
 openfilename=$savefile
-$link -o $savefile $dflag $Loptions $libqofiles $qofiles $newqofiles || exit 1
+$link -o "$savefile" $dflag $Loptions $libqofiles $qofiles $newqofiles || exit 1
 openfilename=""
 [ -z "$newqofiles" ] || rm -f $newqofiles
 
 # make executable file
 
-echo "exec $execute $Eoptions $lflag -Q $savefile \$* $*" >$execfile
+echo "exec $execute $Eoptions $lflag -Q '$savefile' \$* $*" >$execfile
 chmod a+x $execfile

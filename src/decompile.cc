@@ -55,7 +55,7 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: decompile.cc,v 1.5 2001/12/06 02:56:05 qp Exp $
+// $Id: decompile.cc,v 1.6 2002/12/04 00:36:12 qp Exp $
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -85,7 +85,10 @@ extern PredTab *predicates;
 
 #define ADD_UNIFICATION(t1, t2, listElem)		                \
 do {							                \
-   Structure* u = heap.newStructure(2, AtomTable::equal, t1, t2);   	\
+   Structure* u = heap.newStructure(2);   	                        \
+   u->setFunctor(AtomTable::equal);                                     \
+   u->setArgument(1, t1);                                               \
+   u->setArgument(2, t2);                                               \
    Cons* l = heap.newCons();                                            \
    l->setHead(u);                                                       \
    *listElem = l;                                                       \

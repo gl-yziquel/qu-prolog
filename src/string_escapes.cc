@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: string_escapes.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: string_escapes.cc,v 1.6 2002/11/13 04:04:16 qp Exp $
 
-#include <strstream.h>
+#include <sstream>
 
 #include "atom_table.h"
 #include "io_qp.h"
@@ -74,33 +74,30 @@ Thread::psi_stream_to_chars(Object *& stream_arg,
 {
   Object* stream_object = heap.dereference(stream_arg);
   
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
 
-  if (stream->frozen())
-    {
-      return RV_FAIL;
-    }
-  
   //
   // Converting the string to a list of characters.
   //
-  const char *string = stream->str();
   Object* tail = AtomTable::nil;
-  for (int i = stream->pcount(); i > 0; i--)
+  int size = stream->str().length();
+  if (size > 0)
     {
-      Cons* temp = heap.newCons();
-      temp->setTail(tail);
-      temp->setHead(heap.newNumber(string[i - 1]));
-      tail = temp;
+      string data = stream->str();
+      for (int i = size; i > 0; i--)
+	{
+	  Cons* temp = heap.newCons();
+	  temp->setTail(tail);
+	  temp->setHead(heap.newNumber(data[i - 1]));
+	  tail = temp;
+	}
     }
   
   //
   // Return the list of characters.
   //
   char_list_arg = tail;
-
-  stream->freeze(0);
 
   return RV_SUCCESS;
 }
@@ -114,21 +111,28 @@ Thread::psi_stream_to_atom(Object *& stream_arg, Object *& atom_arg)
 {
   Object* stream_object = heap.dereference(stream_arg);
   
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
 
-  if (stream->frozen())
-    {
-      return RV_FAIL;
-    }
-  
   //
   // Return the atom.
   //
-  *stream << '\0';     // ends
-  atom_arg = atoms->add(stream->str());
-
-  stream->freeze(0);
+  int size = stream->str().length();
+  if (size == 0)
+    {
+      atom_arg = atoms->add("");
+    }
+  else
+    {
+      string data = stream->str();
+      char buff[size+1];
+      for (int i = 0; i < size; i++)
+	{
+	  buff[i] = data[i];
+	}
+      buff[size] = '\0';
+      atom_arg = atoms->add(buff);
+    }
 
   return RV_SUCCESS;
 }

@@ -3,4 +3,4 @@
 # This shell script is for compiling foreign functions.
 #
 
-g++ -Wall -D_GNU_SOURCE=1 -D_THREAD_SAFE=1 -D_REENTRANT=1 -O9 -Wno-uninitialized -c @CXXFLAGS@ -I@QPHOME@/src -I- $*
+g++ -Wall -D_GNU_SOURCE=1 -D_THREAD_SAFE=1 -D_REENTRANT=1 -O3 -Wno-uninitialized -c @CXXFLAGS@ -I@QPHOME@/src -I-  @GCCINCLUDES@$*

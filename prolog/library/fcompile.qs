@@ -90,7 +90,7 @@ end('fcompile'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, '[]':$4])
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
 
 $4:
 	try(2, $1)

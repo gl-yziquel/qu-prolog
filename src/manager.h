@@ -53,11 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: manager.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: manager.h,v 1.3 2002/12/05 03:39:31 qp Exp $
 
 #ifndef	MANAGER_H
 #define	MANAGER_H
 
+#include <stdlib.h>
 #include "defs.h"
 #include "errors.h"
 
@@ -105,7 +106,7 @@ public:
 	}
       else
 	{
-	  Fatal("%s: Bad index argument\n", __FUNCTION__, index);
+	  Fatal(__FUNCTION__, "Bad index argument");
 	}
     }
 
@@ -145,8 +146,7 @@ public:
 	{
 	  if (isElem(index))
 	    {
-	      Fatal("%s: Attempt to overwrite item at index %d\n",
-		    __FUNCTION__, index);
+	      Fatal(__FUNCTION__, "Attempt to overwrite item");
 	    }
 	  else
 	    {
@@ -157,7 +157,7 @@ public:
 	}
       else
 	{
-	  Fatal("%s: Bad index argument %d\n", __FUNCTION__, index);
+	  Fatal(__FUNCTION__, "Bad index argument ");
 	}
     }
 

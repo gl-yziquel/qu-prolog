@@ -54,9 +54,9 @@
 // 
 // ##Copyright##
 //
-// $Id: code.cc,v 1.5 2002/09/12 00:55:08 qp Exp $
+// $Id: code.cc,v 1.10 2002/12/23 00:22:09 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 #include <streambuf.h>
 #include <stdio.h>
 
@@ -80,16 +80,10 @@ StaticCodeArea::StaticCodeArea(word32 size)
   word32        FullSize;
 
   FullSize = size * K;
-  if ((base = new word8 [FullSize]) == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  else
-    {
-       top = base;
-       last = base + FullSize;
-       allocated_size = FullSize;
-    }
+  base = new word8 [FullSize];
+  top = base;
+  last = base + FullSize;
+  allocated_size = FullSize;
 }
 
 StaticCodeArea::~StaticCodeArea(void)
@@ -122,7 +116,7 @@ StaticCodeArea::saveArea(ostream& ostrm, const u_long magic) const
   //
   // Write out the code.
   //
-  ostrm.write(base, size);
+  ostrm.write((char*)base, size);
   if (ostrm.fail())
     {
       SaveFailure(__FUNCTION__, "data segment", getAreaName());
@@ -140,12 +134,16 @@ StaticCodeArea::readData(istream& istrm, const word32 readSize)
     {
       OutOfPage(__FUNCTION__, "code area", allocated_size / K);
     }
-
+#if defined(MACOSX)
+    istrm.read((char*)top, readSize);
+#else
   if (istrm.good() &&
-      istrm.read(top, readSize).fail())
+      istrm.read((char*)top, readSize).fail())
     {
       ReadFailure(__FUNCTION__, "data segment", "code area");
     }
+
+#endif // defined(MACOSX)
   top += readSize;
 }
 
@@ -158,7 +156,7 @@ StaticCodeArea::loadArea(istream& istrm)
       //
       // Wrong size.
       //
-      Fatal(__FUNCTION__, "wrong size for %s", getAreaName());
+      FatalS(__FUNCTION__, "wrong size for", getAreaName());
     }
 
   readData(istrm, readSize);
@@ -427,10 +425,6 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	    // Allocate some space to create a temporary table.
 	    //
 	    ConstTable = new ConstEntry[CodeConstTable.size()];
-	    if (ConstTable == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
 	    //
 	    // Get the default offset.
 	    //
@@ -478,10 +472,6 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	    // Allocate some space to create a temporary table.
 	    //
 	    StructTable = new StructEntry[CodeStructTable.size()];
-	    if (StructTable == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
 	    //
 	    // Get the default offset.
 	    //
@@ -530,10 +520,6 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	    // Allocate some space to create a temporary table.
 	    //
 	    QuantTable = new StructEntry[CodeQuantTable.size()];
-	    if (QuantTable == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
 	    //
 	    // Get the default offset.
 	    //
@@ -687,7 +673,7 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	  break;
 	default:
 	  loc = pc - SIZE_OF_INSTRUCTION;
-	  cerr.form("illegal opcode %ld\n", getInstruction(loc));
+	  cerr << "illegal opcode " <<  getInstruction(loc) << endl;
 	  DEBUG_ASSERT(false);
 	  break;
 	}
@@ -939,7 +925,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  break;
 	default:
 	  loc = pc - SIZE_OF_INSTRUCTION;
-	  cerr.form("illegal opcode %ld\n", getInstruction(loc));
+	  cerr << "illegal opcode " << getInstruction(loc) << endl;
 	  DEBUG_ASSERT(false);
 	  break;
 	}
@@ -1032,10 +1018,6 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
             // Allocate some space to create a temporary table.
             //
             ConstTable = new ConstEntry[size];
-            if (ConstTable == NULL)
-              {
-                OutOfMemory(__FUNCTION__);
-              }
             ConstEntry empty(EMPTY_ENTRY, ConstEntry::EMPTY);
             //
             // Transfer the entries of the table out for hashing.
@@ -1101,10 +1083,6 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
             // Allocate some space to create a temporary table.
             //
             StructTable = new StructEntry[size];
-            if (StructTable == NULL)
-              {
-                OutOfMemory(__FUNCTION__);
-              }
             StructEntry empty(EMPTY_ENTRY,0);
             //
             // Transfer the entries of the table out for hashing.
@@ -1169,10 +1147,6 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
             // Allocate some space to create a temporary table.
             //
             StructTable = new StructEntry[size];
-            if (StructTable == NULL)
-              {
-                OutOfMemory(__FUNCTION__);
-              }
             StructEntry empty(EMPTY_ENTRY,0);
             //
             // Transfer the entries of the table out for hashing.
@@ -1338,7 +1312,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  break;
 	default:
 	  loc = pc - SIZE_OF_INSTRUCTION;
-	  cerr.form("illegal opcode %ld\n", getInstruction(loc));
+	  cerr << "illegal opcode " << getInstruction(loc) << endl;
 	  DEBUG_ASSERT(false);
 	  break;
 	}
@@ -1376,7 +1350,7 @@ Code::argSize(const char c) const
       arg_size = SIZE_OF_TABLE_SIZE;
       break;
     default:
-      Fatal(__FUNCTION__, "Uncaught case in %c", c);
+      Fatal(__FUNCTION__, "Uncaught case");
       break;
     }
 

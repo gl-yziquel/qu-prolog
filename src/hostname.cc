@@ -53,15 +53,20 @@
 // 
 // ##Copyright##
 //
-// $Id: hostname.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: hostname.cc,v 1.2 2002/12/05 03:39:29 qp Exp $
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #include <sys/types.h>
 #include <unistd.h>
+#include <iostream.h>
 
 #include "errors.h"
 #include "hostname.h"
+
+extern const char *Program;
 
 void
 hostname(char *name, const size_t len)

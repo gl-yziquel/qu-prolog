@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: choice.h,v 1.4 2001/11/21 00:21:11 qp Exp $
+// $Id: choice.h,v 1.6 2003/09/28 07:53:35 qp Exp $
 
 #ifndef	CHOICE_H
 #define	CHOICE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "code.h"
@@ -280,7 +280,10 @@ private:
   
 public:
   
-  ChoiceStack(word32 size) : RecordStack(size, size / 10) { }
+  ChoiceStack(word32 size) : RecordStack(size, size / 10) 
+  { 
+      fetchChoice(0)->envStackTop = 0;
+  }
   
   //
   // Work out the size of a choice point.

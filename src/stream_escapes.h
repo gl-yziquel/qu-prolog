@@ -53,12 +53,18 @@
 // 
 // ##Copyright##
 //
-// $Id: stream_escapes.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: stream_escapes.h,v 1.3 2002/12/13 00:19:55 qp Exp $
 
 #ifndef	STREAM_ESCAPES_H
 #define	STREAM_ESCAPES_H
 
 public:
+//
+// psi_get_open_streams(StreamList)
+// Make a list of all the open stream nums.
+//
+ReturnValue psi_get_open_streams(Object *&);
+
 //
 // psi_open(file, iomode, var)
 // Open the file for the specified mode.
@@ -106,6 +112,12 @@ ReturnValue psi_set_output(Object *&);
 // Flush the output stream.
 //
 ReturnValue psi_flush_output(Object *&);
+
+//
+// psi_set_autoflush(stream)
+// Set the output stream to be unbuffered - i.e. flushes at each output.
+//
+ReturnValue psi_set_autoflush(Object *&);
 
 //
 // psi_at_end_of_stream(stream)

@@ -53,13 +53,16 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_escapes.cc,v 1.4 2001/02/23 01:11:44 qp Exp $
+// $Id: icm_escapes.cc,v 1.9 2003/10/03 01:19:40 qp Exp $
 
 #include "atom_table.h"
 #include "icm_environment.h"
 #include "icm_handle.h"
 #include "qem_options.h"
 #include "thread_qp.h"
+#include "scheduler.h"
+
+
 
 extern AtomTable *atoms;
 extern ICMEnvironment *icm_environment;
@@ -67,6 +70,100 @@ extern QemOptions *qem_options;
 extern char *process_symbol;
 extern char *icm_address;
 extern int icm_port;
+extern ICMMessageChannel* icm_channel;
+extern ThreadTable *thread_table;
+extern IOManager *iom;
+extern Signals *signals;
+extern Scheduler *scheduler;
+
+Thread::ReturnValue
+Thread::psi_icm_register(Object *& name_arg, Object *& port_arg, 
+			 Object *& server_arg)
+{
+#ifdef ICM_DEF
+  if (icm_environment != NULL)
+    {
+      Warning(Program, "Already registered");
+      return RV_FAIL;
+    }
+  DEBUG_ASSERT(name_arg->variableDereference()->isAtom());
+  DEBUG_ASSERT(port_arg->variableDereference()->isNumber());
+  DEBUG_ASSERT(server_arg->variableDereference()->isAtom());
+  Atom* name = OBJECT_CAST(Atom*, name_arg->variableDereference());
+  int port = port_arg->variableDereference()->getNumber();
+  Atom* server = OBJECT_CAST(Atom*, server_arg->variableDereference());
+
+  process_symbol = atoms->getAtomString(name);
+  char* icm_server = (server == atoms->add("") 
+		      ? NULL : atoms->getAtomString(server));
+
+  icmConn icm_conn;
+  // Start up communications
+  const icmStatus icm_status = icmInitComms(port, icm_server, &icm_conn); 
+
+  if (icm_status == icmFailed)
+    {
+      Warning(Program, " Couldn't contact ICM communications server");
+      return RV_FAIL;
+    }
+  else if (icm_status == icmError)
+    {
+      Warning(Program, " ICM communications refused connection");
+      return RV_FAIL;
+    }
+  // Set up icm and register
+  icm_environment = new ICMEnvironment(icm_conn);
+  if (!icm_environment->Register(process_symbol))
+    {
+      Fatal(Program, " Cannot register process with ICM");
+    }
+
+
+  // Create a channel for ICM messages
+  icm_channel = 
+    new ICMMessageChannel(*icm_environment, *thread_table, *iom, *signals);
+  // Add ICM channel to scheduler channels
+  scheduler->getChannels().push_back(icm_channel);
+  return RV_SUCCESS;
+
+#else // ICM_DEF
+  return RV_FAIL;
+#endif // ICM_DEF
+}
+
+Thread::ReturnValue
+Thread::psi_icm_deregister(void)
+{
+#ifdef ICM_DEF
+  if (icm_environment == NULL)
+    {
+      Warning(Program, "Not registered");
+      return RV_FAIL;
+    }
+  list <MessageChannel*>& channels = scheduler->getChannels();
+  for (list <MessageChannel*>::iterator iter = channels.begin();
+       iter != channels.end();
+       iter++)
+    {
+      if (*iter == icm_channel)
+        {
+          channels.erase(iter);
+          break;
+        }
+    }
+
+  delete icm_channel;
+  icm_environment->Unregister();
+  delete icm_environment;
+  icm_environment = NULL;
+  process_symbol = NULL;
+  return RV_SUCCESS;
+
+#else // ICM_DEF
+  return RV_FAIL;
+#endif // ICM_DEF
+}
+
 
 Thread::ReturnValue
 Thread::psi_icm_process_handle(Object *& handle_object)
@@ -306,6 +403,166 @@ Thread::psi_icm_port(Object *& name_cell)
 }
 
 
+Thread::ReturnValue 
+Thread::psi_icm_symbolic_address_to_icm_handle(Object *& add_obj, 
+					       Object *& handle_obj)
+{
+#ifdef ICM_DEF
+  if (process_symbol == NULL)
+    {
+      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
+      return RV_FAIL;
+    }
+  
+  Object* address_term = heap.dereference(add_obj);
 
+  if (address_term->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+
+  Object* my_handle;
+  icmHandle handle = icm_thread_handle(*icm_environment, *this);
+  
+  icm_handle_to_heap(heap, *atoms, handle, my_handle);
+  Structure* my_hand_str = OBJECT_CAST(Structure*,my_handle);
+  
+  icmReleaseHandle(handle);
+
+  if (address_term->isAtom())
+    {
+      if (address_term == atoms->add("self"))
+	{
+	  handle_obj = my_handle;
+          return RV_SUCCESS;
+        }
+      else
+	{
+          my_hand_str->setArgument(1, address_term);
+	  handle_obj = my_handle;
+          return RV_SUCCESS;
+        }
+    }
+  else if (address_term->isStructure())
+    {
+      Object* thread_name = NULL;
+      Object* process_name = NULL;
+      Object* machine_name = NULL;
+      Object* locations = NULL;
+      Structure* hand_str = OBJECT_CAST(Structure*, address_term);
+      Object* func = hand_str->getFunctor()->variableDereference();
+      if (func->isVariable())
+	{
+	  PSI_ERROR_RETURN(EV_INST, 1);
+	}
+      if (func == AtomTable::divide) // has locations
+	{
+	  Object* l = hand_str->getArgument(2)->variableDereference();
+	  if (l->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	  locations = l;
+	  Object* tmp = hand_str->getArgument(1)->variableDereference();
+	  if (tmp->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	  if (!tmp->isStructure())
+	    {
+	      PSI_ERROR_RETURN(EV_TYPE, 1);
+	    }
+	  hand_str = OBJECT_CAST(Structure*, tmp);
+	  func = hand_str->getFunctor()->variableDereference();
+	  if (func->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	}
+      if (func == atoms->add("@"))
+	{
+	  Object* l = hand_str->getArgument(2)->variableDereference();
+	  if (l->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	  machine_name = l;
+	  Object* tmp = hand_str->getArgument(1)->variableDereference();
+	  if (tmp->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	  if (!tmp->isStructure())
+	    {
+	      PSI_ERROR_RETURN(EV_TYPE, 1);
+	    }
+	  hand_str = OBJECT_CAST(Structure*, tmp);
+	  func = hand_str->getFunctor()->variableDereference();
+	  if (func->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	}
+      if (func == atoms->add(":"))
+	{
+	  Object* l = hand_str->getArgument(2)->variableDereference();
+	  if (l->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	  process_name = l;
+	  thread_name = hand_str->getArgument(1)->variableDereference();
+	  if (thread_name->isVariable())
+	    {
+	      PSI_ERROR_RETURN(EV_INST, 1);
+	    }
+	}
+      else
+	{
+	  PSI_ERROR_RETURN(EV_TYPE, 1);
+	}
+  
+      if (machine_name == atoms->add("localhost") 
+	  || machine_name == atoms->add("LOCALHOST"))
+	{
+	  machine_name = NULL;
+	}
+      if (locations == NULL)
+	{
+	  if (machine_name != NULL)
+	    {
+	      Cons* loc = heap.newCons();
+	      loc->setHead(machine_name);
+	      loc->setTail(AtomTable::nil);
+	      my_hand_str->setArgument(4, loc);
+	    }
+	}
+      else
+	{
+	  my_hand_str->setArgument(4, locations);
+	}
+      if (machine_name != NULL) 
+	{
+	  my_hand_str->setArgument(3, machine_name);
+	}
+      if (process_name != NULL)
+	{
+	  my_hand_str->setArgument(2, process_name);
+	}
+      if (thread_name != NULL)
+	{
+	  my_hand_str->setArgument(1, thread_name);
+	}
+      handle_obj = my_handle;
+      return RV_SUCCESS;
+    }
+  else
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+#else // ICM_DEF
+  return RV_FAIL;
+#endif // ICM_DEF
+}
 
 

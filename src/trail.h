@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: trail.h,v 1.6 2001/12/10 03:56:40 qp Exp $
+// $Id: trail.h,v 1.10 2003/11/12 02:39:39 qp Exp $
 
 #ifndef	TRAIL_H
 #define	TRAIL_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "objects.h"
@@ -285,11 +285,23 @@ public:
   {
     TrailLoc	top, next;
     top = getTop();
+
     while (start < top)
       {
-	heapobject* entry = inspectEntry(start).getAddress();
-	if (entry < heap.getSavedTop() || entry >= heap.getTop())
+        UpdatableObject entry_obj = inspectEntry(start);
+	heapobject* entry = entry_obj.getAddress();
+	if ((entry == NULL) || entry < heap.getSavedTop() || entry >= heap.getTop())
 	  {
+            for (TrailLoc i = start+1; i < top; i++)
+              {
+
+		UpdatableObject i_entry_obj = inspectEntry(i);
+                if ((entry == i_entry_obj.getAddress())
+		    && (entry_obj.getOffset() == i_entry_obj.getOffset()))
+                  {
+                     fetchAddr(i)->setAddress(NULL);
+                  }
+              }
 	    start++;
 	  }
 	else
@@ -299,9 +311,19 @@ public:
       }
     for (next = start+1; next < top; next++)
       {
-	heapobject* entry = inspectEntry(next).getAddress();
-	if (entry < heap.getSavedTop() || entry >= heap.getTop())
+        UpdatableObject entry_obj = inspectEntry(next);
+	heapobject* entry = entry_obj.getAddress();
+	if ((entry == NULL) || entry < heap.getSavedTop() || entry >= heap.getTop())
 	  {
+            for (TrailLoc i = next+1; i < top; i++)
+              {
+		UpdatableObject i_entry_obj = inspectEntry(i);
+                if ((entry == i_entry_obj.getAddress())
+		    && (entry_obj.getOffset() == i_entry_obj.getOffset()))
+                  {
+                     fetchAddr(i)->setAddress(NULL);
+                  }
+              }
 	    //
 	    // Keep the current entry.
 	    // Copy the entry.

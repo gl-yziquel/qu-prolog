@@ -53,39 +53,45 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_info.h,v 1.3 2001/11/21 00:21:18 qp Exp $
+// $Id: thread_info.h,v 1.5 2002/11/10 07:54:55 qp Exp $
 
 #ifndef THREAD_INFO_H
 #define THREAD_INFO_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "config.h"
 
 #include "heap_qp.h"
-#include "symbol_info.h"
+//#include "symbol_info.h"
 #include "thread_table_loc.h"
 
-class ThreadInfo : public SymbolInfo
+class ThreadInfo
 {
 private:
   // Location in global thread table.
   bool thread_table_loc_set;
-  ThreadTableLoc thread_table_loc;
   bool is_forbid_thread;
+  bool symbol_set;
 
   // Is this an initial thread?
   const bool initial;
 
   // Initial Prolog goal of this thread.
   Object* goal;
+
+  ThreadTableLoc thread_table_loc;
+  // Thread symbol
+  string symbol;
+
 public:
   ThreadInfo(Thread *pt)
     : thread_table_loc_set(false),
-      initial(pt == NULL)
+    is_forbid_thread(false),
+    symbol_set(false),
+    initial(pt == NULL),
+    goal(NULL)
   {
-    goal = NULL;
-    is_forbid_thread = false;
   }
 
   ~ThreadInfo(void)
@@ -109,7 +115,20 @@ public:
 
   void setForbidThread(bool is_forbid) { is_forbid_thread = is_forbid; }
 
-  bool isForbidThread(void) { return is_forbid_thread; }
+  bool isForbidThread(void) const { return is_forbid_thread; }
+
+  bool SymbolSet(void) const { return symbol_set; }
+
+  const string& Symbol(void) const
+  {
+    return symbol;
+  }
+
+  void SetSymbol(const string& s)
+  {
+    symbol_set = true;
+    symbol = s;
+  }
 
   ostream& Display(ostream& ostrm, AtomTable& atoms, Heap& heap);
 };

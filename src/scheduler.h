@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.h,v 1.3 2002/06/07 00:35:02 qp Exp $
+// $Id: scheduler.h,v 1.11 2003/04/21 06:11:14 qp Exp $
 
 #ifndef	SCHEDULER_H
 #define	SCHEDULER_H
@@ -63,16 +63,15 @@
 #include "atom_table.h"
 #include "block.h"
 #include "code.h"
-#include "cond_list.h"
 #include "defs.h"
 #include "icm_message.h"
 #include "manager.h"
 #include "pred_table.h"
-#include "sched_rec.h"
+//#include "sched_rec.h"
 #include "scheduler_status.h"
 #include "signals.h"
 #include "status.h"
-#include "string_qp.h"
+//#include "string_qp.h"
 #include "thread_qp.h"
 #include "thread_options.h"
 #include "thread_table.h"
@@ -90,94 +89,64 @@ private:
   //
   // Queues
   //
-  list<SchedRec *> run_queue;			// Things to (try to) run
-  list<SchedRec *> suspended_queue;		// Things not to (try to) run
+  list<Thread *> run_queue;			// Threads to run
 
-  // Blocked things
-  list<SchedRec *> blocked_io_queue;		// Blocked waiting on IO
-  BlockedIO blocked_io_info;			// FDs involved in blocking
+  list<BlockingObject *> blocked_queue;		// Blocked threads
 
-  list<SchedRec *> blocked_icm_queue;		// Blocked waiting on QPNS
+  list <MessageChannel*> message_channels;       // All the message channels
 
-  list<SchedRec *> blocked_retry_queue;	// Blocked waiting on retry
+  ThreadOptions& thread_options;
 
-  list<SchedRec *> blocked_wait_queue;		// Blocked waiting on change
+  ThreadTable& thread_table;
 
-  list<SchedRec *> timeout_queue;		// Blocked waiting on timeout
+  Signals& signals;
 
-  word32 last_process_blocked_wait;		// Stamp of last call to
-						// ProcessBlockedWait()
+  PredTab& predicates;
 
+  int theTimeouts;              // Calculated in IterQuantum to determine of 
+	                         // Sleep is a block or a timeout
   //
   // Perform actions between thread executions.
   // Return true if any threads were woken.
   //
-  bool InterQuantum(CondList<ICMMessage *>&, ThreadTable&);
+  bool InterQuantum(void);
 
   //
-  // Process all threads that have a timeout on some blocked operation.
+  // Process all blocked threads.
   // Return true if any threads were woken.
   //
-  bool ProcessTimeouts(void);
-
-  //
-  // Process all threads that are blocked on an IO operation.
-  // Return true if any threads were woken.
-  //
-  bool ProcessBlockedIO(void);
-
-  //
-  // Process all threads that are blocked waiting to retry.
-  // Return true if any threads were woken.
-  //
-  bool ProcessBlockedRetry(void);
-
-  // 
-  // Return true if any threads were woken.
-  //
-  bool ProcessBlockedICM(CondList<ICMMessage *>&, ThreadTable&);
-
-
-  //
-  // Return true if any threads were woken (generally returns true).
-  //
-  bool ProcessBlockedWait(void);
-
+  bool processBlockedThreads(void);
+  
   //
   // Set up and execute a signal handling thread.
   //
-  Thread::ReturnValue HandleSignal(ThreadTable&, ThreadOptions&);
-
-  // Shuffle a message onto a thread's message queue
-  bool ShuffleMessage(ICMMessage *, ThreadTable&);
-
-  // Is IO ready for a blocked thread?
-  bool ReadyIO(SchedRec *);
+  Thread::ReturnValue HandleSignal();
+  
+  // Shuffle all the messages onto thread's message queues
+  bool ShuffleAllMessages(void);
+  
+  // Look for fd's that are ready
+  bool poll_fds(int32);
 
 public:
-  Scheduler(void);
+  Scheduler(ThreadOptions& to, ThreadTable& tt, Signals& s, PredTab& p);
 	    
   ~Scheduler(void);
 
   // Do the scheduling.
-  int32 Schedule(CondList<ICMMessage *>& icm_message_queue,
-		 PredTab&, Signals&, ThreadOptions&, ThreadTable&);
+  int32 Schedule(void);
 
-  list<SchedRec *>& RunQueue(void) { return run_queue; }
-  list<SchedRec *>& SuspendedQueue(void) { return suspended_queue; }
-  list<SchedRec *>& TimeoutQueue(void) { return timeout_queue; }
+  list<Thread *>& runQueue(void) { return run_queue; }
+  list<BlockingObject *>& blockedQueue(void) { return blocked_queue; }
 
   SchedulerStatus& Status(void) { return scheduler_status; }
 
-  // Sleeps waiting for IO or ICM to become ready.
-  Thread::ReturnValue Sleep(CondList<ICMMessage *>&, ThreadTable&, 
-			    Signals&, ThreadOptions&);
+  list <MessageChannel*>& getChannels(void) { return message_channels; }
 
-  void block_icm(Thread*);
+  // Sleeps waiting for IO or messages to become ready.
+  Thread::ReturnValue Sleep(bool doPoll);
 
-  void deleteTimeout(Thread*);
-
-  void insertThread(Thread*, SchedRec*);
+  void insertThread(Thread*, Thread*);
 
   void resetThread(Thread*);
 };

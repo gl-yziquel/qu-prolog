@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: token.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: token.h,v 1.2 2002/11/10 07:54:55 qp Exp $
 
 #ifndef TOKEN_H
 #define TOKEN_H
@@ -82,39 +82,39 @@ inline void SyntaxError(int32& Integer, const int32 err);
 //
 // Peek ahead one character
 //
-inline int Peek(Stream *InStrm, const word32);
+inline int Peek(QPStream *InStrm, const word32);
 
 //
 // Echo a read prompt.
 //
 // Retained for historical reasons.
 //
-inline void ReadPrompt(const Stream *, const char);
+inline void ReadPrompt(const QPStream *, const char);
 
 //
 // Recover from a numeric error.
 //
-inline void RecoverNumber(Stream *InStrm, const int32 base);
+inline void RecoverNumber(QPStream *InStrm, const int32 base);
 
 //
 // Recover from a name that is too long.
 //
-inline void RecoverName(Stream *InStrm);
+inline void RecoverName(QPStream *InStrm);
 
 //
 // Recover from a quoted name.
 //
-inline void RecoverQuotedName(Stream *InStrm, const bool put);
+inline void RecoverQuotedName(QPStream *InStrm, const bool put);
 
 //
 // Get a character.
 //
-inline int Get(Stream *InStrm);
+inline int Get(QPStream *InStrm);
 
 //
 // Put back a character or clear EOF.
 //
-inline void Putback(Stream *InStrm, const int c);
+inline void Putback(QPStream *InStrm, const int c);
 
 //
 // ReadCharacter(Stream *InStrm, int8 q)
@@ -128,14 +128,14 @@ inline void Putback(Stream *InStrm, const int c);
 //      has to be continued over \c
 //      several lines.\n".
 //
-int32 ReadCharacter(Stream *InStrm, const char q, int32& Integer);
+int32 ReadCharacter(QPStream *InStrm, const char q, int32& Integer);
 
 //
 // GetToken() reads a single token from the input stream and returns the
 // token type.  The value of the token is stored in one of the
 // variables: Integer, Simple, String.
 //
-int32 GetToken(Stream *InStrm, int32& Integer, char *Simple, Object*& String);
+int32 GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String);
 
 public:
 //

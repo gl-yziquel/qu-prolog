@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: freeness.cc,v 1.15 2002/07/26 00:39:57 qp Exp $
+// $Id: freeness.cc,v 1.17 2003/07/03 04:45:44 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -67,7 +67,7 @@
 //
 bool
 Thread::notFreeInStructure(ObjectVariable *object_variable,
-			   PrologValue& term, bool gen_delays = true)
+			   PrologValue& term, bool gen_delays)
 {
   DEBUG_ASSERT(term.getTerm()->isStructure());
 
@@ -106,7 +106,7 @@ Thread::notFreeInStructure(ObjectVariable *object_variable,
 //
 bool	
 Thread::notFreeInList(ObjectVariable *object_variable,
-		      PrologValue& list, bool gen_delays = true)
+		      PrologValue& list, bool gen_delays)
 {
   DEBUG_ASSERT(list.getTerm()->isCons());
 
@@ -136,7 +136,7 @@ Thread::notFreeInList(ObjectVariable *object_variable,
 //
 bool	
 Thread::notFreeInQuantifier(ObjectVariable *object_variable,
-			    PrologValue& term, bool gen_delays = true)
+			    PrologValue& term, bool gen_delays)
 {
   DEBUG_ASSERT(term.getTerm()->isQuantifiedTerm());
   DEBUG_ASSERT(object_variable == object_variable->variableDereference());
@@ -296,7 +296,7 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 //
 bool
 Thread::notFreeInVar(ObjectVariable *object_variable,
-		     PrologValue& var, bool gen_delays = true)
+		     PrologValue& var, bool gen_delays)
 {
   DEBUG_ASSERT(var.getTerm()->isAnyVariable());
   DEBUG_ASSERT(object_variable == object_variable->variableDereference());
@@ -374,7 +374,7 @@ Thread::notFreeInVar(ObjectVariable *object_variable,
 //
 bool	
 Thread::notFreeIn(ObjectVariable *object_variable, PrologValue& term,
-		  bool gen_delays = true)
+		  bool gen_delays)
 {
   object_variable = OBJECT_CAST(ObjectVariable*, object_variable->variableDereference());
   heap.prologValueDereference(term);
@@ -864,18 +864,11 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 			   == domain_object_variable->variableDereference());
 	      doms[i] = NULL;
 	      total--;
-	      DEBUG_CODE(
-	      {
-		Object *remember = new_term.getTerm();
-		heap.prologValueDereference(new_term);
-		DEBUG_ASSERT(remember == new_term.getTerm());
-	      });
+
 	      heap.prologValueDereference(new_term);
 	      
-	      DEBUG_ASSERT(new_term.getTerm()->isAnyVariable());
-
 	      sub = heap.newSubstitutionBlock(total);
-
+	      
 	      offset = total;
 	      for (int j = size - 1; j >= 0; j--)
 		{
@@ -887,8 +880,12 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 		    }
 		}
 	      DEBUG_ASSERT(offset == 0);
-		  PrologValue term1(heap.newSubstitutionBlockList(sub, AtomTable::nil), term.getTerm());
-
+	      PrologValue term1(heap.newSubstitutionBlockList(sub, AtomTable::nil), term.getTerm());
+	      if (!new_term.getTerm()->isAnyVariable())
+		{
+		  return notFreeIn(domain_object_variable, new_term) && 
+		    notFreeIn(object_variable, term1);
+		}
               if (new_term.getSubstitutionBlockList()->isNil())
                 {
 	          return notFreeInVar(domain_object_variable, new_term) && 

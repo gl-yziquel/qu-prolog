@@ -52,24 +52,24 @@ usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
 #
 # location of Qu-Prolog project
 #
-PATH=/home/qp/rel/qp6.1/bin:$PATH
+PATH=/home/pjr/qp_dev/rel/qp6.2/bin:$PATH
 
 #
 # names of Qu-Prolog binaries
 #
-preprocess=/home/qp/rel/qp6.1/bin/qppp
+preprocess=/home/pjr/qp_dev/rel/qp6.2/bin/qppp
 expand=qg
 compile=qc1
 compversion=qup
 assemble=qa
 link=ql
-execute=/home/qp/rel/qp6.1/bin/qem
+execute=/home/pjr/qp_dev/rel/qp6.2/bin/qem
 
 #
 # Use the line below when dynamic search for libraries is implemented.
 #
 # libqofiles=""
-libqofiles="/home/qp/rel/qp6.1/prolog/compiler/*.qo /home/qp/rel/qp6.1/prolog/library/*.qo"
+libqofiles="/home/pjr/qp_dev/rel/qp6.2/prolog/compiler/*.qo /home/pjr/qp_dev/rel/qp6.2/prolog/library/*.qo"
 
 qlfiles=""
 qlefiles=""
@@ -353,11 +353,11 @@ savefile=$absexecfile.qx
 # generate save file
 
 openfilename=$savefile
-$link -o $savefile $dflag $Loptions $libqofiles $qofiles $newqofiles || exit 1
+$link -o "$savefile" $dflag $Loptions $libqofiles $qofiles $newqofiles || exit 1
 openfilename=""
 [ -z "$newqofiles" ] || rm -f $newqofiles
 
 # make executable file
 
-echo "exec $execute $Eoptions $lflag -Q $savefile \$* $*" >$execfile
+echo "exec $execute $Eoptions $lflag -Q '$savefile' \$* $*" >$execfile
 chmod a+x $execfile

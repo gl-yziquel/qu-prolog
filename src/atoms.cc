@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: atoms.cc,v 1.3 2001/06/04 01:22:54 qp Exp $
+// $Id: atoms.cc,v 1.4 2002/11/03 08:37:23 qp Exp $
 
 #include <string.h>
-#include <strstream.h>
+#include <sstream>
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -99,7 +99,7 @@ Thread::ReturnValue
 Thread::psi_atom_concat2(Object *& object1, Object *& object2, 
 			 Object *& object3)
 {
-  ostrstream	strm(atom_buf1, ATOM_LENGTH);
+  ostringstream	strm;
 
   Object* a1 = heap.dereference(object1);
   Object* a2 = heap.dereference(object2);
@@ -128,16 +128,9 @@ Thread::psi_atom_concat2(Object *& object1, Object *& object2,
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
-  if (strm.good())
-    {
-      strm << ends;
-    }
-  else
-    {
-      atom_buf1[ATOM_LENGTH - 1] = '\0';
-    }
-  
-  object3 = atoms->add(atom_buf1);
+  strm << ends;
+    
+  object3 = atoms->add(strm.str().data());
   return(RV_SUCCESS);
 }
 
@@ -149,7 +142,7 @@ Thread::psi_atom_concat2(Object *& object1, Object *& object2,
 Thread::ReturnValue
 Thread::psi_concat_atom(Object *& object1, Object *& object2)
 {
-  ostrstream	strm(atom_buf1, ATOM_LENGTH);
+  ostringstream	strm;
  
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
@@ -203,16 +196,9 @@ Thread::psi_concat_atom(Object *& object1, Object *& object2)
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
   
-  if (strm.good())
-    {
-      strm << ends;
-    }
-  else
-    {
-      atom_buf1[ATOM_LENGTH - 1] = '\0';
-    }
+  strm << ends;
   
-  object2 = atoms->add(atom_buf1);
+  object2 = atoms->add(strm.str().data());
   return(RV_SUCCESS);
 }
 
@@ -226,8 +212,8 @@ Thread::ReturnValue
 Thread::psi_concat_atom3(Object *& object1, Object *& object2,
 			 Object *& object3)
 {
-  ostrstream	strm(atom_buf1, ATOM_LENGTH);
-  ostrstream	strm1(atom_buf2, ATOM_LENGTH);
+  ostringstream	strm;
+  ostringstream	strm1;
   bool		firstatom = true;
   Object* val2 = heap.dereference(object2);
   
@@ -248,14 +234,6 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  if (strm1.good())
-    {
-      strm1 << ends;
-    }
-  else
-    {
-      atom_buf2[ATOM_LENGTH - 1] = '\0';
-    }
   
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
@@ -268,7 +246,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
 	}
       else
 	{
-	  strm << atom_buf2;
+	  strm << strm1.str();
 	}
 
       Cons* clist = OBJECT_CAST(Cons*, pval1.getTerm());
@@ -317,15 +295,9 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
   
-  if (strm.good())
-    {
-      strm << ends;
-    }
-  else
-    {
-      atom_buf1[ATOM_LENGTH - 1] = '\0';
-    }
-  object3 = atoms->add(atom_buf1);
+  strm << ends;
+
+  object3 = atoms->add(strm.str().data());
 
   return(RV_SUCCESS);
 }

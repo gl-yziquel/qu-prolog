@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem_options.h,v 1.3 2001/11/21 00:21:16 qp Exp $
+// $Id: qem_options.h,v 1.4 2002/11/10 07:54:53 qp Exp $
 
 #ifndef QEM_OPTIONS_H
 #define QEM_OPTIONS_H
@@ -63,7 +63,7 @@
 #include "defs.h"
 #include "option.h"
 #include "options.h"
-#include "string_qp.h"
+//#include "string_qp.h"
 
 // #include "atom_table.h"
 

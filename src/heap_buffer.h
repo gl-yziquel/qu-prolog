@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_buffer.h,v 1.2 2002/03/08 00:29:33 qp Exp $
+// $Id: heap_buffer.h,v 1.3 2002/11/08 00:44:16 qp Exp $
 
 #ifndef	HEAP_BUFFER_H
 #define	HEAP_BUFFER_H
@@ -199,14 +199,8 @@ public:
   //
   HeapBufferManager(word32 NumberOfBuffers)
     {
-      if ((buffers = new HeapBuffer [NumberOfBuffers]) == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
-      else
-	{ 
-	  size = NumberOfBuffers; 
-	}
+      buffers = new HeapBuffer [NumberOfBuffers];
+      size = NumberOfBuffers; 
       top = 0;
     }
   ~HeapBufferManager(void)

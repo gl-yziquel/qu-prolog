@@ -53,14 +53,15 @@
 // 
 // ##Copyright##
 //
-// $Id: tcp_qp.h,v 1.1 2000/12/13 23:10:02 qp Exp $
+// $Id: tcp_qp.h,v 1.2 2002/11/10 07:54:54 qp Exp $
 
 #ifndef	TCP_QP_H
 #define	TCP_QP_H
 
 #include <sys/types.h>
+#include <string>
 
-#include "string_qp.h"
+//#include "string_qp.h"
 
 //
 // Opens and binds a socket and returns it, as well as the port that
@@ -90,7 +91,7 @@ extern void close_socket(const int);
 // Given a machine's name, try to find its IP address.
 // (The result is in network byte order.)
 //
-extern u_long LookupMachineIPAddress(const String&);
+extern u_long LookupMachineIPAddress(const std::string&);
 extern u_long LookupMachineIPAddress(const char *);
 
 //

@@ -20,7 +20,7 @@ $11:
 	trust($10)
 
 $12:
-	switch_on_structure(0, 8, ['default':$19, '$'/0:$13, ','/2:$14, ';'/2:$15])
+	switch_on_structure(0, 8, ['$default':$19, '$'/0:$13, ','/2:$14, ';'/2:$15])
 
 $13:
 	try(2, $1)
@@ -47,7 +47,7 @@ $15:
 	trust($10)
 
 $16:
-	switch_on_constant(0, 4, ['default':$19, '!':$17, 'trace':$18])
+	switch_on_constant(0, 4, ['$default':$19, '!':$17, 'trace':$18])
 
 $17:
 	try(2, $1)

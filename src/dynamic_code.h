@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_code.h,v 1.6 2002/02/05 04:00:44 qp Exp $  
+// $Id: dynamic_code.h,v 1.7 2002/11/03 08:37:26 qp Exp $  
 
 #ifndef DYNAMIC_CODE_H
 #define DYNAMIC_CODE_H
@@ -64,7 +64,7 @@
 // a clause chain for clauses that match the indexed argument.
 //
 
-#include <list.h>
+#include <list>
 #include "atom_table.h"
 #include "code.h"
 #include "dynamic_hash_table.h"

@@ -54,12 +54,12 @@
 // 
 // ##Copyright##
 //
-// $Id: name_table.h,v 1.2 2001/11/21 00:21:15 qp Exp $
+// $Id: name_table.h,v 1.3 2002/11/03 08:37:29 qp Exp $
 
 #ifndef	NAME_TABLE_H
 #define	NAME_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "atom_table.h"
 #include "area_offsets.h"

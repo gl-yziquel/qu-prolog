@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.25 2002/07/09 02:00:51 qp Exp $
+// $Id: pseudo_instr_arrays.cc,v 1.38 2003/11/05 21:33:30 qp Exp $
 
 #include "thread_qp.h"
 
@@ -73,7 +73,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_thread_exit,	0,	"psi_thread_exit"}, 
 	{&Thread::psi_thread_is_initial_thread,	0,	"psi_thread_is_initial_thread"}, 
 	{&Thread::psi_signal_thread_exit,	0,	"psi_signal_thread_exit"}, 
-	{&Thread::psi_gc,	0,	"psi_gc"}
+	{&Thread::psi_gc,	0,	"psi_gc"}, 
+	{&Thread::psi_icm_deregister,	0,	"psi_icm_deregister"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {
@@ -178,7 +179,10 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_icm_address,	1,	"psi_icm_address"}, 
 	{&Thread::psi_icm_port,	1,	"psi_icm_port"}, 
 	{&Thread::psi_bound,	0,	"psi_bound"}, 
-	{&Thread::psi_make_iterator,	1,	"psi_make_iterator"}
+	{&Thread::psi_make_iterator,	1,	"psi_make_iterator"}, 
+	{&Thread::psi_set_autoflush,	0,	"psi_set_autoflush"}, 
+	{&Thread::psi_get_open_streams,	1,	"psi_get_open_streams"}, 
+	{&Thread::psi_broadcast,	0,	"psi_broadcast"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -295,7 +299,8 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_equal_equal,	0,	"psi_equal_equal"}, 
 	{&Thread::psi_simplify_term,	1,	"psi_simplify_term"}, 
 	{&Thread::psi_is_not_free_in,	0,	"psi_is_not_free_in"}, 
-	{&Thread::psi_put_line,	0,	"psi_put_line"}
+	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
+	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -313,7 +318,7 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_stat_code,	7,	"psi_stat_code"}, 
 	{&Thread::psi_stat_string,	7,	"psi_stat_string"}, 
 	{&Thread::psi_get_next_clause,	3,	"psi_get_next_clause"}, 
-	{&Thread::psi_new_sub,	1,	"psi_new_sub"}, 
+	{&Thread::psi_icm_register,	0,	"psi_icm_register"}, 
 	{&Thread::psi_set_domain,	0,	"psi_set_domain"}, 
 	{&Thread::psi_set_range,	0,	"psi_set_range"}, 
 	{&Thread::psi_get_domain,	1,	"psi_get_domain"}, 
@@ -386,7 +391,8 @@ pseudo_instr4_data pseudo_instr4_array[] =
 	{&Thread::psi_next_instr,	3,	"psi_next_instr"}, 
 	{&Thread::psi_assert,	1,	"psi_assert"}, 
 	{&Thread::psi_ccompile,	1,	"psi_ccompile"}, 
-	{&Thread::psi_set_domains_apart,	0,	"psi_set_domains_apart"}
+	{&Thread::psi_set_domains_apart,	0,	"psi_set_domains_apart"}, 
+	{&Thread::psi_new_sub,	1,	"psi_new_sub"}
 };
 pseudo_instr5_data pseudo_instr5_array[] =
 {

@@ -684,7 +684,7 @@ end('$spy_pred/1$2'/1):
 	switch_on_term(0, $11, $10, $10, $6, $10, $10)
 
 $6:
-	switch_on_structure(0, 8, ['default':$10, '$'/0:$7, '-'/2:$8, '/'/2:$9])
+	switch_on_structure(0, 8, ['$default':$10, '$'/0:$7, '-'/2:$8, '/'/2:$9])
 
 $7:
 	try(1, $1)
@@ -908,7 +908,7 @@ end('$nospy_pred/1$2'/1):
 	switch_on_term(0, $11, $10, $10, $6, $10, $10)
 
 $6:
-	switch_on_structure(0, 8, ['default':$10, '$'/0:$7, '-'/2:$8, '/'/2:$9])
+	switch_on_structure(0, 8, ['$default':$10, '$'/0:$7, '-'/2:$8, '/'/2:$9])
 
 $7:
 	try(1, $1)
@@ -1538,7 +1538,7 @@ end('$leash/2$4'/3):
 	switch_on_term(0, $13, $6, $6, $6, $6, $7)
 
 $7:
-	switch_on_constant(0, 16, ['default':$6, 'half':$8, 'full':$9, 'loose':$10, 'none':$11, 'tight':$12])
+	switch_on_constant(0, 16, ['$default':$6, 'half':$8, 'full':$9, 'loose':$10, 'none':$11, 'tight':$12])
 
 $8:
 	try(2, $1)
@@ -1673,7 +1673,7 @@ end('$leash_port'/3):
 	switch_on_term(0, $7, 'fail', 'fail', 'fail', 'fail', $6)
 
 $6:
-	switch_on_constant(0, 16, ['default':'fail', 'call':$1, 'exit':$2, 'redo':$3, 'fail':$4, 'exception':$5])
+	switch_on_constant(0, 16, ['$default':'fail', 'call':$1, 'exit':$2, 'redo':$3, 'fail':$4, 'exception':$5])
 
 $7:
 	try(2, $1)
@@ -2176,6 +2176,16 @@ end('$check_spy_conds'/4):
 
 '$trace_interact/4$0'/7:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'yes':$4])
+
+$4:
+	try(7, $1)
+	trust($2)
+
+$5:
 	try(7, $1)
 	trust($2)
 
@@ -2311,7 +2321,7 @@ end('$check_port_hook'/4):
 	switch_on_term(0, $11, $5, $5, $5, $5, $6)
 
 $6:
-	switch_on_constant(0, 8, ['default':$5, 'interact':$7, 'creep':$8, 'continue':$9, 'fail':$10])
+	switch_on_constant(0, 8, ['$default':$5, 'interact':$7, 'creep':$8, 'continue':$9, 'fail':$10])
 
 $7:
 	try(6, $1)
@@ -2406,6 +2416,16 @@ end('$trace_action'/6):
 
 '$print_trace/6$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'spy':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -2611,7 +2631,7 @@ end('$debug_interact'/3):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'spy':$1, 'nospy':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'spy':$1, 'nospy':$2])
 
 $4:
 	try(2, $1)
@@ -2644,6 +2664,16 @@ end('$is_interact'/2):
 
 '$get_debug_command/2$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 10:$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -2693,6 +2723,12 @@ end('$get_debug_command'/2):
 
 '$skip_space/2$0'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 32:$1, 9:$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -2740,6 +2776,12 @@ end('$skip_space'/2):
 
 '$get_argument/2$0'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 32:$1, 9:$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -2799,6 +2841,16 @@ end('$get_argument'/2):
 
 '$execute_debug_command/4$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -2839,6 +2891,16 @@ end('$execute_debug_command/4$1'/1):
 
 '$execute_debug_command/4$2'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -2861,6 +2923,21 @@ end('$execute_debug_command/4$2'/1):
 
 '$execute_debug_command/4$3'/2:
 
+	switch_on_term(0, $7, $6, $6, $6, $6, $4)
+
+$4:
+	switch_on_constant(0, 4, ['$default':$6, '':$5])
+
+$5:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$6:
+	try(2, $2)
+	trust($3)
+
+$7:
 	try(2, $1)
 	retry($2)
 	trust($3)
@@ -2901,6 +2978,16 @@ end('$execute_debug_command/4$3'/2):
 
 '$execute_debug_command/4$4'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -2924,6 +3011,16 @@ end('$execute_debug_command/4$4'/2):
 
 '$execute_debug_command/4$5'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -2956,6 +3053,21 @@ end('$execute_debug_command/4$5'/3):
 
 '$execute_debug_command/4$6'/2:
 
+	switch_on_term(0, $7, $6, $6, $6, $6, $4)
+
+$4:
+	switch_on_constant(0, 4, ['$default':$6, '':$5])
+
+$5:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$6:
+	try(2, $2)
+	trust($3)
+
+$7:
 	try(2, $1)
 	retry($2)
 	trust($3)
@@ -2996,6 +3108,12 @@ end('$execute_debug_command/4$6'/2):
 
 '$execute_debug_command/4$7/2$0'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 'fail':$1, 'exit':$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -3059,7 +3177,7 @@ end('$execute_debug_command/4$7'/2):
 	switch_on_term(0, $45, $44, $44, $44, $44, $23)
 
 $23:
-	switch_on_constant(0, 64, ['default':$44, 10:$24, 61:$25, 43:$26, 45:$27, 64:$28, 60:$29, 63:$30, 97:$31, 98:$32, 99:$33, 100:$34, 102:$35, 103:$36, 104:$37, 108:$38, 110:$39, 112:$40, 114:$41, 115:$42, 119:$43])
+	switch_on_constant(0, 64, ['$default':$44, 10:$24, 61:$25, 43:$26, 45:$27, 64:$28, 60:$29, 63:$30, 97:$31, 98:$32, 99:$33, 100:$34, 102:$35, 103:$36, 104:$37, 108:$38, 110:$39, 112:$40, 114:$41, 115:$42, 119:$43])
 
 $24:
 	try(4, $1)
@@ -3631,7 +3749,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$2, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$2, '[]':$6])
 
 $6:
 	try(2, $1)
@@ -3729,6 +3847,16 @@ end('$print_ancestor'/2):
 
 '$print_spy_indicator/3$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'spy':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -3936,6 +4064,16 @@ end('$skip_complete'/0):
 
 '$fail_back/1$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 

@@ -25,6 +25,16 @@ end('$expandfiles'/1):
 
 '$expandfile/1$0/1$0/1$0'/6:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'le':$4])
+
+$4:
+	try(6, $1)
+	trust($2)
+
+$5:
 	try(6, $1)
 	trust($2)
 
@@ -180,7 +190,7 @@ end('$expand/3$0'/3):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'encoded':$1, 'normal':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'encoded':$1, 'normal':$2])
 
 $4:
 	try(3, $1)
@@ -295,7 +305,7 @@ end('$expand_write/2$1'/1):
 	switch_on_term(0, $11, $4, $4, $5, $4, $9)
 
 $5:
-	switch_on_structure(0, 8, ['default':$4, '$'/0:$6, ':-'/1:$7, '?-'/1:$8])
+	switch_on_structure(0, 8, ['$default':$4, '$'/0:$6, ':-'/1:$7, '?-'/1:$8])
 
 $6:
 	try(2, $2)
@@ -311,7 +321,7 @@ $8:
 	trust($4)
 
 $9:
-	switch_on_constant(0, 4, ['default':$4, 'end_of_file':$10])
+	switch_on_constant(0, 4, ['$default':$4, 'end_of_file':$10])
 
 $10:
 	try(2, $1)

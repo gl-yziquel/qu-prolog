@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: qdeal.cc,v 1.4 2002/06/30 05:30:02 qp Exp $
+// $Id: qdeal.cc,v 1.9 2002/12/05 03:39:33 qp Exp $
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 #include "atom_table.h"
@@ -72,6 +72,20 @@
 
 const char *Program = "qdeal";
 
+//
+// Handler for out of memory via new
+//
+
+//typedef void (*new_handler)();
+//new_handler set_new_handler(new_handler) throw();
+
+void noMoreMemory()
+{
+   cerr << "No more memory available for " << Program << endl;
+   abort();
+}
+
+
 AtomTable *atoms = NULL;
 Code *code = NULL;
 
@@ -82,11 +96,10 @@ Code *code = NULL;
 int
 main(int32 argc, char** argv)
 {
+  // set the out-of-memory handler
+  std::set_new_handler(noMoreMemory);
+
   QdealOptions *qdeal_options = new QdealOptions(argc, argv);
-  if (qdeal_options == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   if (!qdeal_options->Valid())
     {
@@ -96,30 +109,13 @@ main(int32 argc, char** argv)
   atoms =
     new AtomTable(qdeal_options->AtomTableSize(),
 		qdeal_options->StringTableSize(), 0);
-  if (atoms == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
   PredTab *predicates =
     new PredTab(atoms, qdeal_options->PredicateTableSize());
-  if (predicates == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   code = new Code(qdeal_options->CodeSize());
-  if (code == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   StringMap *string_map =
     new StringMap(qdeal_options->StringMapSize(), 0); 
-  if (string_map == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   //
   // Step one - Load in the file.
@@ -152,14 +148,12 @@ main(int32 argc, char** argv)
 	}
       else 
 	{
-	  Fatal(__FUNCTION__, "%s is not a .qo or .qx file",
-		qdeal_options->QxFile());
+	  FatalS(__FUNCTION__, qdeal_options->QxFile(), " not a .qo or .qx file");
 	}
     }
   else 
     {
-      Fatal(__FUNCTION__, "%s is not a .qo or .qx file",
-	    qdeal_options->QxFile());
+      FatalS(__FUNCTION__, qdeal_options->QxFile(), " not a .qo or .qx file");
     }
 
   //

@@ -1,9 +1,3 @@
 icm_support.o: icm_support.c config.h ../config.h icm_support.h icm.h \
   icmIo.h icmLocal.h /opt/icm/include/icmP.h /opt/icm/include/icm.h \
-  /opt/icm/include/icmIo.h /opt/icm/include/icmFile.h /usr/include/tcl.h \
-  /usr/include/tclDecls.h pthread_qp.h
-tkICM.o: tkICM.c icm_support.h icm.h icmIo.h icmLocal.h \
-  /opt/icm/include/icmP.h /opt/icm/include/icm.h /opt/icm/include/icmIo.h \
-  /opt/icm/include/icmFile.h /usr/include/tcl.h /usr/include/tclDecls.h \
-  pthread_qp.h config.h ../config.h /usr/include/tk.h \
-  /usr/include/tkDecls.h
+  /opt/icm/include/icmIo.h /opt/icm/include/icmFile.h

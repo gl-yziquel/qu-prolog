@@ -53,19 +53,18 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.cc,v 1.4 2001/09/23 22:32:00 qp Exp $
+// $Id: icm_environment.cc,v 1.15 2003/10/05 04:50:45 qp Exp $
 
 #include "config.h"
 
 #ifdef ICM_DEF
 #include "icm.h"
 #include "icmP.h"
+#include "icm_handle.h"
 #include "icm_environment.h"
-
-#ifndef USE_ICM_DEREGISTER
-//#warning Not using icmDeregisterAgent() call.
-static icmStatus qpDeregisterAgent(icmConn conn, icmHandle handle);
-#endif
+#include "thread_qp.h"
+#include "thread_table.h"
+#include "atom_table.h"
 
 bool
 ICMEnvironment::Register(char *ps)
@@ -73,7 +72,7 @@ ICMEnvironment::Register(char *ps)
   DEBUG_ASSERT(ps != NULL);
 
 #ifdef DEBUG_ICM
-  cerr.form("%s %s\n", __FUNCTION__, ps);
+  cerr << __FUNCTION__ << " " << ps << endl;
 #endif
 
   DEBUG_ASSERT(process_symbol == NULL);
@@ -81,7 +80,7 @@ ICMEnvironment::Register(char *ps)
   icmHandle tmp = icmParseHandle(ps);
   
 #ifdef DEBUG_ICM      
-  cerr.form("%s Before icmRegisterAgent()\n", __FUNCTION__);
+  cerr << __FUNCTION__ << " Before icmRegisterAgent()" << endl;
 #endif
   
   const icmStatus status = icmRegisterAgent(conn, tmp, NULL, &handle);
@@ -89,9 +88,8 @@ ICMEnvironment::Register(char *ps)
 #ifdef DEBUG_ICM
   char buf[MAXSTRING];
   (void) icmHandleName(handle, buf, 512);
-  cerr.form("%s After icmRegisterAgent() %s\n", __FUNCTION__, buf);
+  cerr << __FUNCTION__ << "After icmRegisterAgent() " << buf << endl;
 #endif
-  
   switch (status)
     {
     case icmOk:
@@ -100,11 +98,9 @@ ICMEnvironment::Register(char *ps)
       return true;
       break;
     case icmFailed:
-      Fatal(__FUNCTION__, "Couldn't register agent name %s\n", ps);
       return false;
       break;
     case icmError:
-      Fatal(__FUNCTION__, "ICM comms server unavailable\n");
       return false;
       break;
     case icmEndFile:
@@ -127,20 +123,13 @@ ICMEnvironment::Unregister(void)
   (void) icmHandleName(handle, buf, 512);
 #endif
 
-#ifdef USE_ICM_DEREGISTER
 #ifdef DEBUG_ICM
-  cerr.form("%s Before icmDeregisterAgent() %s\n", __FUNCTION__, buf);
+  cerr << __FUNCTION__ << " Before icmDeregisterAgent() " << buf << endl;
 #endif
   const icmStatus status = icmDeregisterAgent(conn, handle);
-#else
-#ifdef DEBUG_ICM
-  cerr.form("%s Before qpDeregisterAgent() %s\n", __FUNCTION__, buf);
-#endif
-  const icmStatus status = qpDeregisterAgent(conn, handle);
-#endif
   
 #ifdef DEBUG_ICM
-  cerr.form("%s After icmDeregisterAgent()\n", __FUNCTION__);
+  cerr << __FUNCTION__ << " After icmDeregisterAgent() " << buf << endl;
 #endif
   
   switch (status)
@@ -148,15 +137,13 @@ ICMEnvironment::Unregister(void)
     case icmOk:
       (void) icmReleaseHandle(handle);
       process_symbol = NULL;
+      icmCloseComms(conn);
       return true;
       break;
     case icmFailed:
-      Warning(__FUNCTION__, "Couldn't deregister agent name %s\n",
-	      process_symbol);
       return false;
       break;
     case icmError:
-      Warning(__FUNCTION__, "ICM comms server unavailable\n");
       return false;
       break;
     case icmEndFile:
@@ -169,26 +156,244 @@ ICMEnvironment::Unregister(void)
   return false;
 }
 
-#ifndef USE_ICM_DEREGISTER
-// TO DO: This procedure is to work around a problem with the
-// TO DO: ICM icmDeregisterAgent() mechanism.
-// TO DO: It should go away when that code is fixed.
-static icmStatus
-qpDeregisterAgent(icmConn conn, icmHandle handle)
-{
-  if(conn!=NULL && conn->socket>0 && conn->server!=NULL)
-    {
-      icmMsg msg = icmFormatMsg(NULL,"%(icmDeregisterAgent%h%)", handle);
-      icmStatus ret = icmSendMsg(conn, conn->server, handle, NULL, msg);
-      icmReleaseMsg(msg);
 
-      return ret;
+Object*
+ICMMessage::constructSenderTerm(Thread& thread, AtomTable& atoms)
+{
+  Object* from_handle_cell;
+  icm_handle_to_heap(thread.TheHeap(), atoms, 
+		     sender, from_handle_cell);
+  return from_handle_cell;
+}
+
+Object*
+ICMMessage::constructReplyToTerm(Thread& thread, AtomTable& atoms)
+{
+  Object* replyto_handle_cell;
+  icm_handle_to_heap(thread.TheHeap(), atoms, 
+		     reply_to, replyto_handle_cell);
+  return replyto_handle_cell;
+
+}
+
+Object*
+ICMMessage::constructMessageTerm(Thread& thread, AtomTable& atoms,
+				 bool remember_names)
+{
+  Object* message_cell = NULL;
+  icmDataRec data;
+  if (icmScanMsg(message, "%(%S%)", &data) == icmOk)
+    {
+      string buff(data.data, data.size);
+      
+      free(data.data);
+      
+      QPistringstream stream(buff);
+      Object* object_variablenames;
+
+      EncodeRead er(thread,
+		    thread.TheHeap(),
+		    stream,
+		    message_cell,
+		    atoms,
+		    remember_names,
+		    thread.getNames(),
+		    object_variablenames);
+      if (! er.Success())
+	{
+	  // XXX Should raise an exception
+	  Fatal(__FUNCTION__, "Couldn't decode message!");
+	}
+      return message_cell;
+    }
+  // The message is not encoded
+  icmStatus status = icmScanMsg(message, "%S", &data);
+  if (status == icmOk)
+    {
+      // Nothing.
+    }
+  else if (status == icmFailed)
+    {
+      Fatal(__FUNCTION__, "Format of message doesn't match QP message format");
+    }
+  else if (status == icmError)
+    {
+      Fatal(__FUNCTION__, "icmScanMsg() returned icmError");
+    }
+  message_cell = AtomTable::nil;
+  Heap& heap = thread.TheHeap();
+  for (int i = data.size-1; i >= 0 ; i--)
+    {
+      Object* entry = heap.newNumber(data.data[i]);
+      Cons* list = heap.newCons(entry, message_cell);
+      message_cell = list;
+    }
+
+  // Free the data.
+  free(data.data);
+
+  return message_cell;
+}
+
+bool
+ICMMessageChannel::msgToThread(ICMMessage* message)
+{
+  char *icm_target;
+  
+  (void) icmAnalyseHandle(message->getRecipient(), &icm_target, 
+			  NULL, NULL, NULL, NULL);
+  
+  if (*icm_target == '\0')
+    {
+      // Empty target - search for QPimstream for the sender
+      iom.updateStreamMessages(message->getSender(), message->getMessage());
+      delete message;
+      return true;
+    }
+  
+  ICMIncomingTarget target(icm_target);
+  
+  ThreadTable& thread_table = getThreadTable();
+
+  ThreadTableLoc id = (ThreadTableLoc) -1;
+  if (target.IsID())
+    {
+      id = target.ID();
+    }
+  else if (target.IsSymbol())
+    {
+      id = thread_table.LookupName(target.Symbol());
+      if (id == (ThreadTableLoc) -1)
+	{
+	  return false;
+	}
+    }
+  
+  if (!thread_table.IsValid(id))
+    {
+      return false;
     }
   else
     {
-      return icmError;
+      Thread* thread = thread_table.LookupID(id);
+      if (thread == NULL)
+	{
+	  return false;
+	}
+
+      thread->MessageQueue().push_back(message);
+      return true;
     }
+
 }
+
+bool
+ICMMessageChannel::ShuffleMessages(void)
+{
+  icmHandle recipient;
+  icmHandle sender;
+  icmOption options;
+  icmMsg message;
+  bool newMsg = false;
+
+  for (list<ICMMessage*>::iterator iter = msg_buff.begin();
+       iter != msg_buff.end();
+       )
+    {
+      if (msgToThread(*iter))
+	{
+	  newMsg = true;
+	  iter = msg_buff.erase(iter);
+	}
+      else
+	{
+	  iter++;
+	}
+    }
+
+  while (icmMsgAvail(icm_env.Conn(), icm_env.messageNo()) == icmOk)
+    {
+      icmStatus status = icmGetMsg(icm_env.Conn(),
+                                   &recipient, &sender, &options,
+                                   &message, icm_env.messageNoRef());
+      
+      switch (status)
+        {
+        case icmOk:
+          {
+#ifdef DEBUG_ICM
+            char recipient_buf[MAXSTRING], sender_buf[MAXSTRING];
+            (void) icmHandleName(sender, sender_buf, MAXSTRING);
+            (void) icmHandleName(recipient, recipient_buf, MAXSTRING);
+	    cerr << __FUNCTION__
+		 << " Message received for "
+		 << recipient_buf << " from " << sender_buf << endl;
 #endif
+	    
+            icmDataRec data;
+            icmStatus status = icmScanMsg(message, "%S", &data);
+            if(status == icmOk &&
+               data.size == 17 &&
+               strncmp(data.data, "control_C_message", data.size) == 0)
+	      
+              {
+		free(data.data);
+		signals.Increment(SIGINT);
+		signals.Status().setSignals();
+		return newMsg;
+              }
+            else
+              {
+		if (status == icmOk)
+		  {
+		    free(data.data);
+		  }
+		newMsg = true;
+                icmHandle replyto = sender;
+		
+                // If this call fails, replyto is unchanged
+                (void) icmIsOption(options, icmReplyto, &replyto);
+		
+                // Return the storage used by the options.
+                icmReleaseOptions(options);
+
+		ICMMessage *icm_message = 
+		  new ICMMessage(sender, replyto, recipient, message);
+
+		if (msgToThread(icm_message))
+		  {
+		    newMsg = true;
+		  }
+		else
+		  {
+		    msg_buff.push_back(icm_message);
+		  }
+	      }
+
+          }
+          break;
+        case icmFailed:
+          Warning(__FUNCTION__, "icmGetMsg() returned icmFailed");
+          DEBUG_ASSERT(false);
+          break;
+        case icmError:
+          Warning(__FUNCTION__, "icmGetMsg() returned icmError");
+          break;
+        case icmEndFile:
+          Warning(__FUNCTION__, "ICM Communicatons Server has closed connection");
+          break;
+        }
+    }
+  return newMsg;
+}
+
+void
+ICMMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
+{
+  int fd = icm_env.getCommFD();
+  if (fd > max_fd) max_fd = fd;
+  FD_SET(fd, rfds);
+}
+
 #endif // ICM_DEF
 

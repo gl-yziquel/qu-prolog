@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: io.cc,v 1.7 2002/06/04 04:08:15 qp Exp $
+// $Id: io.cc,v 1.25 2002/12/22 04:12:29 qp Exp $
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -71,10 +71,10 @@
 #include "thread_table.h"
 
 extern Scheduler *scheduler;
-extern CondList<ICMMessage *> *incoming_icm_message_queue;
 extern Signals *signals;
 extern ThreadTable *thread_table;
 extern ThreadOptions *thread_options;
+extern ICMMessageChannel * icm_channel;
 
 //-----------------------------------------------
 //
@@ -220,12 +220,6 @@ Socket::setAccepted(Socket *sock, const int new_fd)
   sock->setConnected();
 }
 
-bool
-Socket::isReady(void) const
-{
-  const int fd = getFD();
-  return is_ready(fd, SOCKET);
-}
 
 bool
 Socket::isEnded(void) const
@@ -239,169 +233,13 @@ Socket::isEnded(void) const
 //
 //-----------------------------------------------
 
-bool
-imstream::msg_ready(void)
-{
-#ifdef ICM_DEF
-      for (;	 
-	   *(iter) != thread->ICMQueue().end();   
-	   (*(iter))++)  
-	{   
-	  if ( (**(iter))->Committed() )  
-	    {               
-	      continue;		
-	    }                    
-	  ICMMessage& icm_message = ***iter;
-	  icmHandle from_handle = icm_message.Sender();
-	  if (icmSameHandle(from_handle, sender_handle) == icmOk)
-	    {                   
-	      return true;            
-	    }                  
-	}                       
-      (*iter)--;
-      return false;
-#else // ICM_DEF
-      return false;
-#endif // ICM_DEF
-}
-
-void
-imstream::get_a_msg(void)
-{
-#ifdef ICM_DEF
-  bool already_blocked = thread->getBlockStatus().testBlockICM();
-  while (!msg_ready())
-    {
-        thread->getBlockStatus().setBlockICM(*(iter), 
-                                             thread->ICMQueue().size(),0);
-	scheduler->block_icm(thread);
-	  scheduler->Sleep(*incoming_icm_message_queue, *thread_table, 
-                           *signals, *thread_options);                 
-    }
-
-    ICMMessage& icm_message = ***iter;
-#ifdef DEBUG
-    icmHandle from_handle = icm_message.Sender();
-#endif // DEBUG
-    DEBUG_ASSERT(icmSameHandle(from_handle, sender_handle) == icmOk);
-    icmDataRec data;
-    icmStatus status = icmScanMsg(icm_message.Message(), "%S", &data);
-    if (status == icmOk)
-      {
-	// Nothing.
-      }
-    else if (status == icmFailed)
-      {
-	Fatal(__FUNCTION__, 
-	      "Format of message doesn't match QP message format");
-      }
-    else if (status == icmError)
-      {
-	Fatal(__FUNCTION__, "icmScanMsg() returned icmError");
-      }	
-    strstreambuf* sbtemp = new strstreambuf(128);
-    istream* strintemp = new istream(sbtemp);
-    ostream* strouttemp = new ostream(sbtemp);
-    (*strin) >> strouttemp->rdbuf();
-    delete sb;
-    delete strin;
-    delete strout;
-    sb = sbtemp;
-    strin = strintemp;
-    strout = strouttemp; 
-    strout->write(data.data, data.size);
-    strin->clear();
-    free(data.data);
-    icm_message.Commit();
-    if (already_blocked)
-      {
-        thread->getBlockStatus().setBlockICM(*(iter), 
-                                             thread->ICMQueue().size(),0);
-	scheduler->block_icm(thread);
-      }
-#endif // ICM_DEF
-}
-
-void
-omstream::send_msg(void)
-{
-#ifdef ICM_DEF
-  icmStatus status;
-//  (*ostrm) << ends;
-  icmDataRec data = { ostrm->pcount(), ostrm->str() };
-  icmMsg message = icmFormatMsg(NULL, "%S", &data);
-//  DEBUG_ASSERT(status == icmOk);
-  status = icmSendMsg(icm_environment->Conn(),
-		      to_handle,
-		      icm_thread_handle(*icm_environment, *sender_thread),
-		      NULL,
-		      message);
-  DEBUG_ASSERT(status == icmOk);
-  ostrm->freeze(0);
-  delete ostrm;
-  ostrm = new ostrstream();
-#endif // ICM_DEF
-}
-
-bool
-Stream::isEnded(void) const
-{
-  switch (type)
-    {
-    case ISTREAM:
-      return (desc.i_stream == NULL) || (desc.i_stream->eof());
-      break;
-    case OSTREAM:
-      return (desc.o_stream == NULL);
-      break;
-    case ISTRSTREAM:
-      return (desc.i_strstream == NULL) || (desc.i_strstream->eof());
-      break;
-    case OSTRSTREAM:
-      return (desc.o_strstream == NULL);
-      break;
-    default:
-      DEBUG_ASSERT(false);
-      return false;
-      break;
-    }
-}
-
-//
-// Change the line counter.
-//
-void
-Stream::newline(void)
-{
-  lineCounter++;
-}
-
-void
-Stream::unnewline(void)
-{
-  lineCounter--;
-}
-
-bool
-Stream::isReady(void) const
-{
-  switch (type)
-    {
-    case ISTREAM:
-    case OSTREAM:
-      {
-	const int fd = getFD();
-	return is_ready(fd, type);
-      }
-      break;
-    default:
-      return true;
-      break;
-    }
+QPStream::QPStream(IOType t):type(t),lineCounter(1)
+{ 
+  properties = new heapobject[Structure::size(7)]; 
 }
 
 void 
-Stream::setProperties(Object* prop)
+QPStream::setProperties(Object* prop)
 {
   DEBUG_ASSERT(prop->isStructure());
   // copy the tag
@@ -416,7 +254,7 @@ Stream::setProperties(Object* prop)
 }
 
 void
-Stream::setRSProperties(void)
+QPStream::setRSProperties(void)
 {
   // !! WARNING !! Do the following a different way
   // This sets up the structure tag and arity directly.
@@ -433,6 +271,601 @@ Stream::setRSProperties(void)
   propstr->setArgument(7, atoms->add("test"));
 }
 
+
+Object* QPStream::getProperties(void)
+{
+  return (reinterpret_cast<Object*>(properties));
+}
+
+
+///////////////////////////////////////////////////////////
+// QPistream
+//////////////////////////////////////////////////////////
+
+QPistream::QPistream(const char* file): QPStream(ISTREAM), stream(file) {}
+
+bool QPistream::seekg(streampos pos, ios::seekdir d)
+{ 
+  return (!stream.seekg(pos, d).fail()); 
+}
+
+///////////////////////////////////////////////////////////
+// QPistringstream
+//////////////////////////////////////////////////////////
+
+QPistringstream::QPistringstream(const string& buff)
+  : QPStream(ISTRSTREAM), stream(buff) {}
+
+///////////////////////////////////////////////////////////
+// QPifstream
+//////////////////////////////////////////////////////////
+
+QPifdstream::QPifdstream(int f):  
+  QPStream(IFDSTREAM), stream(""), fd(f), done_get(false) { }
+
+bool QPifdstream::get(char& ch)
+{
+  if (done_get && eof())
+    {
+      get_read();
+    }
+  done_get = true;
+  
+  return (!stream.get(ch).fail());
+}
+
+int QPifdstream::get(void)
+{
+  if (done_get && eof())
+    {
+      get_read();
+    }
+  done_get = true;
+  
+  return (stream.get());
+}
+
+bool
+QPifdstream::isReady(void)
+{
+  // Not at end of buffer so ready to read
+  if (done_get && !eof()) return true;
+
+  // otherwise use select to see if there is anything on low-level
+  // stream - and if so transfer to buffer.
+
+  if (is_ready(fd, IFDSTREAM))
+    {
+      get_read();
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+void
+QPifdstream::get_read(void)
+{
+  DEBUG_ASSERT(fd != NO_FD);
+  char buff[BUFFSIZE];
+  // read from fd
+  int buffsize = read(fd, buff, BUFFSIZE-1);
+  buff[buffsize] = '\0';
+  //reset strin buffer
+  stream.str(buff);
+  stream.seekg(0, ios::beg);
+  stream.clear();
+  done_get = false;
+}
+
+///////////////////////////////////////////////////////////
+// QPimstream
+//////////////////////////////////////////////////////////
+
+QPimstream::QPimstream(icmHandle handle)
+  : QPStream(IMSTREAM), 
+    stream(""),
+    sender_handle(handle), 
+    done_get(false) 
+{ }
+
+bool
+QPimstream::msgReady(void) 
+{ 
+  return !message_strings.empty(); 
+}
+
+void 
+QPimstream::pushString(string* st) 
+{ 
+  message_strings.push_back(st); 
+}
+
+bool 
+QPimstream::get(char& ch)
+{
+  if (done_get && eof())
+    {
+      get_read();
+    }
+  done_get = true;
+  
+  return (!stream.get(ch).fail());
+}
+
+int 
+QPimstream::get(void)
+{
+  if (done_get && eof())
+    {
+      get_read();
+    }
+  done_get = true;
+  
+  return (stream.get());
+}
+
+icmHandle 
+QPimstream::getSenderHandle(void)
+{ 
+  return sender_handle; 
+}
+
+bool
+QPimstream::isReady(void)
+{
+#ifdef ICM_DEF
+  
+  if (done_get && !eof()) return true;
+
+  if ( message_strings.empty())
+    {
+      return false;
+    }
+  else
+    {
+      get_read();
+      return true;
+    }
+
+#else // ICM_DEF
+      return false;
+#endif // ICM_DEF
+}
+
+void
+QPimstream::get_read(void)
+{
+#ifdef ICM_DEF
+  while (message_strings.empty())
+    {
+      fd_set rfds, wfds;
+      FD_ZERO(&rfds);
+      FD_ZERO(&wfds);
+      int max_fd = 0;
+      icm_channel->updateFDSETS(&rfds, &wfds, max_fd);
+      select(max_fd + 1, &rfds, &wfds, NULL, NULL);
+      icm_channel->ShuffleMessages();
+    }
+  DEBUG_ASSERT(!message_strings.empty());
+  
+  string* msg = message_strings.front();
+  stream.str(*msg);
+  message_strings.pop_front();
+  delete msg;
+
+  stream.seekg(0, ios::beg);
+  stream.clear();
+  done_get = false;
+
+#endif // ICM_DEF
+}
+
+///////////////////////////////////////////////////////////
+// QPostream
+//////////////////////////////////////////////////////////
+
+QPostream::QPostream(const char* file, ios::openmode mode)
+  : QPStream(OSTREAM), 
+    can_delete(true) 
+{
+  stream = new ofstream(file, mode);
+}
+QPostream::QPostream(ostream* strmptr)
+  : QPStream(OSTREAM),
+    can_delete(false) 
+{
+  stream = strmptr;
+}
+
+///////////////////////////////////////////////////////////
+// QPostringstream
+//////////////////////////////////////////////////////////
+
+QPostringstream::QPostringstream(): QPStream(OSTRSTREAM) {}
+
+///////////////////////////////////////////////////////////
+// QPofstream
+//////////////////////////////////////////////////////////
+
+QPofdstream::QPofdstream(int n)
+  : QPStream(OFDSTREAM), 
+    fd(n), 
+    auto_flush(false) 
+{}
+
+bool 
+QPofdstream::put(char ch)
+{
+  if (stream.put(ch).fail())
+    {
+      return false;
+    }
+  if (auto_flush || (ch == '\n'))
+    {
+      send();
+    }
+  return true;
+}
+
+void 
+QPofdstream::operator<<(const char c)
+{
+  stream << c;
+  if (auto_flush || (c == '\n'))
+    {
+      send();
+    }
+}
+
+void 
+QPofdstream::operator<<(const char* s)
+{
+  if (auto_flush)
+    {
+      stream << s;
+      send();
+    }
+  else
+    {
+      char* ptr = strrchr(s, '\n');
+      if (ptr == NULL)
+	{
+	  stream << s;
+	}
+      else if ((ptr - s) == ((int)strlen(s) + 1))
+	{
+	  stream << s;
+	  send();
+	}
+      else
+	{
+	  int len = ptr-s+1;
+	  char tmpbuff[len+1];
+	  strncpy(tmpbuff, s, len);
+	  tmpbuff[len] = '\0';
+	  stream << tmpbuff;
+	  send();
+	  stream << (ptr+1);
+	}
+    }
+}
+
+void 
+QPofdstream::operator<<(const int n)
+{
+  stream << n;
+  if (auto_flush) send();
+}
+
+const string 
+QPofdstream::str(void)
+{
+  return stream.str();
+}
+
+void 
+QPofdstream::flush(void)
+{
+  if (!auto_flush && (stream.str().length() != 0)) send();
+}
+
+bool 
+QPofdstream::set_autoflush(void)
+{
+  auto_flush = true;
+  return true;
+}
+
+void
+QPofdstream::send(void)
+{
+  if (fd == NO_FD) return;
+  write(fd, stream.str().data(), stream.str().length());
+  stream.str("");
+}
+
+
+///////////////////////////////////////////////////////////
+// QPomstream
+//////////////////////////////////////////////////////////
+
+QPomstream::QPomstream(icmHandle handle, Thread* thread, 
+		       ICMEnvironment* icm_env)
+  : QPStream(OMSTREAM),
+    to_handle(handle), 
+    sender_thread(thread), 
+    icm_environment(icm_env), 
+    auto_flush(false) 
+{}
+
+bool 
+QPomstream::put(char ch)
+{
+  if (stream.put(ch).fail())
+    {
+      return false;
+    }
+  if (auto_flush || (ch == '\n'))
+    {
+      send();
+    }
+  return true;
+}
+
+void 
+QPomstream::operator<<(const char c)
+{
+  stream << c;
+  if (auto_flush || (c == '\n'))
+    {
+      send();
+    }
+}
+
+void 
+QPomstream::operator<<(const char* s)
+{
+  if (auto_flush)
+    {
+      stream << s;
+      send();
+    }
+  else
+    {
+      char* ptr = strrchr(s, '\n');
+      if (ptr == NULL)
+	{
+	  stream << s;
+	}
+      else if ((ptr - s) == ((int)strlen(s) + 1))
+	{
+	  stream << s;
+	  send();
+	}
+      else
+	{
+	  int len = ptr-s+1;
+	  char tmpbuff[len+1];
+	  strncpy(tmpbuff, s, len);
+	  tmpbuff[len] = '\0';
+	  stream << tmpbuff;
+	  send();
+	  stream << (ptr+1);
+	}
+    }
+}
+
+void 
+QPomstream::operator<<(const int n)
+{
+  stream << n;
+  if (auto_flush) send();
+}
+
+const string 
+QPomstream::str(void)
+{
+  return stream.str();
+}
+
+void 
+QPomstream::flush(void)
+{
+  if (!auto_flush && (stream.str().length() != 0)) send();
+}
+
+bool 
+QPomstream::set_autoflush(void)
+{
+  auto_flush = true;
+  return true;
+}
+
+void
+QPomstream::send(void)
+{
+#ifdef ICM_DEF
+  icmStatus status;
+  string str = stream.str();
+  int size = str.length();
+
+  icmDataRec data = { size, const_cast<char*>(str.c_str()) };
+  icmMsg message = icmFormatMsg(NULL, "%S", &data);
+
+  status = icmSendMsg(icm_environment->Conn(),
+		      to_handle,
+		      icm_thread_handle(*icm_environment, *sender_thread),
+		      NULL,
+		      message);
+  DEBUG_ASSERT(status == icmOk);
+  stream.str("");
+#endif // ICM_DEF
+}
+
+
+///////////////////////////////////////////////////////////
+// IOManager
+//////////////////////////////////////////////////////////
+
+IOManager::IOManager(QPStream *in, QPStream *out, QPStream *error)
+{
+  for (u_int i = 0; i < NUM_OPEN_STREAMS; i++)
+    {
+      open_streams[i] = NULL;
+    }
+  DEBUG_ASSERT(in != NULL);
+  DEBUG_ASSERT(out != NULL);
+  DEBUG_ASSERT(error != NULL);
+  save_stdin = in;
+  save_stdout = out;
+  save_stderr = error;
+  open_streams[0] = in;
+  open_streams[1] = out;
+  open_streams[2] = error;
+  current_input = 0;
+  current_output = 1;
+  current_error = 2;
+}
+
+bool
+IOManager::updateStreamMessages(icmHandle sender, icmMsg message)
+{
+#ifdef ICM_DEF
+  for (u_int i = 0; i < NUM_OPEN_STREAMS; i++)
+    {
+      if (open_streams[i] != NULL 
+	  && open_streams[i]->Type() == IMSTREAM
+	  && icmSameHandle(sender, 
+			   open_streams[i]->getSenderHandle()) == icmOk)
+	{
+	  // Found stream for from handle - extract message
+	  // and push onto stream message list
+	  icmDataRec data;
+	  icmStatus status = icmScanMsg(message, "%S", &data);
+	  if (status == icmOk)
+	    {
+	      // Nothing.
+	    }
+	  else if (status == icmFailed)
+	    {
+	      Fatal(__FUNCTION__, "Format of message doesn't match QP message format");
+	    }
+	  else if (status == icmError)
+	    {
+	      Fatal(__FUNCTION__, "icmScanMsg() returned icmError");
+	    }	
+	  string* new_string = new string(data.data, data.size);
+	  open_streams[i]->pushString(new_string);
+	  free(data.data);
+	  return true;
+	}
+    }
+#endif // ICM_DEF
+  return false;
+}
+
+int 
+IOManager::OpenStream(QPStream* strm)
+{
+  u_int i;
+  for (i = 0; i < NUM_OPEN_STREAMS; i++)
+    {
+      if (open_streams[i] == NULL)
+	{
+	  break;
+	}
+    }
+  if (i == NUM_OPEN_STREAMS)
+    {
+      return -1;
+    }
+  open_streams[i] = strm;
+  return i;
+}
+
+bool 
+IOManager::CloseStream(u_int i)
+{
+  DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_STREAMS);
+  DEBUG_ASSERT(open_streams[i] != NULL);
+  if (i < 3) return false; // Can't close std streams
+  delete open_streams[i];
+  open_streams[i] = NULL;
+  return true;
+}
+  
+QPStream* 
+IOManager::GetStream(u_int i)
+{
+  DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_STREAMS);
+  return (open_streams[i]);
+}
+
+bool 
+IOManager::set_std_stream(int stdstrm, u_int i)
+{
+  if (stdstrm < 0 || stdstrm > 2)
+    {
+      return false;
+    }
+  if (i < 0 || i >=  NUM_OPEN_STREAMS || open_streams[i] == NULL)
+    {
+      return false;
+    }
+  if (open_streams[i]->getDirection() == 
+      open_streams[stdstrm]->getDirection())
+    {
+      open_streams[stdstrm] = open_streams[i];
+      open_streams[stdstrm]->setFD(stdstrm);
+      open_streams[i] = NULL;
+      return true;
+    }
+  return false;
+}
+
+bool 
+IOManager::reset_std_stream(int stdstrm)
+{
+  switch (stdstrm)
+    {
+    case 0:
+      if (open_streams[0] == save_stdin)
+	{
+	  return false;
+	}
+      delete open_streams[0];
+      open_streams[0] = save_stdin;
+      break;
+    case 1:
+      if (open_streams[1] == save_stdout)
+	{
+	  return false;
+	}
+      delete open_streams[1];
+      open_streams[1] = save_stdout;
+      break;
+    case 2:
+      if (open_streams[2] == save_stderr)
+	{
+	  return false;
+	}
+      delete open_streams[2];
+      open_streams[2] = save_stderr;
+      break;
+    default:
+      DEBUG_ASSERT(false);
+      return false;
+    }
+  return true;
+}
+
+
+
+
+
 bool
 is_ready(const int fd, const IOType type)
 {
@@ -445,13 +878,12 @@ is_ready(const int fd, const IOType type)
   timeval tv = { 0, 0 };
 
   int result = 0;
-
   switch (type)
     {
-    case ISTREAM:
+    case IFDSTREAM:
       result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
       break;
-    case OSTREAM:
+    case OFDSTREAM:
       result = select(fd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, &tv);
       break;
     case SOCKET:
@@ -468,6 +900,7 @@ is_ready(const int fd, const IOType type)
 	    __FUNCTION__, result, fd, FD_ISSET(fd, &fds));
 #endif
   return result && FD_ISSET(fd, &fds);
+
 }
 
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: labels.h,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: labels.h,v 1.4 2002/11/10 07:54:52 qp Exp $
 
 #ifndef	LABELS_H
 #define	LABELS_H
@@ -64,7 +64,7 @@
 #include "asm_string_table.h"
 #include "code.h"
 #include "code_block.h"
-#include "string_qp.h"
+//#include "string_qp.h"
 
 class Label
 {
@@ -89,21 +89,17 @@ private:
 	}
     };
 
-  String *name;
+  string *name;
 
   bool resolved;
   
   vector<Reference *> *references;
 public:
-  Label(const String& s) 
-    : name(new String(s)),
+  Label(const string& s) 
+    : name(new string(s)),
     resolved(false),
     references(new vector<Reference *>)
     {
-      if (name == NULL || references == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
     }
   ~Label(void)
   {
@@ -112,7 +108,7 @@ public:
     delete references;
   }
   
-  const String& Name(void) const { return *name; }
+  const string& Name(void) const { return *name; }
 
   bool operator==(const Label& l) const
   {
@@ -122,10 +118,6 @@ public:
   void AddReference(CodeBlock& code, const u_int jump_offset_base)
   {
     Reference *ref = new Reference(code.Current(), jump_offset_base);
-    if (ref == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
 
     references->push_back(ref);
     code.Advance(Code::SIZE_OF_OFFSET);
@@ -167,26 +159,17 @@ public:
   void operator=(const Label& l)
     {
       delete name;
-      name = new String(*(l.name));
-      if (name == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
-
+      name = new string(*(l.name));
       resolved = l.resolved;
 
       delete references;
       references = new vector<Reference *>(*(l.references));
-      if (references == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
     }
 };
 
 inline ostream& operator<<(ostream& ostrm, const Label& label)
 {
-  return ostrm << label.Name().Str();
+  return ostrm << label.Name();
 }
 
 
@@ -198,7 +181,7 @@ public:
   // s is the name of the label
   // code is the code block where it references
   // job is the jump offset base
-  void AddReference(const String& s, CodeBlock& code, const u_int job)
+  void AddReference(const string& s, CodeBlock& code, const u_int job)
   {
     Label *found = NULL;
     
@@ -221,18 +204,13 @@ public:
       {
 	// Not found, so add it
 	Label *label = new Label(s);
-	if (label == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
-	
 	label->AddReference(code, job);
 	
 	labels.push_back(label);
       }
   }
   
-  void Resolve(const String& s, CodeBlock &code)
+  void Resolve(const string& s, CodeBlock &code)
   {
     Label *found = NULL;
     

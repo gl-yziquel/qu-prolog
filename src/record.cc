@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: record.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: record.cc,v 1.6 2002/11/13 04:04:16 qp Exp $
 
-#include <strstream.h>
+#include <sstream>
 
 #include "atom_table.h"
 #include "record_ref_table.h"
@@ -195,13 +195,7 @@ Thread::psi_record_get_term(Object *& object1, Object *& object2)
     {
       Object* object_variablenames;
 
-      istrstream *istrm = 
-	new istrstream(record_db->getString(loc), record_db->getLength(loc));
-      if (istrm == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
-      Stream stream(istrm);
+      QPistringstream stream(record_db->getString(loc));
 
       EncodeRead er(*this,
 		    heap,
@@ -232,28 +226,16 @@ Thread::psi_record_record_first(Object *& object1,
   
   DEBUG_ASSERT(val1->isAtom());
 
-  // XXX Deleted on destruction of stream
-  ostrstream *ostrm = new ostrstream(atom_buf1, ATOM_LENGTH, 0);
-  if (ostrm == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
-  if (ostrm->bad())
-    {
-      delete ostrm;
-      PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-    }
-
-  Stream stream(ostrm);
+  QPostringstream stream;
 
   EncodeWrite ew(*this, heap, stream, val2, *atoms, false, names);
   if (ew.Success())
     {
       const StackLoc first = OBJECT_CAST(Atom*, val1)->getFirstRef();
 
+      const char* buff = stream.str().data();
       const StackLoc loc = record_db->add(EMPTY_LOC, first,
-					 ostrm->str(), ostrm->pcount());
+					 buff, stream.str().length());
       
       OBJECT_CAST(Atom*, val1) ->setFirstRef(loc);
       if (first == EMPTY_LOC) 
@@ -268,14 +250,10 @@ Thread::psi_record_record_first(Object *& object1,
       // Return the stack reference
       object3 = heap.newNumber(loc);
 
-      ostrm->freeze(0);
-
       return(RV_SUCCESS);
     } 
   else 
     {
-      ostrm->freeze(0);
-
       return(RV_FAIL);
     }
 }
@@ -294,27 +272,15 @@ Thread::psi_record_record_last(Object *& object1, Object *& object2, Object *& o
   
   DEBUG_ASSERT(val1->isAtom());
   
-  // XXX Deleted on destruction of stream
-  ostrstream *ostrm = new ostrstream(atom_buf1, ATOM_LENGTH, 0);
-  if (ostrm == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
-  if (ostrm->bad())
-    {
-      delete ostrm;
-      PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-    }
-
-  Stream stream(ostrm);
+  QPostringstream stream;
 
   EncodeWrite ew(*this, heap, stream, val2, *atoms, false, names);
   if (ew.Success())
     {
       const StackLoc last = OBJECT_CAST(Atom*, val1)->getLastRef();
+      const char* buff = stream.str().data();
       const StackLoc loc = record_db->add(last, EMPTY_LOC,
-				   ostrm->str(), ostrm->pcount());
+				   buff, stream.str().length());
       
       OBJECT_CAST(Atom*, val1)->setLastRef(loc);
       if (last == EMPTY_LOC) 
@@ -329,14 +295,10 @@ Thread::psi_record_record_last(Object *& object1, Object *& object2, Object *& o
       // Return the reference
       object3 = heap.newNumber(loc);
 
-      ostrm->freeze(0);
-
       return(RV_SUCCESS);
     } 
   else 
     {
-      ostrm->freeze(0);
-
       return(RV_FAIL);
     }
 }

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: choice.cc,v 1.5 2001/12/06 02:56:05 qp Exp $
+// $Id: choice.cc,v 1.6 2002/11/03 08:37:24 qp Exp $
 
 #include "area_offsets.h"
 #include "choice.h"
@@ -162,22 +162,21 @@ ChoiceStack::Display(ostream& ostrm, ChoiceLoc index, const size_t depth) const
   const Choice *c = inspectChoice(index);
   
   Indent(ostrm, depth);
-  ostrm.form("nextClause=%#lx\n", c->inspectNextClause());
+  ostrm << "nextClause=" << hex << c->inspectNextClause() << dec << endl;
 
   Indent(ostrm, depth);
-  ostrm.form("currentEnvironment=%#lx\n", c->currentEnv());
+  ostrm << "currentEnvironment=" << hex <<  c->currentEnv() << dec << endl;
 
   Indent(ostrm, depth);
-  ostrm.form("envStackTop=%#lx\n", c->getEnvTop());
+  ostrm << "envStackTop=" << hex << c->getEnvTop() << dec << endl;
 
   Indent(ostrm, depth);
-  ostrm.form("previousChoicePoint=%#lx\n", c->getPreviousChoice());
-
+  ostrm << "previousChoicePoint=" << hex << c->getPreviousChoice() << dec << endl;
   Indent(ostrm, depth);
-  ostrm.form("cutPoint=%#lx\n", c->getCutPoint());
-
+  ostrm << "cutPoint=" << hex << c->getCutPoint() << dec << endl;
+ 
   Indent(ostrm, depth);
-  ostrm.form("numArgs=%ld\n", c->getNumArgs());
+  ostrm << "numArgs=" << hex << c->getNumArgs() << dec << endl;
 
   return ostrm;
 }

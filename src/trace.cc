@@ -55,7 +55,9 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: trace.cc,v 1.5 2001/12/06 02:56:07 qp Exp $
+// $Id: trace.cc,v 1.8 2002/12/20 02:15:54 qp Exp $
+
+#ifdef DEBUG
 
 #include	<sys/types.h>
 #include	<unistd.h>
@@ -72,23 +74,23 @@ trace_thread_info(const ThreadInfo& thread_info,
 {
   if (thread_info.IDSet())
     {
-      cerr.form("%6ld ", thread_info.ID());
+      cerr << thread_info.ID();
     }
   else
     {
-      cerr.form("%6s ", " ");
+      cerr << "    ";
     }
   
   if (thread_info.SymbolSet())
     {
-      cerr.form("%10s ", thread_info.Symbol().Str());
+      cerr << thread_info.Symbol().c_str();
     }
   else
     {
-      cerr.form("%10s ", " ");
+      cerr << " ";
     }
   
-  cerr.form("%8lx: ", pc);
+  cerr << hex << pc << dec;
 }
 
 void
@@ -109,45 +111,45 @@ Trace::TraceInOut(const word32 mode,
 void
 Trace::Trace0(const char *s)
 {
-  cerr.form("%s\n", s);
+  cerr << s << endl;
 }
 
 void
 Trace::Trace1(const char *s, const int32 x)
 {
-  cerr.form("%s(%ld)\n", s, x);
+  cerr << s << "(" << x << ")" << endl;
 }
 
 void
 Trace::Trace2(const char *s, const int32 x, const int32 y)
 {
-  cerr.form("%s(%ld, %ld)\n", s, x, y);
+  cerr << s << "(" << x << ", " << y << ")" << endl;
 }
 
 void
 Trace::Trace3(const char *s, const int32 x, const int32 y, const int32 z)
 {
-  cerr.form("%s(%ld, %ld, %ld)\n", s, x, y, z);
+  cerr << s << "(" << x << ", " << y << ", " << z << ")" << endl;
 }
 
 void
 Trace::Trace4(const char *s, const int32 x, const int32 y, const int32 z,
 	      const int32 w)
 {
-  cerr.form("%s(%ld, %ld, %ld, %ld)\n", s, x, y, z, w);
+  cerr << s << "(" << x << ", " << y << ", " << z << ", " << w << ")" << endl;
 }
 
 void
 Trace::Trace5(const char *s, const int32 x, const int32 y, const int32 z,
 	      const int32 w, const int32 u)
 {
-  cerr.form("%s(%ld, %ld, %ld, %ld, %ld)\n", s, x, y, z, w, u);
+  cerr << s << "(" << x << ", " << y << ", " << z << ", " << w << ", " << u << ")" << endl;
 }
 
 void
 Trace::TraceConst0(AtomTable& atoms, Heap& heap, const char *s, Object* c)
 {
-  cerr.form("%s(%lx) ", s, reinterpret_cast<word32>(c));
+  cerr << s << "(" << hex << reinterpret_cast<word32>(c) << dec << ") ";
   heap.displayTerm(cerr, atoms, c, 0);
 }
 
@@ -156,7 +158,7 @@ Trace::TraceConst1(AtomTable& atoms, Heap& heap,
 		   const char *s, Object* c,
 		   const int32 x)
 {
-  cerr.form("%s(%lx, %ld) ", s, reinterpret_cast<word32>(c), x);
+  cerr << s << "(" << hex << reinterpret_cast<word32>(c) << ", " << x << dec << ") ";
   heap.displayTerm(cerr, atoms, c, 0);
 }
 
@@ -165,37 +167,37 @@ Trace::TraceConst2(AtomTable& atoms, Heap& heap,
 		   const char *s, Object* c,
 		   const int32 x, const int32 y)
 {
-  cerr.form("%s(%lx, %ld, %ld)  ", s, reinterpret_cast<word32>(c), x, y);
+  cerr << s << "(" << hex << reinterpret_cast<word32>(c) << ", " << x << ", " << y << dec << ") ";
   heap.displayTerm(cerr, atoms, c, 0);
 }
 
 void
 Trace::TraceInt0(const char *s, const int32 n)
 {
-  cerr.form("%s(%ld) ", s, n);
+  cerr << s << "(" <<  n << ") ";
 }
 void
 Trace::TraceInt1(const char *s, const int32 n, const int32 x)
 {
-  cerr.form("%s(%ld, %ld) ", s, n, x);
+  cerr << s << "(" <<  n  << "' " << x << ") ";
 }
 
 void
 Trace::TraceString1(const char *s, const char *t)
 {
-  cerr.form("%s(%s)\n", s, t);
+  cerr << s << "(" <<  t << ") ";
 }
 
 void
 Trace::TraceString2(const char *s, const char *t, const int32 x)
 {
-  cerr.form("%s(%s, %ld)\n", s, t, x);
+  cerr << s << "(" <<  t  << "' " << x << ") ";
 }
 
 void
 Trace::TraceString3(const char *s, const char *t, const int32 x, const int32 y)
 {
-  cerr.form("%s(%s, %ld, %ld)\n", s, t, x, y);
+  cerr << s << "(" <<  t  << "' " << x << "' " << y << ") ";
 }
 
 void
@@ -203,7 +205,7 @@ Trace::TraceXReg(Thread& th, AtomTable& atoms, const word32 reg)
 {
   if (trace_level & TRACE_REGS)
     {
-      cerr.form("\tX[%ld]: \n", reg);
+      cerr << "\tX[" << reg << "]: " << endl;
       th.heap.displayTerm(cerr, atoms, th.X[reg], 2);
     }
 }
@@ -213,7 +215,7 @@ Trace::TraceYReg(Thread& th, AtomTable& atoms, const word32 reg)
 {
   if (trace_level & TRACE_REGS)
     {
-      cerr.form("\tY[%ld]: \n", reg);
+      cerr << "\tY[" << reg << "]: " << endl;
       th.heap.displayTerm(cerr, atoms, th.envStack.yReg(th.currentEnvironment, reg), 2);
     }
 }
@@ -257,7 +259,7 @@ Trace::TracePseudoRegs(Thread& th, AtomTable& atoms,
 	{
 	  const word32 reg = va_arg(regs, word32);
 
-	  cerr.form("\tX[%ld]: \n", reg);
+	  cerr << "\tX[" << reg << "]: " << endl;
 	  th.heap.displayTerm(cerr, atoms, th.PSIGetReg(reg), 2);
 	}
 
@@ -268,7 +270,7 @@ Trace::TracePseudoRegs(Thread& th, AtomTable& atoms,
 void
 Trace::TracePseudo0(Thread& th, AtomTable& atoms, const word32 n)
 {
-  cerr.form("pseudo_instr0(%ld =  %s", n, pseudo_instr0_array[n].name);
+  cerr << "pseudo_instr0(" << n << " = " << pseudo_instr0_array[n].name;
   TracePseudoRegs(th, atoms, pseudo_instr0_array[n].mode, 0);
 }
 
@@ -277,7 +279,7 @@ Trace::TracePseudo1(Thread& th, AtomTable& atoms,
 		    const word32 n,
 		    const word32 reg1)
 {
-  cerr.form("pseudo_instr1(%ld = %s", n, pseudo_instr1_array[n].name);
+  cerr << "pseudo_instr1(" << n << " = " << pseudo_instr1_array[n].name;
   TracePseudoRegs(th, atoms, pseudo_instr1_array[n].mode, 1,
 		  reg1);
 }
@@ -288,7 +290,7 @@ Trace::TracePseudo2(Thread& th, AtomTable& atoms,
 		    const word32 reg1,
 		    const word32 reg2)
 {
-  cerr.form("pseudo_instr2(%ld = %s", n, pseudo_instr2_array[n].name);
+  cerr << "pseudo_instr2(" << n << " = " << pseudo_instr2_array[n].name;
   TracePseudoRegs(th, atoms, pseudo_instr2_array[n].mode, 2,
 		  reg1, reg2);
 }
@@ -300,7 +302,7 @@ Trace::TracePseudo3(Thread& th, AtomTable& atoms,
 		    const word32 reg2,
 		    const word32 reg3)
 {
-  cerr.form("pseudo_instr3(%ld = %s", n, pseudo_instr3_array[n].name);
+  cerr << "pseudo_instr3(" << n << " = " << pseudo_instr3_array[n].name;
   TracePseudoRegs(th, atoms, pseudo_instr3_array[n].mode, 3,
 		  reg1, reg2, reg3);
 }
@@ -311,7 +313,7 @@ Trace::TracePseudo4(Thread& th, AtomTable& atoms,
 		    const word32 reg1, const word32 reg2,
 		    const word32 reg3, const word32 reg4)
 {
-  cerr.form("pseudo_instr4(%ld = %s", n, pseudo_instr4_array[n].name);
+  cerr << "pseudo_instr4(" << n << " = " << pseudo_instr4_array[n].name;
   TracePseudoRegs(th, atoms, pseudo_instr4_array[n].mode, 4,
 		  reg1, reg2, reg3, reg4);
 }
@@ -323,7 +325,7 @@ Trace::TracePseudo5(Thread& th, AtomTable& atoms,
 		    const word32 reg3, const word32 reg4,
 		    const word32 reg5)
 {
-  cerr.form("pseudo_instr5(%ld = %s", n, pseudo_instr5_array[n].name);
+  cerr << "pseudo_instr5(" << n << " = " << pseudo_instr5_array[n].name;
   TracePseudoRegs(th, atoms, pseudo_instr5_array[n].mode, 5,
 		  reg1, reg2, reg3, reg4, reg5);
 }
@@ -1240,8 +1242,7 @@ Trace::TraceInstr(Thread& th,
 
 
 	    CodeLoc oldpc = pc - Code::SIZE_OF_INSTRUCTION;
-	    cerr.form("*** UNKNOWN INSTRUCTION = %ld\n",
-		      getInstruction(oldpc));
+	    cerr << "*** UNKNOWN INSTRUCTION = " << getInstruction(oldpc) << endl;
 	  }
 	break;
 	}
@@ -1300,9 +1301,7 @@ Trace::TraceEnd(Thread& th)
   
   if ((trace_level & TRACE_CUT) && trace_cut_point != th.cutPoint)
     {
-      cerr.form("%6ld cutPoint=%ld\n",
-		th.TInfo().ID(),
-		th.cutPoint);
+      cerr << th.TInfo().ID() << " cutPoint=" << th.cutPoint << endl;
   
       cerr.flush();
     }
@@ -1314,3 +1313,4 @@ Trace::Trace(const word32 level)
     trace_init_choice(false)
 { }
 
+#endif // DEBUG

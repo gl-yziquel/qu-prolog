@@ -1,13 +1,12 @@
 '$pseudo_instruction'/4:
 
-	switch_on_term(0, $321, 'fail', 'fail', $318, 'fail', $320)
+	switch_on_term(0, $327, 'fail', 'fail', $324, 'fail', $326)
 
-$318:
-	switch_on_structure(0, 1024, ['default':'fail', '$'/0:$319, 'compound'/1:$13, 'var'/1:$14, 'atom'/1:$15, 'integer'/1:$16, 'obvar'/1:$17, 'quant'/1:$18, 'sub'/1:$19, '$get_level'/1:$20, '$delayneckcut'/1:$21, '$cut'/1:$22, '$get_qplibpath'/1:$23, 'get_args'/1:$24, '$psi_retract'/1:$25, '$save'/1:$26, '$restore'/1:$27, '$cputime'/1:$28, '$stat_memory'/1:$29, '$stat_program'/1:$30, '$empty_sub'/1:$31, '$call_predicate0'/1:$32, '$code_top'/1:$33, '$get_catch'/1:$34, '$set_catch'/1:$35, '$psi_resume'/1:$36, '$erase'/1:$37, '$clear_signal'/1:$38, '$default_signal_handler'/1:$39, 'current_input'/1:$40, 'current_output'/1:$41, '$set_input'/1:$42, '$set_output'/1:$43, 'flush_output'/1:$44, 'at_end_of_stream'/1:$45, 'past_end_of_stream'/1:$46, '$reset_stream'/1:$47, '$local_obvar'/1:$48, '$new_obvar'/1:$49, '$valid_obvar_prefix'/1:$50, '$set_trace_level'/1:$51, 'freeze_var'/1:$52, 'thaw_var'/1:$53, 'frozen_var'/1:$54, 'thawed_var'/1:$55, 'atomic'/1:$56, 'any_variable'/1:$57, 'simple'/1:$58, 'nonvar'/1:$59, 'std_var'/1:$60, 'std_nonvar'/1:$61, 'std_compound'/1:$62, 'list'/1:$63, 'freeze_term'/1:$64, 'thaw_term'/1:$65, 'name_vars'/1:$66, 'ip_array_clear'/1:$67, '$ipc_commit'/1:$68, 'tcp_listen'/1:$69, 'tcp_checkconn'/1:$70, 'tcp_close'/1:$71, 'realtime'/1:$72, '$single_sub'/1:$73, 'tcp_is_socket'/1:$74, 'process_pid'/1:$75, 'thread_set_symbol'/1:$76, 'thread_goal'/1:$77, 'thread_is_thread'/1:$78, 'thread_is_runnable'/1:$79, 'thread_is_suspended'/1:$80, '$thread_tid'/1:$81, 'thread_suspend'/1:$82, 'thread_resume'/1:$83, '$thread_wait'/1:$84, '$thread_defaults'/1:$85, '$thread_set_defaults'/1:$86, 'machine_ip_address'/1:$87, 'machine_name'/1:$88, 'nsig'/1:$89, 'thread_errno'/1:$90, 'set_trace_flag'/1:$91, 'clear_trace_flag'/1:$92, 'test_trace_flag'/1:$93, '$tcp_connect2'/1:$94, 'stdin'/1:$95, 'stdout'/1:$96, 'stderr'/1:$97, 'ipc_open'/1:$98, 'ipc_close'/1:$99, 'process_set_symbol'/1:$100, 'process_symbol'/1:$101, 'icm_process_handle'/1:$102, '$icm_thread_handle'/1:$103, '$alloc_buffer'/1:$104, '$dealloc_buffer'/1:$105, '$debug_write'/1:$106, '$addExtraInfoToVars'/1:$107, '$reset_std_stream'/1:$108, 'current_threads'/1:$109, 'thread_exit'/1:$110, 'icm_address'/1:$111, 'icm_port'/1:$112, 'bound'/1:$113, '$psi_make_iterator'/1:$114, 'is'/2:$115, '<'/2:$116, '=<'/2:$117, 'ip_set'/2:$118, 'ip_lookup'/2:$119, '$get_char'/2:$120, 'put_char'/2:$121, '$get_code'/2:$122, 'put_code'/2:$123, '$compare_pointers'/2:$124, '$set_flag'/2:$125, '$get_flag'/2:$126, '$copy_term_from_buffer'/2:$127, '$stat_atom'/2:$128, '$stat_predicate'/2:$129, '$stat_name'/2:$130, '$psi_write_atom'/2:$131, '$psi_writeq_atom'/2:$132, '$write_integer'/2:$133, '$write_var'/2:$134, '$writeR_var'/2:$135, '$write_obvar'/2:$136, '$writeR_obvar'/2:$137, '$writeq_obvar'/2:$138, '$get_substitution'/2:$139, 'sub_term'/2:$140, '$next_sub'/2:$141, '$sub_table_size'/2:$142, '$compress_sub_object_variable'/2:$143, '$reset_entry'/2:$144, 'atom_length'/2:$145, 'concat_atom'/2:$146, '$atom_codes'/2:$147, '$codes_atom'/2:$148, '$char_code'/2:$149, '$code_char'/2:$150, '$record_get_first_ref'/2:$151, '$record_get_next_ref'/2:$152, '$record_get_last_ref'/2:$153, '$record_get_term'/2:$154, '$close'/2:$155, '$stream_position'/2:$156, '$set_stream_position'/2:$157, '$line_number'/2:$158, '$stream_to_chars'/2:$159, '$stream_to_atom'/2:$160, '$system'/2:$161, '$mktemp'/2:$162, '$delay'/2:$163, '$delayed_problems_for_var'/2:$164, '$get_bound_structure'/2:$165, 'not_free_in'/2:$166, '$not_free_in_var_simplify'/2:$167, 'is_distinct'/2:$168, 'get_distinct'/2:$169, '$object_variable_name_to_prefix'/2:$170, '$readR_var'/2:$171, '$readR_obvar'/2:$172, 'quantifier'/2:$173, 'bound_var'/2:$174, 'body'/2:$175, 'check_binder'/2:$176, 'get_var_name'/2:$177, 'set_var_name'/2:$178, 'set_obvar_name'/2:$179, 'freeze_term'/2:$180, 'thaw_term'/2:$181, 'collect_vars'/2:$182, '$call_predicate1'/2:$183, '$increment'/2:$184, '$decrement'/2:$185, 'name_vars'/2:$186, 'get_unnamed_vars'/2:$187, 'global_state_lookup'/2:$188, 'global_state_set'/2:$189, 'global_state_increment'/2:$190, 'global_state_decrement'/2:$191, '$get_dynamic_chain'/2:$192, '$thread_goal'/2:$193, 'tcp_host_to_ip_address'/2:$194, 'tcp_host_from_ip_address'/2:$195, 'get_msgstream_handle'/2:$196, '$thread_symbol'/2:$197, '$load'/2:$198, 'is_free_in'/2:$199, 'pipe'/2:$200, 'env_getenv'/2:$201, 'env_putenv'/2:$202, 'signal_to_atom'/2:$203, 'strerror'/2:$204, 'icm_handles_equal'/2:$205, 'icm_handles_qp_equal'/2:$206, 'uncurry'/2:$207, '$get_line'/2:$208, 'ip_array_init'/2:$209, 'copy_term'/2:$210, '$buffer_set_domains_apart'/2:$211, '$copy_substitution'/2:$212, '$copy_obvar_to_buffer_tail'/2:$213, '$stat_ip_table'/2:$214, '$set_stream_properties'/2:$215, '$get_stream_properties'/2:$216, 'set_std_stream'/2:$217, 'thread_push_goal'/2:$218, 'structural_unify'/2:$219, '$not_free_in_nfi_simp'/2:$220, '$require_nfi_simp'/2:$221, '$fast_simplify'/2:$222, 'gmtime'/2:$223, 'localtime'/2:$224, '=='/2:$225, 'simplify_term'/2:$226, 'is_not_free_in'/2:$227, '$put_line'/2:$228, 'functor'/3:$229, 'arg'/3:$230, '$add'/3:$231, '$subtract'/3:$232, '$compare_var'/3:$233, '$compare_atom'/3:$234, '$fast_equal'/3:$235, '$stat_choice'/3:$236, '$stat_global'/3:$237, '$stat_local'/3:$238, '$stat_binding_trail'/3:$239, '$stat_code'/3:$240, '$stat_string'/3:$241, '$get_next_clause'/3:$242, '$new_sub'/3:$243, '$set_domain'/3:$244, '$set_range'/3:$245, '$get_domain'/3:$246, '$get_range'/3:$247, '$build_sub_term'/3:$248, '$get_opcode'/3:$249, '$get_const'/3:$250, '$get_number'/3:$251, '$get_address'/3:$252, '$get_offset'/3:$253, '$get_pred'/3:$254, '$get_entry'/3:$255, '$copy_to_buffer_tail'/3:$256, 'concat_atom'/3:$257, '$record_record_first'/3:$258, '$record_record_last'/3:$259, '$open'/3:$260, '$get_atom_from_atom_table'/3:$261, '$symtype'/3:$262, '$access'/3:$263, '$read_next_token'/3:$264, '$encoded_write'/3:$265, '$call_predicate2'/3:$266, '$put_structure'/3:$267, '$set_argument'/3:$268, 'ip_set'/3:$269, 'ip_lookup'/3:$270, '$ipc_next'/3:$271, 'tcp_socket'/3:$272, 'tcp_setsockopt'/3:$273, 'tcp_getsockopt'/3:$274, 'tcp_bind'/3:$275, '$tcp_connect1'/3:$276, '$open_socket_stream'/3:$277, '$open_msgstream'/3:$278, 'tcp_getsockname'/3:$279, 'tcp_getpeername'/3:$280, '$tcp_service_to_proto_port'/3:$281, '$tcp_service_proto_to_port'/3:$282, '$tcp_service_from_proto_port'/3:$283, '$tcp_service_proto_from_port'/3:$284, '$thread_fork'/3:$285, '$psi_decompile'/3:$286, '$make_sub_from_buffer'/3:$287, '$stat_object_trail'/3:$288, '$stat_ip_trail'/3:$289, '$stat_tag_trail'/3:$290, '$stat_scratchpad'/3:$291, '$get_delays$'/3:$292, 'atom_concat2'/3:$293, '$stat_ref_trail'/3:$294, '$get_first_clause'/3:$295, '$get_integer'/3:$296, '$ipc_first'/3:$297, 'simplify_term'/3:$298, '$psi_dynamic'/4:$299, 'atom_search'/4:$300, '$sub_atom'/4:$301, '$load_foreign'/4:$302, '$open_string'/4:$303, '$get_pred_from_pred_table'/4:$304, '$encoded_read'/4:$305, 'quantify'/4:$306, '$call_predicate3'/4:$307, '$ipc_send'/4:$308, 'tcp_accept'/4:$309, '$psi_next_instr'/4:$310, '$psi_assert'/4:$311, '$ccompile'/4:$312, '$set_domains_apart'/4:$313, '$ipc_get_message'/5:$314, '$call_predicate4'/5:$315, 'icm_handle_from_components'/5:$316, '$icm_handle_to_components'/5:$317])
+$324:
+	switch_on_structure(0, 1024, ['$default':'fail', '$'/0:$325, 'compound'/1:$14, 'var'/1:$15, 'atom'/1:$16, 'integer'/1:$17, 'obvar'/1:$18, 'quant'/1:$19, 'sub'/1:$20, '$get_level'/1:$21, '$delayneckcut'/1:$22, '$cut'/1:$23, '$get_qplibpath'/1:$24, 'get_args'/1:$25, '$psi_retract'/1:$26, '$save'/1:$27, '$restore'/1:$28, '$cputime'/1:$29, '$stat_memory'/1:$30, '$stat_program'/1:$31, '$empty_sub'/1:$32, '$call_predicate0'/1:$33, '$code_top'/1:$34, '$get_catch'/1:$35, '$set_catch'/1:$36, '$psi_resume'/1:$37, '$erase'/1:$38, '$clear_signal'/1:$39, '$default_signal_handler'/1:$40, 'current_input'/1:$41, 'current_output'/1:$42, '$set_input'/1:$43, '$set_output'/1:$44, 'flush_output'/1:$45, 'at_end_of_stream'/1:$46, 'past_end_of_stream'/1:$47, '$reset_stream'/1:$48, '$local_obvar'/1:$49, '$new_obvar'/1:$50, '$valid_obvar_prefix'/1:$51, '$set_trace_level'/1:$52, 'freeze_var'/1:$53, 'thaw_var'/1:$54, 'frozen_var'/1:$55, 'thawed_var'/1:$56, 'atomic'/1:$57, 'any_variable'/1:$58, 'simple'/1:$59, 'nonvar'/1:$60, 'std_var'/1:$61, 'std_nonvar'/1:$62, 'std_compound'/1:$63, 'list'/1:$64, 'freeze_term'/1:$65, 'thaw_term'/1:$66, 'name_vars'/1:$67, 'ip_array_clear'/1:$68, '$ipc_commit'/1:$69, 'tcp_listen'/1:$70, 'tcp_checkconn'/1:$71, 'tcp_close'/1:$72, 'realtime'/1:$73, '$single_sub'/1:$74, 'tcp_is_socket'/1:$75, 'process_pid'/1:$76, 'thread_set_symbol'/1:$77, 'thread_goal'/1:$78, 'thread_is_thread'/1:$79, 'thread_is_runnable'/1:$80, 'thread_is_suspended'/1:$81, '$thread_tid'/1:$82, 'thread_suspend'/1:$83, 'thread_resume'/1:$84, '$thread_wait'/1:$85, '$thread_defaults'/1:$86, '$thread_set_defaults'/1:$87, 'machine_ip_address'/1:$88, 'machine_name'/1:$89, 'nsig'/1:$90, 'thread_errno'/1:$91, 'set_trace_flag'/1:$92, 'clear_trace_flag'/1:$93, 'test_trace_flag'/1:$94, '$tcp_connect2'/1:$95, 'stdin'/1:$96, 'stdout'/1:$97, 'stderr'/1:$98, 'ipc_open'/1:$99, 'ipc_close'/1:$100, 'process_set_symbol'/1:$101, 'process_symbol'/1:$102, 'icm_process_handle'/1:$103, '$icm_thread_handle'/1:$104, '$alloc_buffer'/1:$105, '$dealloc_buffer'/1:$106, '$debug_write'/1:$107, '$addExtraInfoToVars'/1:$108, '$reset_std_stream'/1:$109, 'current_threads'/1:$110, 'thread_exit'/1:$111, 'icm_address'/1:$112, 'icm_port'/1:$113, 'bound'/1:$114, '$psi_make_iterator'/1:$115, 'set_autoflush'/1:$116, 'get_open_streams'/1:$117, 'broadcast'/1:$118, 'is'/2:$119, '<'/2:$120, '=<'/2:$121, 'ip_set'/2:$122, 'ip_lookup'/2:$123, '$get_char'/2:$124, 'put_char'/2:$125, '$get_code'/2:$126, 'put_code'/2:$127, '$compare_pointers'/2:$128, '$set_flag'/2:$129, '$get_flag'/2:$130, '$copy_term_from_buffer'/2:$131, '$stat_atom'/2:$132, '$stat_predicate'/2:$133, '$stat_name'/2:$134, '$psi_write_atom'/2:$135, '$psi_writeq_atom'/2:$136, '$write_integer'/2:$137, '$write_var'/2:$138, '$writeR_var'/2:$139, '$write_obvar'/2:$140, '$writeR_obvar'/2:$141, '$writeq_obvar'/2:$142, '$get_substitution'/2:$143, 'sub_term'/2:$144, '$next_sub'/2:$145, '$sub_table_size'/2:$146, '$compress_sub_object_variable'/2:$147, '$reset_entry'/2:$148, 'atom_length'/2:$149, 'concat_atom'/2:$150, '$atom_codes'/2:$151, '$codes_atom'/2:$152, '$char_code'/2:$153, '$code_char'/2:$154, '$record_get_first_ref'/2:$155, '$record_get_next_ref'/2:$156, '$record_get_last_ref'/2:$157, '$record_get_term'/2:$158, '$close'/2:$159, '$stream_position'/2:$160, '$set_stream_position'/2:$161, '$line_number'/2:$162, '$stream_to_chars'/2:$163, '$stream_to_atom'/2:$164, '$system'/2:$165, '$mktemp'/2:$166, '$delay'/2:$167, '$delayed_problems_for_var'/2:$168, '$get_bound_structure'/2:$169, 'not_free_in'/2:$170, '$not_free_in_var_simplify'/2:$171, 'is_distinct'/2:$172, 'get_distinct'/2:$173, '$object_variable_name_to_prefix'/2:$174, '$readR_var'/2:$175, '$readR_obvar'/2:$176, 'quantifier'/2:$177, 'bound_var'/2:$178, 'body'/2:$179, 'check_binder'/2:$180, 'get_var_name'/2:$181, 'set_var_name'/2:$182, 'set_obvar_name'/2:$183, 'freeze_term'/2:$184, 'thaw_term'/2:$185, 'collect_vars'/2:$186, '$call_predicate1'/2:$187, '$increment'/2:$188, '$decrement'/2:$189, 'name_vars'/2:$190, 'get_unnamed_vars'/2:$191, 'global_state_lookup'/2:$192, 'global_state_set'/2:$193, 'global_state_increment'/2:$194, 'global_state_decrement'/2:$195, '$get_dynamic_chain'/2:$196, '$thread_goal'/2:$197, 'tcp_host_to_ip_address'/2:$198, 'tcp_host_from_ip_address'/2:$199, 'get_msgstream_handle'/2:$200, '$thread_symbol'/2:$201, '$load'/2:$202, 'is_free_in'/2:$203, 'pipe'/2:$204, 'env_getenv'/2:$205, 'env_putenv'/2:$206, 'signal_to_atom'/2:$207, 'strerror'/2:$208, 'icm_handles_equal'/2:$209, 'icm_handles_qp_equal'/2:$210, 'uncurry'/2:$211, '$get_line'/2:$212, 'ip_array_init'/2:$213, 'copy_term'/2:$214, '$buffer_set_domains_apart'/2:$215, '$copy_substitution'/2:$216, '$copy_obvar_to_buffer_tail'/2:$217, '$stat_ip_table'/2:$218, '$set_stream_properties'/2:$219, '$get_stream_properties'/2:$220, 'set_std_stream'/2:$221, 'thread_push_goal'/2:$222, 'structural_unify'/2:$223, '$not_free_in_nfi_simp'/2:$224, '$require_nfi_simp'/2:$225, '$fast_simplify'/2:$226, 'gmtime'/2:$227, 'localtime'/2:$228, '=='/2:$229, 'simplify_term'/2:$230, 'is_not_free_in'/2:$231, '$put_line'/2:$232, '$symbolic_address_to_icm_handle'/2:$233, 'functor'/3:$234, 'arg'/3:$235, '$add'/3:$236, '$subtract'/3:$237, '$compare_var'/3:$238, '$compare_atom'/3:$239, '$fast_equal'/3:$240, '$stat_choice'/3:$241, '$stat_global'/3:$242, '$stat_local'/3:$243, '$stat_binding_trail'/3:$244, '$stat_code'/3:$245, '$stat_string'/3:$246, '$get_next_clause'/3:$247, '$icm_register'/3:$248, '$set_domain'/3:$249, '$set_range'/3:$250, '$get_domain'/3:$251, '$get_range'/3:$252, '$build_sub_term'/3:$253, '$get_opcode'/3:$254, '$get_const'/3:$255, '$get_number'/3:$256, '$get_address'/3:$257, '$get_offset'/3:$258, '$get_pred'/3:$259, '$get_entry'/3:$260, '$copy_to_buffer_tail'/3:$261, 'concat_atom'/3:$262, '$record_record_first'/3:$263, '$record_record_last'/3:$264, '$open'/3:$265, '$get_atom_from_atom_table'/3:$266, '$symtype'/3:$267, '$access'/3:$268, '$read_next_token'/3:$269, '$encoded_write'/3:$270, '$call_predicate2'/3:$271, '$put_structure'/3:$272, '$set_argument'/3:$273, 'ip_set'/3:$274, 'ip_lookup'/3:$275, '$ipc_next'/3:$276, 'tcp_socket'/3:$277, 'tcp_setsockopt'/3:$278, 'tcp_getsockopt'/3:$279, 'tcp_bind'/3:$280, '$tcp_connect1'/3:$281, '$open_socket_stream'/3:$282, '$open_msgstream'/3:$283, 'tcp_getsockname'/3:$284, 'tcp_getpeername'/3:$285, '$tcp_service_to_proto_port'/3:$286, '$tcp_service_proto_to_port'/3:$287, '$tcp_service_from_proto_port'/3:$288, '$tcp_service_proto_from_port'/3:$289, '$thread_fork'/3:$290, '$psi_decompile'/3:$291, '$make_sub_from_buffer'/3:$292, '$stat_object_trail'/3:$293, '$stat_ip_trail'/3:$294, '$stat_tag_trail'/3:$295, '$stat_scratchpad'/3:$296, '$get_delays$'/3:$297, 'atom_concat2'/3:$298, '$stat_ref_trail'/3:$299, '$get_first_clause'/3:$300, '$get_integer'/3:$301, '$ipc_first'/3:$302, 'simplify_term'/3:$303, '$psi_dynamic'/4:$304, 'atom_search'/4:$305, '$sub_atom'/4:$306, '$load_foreign'/4:$307, '$open_string'/4:$308, '$get_pred_from_pred_table'/4:$309, '$encoded_read'/4:$310, 'quantify'/4:$311, '$call_predicate3'/4:$312, '$ipc_send'/4:$313, 'tcp_accept'/4:$314, '$psi_next_instr'/4:$315, '$psi_assert'/4:$316, '$ccompile'/4:$317, '$set_domains_apart'/4:$318, '$new_sub'/4:$319, '$ipc_get_message'/5:$320, '$call_predicate4'/5:$321, 'icm_handle_from_components'/5:$322, '$icm_handle_to_components'/5:$323])
 
-$319:
-	try(4, $13)
-	retry($14)
+$325:
+	try(4, $14)
 	retry($15)
 	retry($16)
 	retry($17)
@@ -310,12 +309,18 @@ $319:
 	retry($314)
 	retry($315)
 	retry($316)
-	trust($317)
+	retry($317)
+	retry($318)
+	retry($319)
+	retry($320)
+	retry($321)
+	retry($322)
+	trust($323)
 
-$320:
-	switch_on_constant(0, 32, ['default':'fail', '$failpt_to_catch':$1, '$catch_to_failpt':$2, '$clear_all_signals':$3, '$psidelay_resume':$4, '$compress_var_delays':$5, '$retry_nfi_obvars':$6, 'fast_retry_delays':$7, 'thread_yield':$8, 'thread_exit':$9, 'thread_is_initial_thread':$10, '$signal_thread_exit':$11, 'gc':$12])
+$326:
+	switch_on_constant(0, 32, ['$default':'fail', '$failpt_to_catch':$1, '$catch_to_failpt':$2, '$clear_all_signals':$3, '$psidelay_resume':$4, '$compress_var_delays':$5, '$retry_nfi_obvars':$6, 'fast_retry_delays':$7, 'thread_yield':$8, 'thread_exit':$9, 'thread_is_initial_thread':$10, '$signal_thread_exit':$11, 'gc':$12, '$icm_deregister':$13])
 
-$321:
+$327:
 	try(4, $1)
 	retry($2)
 	retry($3)
@@ -632,7 +637,13 @@ $321:
 	retry($314)
 	retry($315)
 	retry($316)
-	trust($317)
+	retry($317)
+	retry($318)
+	retry($319)
+	retry($320)
+	retry($321)
+	retry($322)
+	trust($323)
 
 $1:
 	get_constant('$failpt_to_catch', 0)
@@ -731,6 +742,14 @@ $12:
 	proceed
 
 $13:
+	get_constant('$icm_deregister', 0)
+	get_constant('[]', 1)
+	get_constant('[]', 3)
+	get_structure('$pseudo_instr0', 1, 2)
+	unify_integer(12)
+	proceed
+
+$14:
 	get_constant('[]', 3)
 	get_structure('compound', 1, 0)
 	unify_x_variable(0)
@@ -745,7 +764,7 @@ $13:
 	unify_x_value(0)
 	proceed
 
-$14:
+$15:
 	get_constant('[]', 3)
 	get_structure('var', 1, 0)
 	unify_x_variable(0)
@@ -760,7 +779,7 @@ $14:
 	unify_x_value(0)
 	proceed
 
-$15:
+$16:
 	get_constant('[]', 3)
 	get_structure('atom', 1, 0)
 	unify_x_variable(0)
@@ -775,7 +794,7 @@ $15:
 	unify_x_value(0)
 	proceed
 
-$16:
+$17:
 	get_constant('[]', 3)
 	get_structure('integer', 1, 0)
 	unify_x_variable(0)
@@ -790,7 +809,7 @@ $16:
 	unify_x_value(0)
 	proceed
 
-$17:
+$18:
 	get_constant('[]', 3)
 	get_structure('obvar', 1, 0)
 	unify_x_variable(0)
@@ -805,7 +824,7 @@ $17:
 	unify_x_value(0)
 	proceed
 
-$18:
+$19:
 	get_constant('[]', 3)
 	get_structure('quant', 1, 0)
 	unify_x_variable(0)
@@ -820,7 +839,7 @@ $18:
 	unify_x_value(0)
 	proceed
 
-$19:
+$20:
 	get_constant('[]', 3)
 	get_structure('sub', 1, 0)
 	unify_x_variable(0)
@@ -835,7 +854,7 @@ $19:
 	unify_x_value(0)
 	proceed
 
-$20:
+$21:
 	get_structure('$get_level', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -854,7 +873,7 @@ $20:
 	unify_x_value(1)
 	proceed
 
-$21:
+$22:
 	get_constant('[]', 3)
 	get_structure('$delayneckcut', 1, 0)
 	unify_x_variable(0)
@@ -869,7 +888,7 @@ $21:
 	unify_x_value(0)
 	proceed
 
-$22:
+$23:
 	get_constant('[]', 3)
 	get_structure('$cut', 1, 0)
 	unify_x_variable(0)
@@ -884,7 +903,7 @@ $22:
 	unify_x_value(0)
 	proceed
 
-$23:
+$24:
 	get_structure('$get_qplibpath', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -903,7 +922,7 @@ $23:
 	unify_x_value(1)
 	proceed
 
-$24:
+$25:
 	get_structure('get_args', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -922,7 +941,7 @@ $24:
 	unify_x_value(1)
 	proceed
 
-$25:
+$26:
 	get_constant('[]', 3)
 	get_structure('$psi_retract', 1, 0)
 	unify_x_variable(0)
@@ -937,7 +956,7 @@ $25:
 	unify_x_value(0)
 	proceed
 
-$26:
+$27:
 	get_constant('[]', 3)
 	get_structure('$save', 1, 0)
 	unify_x_variable(0)
@@ -952,7 +971,7 @@ $26:
 	unify_x_value(0)
 	proceed
 
-$27:
+$28:
 	get_constant('[]', 3)
 	get_structure('$restore', 1, 0)
 	unify_x_variable(0)
@@ -967,7 +986,7 @@ $27:
 	unify_x_value(0)
 	proceed
 
-$28:
+$29:
 	get_structure('$cputime', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -986,7 +1005,7 @@ $28:
 	unify_x_value(1)
 	proceed
 
-$29:
+$30:
 	get_structure('$stat_memory', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1005,7 +1024,7 @@ $29:
 	unify_x_value(1)
 	proceed
 
-$30:
+$31:
 	get_structure('$stat_program', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1024,7 +1043,7 @@ $30:
 	unify_x_value(1)
 	proceed
 
-$31:
+$32:
 	get_structure('$empty_sub', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1043,7 +1062,7 @@ $31:
 	unify_x_value(1)
 	proceed
 
-$32:
+$33:
 	get_constant('[]', 3)
 	get_structure('$call_predicate0', 1, 0)
 	unify_x_variable(0)
@@ -1058,7 +1077,7 @@ $32:
 	unify_x_value(0)
 	proceed
 
-$33:
+$34:
 	get_structure('$code_top', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1077,7 +1096,7 @@ $33:
 	unify_x_value(1)
 	proceed
 
-$34:
+$35:
 	get_structure('$get_catch', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1096,7 +1115,7 @@ $34:
 	unify_x_value(1)
 	proceed
 
-$35:
+$36:
 	get_constant('[]', 3)
 	get_structure('$set_catch', 1, 0)
 	unify_x_variable(0)
@@ -1111,7 +1130,7 @@ $35:
 	unify_x_value(0)
 	proceed
 
-$36:
+$37:
 	get_constant('[]', 3)
 	get_structure('$psi_resume', 1, 0)
 	unify_x_variable(0)
@@ -1126,7 +1145,7 @@ $36:
 	unify_x_value(0)
 	proceed
 
-$37:
+$38:
 	get_constant('[]', 3)
 	get_structure('$erase', 1, 0)
 	unify_x_variable(0)
@@ -1141,7 +1160,7 @@ $37:
 	unify_x_value(0)
 	proceed
 
-$38:
+$39:
 	get_constant('[]', 3)
 	get_structure('$clear_signal', 1, 0)
 	unify_x_variable(0)
@@ -1156,7 +1175,7 @@ $38:
 	unify_x_value(0)
 	proceed
 
-$39:
+$40:
 	get_constant('[]', 3)
 	get_structure('$default_signal_handler', 1, 0)
 	unify_x_variable(0)
@@ -1171,7 +1190,7 @@ $39:
 	unify_x_value(0)
 	proceed
 
-$40:
+$41:
 	get_structure('current_input', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1190,7 +1209,7 @@ $40:
 	unify_x_value(1)
 	proceed
 
-$41:
+$42:
 	get_structure('current_output', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1209,7 +1228,7 @@ $41:
 	unify_x_value(1)
 	proceed
 
-$42:
+$43:
 	get_constant('[]', 3)
 	get_structure('$set_input', 1, 0)
 	unify_x_variable(0)
@@ -1224,7 +1243,7 @@ $42:
 	unify_x_value(0)
 	proceed
 
-$43:
+$44:
 	get_constant('[]', 3)
 	get_structure('$set_output', 1, 0)
 	unify_x_variable(0)
@@ -1239,7 +1258,7 @@ $43:
 	unify_x_value(0)
 	proceed
 
-$44:
+$45:
 	get_constant('[]', 3)
 	get_structure('flush_output', 1, 0)
 	unify_x_variable(0)
@@ -1254,7 +1273,7 @@ $44:
 	unify_x_value(0)
 	proceed
 
-$45:
+$46:
 	get_constant('[]', 3)
 	get_structure('at_end_of_stream', 1, 0)
 	unify_x_variable(0)
@@ -1269,7 +1288,7 @@ $45:
 	unify_x_value(0)
 	proceed
 
-$46:
+$47:
 	get_constant('[]', 3)
 	get_structure('past_end_of_stream', 1, 0)
 	unify_x_variable(0)
@@ -1284,7 +1303,7 @@ $46:
 	unify_x_value(0)
 	proceed
 
-$47:
+$48:
 	get_constant('[]', 3)
 	get_structure('$reset_stream', 1, 0)
 	unify_x_variable(0)
@@ -1299,7 +1318,7 @@ $47:
 	unify_x_value(0)
 	proceed
 
-$48:
+$49:
 	get_constant('[]', 3)
 	get_structure('$local_obvar', 1, 0)
 	unify_x_variable(0)
@@ -1314,7 +1333,7 @@ $48:
 	unify_x_value(0)
 	proceed
 
-$49:
+$50:
 	get_structure('$new_obvar', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1333,7 +1352,7 @@ $49:
 	unify_x_value(1)
 	proceed
 
-$50:
+$51:
 	get_constant('[]', 3)
 	get_structure('$valid_obvar_prefix', 1, 0)
 	unify_x_variable(0)
@@ -1348,7 +1367,7 @@ $50:
 	unify_x_value(0)
 	proceed
 
-$51:
+$52:
 	get_constant('[]', 3)
 	get_structure('$set_trace_level', 1, 0)
 	unify_x_variable(0)
@@ -1363,7 +1382,7 @@ $51:
 	unify_x_value(0)
 	proceed
 
-$52:
+$53:
 	get_constant('[]', 3)
 	get_structure('freeze_var', 1, 0)
 	unify_x_variable(0)
@@ -1378,7 +1397,7 @@ $52:
 	unify_x_value(0)
 	proceed
 
-$53:
+$54:
 	get_constant('[]', 3)
 	get_structure('thaw_var', 1, 0)
 	unify_x_variable(0)
@@ -1393,7 +1412,7 @@ $53:
 	unify_x_value(0)
 	proceed
 
-$54:
+$55:
 	get_constant('[]', 3)
 	get_structure('frozen_var', 1, 0)
 	unify_x_variable(0)
@@ -1408,7 +1427,7 @@ $54:
 	unify_x_value(0)
 	proceed
 
-$55:
+$56:
 	get_constant('[]', 3)
 	get_structure('thawed_var', 1, 0)
 	unify_x_variable(0)
@@ -1423,7 +1442,7 @@ $55:
 	unify_x_value(0)
 	proceed
 
-$56:
+$57:
 	get_constant('[]', 3)
 	get_structure('atomic', 1, 0)
 	unify_x_variable(0)
@@ -1438,7 +1457,7 @@ $56:
 	unify_x_value(0)
 	proceed
 
-$57:
+$58:
 	get_constant('[]', 3)
 	get_structure('any_variable', 1, 0)
 	unify_x_variable(0)
@@ -1453,7 +1472,7 @@ $57:
 	unify_x_value(0)
 	proceed
 
-$58:
+$59:
 	get_constant('[]', 3)
 	get_structure('simple', 1, 0)
 	unify_x_variable(0)
@@ -1468,7 +1487,7 @@ $58:
 	unify_x_value(0)
 	proceed
 
-$59:
+$60:
 	get_constant('[]', 3)
 	get_structure('nonvar', 1, 0)
 	unify_x_variable(0)
@@ -1483,7 +1502,7 @@ $59:
 	unify_x_value(0)
 	proceed
 
-$60:
+$61:
 	get_constant('[]', 3)
 	get_structure('std_var', 1, 0)
 	unify_x_variable(0)
@@ -1498,7 +1517,7 @@ $60:
 	unify_x_value(0)
 	proceed
 
-$61:
+$62:
 	get_constant('[]', 3)
 	get_structure('std_nonvar', 1, 0)
 	unify_x_variable(0)
@@ -1513,7 +1532,7 @@ $61:
 	unify_x_value(0)
 	proceed
 
-$62:
+$63:
 	get_constant('[]', 3)
 	get_structure('std_compound', 1, 0)
 	unify_x_variable(0)
@@ -1528,7 +1547,7 @@ $62:
 	unify_x_value(0)
 	proceed
 
-$63:
+$64:
 	get_constant('[]', 3)
 	get_structure('list', 1, 0)
 	unify_x_variable(0)
@@ -1543,7 +1562,7 @@ $63:
 	unify_x_value(0)
 	proceed
 
-$64:
+$65:
 	get_constant('[]', 3)
 	get_structure('freeze_term', 1, 0)
 	unify_x_variable(0)
@@ -1558,7 +1577,7 @@ $64:
 	unify_x_value(0)
 	proceed
 
-$65:
+$66:
 	get_constant('[]', 3)
 	get_structure('thaw_term', 1, 0)
 	unify_x_variable(0)
@@ -1573,7 +1592,7 @@ $65:
 	unify_x_value(0)
 	proceed
 
-$66:
+$67:
 	get_constant('[]', 3)
 	get_structure('name_vars', 1, 0)
 	unify_x_variable(0)
@@ -1588,7 +1607,7 @@ $66:
 	unify_x_value(0)
 	proceed
 
-$67:
+$68:
 	get_constant('[]', 3)
 	get_structure('ip_array_clear', 1, 0)
 	unify_x_variable(0)
@@ -1603,7 +1622,7 @@ $67:
 	unify_x_value(0)
 	proceed
 
-$68:
+$69:
 	get_constant('[]', 3)
 	get_structure('$ipc_commit', 1, 0)
 	unify_x_variable(0)
@@ -1618,7 +1637,7 @@ $68:
 	unify_x_value(0)
 	proceed
 
-$69:
+$70:
 	get_constant('[]', 3)
 	get_structure('tcp_listen', 1, 0)
 	unify_x_variable(0)
@@ -1633,7 +1652,7 @@ $69:
 	unify_x_value(0)
 	proceed
 
-$70:
+$71:
 	get_constant('[]', 3)
 	get_structure('tcp_checkconn', 1, 0)
 	unify_x_variable(0)
@@ -1648,7 +1667,7 @@ $70:
 	unify_x_value(0)
 	proceed
 
-$71:
+$72:
 	get_constant('[]', 3)
 	get_structure('tcp_close', 1, 0)
 	unify_x_variable(0)
@@ -1663,7 +1682,7 @@ $71:
 	unify_x_value(0)
 	proceed
 
-$72:
+$73:
 	get_structure('realtime', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1682,7 +1701,7 @@ $72:
 	unify_x_value(1)
 	proceed
 
-$73:
+$74:
 	get_constant('[]', 3)
 	get_structure('$single_sub', 1, 0)
 	unify_x_variable(0)
@@ -1697,7 +1716,7 @@ $73:
 	unify_x_value(0)
 	proceed
 
-$74:
+$75:
 	get_constant('[]', 3)
 	get_structure('tcp_is_socket', 1, 0)
 	unify_x_variable(0)
@@ -1712,7 +1731,7 @@ $74:
 	unify_x_value(0)
 	proceed
 
-$75:
+$76:
 	get_structure('process_pid', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1731,7 +1750,7 @@ $75:
 	unify_x_value(1)
 	proceed
 
-$76:
+$77:
 	get_constant('[]', 3)
 	get_structure('thread_set_symbol', 1, 0)
 	unify_x_variable(0)
@@ -1746,7 +1765,7 @@ $76:
 	unify_x_value(0)
 	proceed
 
-$77:
+$78:
 	get_structure('thread_goal', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1765,7 +1784,7 @@ $77:
 	unify_x_value(1)
 	proceed
 
-$78:
+$79:
 	get_constant('[]', 3)
 	get_structure('thread_is_thread', 1, 0)
 	unify_x_variable(0)
@@ -1780,7 +1799,7 @@ $78:
 	unify_x_value(0)
 	proceed
 
-$79:
+$80:
 	get_constant('[]', 3)
 	get_structure('thread_is_runnable', 1, 0)
 	unify_x_variable(0)
@@ -1795,7 +1814,7 @@ $79:
 	unify_x_value(0)
 	proceed
 
-$80:
+$81:
 	get_constant('[]', 3)
 	get_structure('thread_is_suspended', 1, 0)
 	unify_x_variable(0)
@@ -1810,7 +1829,7 @@ $80:
 	unify_x_value(0)
 	proceed
 
-$81:
+$82:
 	get_structure('$thread_tid', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1829,7 +1848,7 @@ $81:
 	unify_x_value(1)
 	proceed
 
-$82:
+$83:
 	get_constant('[]', 3)
 	get_structure('thread_suspend', 1, 0)
 	unify_x_variable(0)
@@ -1844,7 +1863,7 @@ $82:
 	unify_x_value(0)
 	proceed
 
-$83:
+$84:
 	get_constant('[]', 3)
 	get_structure('thread_resume', 1, 0)
 	unify_x_variable(0)
@@ -1859,7 +1878,7 @@ $83:
 	unify_x_value(0)
 	proceed
 
-$84:
+$85:
 	get_constant('[]', 3)
 	get_structure('$thread_wait', 1, 0)
 	unify_x_variable(0)
@@ -1874,7 +1893,7 @@ $84:
 	unify_x_value(0)
 	proceed
 
-$85:
+$86:
 	get_structure('$thread_defaults', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1893,7 +1912,7 @@ $85:
 	unify_x_value(1)
 	proceed
 
-$86:
+$87:
 	get_constant('[]', 3)
 	get_structure('$thread_set_defaults', 1, 0)
 	unify_x_variable(0)
@@ -1908,7 +1927,7 @@ $86:
 	unify_x_value(0)
 	proceed
 
-$87:
+$88:
 	get_structure('machine_ip_address', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1927,7 +1946,7 @@ $87:
 	unify_x_value(1)
 	proceed
 
-$88:
+$89:
 	get_structure('machine_name', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1946,7 +1965,7 @@ $88:
 	unify_x_value(1)
 	proceed
 
-$89:
+$90:
 	get_structure('nsig', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1965,7 +1984,7 @@ $89:
 	unify_x_value(1)
 	proceed
 
-$90:
+$91:
 	get_structure('thread_errno', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -1984,7 +2003,7 @@ $90:
 	unify_x_value(1)
 	proceed
 
-$91:
+$92:
 	get_constant('[]', 3)
 	get_structure('set_trace_flag', 1, 0)
 	unify_x_variable(0)
@@ -1999,7 +2018,7 @@ $91:
 	unify_x_value(0)
 	proceed
 
-$92:
+$93:
 	get_constant('[]', 3)
 	get_structure('clear_trace_flag', 1, 0)
 	unify_x_variable(0)
@@ -2014,7 +2033,7 @@ $92:
 	unify_x_value(0)
 	proceed
 
-$93:
+$94:
 	get_constant('[]', 3)
 	get_structure('test_trace_flag', 1, 0)
 	unify_x_variable(0)
@@ -2029,7 +2048,7 @@ $93:
 	unify_x_value(0)
 	proceed
 
-$94:
+$95:
 	get_constant('[]', 3)
 	get_structure('$tcp_connect2', 1, 0)
 	unify_x_variable(0)
@@ -2044,7 +2063,7 @@ $94:
 	unify_x_value(0)
 	proceed
 
-$95:
+$96:
 	get_structure('stdin', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2063,7 +2082,7 @@ $95:
 	unify_x_value(1)
 	proceed
 
-$96:
+$97:
 	get_structure('stdout', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2082,7 +2101,7 @@ $96:
 	unify_x_value(1)
 	proceed
 
-$97:
+$98:
 	get_structure('stderr', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2101,7 +2120,7 @@ $97:
 	unify_x_value(1)
 	proceed
 
-$98:
+$99:
 	get_structure('ipc_open', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2120,7 +2139,7 @@ $98:
 	unify_x_value(1)
 	proceed
 
-$99:
+$100:
 	get_constant('[]', 3)
 	get_structure('ipc_close', 1, 0)
 	unify_x_variable(0)
@@ -2135,7 +2154,7 @@ $99:
 	unify_x_value(0)
 	proceed
 
-$100:
+$101:
 	get_constant('[]', 3)
 	get_structure('process_set_symbol', 1, 0)
 	unify_x_variable(0)
@@ -2150,7 +2169,7 @@ $100:
 	unify_x_value(0)
 	proceed
 
-$101:
+$102:
 	get_structure('process_symbol', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2169,7 +2188,7 @@ $101:
 	unify_x_value(1)
 	proceed
 
-$102:
+$103:
 	get_structure('icm_process_handle', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2188,7 +2207,7 @@ $102:
 	unify_x_value(1)
 	proceed
 
-$103:
+$104:
 	get_structure('$icm_thread_handle', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2207,7 +2226,7 @@ $103:
 	unify_x_value(1)
 	proceed
 
-$104:
+$105:
 	get_structure('$alloc_buffer', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2226,7 +2245,7 @@ $104:
 	unify_x_value(1)
 	proceed
 
-$105:
+$106:
 	get_constant('[]', 3)
 	get_structure('$dealloc_buffer', 1, 0)
 	unify_x_variable(0)
@@ -2241,7 +2260,7 @@ $105:
 	unify_x_value(0)
 	proceed
 
-$106:
+$107:
 	get_constant('[]', 3)
 	get_structure('$debug_write', 1, 0)
 	unify_x_variable(0)
@@ -2256,7 +2275,7 @@ $106:
 	unify_x_value(0)
 	proceed
 
-$107:
+$108:
 	get_constant('[]', 3)
 	get_structure('$addExtraInfoToVars', 1, 0)
 	unify_x_variable(0)
@@ -2271,7 +2290,7 @@ $107:
 	unify_x_value(0)
 	proceed
 
-$108:
+$109:
 	get_constant('[]', 3)
 	get_structure('$reset_std_stream', 1, 0)
 	unify_x_variable(0)
@@ -2286,7 +2305,7 @@ $108:
 	unify_x_value(0)
 	proceed
 
-$109:
+$110:
 	get_structure('current_threads', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2305,7 +2324,7 @@ $109:
 	unify_x_value(1)
 	proceed
 
-$110:
+$111:
 	get_constant('[]', 3)
 	get_structure('thread_exit', 1, 0)
 	unify_x_variable(0)
@@ -2320,7 +2339,7 @@ $110:
 	unify_x_value(0)
 	proceed
 
-$111:
+$112:
 	get_structure('icm_address', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2339,7 +2358,7 @@ $111:
 	unify_x_value(1)
 	proceed
 
-$112:
+$113:
 	get_structure('icm_port', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2358,7 +2377,7 @@ $112:
 	unify_x_value(1)
 	proceed
 
-$113:
+$114:
 	get_constant('[]', 3)
 	get_structure('bound', 1, 0)
 	unify_x_variable(0)
@@ -2373,7 +2392,7 @@ $113:
 	unify_x_value(0)
 	proceed
 
-$114:
+$115:
 	get_structure('$psi_make_iterator', 1, 0)
 	unify_x_variable(0)
 	get_list(1)
@@ -2392,7 +2411,56 @@ $114:
 	unify_x_value(1)
 	proceed
 
-$115:
+$116:
+	get_constant('[]', 3)
+	get_structure('set_autoflush', 1, 0)
+	unify_x_variable(0)
+	get_list(1)
+	unify_x_ref(1)
+	unify_constant('[]')
+	get_structure('=', 2, 1)
+	unify_x_value(0)
+	unify_x_variable(0)
+	get_structure('$pseudo_instr1', 2, 2)
+	unify_integer(102)
+	unify_x_value(0)
+	proceed
+
+$117:
+	get_structure('get_open_streams', 1, 0)
+	unify_x_variable(0)
+	get_list(1)
+	unify_x_ref(1)
+	unify_constant('[]')
+	get_structure('$psi_life', 1, 1)
+	unify_x_variable(1)
+	get_structure('$pseudo_instr1', 2, 2)
+	unify_integer(103)
+	unify_x_value(1)
+	get_list(3)
+	unify_x_ref(2)
+	unify_constant('[]')
+	get_structure('=', 2, 2)
+	unify_x_value(0)
+	unify_x_value(1)
+	proceed
+
+$118:
+	get_constant('[]', 3)
+	get_structure('broadcast', 1, 0)
+	unify_x_variable(0)
+	get_list(1)
+	unify_x_ref(1)
+	unify_constant('[]')
+	get_structure('=', 2, 1)
+	unify_x_value(0)
+	unify_x_variable(0)
+	get_structure('$pseudo_instr1', 2, 2)
+	unify_integer(104)
+	unify_x_value(0)
+	proceed
+
+$119:
 	get_structure('is', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2419,7 +2487,7 @@ $115:
 	unify_x_value(1)
 	proceed
 
-$116:
+$120:
 	get_constant('[]', 3)
 	get_structure('<', 2, 0)
 	unify_x_variable(0)
@@ -2442,7 +2510,7 @@ $116:
 	unify_x_value(1)
 	proceed
 
-$117:
+$121:
 	get_constant('[]', 3)
 	get_structure('=<', 2, 0)
 	unify_x_variable(0)
@@ -2465,7 +2533,7 @@ $117:
 	unify_x_value(1)
 	proceed
 
-$118:
+$122:
 	get_constant('[]', 3)
 	get_structure('ip_set', 2, 0)
 	unify_x_variable(0)
@@ -2488,7 +2556,7 @@ $118:
 	unify_x_value(1)
 	proceed
 
-$119:
+$123:
 	get_structure('ip_lookup', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2515,7 +2583,7 @@ $119:
 	unify_x_value(1)
 	proceed
 
-$120:
+$124:
 	get_structure('$get_char', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2542,7 +2610,7 @@ $120:
 	unify_x_value(1)
 	proceed
 
-$121:
+$125:
 	get_constant('[]', 3)
 	get_structure('put_char', 2, 0)
 	unify_x_variable(0)
@@ -2565,7 +2633,7 @@ $121:
 	unify_x_value(1)
 	proceed
 
-$122:
+$126:
 	get_structure('$get_code', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2592,7 +2660,7 @@ $122:
 	unify_x_value(1)
 	proceed
 
-$123:
+$127:
 	get_constant('[]', 3)
 	get_structure('put_code', 2, 0)
 	unify_x_variable(0)
@@ -2615,7 +2683,7 @@ $123:
 	unify_x_value(1)
 	proceed
 
-$124:
+$128:
 	get_constant('[]', 3)
 	get_structure('$compare_pointers', 2, 0)
 	unify_x_variable(0)
@@ -2638,7 +2706,7 @@ $124:
 	unify_x_value(1)
 	proceed
 
-$125:
+$129:
 	get_constant('[]', 3)
 	get_structure('$set_flag', 2, 0)
 	unify_x_variable(0)
@@ -2661,7 +2729,7 @@ $125:
 	unify_x_value(1)
 	proceed
 
-$126:
+$130:
 	get_structure('$get_flag', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2688,7 +2756,7 @@ $126:
 	unify_x_value(1)
 	proceed
 
-$127:
+$131:
 	get_structure('$copy_term_from_buffer', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2715,7 +2783,7 @@ $127:
 	unify_x_value(1)
 	proceed
 
-$128:
+$132:
 	get_structure('$stat_atom', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2747,7 +2815,7 @@ $128:
 	unify_x_value(5)
 	proceed
 
-$129:
+$133:
 	get_structure('$stat_predicate', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2779,7 +2847,7 @@ $129:
 	unify_x_value(5)
 	proceed
 
-$130:
+$134:
 	get_structure('$stat_name', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -2806,7 +2874,7 @@ $130:
 	unify_x_value(1)
 	proceed
 
-$131:
+$135:
 	get_constant('[]', 3)
 	get_structure('$psi_write_atom', 2, 0)
 	unify_x_variable(0)
@@ -2829,7 +2897,7 @@ $131:
 	unify_x_value(1)
 	proceed
 
-$132:
+$136:
 	get_constant('[]', 3)
 	get_structure('$psi_writeq_atom', 2, 0)
 	unify_x_variable(0)
@@ -2852,7 +2920,7 @@ $132:
 	unify_x_value(1)
 	proceed
 
-$133:
+$137:
 	get_constant('[]', 3)
 	get_structure('$write_integer', 2, 0)
 	unify_x_variable(0)
@@ -2875,7 +2943,7 @@ $133:
 	unify_x_value(1)
 	proceed
 
-$134:
+$138:
 	get_constant('[]', 3)
 	get_structure('$write_var', 2, 0)
 	unify_x_variable(0)
@@ -2898,7 +2966,7 @@ $134:
 	unify_x_value(1)
 	proceed
 
-$135:
+$139:
 	get_constant('[]', 3)
 	get_structure('$writeR_var', 2, 0)
 	unify_x_variable(0)
@@ -2921,7 +2989,7 @@ $135:
 	unify_x_value(1)
 	proceed
 
-$136:
+$140:
 	get_constant('[]', 3)
 	get_structure('$write_obvar', 2, 0)
 	unify_x_variable(0)
@@ -2944,7 +3012,7 @@ $136:
 	unify_x_value(1)
 	proceed
 
-$137:
+$141:
 	get_constant('[]', 3)
 	get_structure('$writeR_obvar', 2, 0)
 	unify_x_variable(0)
@@ -2967,7 +3035,7 @@ $137:
 	unify_x_value(1)
 	proceed
 
-$138:
+$142:
 	get_constant('[]', 3)
 	get_structure('$writeq_obvar', 2, 0)
 	unify_x_variable(0)
@@ -2990,7 +3058,7 @@ $138:
 	unify_x_value(1)
 	proceed
 
-$139:
+$143:
 	get_structure('$get_substitution', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3017,7 +3085,7 @@ $139:
 	unify_x_value(1)
 	proceed
 
-$140:
+$144:
 	get_structure('sub_term', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3044,7 +3112,7 @@ $140:
 	unify_x_value(1)
 	proceed
 
-$141:
+$145:
 	get_structure('$next_sub', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3071,7 +3139,7 @@ $141:
 	unify_x_value(1)
 	proceed
 
-$142:
+$146:
 	get_structure('$sub_table_size', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3098,7 +3166,7 @@ $142:
 	unify_x_value(1)
 	proceed
 
-$143:
+$147:
 	get_structure('$compress_sub_object_variable', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3125,7 +3193,7 @@ $143:
 	unify_x_value(1)
 	proceed
 
-$144:
+$148:
 	get_constant('[]', 3)
 	get_structure('$reset_entry', 2, 0)
 	unify_x_variable(0)
@@ -3148,7 +3216,7 @@ $144:
 	unify_x_value(1)
 	proceed
 
-$145:
+$149:
 	get_structure('atom_length', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3175,7 +3243,7 @@ $145:
 	unify_x_value(1)
 	proceed
 
-$146:
+$150:
 	get_structure('concat_atom', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3202,7 +3270,7 @@ $146:
 	unify_x_value(1)
 	proceed
 
-$147:
+$151:
 	get_structure('$atom_codes', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3229,7 +3297,7 @@ $147:
 	unify_x_value(1)
 	proceed
 
-$148:
+$152:
 	get_structure('$codes_atom', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3256,7 +3324,7 @@ $148:
 	unify_x_value(1)
 	proceed
 
-$149:
+$153:
 	get_structure('$char_code', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3283,7 +3351,7 @@ $149:
 	unify_x_value(1)
 	proceed
 
-$150:
+$154:
 	get_structure('$code_char', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3310,7 +3378,7 @@ $150:
 	unify_x_value(1)
 	proceed
 
-$151:
+$155:
 	get_structure('$record_get_first_ref', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3337,7 +3405,7 @@ $151:
 	unify_x_value(1)
 	proceed
 
-$152:
+$156:
 	get_structure('$record_get_next_ref', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3364,7 +3432,7 @@ $152:
 	unify_x_value(1)
 	proceed
 
-$153:
+$157:
 	get_structure('$record_get_last_ref', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3391,7 +3459,7 @@ $153:
 	unify_x_value(1)
 	proceed
 
-$154:
+$158:
 	get_structure('$record_get_term', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3418,7 +3486,7 @@ $154:
 	unify_x_value(1)
 	proceed
 
-$155:
+$159:
 	get_constant('[]', 3)
 	get_structure('$close', 2, 0)
 	unify_x_variable(0)
@@ -3441,7 +3509,7 @@ $155:
 	unify_x_value(1)
 	proceed
 
-$156:
+$160:
 	get_structure('$stream_position', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3468,7 +3536,7 @@ $156:
 	unify_x_value(1)
 	proceed
 
-$157:
+$161:
 	get_constant('[]', 3)
 	get_structure('$set_stream_position', 2, 0)
 	unify_x_variable(0)
@@ -3491,7 +3559,7 @@ $157:
 	unify_x_value(1)
 	proceed
 
-$158:
+$162:
 	get_structure('$line_number', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3518,7 +3586,7 @@ $158:
 	unify_x_value(1)
 	proceed
 
-$159:
+$163:
 	get_structure('$stream_to_chars', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3545,7 +3613,7 @@ $159:
 	unify_x_value(1)
 	proceed
 
-$160:
+$164:
 	get_structure('$stream_to_atom', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3572,7 +3640,7 @@ $160:
 	unify_x_value(1)
 	proceed
 
-$161:
+$165:
 	get_structure('$system', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3599,7 +3667,7 @@ $161:
 	unify_x_value(1)
 	proceed
 
-$162:
+$166:
 	get_structure('$mktemp', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3626,7 +3694,7 @@ $162:
 	unify_x_value(1)
 	proceed
 
-$163:
+$167:
 	get_constant('[]', 3)
 	get_structure('$delay', 2, 0)
 	unify_x_variable(0)
@@ -3649,7 +3717,7 @@ $163:
 	unify_x_value(1)
 	proceed
 
-$164:
+$168:
 	get_structure('$delayed_problems_for_var', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3676,7 +3744,7 @@ $164:
 	unify_x_value(1)
 	proceed
 
-$165:
+$169:
 	get_structure('$get_bound_structure', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3703,7 +3771,7 @@ $165:
 	unify_x_value(1)
 	proceed
 
-$166:
+$170:
 	get_constant('[]', 3)
 	get_structure('not_free_in', 2, 0)
 	unify_x_variable(0)
@@ -3726,7 +3794,7 @@ $166:
 	unify_x_value(1)
 	proceed
 
-$167:
+$171:
 	get_constant('[]', 3)
 	get_structure('$not_free_in_var_simplify', 2, 0)
 	unify_x_variable(0)
@@ -3749,7 +3817,7 @@ $167:
 	unify_x_value(1)
 	proceed
 
-$168:
+$172:
 	get_constant('[]', 3)
 	get_structure('is_distinct', 2, 0)
 	unify_x_variable(0)
@@ -3772,7 +3840,7 @@ $168:
 	unify_x_value(1)
 	proceed
 
-$169:
+$173:
 	get_structure('get_distinct', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3799,7 +3867,7 @@ $169:
 	unify_x_value(1)
 	proceed
 
-$170:
+$174:
 	get_structure('$object_variable_name_to_prefix', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3826,7 +3894,7 @@ $170:
 	unify_x_value(1)
 	proceed
 
-$171:
+$175:
 	get_structure('$readR_var', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3853,7 +3921,7 @@ $171:
 	unify_x_value(1)
 	proceed
 
-$172:
+$176:
 	get_structure('$readR_obvar', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3880,7 +3948,7 @@ $172:
 	unify_x_value(1)
 	proceed
 
-$173:
+$177:
 	get_structure('quantifier', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3907,7 +3975,7 @@ $173:
 	unify_x_value(1)
 	proceed
 
-$174:
+$178:
 	get_structure('bound_var', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3934,7 +4002,7 @@ $174:
 	unify_x_value(1)
 	proceed
 
-$175:
+$179:
 	get_structure('body', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -3961,7 +4029,7 @@ $175:
 	unify_x_value(1)
 	proceed
 
-$176:
+$180:
 	get_constant('[]', 3)
 	get_structure('check_binder', 2, 0)
 	unify_x_variable(0)
@@ -3984,7 +4052,7 @@ $176:
 	unify_x_value(1)
 	proceed
 
-$177:
+$181:
 	get_structure('get_var_name', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4011,7 +4079,7 @@ $177:
 	unify_x_value(1)
 	proceed
 
-$178:
+$182:
 	get_constant('[]', 3)
 	get_structure('set_var_name', 2, 0)
 	unify_x_variable(0)
@@ -4034,7 +4102,7 @@ $178:
 	unify_x_value(1)
 	proceed
 
-$179:
+$183:
 	get_constant('[]', 3)
 	get_structure('set_obvar_name', 2, 0)
 	unify_x_variable(0)
@@ -4057,7 +4125,7 @@ $179:
 	unify_x_value(1)
 	proceed
 
-$180:
+$184:
 	get_structure('freeze_term', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4084,7 +4152,7 @@ $180:
 	unify_x_value(1)
 	proceed
 
-$181:
+$185:
 	get_structure('thaw_term', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4111,7 +4179,7 @@ $181:
 	unify_x_value(1)
 	proceed
 
-$182:
+$186:
 	get_structure('collect_vars', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4138,7 +4206,7 @@ $182:
 	unify_x_value(1)
 	proceed
 
-$183:
+$187:
 	get_constant('[]', 3)
 	get_structure('$call_predicate1', 2, 0)
 	unify_x_variable(0)
@@ -4161,7 +4229,7 @@ $183:
 	unify_x_value(1)
 	proceed
 
-$184:
+$188:
 	get_structure('$increment', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4188,7 +4256,7 @@ $184:
 	unify_x_value(1)
 	proceed
 
-$185:
+$189:
 	get_structure('$decrement', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4215,7 +4283,7 @@ $185:
 	unify_x_value(1)
 	proceed
 
-$186:
+$190:
 	get_structure('name_vars', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4242,7 +4310,7 @@ $186:
 	unify_x_value(1)
 	proceed
 
-$187:
+$191:
 	get_structure('get_unnamed_vars', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4269,7 +4337,7 @@ $187:
 	unify_x_value(1)
 	proceed
 
-$188:
+$192:
 	get_structure('global_state_lookup', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4296,7 +4364,7 @@ $188:
 	unify_x_value(1)
 	proceed
 
-$189:
+$193:
 	get_constant('[]', 3)
 	get_structure('global_state_set', 2, 0)
 	unify_x_variable(0)
@@ -4319,7 +4387,7 @@ $189:
 	unify_x_value(1)
 	proceed
 
-$190:
+$194:
 	get_structure('global_state_increment', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4346,7 +4414,7 @@ $190:
 	unify_x_value(1)
 	proceed
 
-$191:
+$195:
 	get_structure('global_state_decrement', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4373,7 +4441,7 @@ $191:
 	unify_x_value(1)
 	proceed
 
-$192:
+$196:
 	get_structure('$get_dynamic_chain', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4400,7 +4468,7 @@ $192:
 	unify_x_value(1)
 	proceed
 
-$193:
+$197:
 	get_structure('$thread_goal', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4427,7 +4495,7 @@ $193:
 	unify_x_value(1)
 	proceed
 
-$194:
+$198:
 	get_structure('tcp_host_to_ip_address', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4454,7 +4522,7 @@ $194:
 	unify_x_value(1)
 	proceed
 
-$195:
+$199:
 	get_structure('tcp_host_from_ip_address', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4481,7 +4549,7 @@ $195:
 	unify_x_value(1)
 	proceed
 
-$196:
+$200:
 	get_structure('get_msgstream_handle', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4508,7 +4576,7 @@ $196:
 	unify_x_value(1)
 	proceed
 
-$197:
+$201:
 	get_constant('[]', 3)
 	get_structure('$thread_symbol', 2, 0)
 	unify_x_variable(0)
@@ -4531,7 +4599,7 @@ $197:
 	unify_x_value(1)
 	proceed
 
-$198:
+$202:
 	get_structure('$load', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4558,7 +4626,7 @@ $198:
 	unify_x_value(1)
 	proceed
 
-$199:
+$203:
 	get_constant('[]', 3)
 	get_structure('is_free_in', 2, 0)
 	unify_x_variable(0)
@@ -4581,7 +4649,7 @@ $199:
 	unify_x_value(1)
 	proceed
 
-$200:
+$204:
 	get_structure('pipe', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4613,7 +4681,7 @@ $200:
 	unify_x_value(5)
 	proceed
 
-$201:
+$205:
 	get_structure('env_getenv', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4640,7 +4708,7 @@ $201:
 	unify_x_value(1)
 	proceed
 
-$202:
+$206:
 	get_constant('[]', 3)
 	get_structure('env_putenv', 2, 0)
 	unify_x_variable(0)
@@ -4663,7 +4731,7 @@ $202:
 	unify_x_value(1)
 	proceed
 
-$203:
+$207:
 	get_structure('signal_to_atom', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4690,7 +4758,7 @@ $203:
 	unify_x_value(1)
 	proceed
 
-$204:
+$208:
 	get_structure('strerror', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4717,7 +4785,7 @@ $204:
 	unify_x_value(1)
 	proceed
 
-$205:
+$209:
 	get_constant('[]', 3)
 	get_structure('icm_handles_equal', 2, 0)
 	unify_x_variable(0)
@@ -4740,7 +4808,7 @@ $205:
 	unify_x_value(1)
 	proceed
 
-$206:
+$210:
 	get_constant('[]', 3)
 	get_structure('icm_handles_qp_equal', 2, 0)
 	unify_x_variable(0)
@@ -4763,7 +4831,7 @@ $206:
 	unify_x_value(1)
 	proceed
 
-$207:
+$211:
 	get_structure('uncurry', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4790,7 +4858,7 @@ $207:
 	unify_x_value(1)
 	proceed
 
-$208:
+$212:
 	get_structure('$get_line', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4817,7 +4885,7 @@ $208:
 	unify_x_value(1)
 	proceed
 
-$209:
+$213:
 	get_constant('[]', 3)
 	get_structure('ip_array_init', 2, 0)
 	unify_x_variable(0)
@@ -4840,7 +4908,7 @@ $209:
 	unify_x_value(1)
 	proceed
 
-$210:
+$214:
 	get_structure('copy_term', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4867,7 +4935,7 @@ $210:
 	unify_x_value(1)
 	proceed
 
-$211:
+$215:
 	get_constant('[]', 3)
 	get_structure('$buffer_set_domains_apart', 2, 0)
 	unify_x_variable(0)
@@ -4890,7 +4958,7 @@ $211:
 	unify_x_value(1)
 	proceed
 
-$212:
+$216:
 	get_structure('$copy_substitution', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4917,7 +4985,7 @@ $212:
 	unify_x_value(1)
 	proceed
 
-$213:
+$217:
 	get_constant('[]', 3)
 	get_structure('$copy_obvar_to_buffer_tail', 2, 0)
 	unify_x_variable(0)
@@ -4940,7 +5008,7 @@ $213:
 	unify_x_value(1)
 	proceed
 
-$214:
+$218:
 	get_structure('$stat_ip_table', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -4967,7 +5035,7 @@ $214:
 	unify_x_value(1)
 	proceed
 
-$215:
+$219:
 	get_constant('[]', 3)
 	get_structure('$set_stream_properties', 2, 0)
 	unify_x_variable(0)
@@ -4990,7 +5058,7 @@ $215:
 	unify_x_value(1)
 	proceed
 
-$216:
+$220:
 	get_structure('$get_stream_properties', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5017,7 +5085,7 @@ $216:
 	unify_x_value(1)
 	proceed
 
-$217:
+$221:
 	get_constant('[]', 3)
 	get_structure('set_std_stream', 2, 0)
 	unify_x_variable(0)
@@ -5040,7 +5108,7 @@ $217:
 	unify_x_value(1)
 	proceed
 
-$218:
+$222:
 	get_constant('[]', 3)
 	get_structure('thread_push_goal', 2, 0)
 	unify_x_variable(0)
@@ -5063,7 +5131,7 @@ $218:
 	unify_x_value(1)
 	proceed
 
-$219:
+$223:
 	get_constant('[]', 3)
 	get_structure('structural_unify', 2, 0)
 	unify_x_variable(0)
@@ -5086,7 +5154,7 @@ $219:
 	unify_x_value(1)
 	proceed
 
-$220:
+$224:
 	get_constant('[]', 3)
 	get_structure('$not_free_in_nfi_simp', 2, 0)
 	unify_x_variable(0)
@@ -5109,7 +5177,7 @@ $220:
 	unify_x_value(1)
 	proceed
 
-$221:
+$225:
 	get_constant('[]', 3)
 	get_structure('$require_nfi_simp', 2, 0)
 	unify_x_variable(0)
@@ -5132,7 +5200,7 @@ $221:
 	unify_x_value(1)
 	proceed
 
-$222:
+$226:
 	get_structure('$fast_simplify', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5159,7 +5227,7 @@ $222:
 	unify_x_value(1)
 	proceed
 
-$223:
+$227:
 	get_constant('[]', 3)
 	get_structure('gmtime', 2, 0)
 	unify_x_variable(0)
@@ -5182,7 +5250,7 @@ $223:
 	unify_x_value(1)
 	proceed
 
-$224:
+$228:
 	get_constant('[]', 3)
 	get_structure('localtime', 2, 0)
 	unify_x_variable(0)
@@ -5205,7 +5273,7 @@ $224:
 	unify_x_value(1)
 	proceed
 
-$225:
+$229:
 	get_constant('[]', 3)
 	get_structure('==', 2, 0)
 	unify_x_variable(0)
@@ -5228,7 +5296,7 @@ $225:
 	unify_x_value(1)
 	proceed
 
-$226:
+$230:
 	get_structure('simplify_term', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5255,7 +5323,7 @@ $226:
 	unify_x_value(1)
 	proceed
 
-$227:
+$231:
 	get_constant('[]', 3)
 	get_structure('is_not_free_in', 2, 0)
 	unify_x_variable(0)
@@ -5278,7 +5346,7 @@ $227:
 	unify_x_value(1)
 	proceed
 
-$228:
+$232:
 	get_constant('[]', 3)
 	get_structure('$put_line', 2, 0)
 	unify_x_variable(0)
@@ -5301,7 +5369,34 @@ $228:
 	unify_x_value(1)
 	proceed
 
-$229:
+$233:
+	get_structure('$symbolic_address_to_icm_handle', 2, 0)
+	unify_x_variable(0)
+	unify_x_variable(4)
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_ref(5)
+	get_structure('$psi_life', 1, 1)
+	unify_x_variable(1)
+	get_list(5)
+	unify_x_ref(5)
+	unify_constant('[]')
+	get_structure('=', 2, 5)
+	unify_x_value(0)
+	unify_x_variable(0)
+	get_structure('$pseudo_instr2', 3, 2)
+	unify_integer(114)
+	unify_x_value(0)
+	unify_x_value(1)
+	get_list(3)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('=', 2, 0)
+	unify_x_value(4)
+	unify_x_value(1)
+	proceed
+
+$234:
 	get_constant('[]', 3)
 	get_structure('functor', 3, 0)
 	unify_x_variable(0)
@@ -5332,7 +5427,7 @@ $229:
 	unify_x_value(3)
 	proceed
 
-$230:
+$235:
 	get_structure('arg', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5367,7 +5462,7 @@ $230:
 	unify_x_value(1)
 	proceed
 
-$231:
+$236:
 	get_structure('$add', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5402,7 +5497,7 @@ $231:
 	unify_x_value(1)
 	proceed
 
-$232:
+$237:
 	get_structure('$subtract', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5437,7 +5532,7 @@ $232:
 	unify_x_value(1)
 	proceed
 
-$233:
+$238:
 	get_structure('$compare_var', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5472,7 +5567,7 @@ $233:
 	unify_x_value(1)
 	proceed
 
-$234:
+$239:
 	get_structure('$compare_atom', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5507,7 +5602,7 @@ $234:
 	unify_x_value(1)
 	proceed
 
-$235:
+$240:
 	get_structure('$fast_equal', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5542,7 +5637,7 @@ $235:
 	unify_x_value(1)
 	proceed
 
-$236:
+$241:
 	get_structure('$stat_choice', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5582,7 +5677,7 @@ $236:
 	unify_x_value(6)
 	proceed
 
-$237:
+$242:
 	get_structure('$stat_global', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5622,7 +5717,7 @@ $237:
 	unify_x_value(6)
 	proceed
 
-$238:
+$243:
 	get_structure('$stat_local', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5662,7 +5757,7 @@ $238:
 	unify_x_value(6)
 	proceed
 
-$239:
+$244:
 	get_structure('$stat_binding_trail', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5702,7 +5797,7 @@ $239:
 	unify_x_value(6)
 	proceed
 
-$240:
+$245:
 	get_structure('$stat_code', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5747,7 +5842,7 @@ $240:
 	unify_x_value(7)
 	proceed
 
-$241:
+$246:
 	get_structure('$stat_string', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5792,7 +5887,7 @@ $241:
 	unify_x_value(7)
 	proceed
 
-$242:
+$247:
 	get_structure('$get_next_clause', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5832,42 +5927,38 @@ $242:
 	unify_x_value(6)
 	proceed
 
-$243:
-	get_structure('$new_sub', 3, 0)
+$248:
+	get_constant('[]', 3)
+	get_structure('$icm_register', 3, 0)
 	unify_x_variable(0)
+	unify_x_variable(3)
 	unify_x_variable(4)
-	unify_x_variable(5)
 	get_list(1)
 	unify_x_ref(1)
-	unify_x_ref(6)
-	get_structure('$psi_life', 1, 1)
-	unify_x_variable(1)
-	get_list(6)
-	unify_x_ref(6)
-	unify_x_ref(7)
-	get_structure('=', 2, 6)
+	unify_x_ref(5)
+	get_structure('=', 2, 1)
 	unify_x_value(0)
 	unify_x_variable(0)
-	get_list(7)
-	unify_x_ref(6)
+	get_list(5)
+	unify_x_ref(1)
+	unify_x_ref(5)
+	get_structure('=', 2, 1)
+	unify_x_value(3)
+	unify_x_variable(1)
+	get_list(5)
+	unify_x_ref(3)
 	unify_constant('[]')
-	get_structure('=', 2, 6)
+	get_structure('=', 2, 3)
 	unify_x_value(4)
-	unify_x_variable(4)
+	unify_x_variable(3)
 	get_structure('$pseudo_instr3', 4, 2)
 	unify_integer(14)
 	unify_x_value(0)
-	unify_x_value(4)
 	unify_x_value(1)
-	get_list(3)
-	unify_x_ref(0)
-	unify_constant('[]')
-	get_structure('=', 2, 0)
-	unify_x_value(5)
-	unify_x_value(1)
+	unify_x_value(3)
 	proceed
 
-$244:
+$249:
 	get_constant('[]', 3)
 	get_structure('$set_domain', 3, 0)
 	unify_x_variable(0)
@@ -5898,7 +5989,7 @@ $244:
 	unify_x_value(3)
 	proceed
 
-$245:
+$250:
 	get_constant('[]', 3)
 	get_structure('$set_range', 3, 0)
 	unify_x_variable(0)
@@ -5929,7 +6020,7 @@ $245:
 	unify_x_value(3)
 	proceed
 
-$246:
+$251:
 	get_structure('$get_domain', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5964,7 +6055,7 @@ $246:
 	unify_x_value(1)
 	proceed
 
-$247:
+$252:
 	get_structure('$get_range', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -5999,7 +6090,7 @@ $247:
 	unify_x_value(1)
 	proceed
 
-$248:
+$253:
 	get_structure('$build_sub_term', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6034,7 +6125,7 @@ $248:
 	unify_x_value(1)
 	proceed
 
-$249:
+$254:
 	get_structure('$get_opcode', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6069,7 +6160,7 @@ $249:
 	unify_x_value(1)
 	proceed
 
-$250:
+$255:
 	get_structure('$get_const', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6104,7 +6195,7 @@ $250:
 	unify_x_value(1)
 	proceed
 
-$251:
+$256:
 	get_structure('$get_number', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6139,7 +6230,7 @@ $251:
 	unify_x_value(1)
 	proceed
 
-$252:
+$257:
 	get_structure('$get_address', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6174,7 +6265,7 @@ $252:
 	unify_x_value(1)
 	proceed
 
-$253:
+$258:
 	get_structure('$get_offset', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6209,7 +6300,7 @@ $253:
 	unify_x_value(1)
 	proceed
 
-$254:
+$259:
 	get_structure('$get_pred', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6244,7 +6335,7 @@ $254:
 	unify_x_value(1)
 	proceed
 
-$255:
+$260:
 	get_structure('$get_entry', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6284,7 +6375,7 @@ $255:
 	unify_x_value(6)
 	proceed
 
-$256:
+$261:
 	get_constant('[]', 3)
 	get_structure('$copy_to_buffer_tail', 3, 0)
 	unify_x_variable(0)
@@ -6315,7 +6406,7 @@ $256:
 	unify_x_value(3)
 	proceed
 
-$257:
+$262:
 	get_structure('concat_atom', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6350,7 +6441,7 @@ $257:
 	unify_x_value(1)
 	proceed
 
-$258:
+$263:
 	get_structure('$record_record_first', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6385,7 +6476,7 @@ $258:
 	unify_x_value(1)
 	proceed
 
-$259:
+$264:
 	get_structure('$record_record_last', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6420,7 +6511,7 @@ $259:
 	unify_x_value(1)
 	proceed
 
-$260:
+$265:
 	get_structure('$open', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6455,7 +6546,7 @@ $260:
 	unify_x_value(1)
 	proceed
 
-$261:
+$266:
 	get_structure('$get_atom_from_atom_table', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6490,7 +6581,7 @@ $261:
 	unify_x_value(1)
 	proceed
 
-$262:
+$267:
 	get_structure('$symtype', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6525,7 +6616,7 @@ $262:
 	unify_x_value(1)
 	proceed
 
-$263:
+$268:
 	get_structure('$access', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6560,7 +6651,7 @@ $263:
 	unify_x_value(1)
 	proceed
 
-$264:
+$269:
 	get_structure('$read_next_token', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6600,7 +6691,7 @@ $264:
 	unify_x_value(6)
 	proceed
 
-$265:
+$270:
 	get_constant('[]', 3)
 	get_structure('$encoded_write', 3, 0)
 	unify_x_variable(0)
@@ -6631,7 +6722,7 @@ $265:
 	unify_x_value(3)
 	proceed
 
-$266:
+$271:
 	get_constant('[]', 3)
 	get_structure('$call_predicate2', 3, 0)
 	unify_x_variable(0)
@@ -6662,7 +6753,7 @@ $266:
 	unify_x_value(3)
 	proceed
 
-$267:
+$272:
 	get_structure('$put_structure', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6697,7 +6788,7 @@ $267:
 	unify_x_value(1)
 	proceed
 
-$268:
+$273:
 	get_constant('[]', 3)
 	get_structure('$set_argument', 3, 0)
 	unify_x_variable(0)
@@ -6728,7 +6819,7 @@ $268:
 	unify_x_value(3)
 	proceed
 
-$269:
+$274:
 	get_constant('[]', 3)
 	get_structure('ip_set', 3, 0)
 	unify_x_variable(0)
@@ -6759,7 +6850,7 @@ $269:
 	unify_x_value(3)
 	proceed
 
-$270:
+$275:
 	get_structure('ip_lookup', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6794,7 +6885,7 @@ $270:
 	unify_x_value(1)
 	proceed
 
-$271:
+$276:
 	get_structure('$ipc_next', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6829,7 +6920,7 @@ $271:
 	unify_x_value(1)
 	proceed
 
-$272:
+$277:
 	get_structure('tcp_socket', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6864,7 +6955,7 @@ $272:
 	unify_x_value(1)
 	proceed
 
-$273:
+$278:
 	get_constant('[]', 3)
 	get_structure('tcp_setsockopt', 3, 0)
 	unify_x_variable(0)
@@ -6895,7 +6986,7 @@ $273:
 	unify_x_value(3)
 	proceed
 
-$274:
+$279:
 	get_structure('tcp_getsockopt', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -6930,7 +7021,7 @@ $274:
 	unify_x_value(1)
 	proceed
 
-$275:
+$280:
 	get_constant('[]', 3)
 	get_structure('tcp_bind', 3, 0)
 	unify_x_variable(0)
@@ -6961,7 +7052,7 @@ $275:
 	unify_x_value(3)
 	proceed
 
-$276:
+$281:
 	get_constant('[]', 3)
 	get_structure('$tcp_connect1', 3, 0)
 	unify_x_variable(0)
@@ -6992,7 +7083,7 @@ $276:
 	unify_x_value(3)
 	proceed
 
-$277:
+$282:
 	get_structure('$open_socket_stream', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7027,7 +7118,7 @@ $277:
 	unify_x_value(1)
 	proceed
 
-$278:
+$283:
 	get_structure('$open_msgstream', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7062,7 +7153,7 @@ $278:
 	unify_x_value(1)
 	proceed
 
-$279:
+$284:
 	get_structure('tcp_getsockname', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7102,7 +7193,7 @@ $279:
 	unify_x_value(6)
 	proceed
 
-$280:
+$285:
 	get_structure('tcp_getpeername', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7142,7 +7233,7 @@ $280:
 	unify_x_value(6)
 	proceed
 
-$281:
+$286:
 	get_structure('$tcp_service_to_proto_port', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7182,7 +7273,7 @@ $281:
 	unify_x_value(6)
 	proceed
 
-$282:
+$287:
 	get_structure('$tcp_service_proto_to_port', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7217,7 +7308,7 @@ $282:
 	unify_x_value(1)
 	proceed
 
-$283:
+$288:
 	get_structure('$tcp_service_from_proto_port', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7252,7 +7343,7 @@ $283:
 	unify_x_value(1)
 	proceed
 
-$284:
+$289:
 	get_structure('$tcp_service_proto_from_port', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7292,7 +7383,7 @@ $284:
 	unify_x_value(6)
 	proceed
 
-$285:
+$290:
 	get_constant('[]', 3)
 	get_structure('$thread_fork', 3, 0)
 	unify_x_variable(0)
@@ -7323,7 +7414,7 @@ $285:
 	unify_x_value(3)
 	proceed
 
-$286:
+$291:
 	get_structure('$psi_decompile', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7358,7 +7449,7 @@ $286:
 	unify_x_value(1)
 	proceed
 
-$287:
+$292:
 	get_structure('$make_sub_from_buffer', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7393,7 +7484,7 @@ $287:
 	unify_x_value(1)
 	proceed
 
-$288:
+$293:
 	get_structure('$stat_object_trail', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7433,7 +7524,7 @@ $288:
 	unify_x_value(6)
 	proceed
 
-$289:
+$294:
 	get_structure('$stat_ip_trail', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7473,7 +7564,7 @@ $289:
 	unify_x_value(6)
 	proceed
 
-$290:
+$295:
 	get_structure('$stat_tag_trail', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7513,7 +7604,7 @@ $290:
 	unify_x_value(6)
 	proceed
 
-$291:
+$296:
 	get_structure('$stat_scratchpad', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7553,7 +7644,7 @@ $291:
 	unify_x_value(6)
 	proceed
 
-$292:
+$297:
 	get_structure('$get_delays$', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7588,7 +7679,7 @@ $292:
 	unify_x_value(1)
 	proceed
 
-$293:
+$298:
 	get_structure('atom_concat2', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7623,7 +7714,7 @@ $293:
 	unify_x_value(1)
 	proceed
 
-$294:
+$299:
 	get_structure('$stat_ref_trail', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7663,7 +7754,7 @@ $294:
 	unify_x_value(6)
 	proceed
 
-$295:
+$300:
 	get_structure('$get_first_clause', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7703,7 +7794,7 @@ $295:
 	unify_x_value(6)
 	proceed
 
-$296:
+$301:
 	get_structure('$get_integer', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7738,7 +7829,7 @@ $296:
 	unify_x_value(1)
 	proceed
 
-$297:
+$302:
 	get_structure('$ipc_first', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7773,7 +7864,7 @@ $297:
 	unify_x_value(1)
 	proceed
 
-$298:
+$303:
 	get_structure('simplify_term', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7813,7 +7904,7 @@ $298:
 	unify_x_value(6)
 	proceed
 
-$299:
+$304:
 	get_constant('[]', 3)
 	get_structure('$psi_dynamic', 4, 0)
 	unify_x_variable(0)
@@ -7852,7 +7943,7 @@ $299:
 	unify_x_value(4)
 	proceed
 
-$300:
+$305:
 	get_structure('atom_search', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7895,7 +7986,7 @@ $300:
 	unify_x_value(1)
 	proceed
 
-$301:
+$306:
 	get_structure('$sub_atom', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -7938,7 +8029,7 @@ $301:
 	unify_x_value(1)
 	proceed
 
-$302:
+$307:
 	get_constant('[]', 3)
 	get_structure('$load_foreign', 4, 0)
 	unify_x_variable(0)
@@ -7977,7 +8068,7 @@ $302:
 	unify_x_value(4)
 	proceed
 
-$303:
+$308:
 	get_structure('$open_string', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8020,7 +8111,7 @@ $303:
 	unify_x_value(1)
 	proceed
 
-$304:
+$309:
 	get_structure('$get_pred_from_pred_table', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8073,7 +8164,7 @@ $304:
 	unify_x_value(8)
 	proceed
 
-$305:
+$310:
 	get_structure('$encoded_read', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8121,7 +8212,7 @@ $305:
 	unify_x_value(7)
 	proceed
 
-$306:
+$311:
 	get_constant('[]', 3)
 	get_structure('quantify', 4, 0)
 	unify_x_variable(0)
@@ -8160,7 +8251,7 @@ $306:
 	unify_x_value(4)
 	proceed
 
-$307:
+$312:
 	get_constant('[]', 3)
 	get_structure('$call_predicate3', 4, 0)
 	unify_x_variable(0)
@@ -8199,7 +8290,7 @@ $307:
 	unify_x_value(4)
 	proceed
 
-$308:
+$313:
 	get_constant('[]', 3)
 	get_structure('$ipc_send', 4, 0)
 	unify_x_variable(0)
@@ -8238,7 +8329,7 @@ $308:
 	unify_x_value(4)
 	proceed
 
-$309:
+$314:
 	get_structure('tcp_accept', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8291,7 +8382,7 @@ $309:
 	unify_x_value(8)
 	proceed
 
-$310:
+$315:
 	get_structure('$psi_next_instr', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8339,7 +8430,7 @@ $310:
 	unify_x_value(7)
 	proceed
 
-$311:
+$316:
 	get_structure('$psi_assert', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8382,7 +8473,7 @@ $311:
 	unify_x_value(1)
 	proceed
 
-$312:
+$317:
 	get_structure('$ccompile', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8425,7 +8516,7 @@ $312:
 	unify_x_value(1)
 	proceed
 
-$313:
+$318:
 	get_constant('[]', 3)
 	get_structure('$set_domains_apart', 4, 0)
 	unify_x_variable(0)
@@ -8464,7 +8555,50 @@ $313:
 	unify_x_value(4)
 	proceed
 
-$314:
+$319:
+	get_structure('$new_sub', 4, 0)
+	unify_x_variable(0)
+	unify_x_variable(4)
+	unify_x_variable(5)
+	unify_x_variable(6)
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_ref(7)
+	get_structure('$psi_life', 1, 1)
+	unify_x_variable(1)
+	get_list(7)
+	unify_x_ref(7)
+	unify_x_ref(8)
+	get_structure('=', 2, 7)
+	unify_x_value(0)
+	unify_x_variable(0)
+	get_list(8)
+	unify_x_ref(7)
+	unify_x_ref(8)
+	get_structure('=', 2, 7)
+	unify_x_value(4)
+	unify_x_variable(4)
+	get_list(8)
+	unify_x_ref(7)
+	unify_constant('[]')
+	get_structure('=', 2, 7)
+	unify_x_value(5)
+	unify_x_variable(5)
+	get_structure('$pseudo_instr4', 5, 2)
+	unify_integer(15)
+	unify_x_value(0)
+	unify_x_value(4)
+	unify_x_value(5)
+	unify_x_value(1)
+	get_list(3)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('=', 2, 0)
+	unify_x_value(6)
+	unify_x_value(1)
+	proceed
+
+$320:
 	get_structure('$ipc_get_message', 5, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8525,7 +8659,7 @@ $314:
 	unify_x_value(9)
 	proceed
 
-$315:
+$321:
 	get_constant('[]', 3)
 	get_structure('$call_predicate4', 5, 0)
 	unify_x_variable(0)
@@ -8572,7 +8706,7 @@ $315:
 	unify_x_value(5)
 	proceed
 
-$316:
+$322:
 	get_structure('icm_handle_from_components', 5, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8623,7 +8757,7 @@ $316:
 	unify_x_value(1)
 	proceed
 
-$317:
+$323:
 	get_structure('$icm_handle_to_components', 5, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)

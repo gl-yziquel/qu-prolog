@@ -53,12 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: interrupt_handler.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: interrupt_handler.cc,v 1.4 2002/12/05 03:39:30 qp Exp $
 
 #include <signal.h>
+#include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <iostream>
 
 #include "errors.h"
 #include "interrupt_handler.h"
@@ -67,6 +69,8 @@
 #ifdef _POSIX_THREAD_IS_GNU_PTH
 #define sigwait __pthread_sigwait
 #endif // _POSIX_THREAD_IS_GNU_PTH
+
+extern const char *Program;
 
 void *
 interrupt_handler(void *s)
@@ -78,12 +82,13 @@ interrupt_handler(void *s)
 
   Signals& signals = *(Signals *) s;
   
-  sigset_t sigs;
+  sigset_t sigm;
   int sig;
 
-  sigfillset(&sigs);
-  SYSTEM_CALL_NON_ZERO(pthread_sigmask(SIG_SETMASK, &sigs, NULL));
+  sigfillset(&sigm);
+  SYSTEM_CALL_NON_ZERO(pthread_sigmask(SIG_SETMASK, &sigm, NULL));
 
+  sigset_t sigs;
   sigemptyset(&sigs);
   sigaddset(&sigs, SIGINT);
  
@@ -93,7 +98,7 @@ interrupt_handler(void *s)
 
 
 #ifdef DEBUG_SCHED
-      cerr.form("%s Received %ld\n", __FUNCTION__, sig);
+      cerr << __FUNCTION__ << " received " << sig << endl;
 #endif
 
       signals.Increment(sig);

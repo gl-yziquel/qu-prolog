@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pipe.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: pipe.cc,v 1.4 2002/11/13 04:04:15 qp Exp $
 
 #include <errno.h>
 
@@ -71,41 +71,10 @@ Thread::psi_pipe(Object *& input_stream_arg,
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
 
-  ifstream *ifstr = new ifstream(fdes[0]);
-  if (ifstr == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
+  QPStream *instream = new QPifdstream(fdes[0]);
 
-  if (ifstr->bad())
-    {
-      delete ifstr;
-      PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-    }
+  QPStream *outstream = new QPofdstream(fdes[1]);
 
-  Stream *instream = new Stream(ifstr);
-  if (instream == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
-  ofstream *ofstr = new ofstream(fdes[1]);
-  if (ofstr == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
-  if (ofstr->bad())
-    {
-      delete ofstr;
-      PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-    }
-
-  Stream *outstream = new Stream(ofstr);
-  if (outstream == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   input_stream_arg =  heap.newNumber(reinterpret_cast<word32>(instream));
   output_stream_arg = heap.newNumber(reinterpret_cast<word32>(outstream));

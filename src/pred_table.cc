@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pred_table.cc,v 1.2 2000/12/12 03:36:20 qp Exp $
+// $Id: pred_table.cc,v 1.4 2002/12/05 03:39:32 qp Exp $
 
 #include "area_offsets.h"
 #include "atom_table.h"
@@ -96,9 +96,10 @@ PredTab::add(AtomTable* atoms,
       //
       // Redefined the predicate.
       //
-      Warning(__FUNCTION__,
-	      "new definition for %s/%d is ignored",
-	      atoms->getAtomString(PredName), arity);
+      ostringstream os;
+      os << "new definition for " << atoms->getAtomString(PredName) 
+	 << "/" << arity << " is ignored";
+      Warning(__FUNCTION__, os.str().c_str()); 
       return(index);
     }
   
@@ -150,9 +151,10 @@ PredTab::linkEscape(AtomTable* atoms,
   index = lookUp(atoms->getAtom(atoms->lookUp(name)), arity, atoms, code);
   if (index == EMPTY_LOC)
     {
-      Warning(__FUNCTION__,
-	      "escape function %s/%d is not installed",
-	      name, arity);
+      ostringstream os;
+      os << "escape function " << name << 
+	"/" << arity << " is not installed";
+      Warning(__FUNCTION__, os.str().c_str());
     }
   else
     {

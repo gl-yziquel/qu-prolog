@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: string_map.h,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: string_map.h,v 1.3 2002/11/03 08:37:33 qp Exp $
 
 #ifndef	STRING_MAP_H
 #define	STRING_MAP_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "atom_table.h"

@@ -51,7 +51,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_objects.h,v 1.3 2001/11/21 00:21:10 qp Exp $
+// $Id: asm_objects.h,v 1.6 2002/11/10 07:54:50 qp Exp $
 
 #ifndef	ASM_OBJECTS_H
 #define	ASM_OBJECTS_H
@@ -62,36 +62,30 @@
 #include "code.h"
 #include "code_block.h"
 #include "labels.h"
-#include "string_qp.h"
+//#include "string_qp.h"
+
+using namespace std;
 
 class AtomArityLabel
 {
 private:
   ASMInt<Code::ConstantSizedType> *atom;
   ASMInt<Code::NumberSizedType> *arity;
-  String *label;
+  string *label;
 public:
   AtomArityLabel(ASMInt<Code::ConstantSizedType> *at,
 		 ASMInt<Code::NumberSizedType> *ar,
-		 String *l) :
+		 string *l) :
     atom(at), arity(ar), label(l) { }
   
   // For constructing ``default'' switch table entries.
-  AtomArityLabel(String *l) : label(l)
+  AtomArityLabel(string *l) : label(l)
     {
       atom = new ASMInt<Code::ConstantSizedType>(0);
-      if (atom == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
 
       atom->Value(UnsignedMax(atom->Value()));
       
       arity = new ASMInt<Code::NumberSizedType>(0);
-      if (arity == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
     }
   
   ~AtomArityLabel(void)	{ }
@@ -122,11 +116,7 @@ public:
       arity->Value(aal.arity->Value());
 
       delete label;
-      label = new String(*(aal.label));
-      if (label == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
+      label = new string(*(aal.label));
     }
 };
 
@@ -134,21 +124,17 @@ class ConstantLabel
 {
 private:
   ASMInt<Code::ConstantSizedType> *constant;
-  String *label;
+  string *label;
 public:
   ConstantLabel(ASMInt<Code::ConstantSizedType> *c,
-		String *l)
+		string *l)
     : constant(c), label(l)
     { }
   
   // For constructing ``default'' switch table entries.
-  ConstantLabel(String *l) : label(l)
+  ConstantLabel(string *l) : label(l)
     {
       constant = new ASMInt<Code::ConstantSizedType>(0);
-      if (constant == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
       constant->Value(UnsignedMax(constant->Value()));
     }
   
@@ -179,11 +165,7 @@ public:
       constant->Value(c.constant->Value());
       
       delete label;
-      label = new String(*(c.label));
-      if (label == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
+      label = new string(*(c.label));
     }
 };
 
@@ -193,12 +175,12 @@ class SwitchTable
 private:
   u_int jump_offset_base;
   ASMInt<Code::TableSizeSizedType> *num_table_entries;
-  String *default_label;
+  string *default_label;
   vector<Item *> *list;
 public:
   SwitchTable(const u_int job,
 	      ASMInt<Code::TableSizeSizedType> *num,
-	      String *dl, vector<Item *> *l)
+	      string *dl, vector<Item *> *l)
     : jump_offset_base(job),
       num_table_entries(num),
       default_label(dl),

@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: varname.cc,v 1.3 2000/12/13 23:10:03 qp Exp $
+// $Id: varname.cc,v 1.5 2003/02/25 02:06:25 qp Exp $
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -246,8 +246,6 @@ Thread::psi_get_var_name(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_set_var_name(Object *& object1, Object *& object2)
 {
-  ostrstream strm(atom_buf1, ATOM_LENGTH);
-  streampos StrmLoc;
   int32 counter = 0;
 
   DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
@@ -283,19 +281,10 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
   //
 
   //
-  // Set the prefix.
-  //
-  if (strm.good() &&
-      strm.form("%s_", atoms->getAtomString(val2)).fail())
-    {
-      Fatal(__FUNCTION__,
-	    "problem in putting prefix for set_var_name/2");
-    }
-  StrmLoc = strm.tellp();
-  //
   // first char of name should be in A..Z
   //
-  if (atom_buf1[0] < 'A' || atom_buf1[0] > 'Z')
+  if (*(atoms->getAtomString(val2)) < 'A' 
+      || *(atoms->getAtomString(val2)) > 'Z')
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -304,24 +293,22 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
   // Find a suitable suffix.
   //
   AtomLoc name_loc;
+  ostringstream strm;
   do
     {
-      strm.seekp(StrmLoc);
-      if (strm.good() && strm.form("%d", counter).fail())
-	{
-	  Fatal(__FUNCTION__,
-		"problem in putting suffix for set_var_name/2");
-	}
+      strm.str("");
+      strm << atoms->getAtomString(val2);
+      strm << counter;
       strm << ends;
       counter++;
-      name_loc = atoms->lookUp(atom_buf1);
+      name_loc = atoms->lookUp(strm.str().data());
     } while (name_loc != EMPTY_LOC && 
 	     names.getVariable(atoms->getAtom(name_loc)) != NULL);
 
   //
   // Add to the tables.
   //
-  Atom* name = atoms->add(atom_buf1);
+  Atom* name = atoms->add(strm.str().c_str());
   names.setNameOldVar(name, var, *this);
 
   return(RV_SUCCESS);
@@ -336,8 +323,6 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_set_object_variable_name(Object *& object1, Object *& object2)
 {
-  ostrstream strm(atom_buf1, ATOM_LENGTH);
-  streampos StrmLoc;
 
   DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
   DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
@@ -369,44 +354,32 @@ Thread::psi_set_object_variable_name(Object *& object1, Object *& object2)
   //
   // else no name
   //
- ObjectVariable* newvar = heap.newObjectVariable();
- 
+  ObjectVariable* newvar = heap.newObjectVariable();
+  
   //
   // Generate the variable name for the object variable.
   //
-
-  //
-  // Set the prefix.
-  //
-  if (strm.good() &&
-      strm.form("%s_", atoms->getAtomString(OBJECT_CAST(Atom*, val2))).fail())
-    {
-      Fatal(__FUNCTION__, "problem in putting prefix for set_ObjectVariable_name/2");
-    }
-  StrmLoc = strm.tellp();
-
+  
   //
   // Find a suitable suffix.
   //
   AtomLoc name_loc;
+  ostringstream strm;
   do
     {
-      strm.seekp(StrmLoc);
-      if (strm.good() && strm.form("%d", objectCounter).fail())
-	{
-	  Fatal(__FUNCTION__,
-		"problem in putting suffix for set_ObjectVariable_name/2");
-	}
+      strm.str("");
+      strm << atoms->getAtomString(OBJECT_CAST(Atom*, val2));
+      strm << objectCounter;
       strm << ends;
       objectCounter++;
-      name_loc = atoms->lookUp(atom_buf1);
+      name_loc = atoms->lookUp(strm.str().data());
     } while (name_loc != EMPTY_LOC && 
 	     names.getVariable(atoms->getAtom(name_loc)) != NULL);
 
   //
   // Add to the tables.
   //
-  Atom* name = atoms->add(atom_buf1);
+  Atom* name = atoms->add(strm.str().c_str());
 
   names.setNameOldVar(name, newvar, *this);
   bindObjectVariables(var, newvar);

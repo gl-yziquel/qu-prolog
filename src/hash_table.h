@@ -54,12 +54,12 @@
 // 
 // ##Copyright##
 //
-// $Id: hash_table.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: hash_table.h,v 1.3 2002/11/08 00:44:16 qp Exp $
 
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "defs.h"
@@ -92,7 +92,7 @@ public:
 // is used to solve the collision problem.  
 // The size of the table must be a power of 2.
 // Error messages that can be reported:
-//	OutOfMemory, OutOfHashTable.
+//	OutOfHashTable.
 //
 template <class HashType, class HashKey>
 class HashTable : public FixedSizeHashTable
@@ -166,12 +166,12 @@ protected:
   //
   // Write the table to a stream.
   //
-  void saveTable(ostream& ostrm, const u_long magic) const;
+  void saveTable(std::ostream& ostrm, const u_long magic) const;
   
   //
   // Load the table from a stream.
   //
-  void loadTable(istream& istrm);
+  void loadTable(std::istream& istrm);
   
 public:
 
@@ -211,9 +211,6 @@ public:
     return loc <= allocatedSize();
   }
 
-  //
-  // OutOfMemory is reported if the hash table cannot be allocated.
-  //
   HashTable(word32 TabSize);
   virtual ~HashTable(void);
 

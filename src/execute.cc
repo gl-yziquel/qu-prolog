@@ -55,7 +55,7 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: execute.cc,v 1.9 2002/03/08 00:29:33 qp Exp $
+// $Id: execute.cc,v 1.12 2002/12/05 03:39:28 qp Exp $
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -115,16 +115,16 @@ do {						\
    switch (rv)							\
      {								\
      case RV_FAIL:						\
-       block_status.Clear();					\
+       block_status.setRunnable();		       		\
        restart_status.Clear();					\
        BACKTRACK;						\
        break;							\
      case RV_SUCCESS:						\
-       block_status.Clear();					\
+       block_status.setRunnable();			       	\
        restart_status.Clear(); 					\
        break;							\
      case RV_YIELD:						\
-       block_status.Clear();					\
+       block_status.setRunnable();     				\
        restart_status.Clear();					\
        return RV_YIELD;						\
        break;							\
@@ -144,8 +144,7 @@ do {						\
        return RV_TIMESLICE;					\
        break;							\
      case RV_ERROR:						\
-       Fatal("%s: RV_ERROR should be handled separately!\n",	\
-	     __FUNCTION__);					\
+       Fatal(__FUNCTION__, "RV_ERROR should be handled separately!");	\
        break;							\
      case RV_EXIT:						\
        return RV_EXIT;						\
@@ -209,6 +208,12 @@ do {						\
     programCounter = PC - pc_off;			\
     return RV_TIMESLICE;			\
   } while (0)
+
+#if defined(__GNUC__)
+#define VMBREAK	__asm__("");break
+#else
+#define VMBREAK break
+#endif
 
 //
 // Fetch-execute cycle for the Qu-Prolog Abstract Machine.
@@ -310,7 +315,7 @@ Thread::Execute(void)
 	    X[i] = heap.newVariable();
 	    X[j]= X[i];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_Y_VARIABLE, ARGS(register, register)):
 	  {
@@ -324,7 +329,7 @@ Thread::Execute(void)
 	    X[j] = heap.newVariable();
 	    envStack.yReg(currentEnvironment, i) = X[j];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_X_VALUE, ARGS(register, register)):
 	  {
@@ -335,7 +340,7 @@ Thread::Execute(void)
 	    //
 	    X[j]= X[i];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_Y_VALUE, ARGS(register, register)):
 	  {
@@ -346,7 +351,7 @@ Thread::Execute(void)
 	    //
 	    X[j]= envStack.yReg(currentEnvironment, i);
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_CONSTANT, ARGS(constant, register)):
 	  {
@@ -358,7 +363,7 @@ Thread::Execute(void)
 	    //
 	    X[i]= c;
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_INTEGER, ARGS(integer, register)):
 	  {
@@ -370,7 +375,7 @@ Thread::Execute(void)
 	    //
 	    X[i]= c;
 	  }
-	break;
+	VMBREAK;
 
 
 	case OPCODE(PUT_LIST, ARGS(register)):
@@ -382,7 +387,7 @@ Thread::Execute(void)
 	    X[i] = heap.newCons();
 	    StructurePointer = X[i]->storage();
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_STRUCTURE, ARGS(number, register)):
 	  {
@@ -394,7 +399,7 @@ Thread::Execute(void)
 	    X[i] = heap.newStructure(n);
 	    StructurePointer = X[i]->storage();
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_X_OBJECT_VARIABLE, ARGS(register, register)):
 	  {
@@ -408,7 +413,7 @@ Thread::Execute(void)
 	    X[i] = heap.newObjectVariable();
 	    X[j]= X[i];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_Y_OBJECT_VARIABLE, ARGS(register, register)):
 	  {
@@ -422,7 +427,7 @@ Thread::Execute(void)
 	    X[j] = heap.newObjectVariable();
 	    envStack.yReg(currentEnvironment, i) = X[j];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_X_OBJECT_VALUE, ARGS(register, register)):
 	  {
@@ -434,7 +439,7 @@ Thread::Execute(void)
 	    //
 	    X[j] = X[i];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_Y_OBJECT_VALUE, ARGS(register, register)):
 	  {
@@ -446,7 +451,7 @@ Thread::Execute(void)
 	    //
 	    X[j] = envStack.yReg(currentEnvironment, i);
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PUT_QUANTIFIER, ARGS(register)):
 	  {
@@ -457,7 +462,7 @@ Thread::Execute(void)
 	    X[i] = heap.newQuantifiedTerm();
 	    StructurePointer = X[i]->storage();
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(CHECK_BINDER, ARGS(register)):
 	  {
@@ -471,7 +476,7 @@ Thread::Execute(void)
 		BACKTRACK;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(PUT_SUBSTITUTION, ARGS(number, register)):
 	  {
@@ -490,7 +495,7 @@ Thread::Execute(void)
 	    X[i] = heap.newSubstitutionBlockList(sub, X[i]);
 	    StructurePointer = sub->storage();
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(PUT_X_TERM_SUBSTITUTION, ARGS(register, register)):
 	  {
@@ -502,7 +507,7 @@ Thread::Execute(void)
 	    DEBUG_ASSERT(!X[i]->isNil());
 	    X[j] = heap.newSubstitution(X[i], X[j]);
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(PUT_Y_TERM_SUBSTITUTION, ARGS(register, register)):
 	  {
@@ -515,7 +520,7 @@ Thread::Execute(void)
 	    X[j] = heap.newSubstitution(envStack.yReg(currentEnvironment, i),
 					X[j]);
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(PUT_INITIAL_EMPTY_SUBSTITUTION, ARGS(register)):
 	  {
@@ -525,7 +530,7 @@ Thread::Execute(void)
 	    //
 	    X[i] = AtomTable::nil;
 	  }
-	break;
+	VMBREAK;
 
 	//
 	// The "get" instructions unify the head arguments 
@@ -544,7 +549,7 @@ Thread::Execute(void)
 	    // 
 	    X[i] = X[j];
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(GET_Y_VARIABLE, ARGS(register, register)):
 	  {
@@ -560,7 +565,7 @@ Thread::Execute(void)
 	    // 
 	    envStack.yReg(currentEnvironment, i) = X[j];
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(GET_X_VALUE, ARGS(register, register)):
 	  {
@@ -578,7 +583,7 @@ Thread::Execute(void)
 		BACKTRACK;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(GET_Y_VALUE, ARGS(register, register)):
 	  {
@@ -596,7 +601,7 @@ Thread::Execute(void)
 		BACKTRACK;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(GET_CONSTANT, ARGS(constant, register)):
 	  {
@@ -644,7 +649,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 
 	case OPCODE(GET_INTEGER, ARGS(integer, register)):
@@ -695,7 +700,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
  
 	case OPCODE(GET_LIST, ARGS(register)):
@@ -779,7 +784,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 	case OPCODE(GET_STRUCTURE, ARGS(constant, number, register)):
 	  {
@@ -892,7 +897,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
   
 	case OPCODE(GET_STRUCTURE_FRAME, ARGS(number, register)):
@@ -997,7 +1002,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
   
 	case OPCODE(GET_X_OBJECT_VARIABLE, ARGS(register, register)):
@@ -1015,7 +1020,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 	  
 	case OPCODE(GET_Y_OBJECT_VARIABLE, ARGS(register, register)):
@@ -1034,7 +1039,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 
 	case OPCODE(GET_X_OBJECT_VALUE, ARGS(register, register)):
@@ -1055,7 +1060,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 
 	case OPCODE(GET_Y_OBJECT_VALUE, ARGS(register, register)):
@@ -1075,7 +1080,7 @@ Thread::Execute(void)
 	      {
 		BACKTRACK;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 	  
 	  //
@@ -1108,7 +1113,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(UNIFY_Y_VARIABLE, ARGS(register)):
 	  {
@@ -1132,7 +1137,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(UNIFY_X_VALUE, ARGS(register)):
 	  {
@@ -1150,7 +1155,7 @@ Thread::Execute(void)
 		    BACKTRACK;
 		  }
 		StructurePointer++;
-		break;
+		VMBREAK;
 	      }
 	    else
 	      {
@@ -1173,7 +1178,7 @@ Thread::Execute(void)
 		  }
 		StructurePointer++;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 
 	case OPCODE(UNIFY_Y_VALUE, ARGS(register)):
@@ -1191,7 +1196,7 @@ Thread::Execute(void)
 		    BACKTRACK;
 		  }
 		StructurePointer++;
-		break;
+		VMBREAK;
 	      }
 	    else
 	      {
@@ -1215,7 +1220,7 @@ Thread::Execute(void)
 		  }
 		StructurePointer++;
 	      }
-	    break;
+	    VMBREAK;
 	  }
 
 	case OPCODE(UNIFY_VOID, ARGS(number)):
@@ -1243,7 +1248,7 @@ Thread::Execute(void)
 		    StructurePointer++;
 		  }
 	      }
-	    break; 
+	    VMBREAK; 
 	  }
 	  
 	  //
@@ -1267,7 +1272,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(var);
 	    StructurePointer++;
 		  }
-	break; 
+	VMBREAK; 
 
 	case OPCODE(SET_Y_VARIABLE, ARGS(register)):
 	  {
@@ -1284,7 +1289,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(var);
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_X_VALUE, ARGS(register)):
 	  {
@@ -1316,7 +1321,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(xval);
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_Y_VALUE, ARGS(register)):
 	  {
@@ -1347,7 +1352,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(xval);
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_X_OBJECT_VARIABLE, ARGS(register)):
 	  {
@@ -1363,7 +1368,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(X[i]);
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_Y_OBJECT_VARIABLE, ARGS(register)):
 	  {
@@ -1378,7 +1383,7 @@ Thread::Execute(void)
 	    *StructurePointer  = reinterpret_cast<heapobject>(envStack.yReg(currentEnvironment, i));
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_X_OBJECT_VALUE, ARGS(register)):
 	  {
@@ -1391,7 +1396,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(X[i]);
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_Y_OBJECT_VALUE, ARGS(register)):
 	  {
@@ -1404,7 +1409,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(envStack.yReg(currentEnvironment, i));
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_CONSTANT, ARGS(constant)):
 	  {
@@ -1416,7 +1421,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(c); 
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 
 	case OPCODE(SET_INTEGER, ARGS(integer)):
 	  {
@@ -1428,7 +1433,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(c); 
 	    StructurePointer++;
 	  }
-	break; 
+	VMBREAK; 
 
 	  
 	case OPCODE(SET_VOID, ARGS(number)):
@@ -1447,7 +1452,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SET_OBJECT_VOID, ARGS(number)):
 	  {
@@ -1464,7 +1469,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	//
 	// The "control" instructions handle the procedural side of
@@ -1494,7 +1499,7 @@ Thread::Execute(void)
 	    currentEnvironment = envStack.push(currentEnvironment,
 						     continuationInstr, n);
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(DEALLOCATE, ARGS()):
 	  {
@@ -1505,7 +1510,7 @@ Thread::Execute(void)
 	    const EnvLoc PrevEnv = currentEnvironment;
 	    envStack.retrieve(PrevEnv, currentEnvironment, continuationInstr);
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(CALL_PREDICATE, ARGS(predatom, number, number)):
 	  {
@@ -1615,7 +1620,7 @@ Thread::Execute(void)
 		  }
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(CALL_ADDRESS, ARGS(address, number)):
 	  {
@@ -1684,7 +1689,7 @@ Thread::Execute(void)
 		PC = address;
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(CALL_ESCAPE, ARGS(address, number)):
 	  {
@@ -1739,7 +1744,7 @@ Thread::Execute(void)
 		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(*this));
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(EXECUTE_PREDICATE, ARGS(predatom, number)):
 	  {
@@ -1835,7 +1840,7 @@ Thread::Execute(void)
 		  }
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	    
 	case OPCODE(EXECUTE_ADDRESS, ARGS(address)):
 	  {
@@ -1890,7 +1895,7 @@ Thread::Execute(void)
 		PC = address;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(EXECUTE_ESCAPE, ARGS(address)):
 	  {
@@ -1939,13 +1944,13 @@ Thread::Execute(void)
 		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(*this));
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(NOOP, ARGS()):
 	  //
 	  // Do nothing.
 	  //
-	  break;
+	  VMBREAK;
 	  
 	case OPCODE(JUMP, ARGS(address)):
 	  {
@@ -1956,7 +1961,7 @@ Thread::Execute(void)
 
 	    PC = address;
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PROCEED, ARGS()):
 	  //
@@ -1965,26 +1970,26 @@ Thread::Execute(void)
 	  // whose address is in the continuation register. 
 	  // 
 	  PC = continuationInstr; 
-	  break; 
+	  VMBREAK; 
   
 	case OPCODE(FAIL, ARGS()):
 	  //
 	  // Initiate backtracking.
 	  //
 	  BACKTRACK;
-	  break;
+	  VMBREAK;
   
 	case OPCODE(HALT, ARGS()):
 	  //
 	  // Halt the execution and exit with 0.
 	  //
 	  return RV_HALT;
-	  break;
+	  VMBREAK;
 	  
 	case OPCODE(EXIT, ARGS()):
           programCounter = PC;
 	  return RV_EXIT;
-	  break;
+	  VMBREAK;
 	  
 	// 
 	// The "choice" instructions manipulate with the choice points.
@@ -2008,7 +2013,7 @@ Thread::Execute(void)
 	    currentChoicePoint =
 	      pushChoicePoint(PC + label, arity);
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(RETRY_ME_ELSE, ARGS(offset)):
 	  {
@@ -2025,7 +2030,7 @@ Thread::Execute(void)
 	    choiceStack.nextClause(currentChoicePoint) =
 	      PC + label;
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(TRUST_ME_ELSE_FAIL, ARGS()):
 	  //
@@ -2038,7 +2043,7 @@ Thread::Execute(void)
           backtrackTo(choiceStack.fetchChoice(currentChoicePoint));
 	  currentChoicePoint = choiceStack.pop(currentChoicePoint);
 	  tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
-	  break; 
+	  VMBREAK; 
 	  
 	case OPCODE(TRY, ARGS(number, offset)):
 	  {
@@ -2055,7 +2060,7 @@ Thread::Execute(void)
 	    currentChoicePoint = pushChoicePoint(PC, arity);
 	    PC += label;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(RETRY, ARGS(offset)):
 	  {
@@ -2073,7 +2078,7 @@ Thread::Execute(void)
 	    choiceStack.nextClause(currentChoicePoint) = PC;
 	    PC += label;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(TRUST, ARGS(offset)):
 	  {
@@ -2092,7 +2097,7 @@ Thread::Execute(void)
 	    tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
 	    PC += label;
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(NECK_CUT, ARGS()):
 	  {
@@ -2123,7 +2128,7 @@ Thread::Execute(void)
 		tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(GET_X_LEVEL, ARGS(register)):
 	  {
@@ -2134,7 +2139,7 @@ Thread::Execute(void)
 	    DEBUG_ASSERT(false);
 	    X[i] = reinterpret_cast<Object*>(cutPoint);
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(GET_Y_LEVEL, ARGS(register)):
 	  {
@@ -2146,7 +2151,7 @@ Thread::Execute(void)
 	    envStack.yReg(currentEnvironment, i) = 
 	      heap.newNumber(cutPoint);
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(CUT, ARGS(register)):
 	  {
@@ -2184,7 +2189,7 @@ Thread::Execute(void)
 		  }
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	  
 	//
 	// The purpose of the indexing instructions is to filter 
@@ -2234,7 +2239,7 @@ Thread::Execute(void)
 		PC += 6 * Code::SIZE_OF_OFFSET + offset;
 	      }
 	  }
-	break; 
+	VMBREAK; 
 	  
 	case OPCODE(SWITCH_ON_CONSTANT, ARGS(register, tablesize)):
 	  {
@@ -2279,7 +2284,7 @@ Thread::Execute(void)
 		PC += label;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(SWITCH_ON_STRUCTURE, ARGS(register, tablesize)):
 	  {
@@ -2349,7 +2354,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		PC += label;
 	      }
 	  }
-	break;
+	VMBREAK;
 	  
 	case OPCODE(SWITCH_ON_QUANTIFIER, ARGS(register, tablesize)):
 	  {
@@ -2406,7 +2411,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		PC += label;
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	//
 	// The pseudo-instructions are intended to be a long term replacement
@@ -2448,7 +2453,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR1, ARGS(number, register)):
 	  {
@@ -2494,7 +2499,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR2, ARGS(number, register, register)):
 	  {
@@ -2542,7 +2547,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR3, ARGS(number, register, register, register)):
 	  {
@@ -2593,7 +2598,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR4, ARGS(number, register, register, register, register)):
 	  {
@@ -2647,7 +2652,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR5, ARGS(number, register, register, register, register, register)):
 	  {
@@ -2703,7 +2708,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(UNIFY_CONSTANT, ARGS(constant)):
 	  {
@@ -2743,7 +2748,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(UNIFY_INTEGER, ARGS(integer)):
 	  {
@@ -2793,7 +2798,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(UNIFY_X_REF, ARGS(register)):
 	  {
@@ -2816,7 +2821,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	  break;
+	  VMBREAK;
 	  
 	case OPCODE(UNIFY_Y_REF, ARGS(register)):
 	  {
@@ -2839,7 +2844,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	break;
+	VMBREAK;
 
 	case OPCODE(DB_JUMP, ARGS(number, address, address, address)):
 	  {
@@ -2852,7 +2857,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	    pred->aquire();
 	    refTrail.trail(r);
 	  }
-	  break;
+	  VMBREAK;
 
 	case OPCODE(DB_TRY, ARGS(number, address, address, address)):
 	  {
@@ -2871,7 +2876,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	    refTrail.trail(r);
 	    PC = first;
 	  }
-	  break;
+	  VMBREAK;
 
 	case OPCODE(DB_RETRY, ARGS(number, address, address, address)):
 	  {
@@ -2897,7 +2902,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	    refTrail.trail(r);
 	    PC = first;
 	  }
-	  break;
+	  VMBREAK;
 
 	case OPCODE(DB_TRY_DEC_REF, ARGS()):
           {
@@ -2905,11 +2910,11 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
             refTrail.tryDecRef(refcp);
 	    PC = continuationInstr; 
           }
-          break;
+          VMBREAK;
 
 	default:
 	  (void)(kill(getpid(), SIGILL));
-	  break;
+	  VMBREAK;
 	}
 #ifdef DEBUG
       trace.TraceInstr(*this, *atoms, *code,

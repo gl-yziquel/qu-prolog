@@ -55,10 +55,10 @@
 // 
 // ##Copyright##
 //
-// $Id: env.cc,v 1.6 2001/12/17 04:27:32 qp Exp $
+// $Id: env.cc,v 1.7 2002/11/03 08:37:26 qp Exp $
 
 #include	<stdlib.h>
-#include	<strstream.h>
+#include	<sstream>
 #include	<signal.h>
 #include	<stdarg.h>
 
@@ -136,14 +136,13 @@ Thread::call_predicate(int32 noargs, ...)
 	  //
 	  if (arity > NUMBER_X_REGISTERS - 1)
 	    {
-	      ostrstream ostrm;
+	      ostringstream ostrm;
 	      ostrm << atoms->getAtomString(functor)
 		    << "/" << arity << ends;
-	      pred = ostrm.str();
+	      pred = (char*)(ostrm.str().data());
 	      PredCodeLoc = 
 		predicates->lookUp(atoms->getAtom(atoms->lookUp(pred)),
 				   NUMBER_X_REGISTERS - 1, atoms, code);
-	      ostrm.freeze(0);
 	    }
 	  else
 	    {

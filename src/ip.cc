@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ip.cc,v 1.7 2002/03/27 23:23:48 qp Exp $
+// $Id: ip.cc,v 1.8 2003/05/16 01:22:32 qp Exp $
 
 
 #include "atom_table.h"
@@ -220,7 +220,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
   const long offset = 1 +
     (hash_val->isNumber() ?
       (hash_val->getNumber() & (array_size-1))
-    : (reinterpret_cast<word32>(hash_val) & (array_size-1)));
+    : ((reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
 
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
@@ -400,7 +400,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
   const int32 offset = 1 +
     (hash_val->isNumber()
      ? hash_val->getNumber() & (array_size-1) 
-     : reinterpret_cast<word32>(hash_val) & (array_size-1));
+     : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1));
   
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
@@ -410,15 +410,15 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
 
   for (;
        array_ptr->isCons();
-       array_ptr = OBJECT_CAST(Cons*, array_ptr)->getTail())
+       array_ptr = OBJECT_CAST(Cons*, array_ptr)->getTail()->variableDereference())
     {
       Object *array_val_head =  
-	OBJECT_CAST(Cons*, array_ptr)->getHead();
+	OBJECT_CAST(Cons*, array_ptr)->getHead()->variableDereference();
 
       DEBUG_ASSERT(array_val_head->isStructure());
 
       Object *list_hash = 
-	OBJECT_CAST(Structure*, array_val_head)->getArgument(2);
+	OBJECT_CAST(Structure*, array_val_head)->getArgument(2)->variableDereference();
 
       if (list_hash == hash_val ||
 	  (hash_val->isNumber() && list_hash->isNumber() &&

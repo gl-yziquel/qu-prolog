@@ -48,12 +48,16 @@ AC_SUBST(QPHOME)
 
 case "$host" in
 *-*-linux*) AC_DEFINE(LINUX)
-#	PATCH="-I- -I$QPHOME/patch"
-#	AC_SUBST(PATCH)
+	OS=LINUX
 	;;
 *-*-solaris*) AC_DEFINE(SOLARIS)
-#        PATCH=
-#	AC_SUBST(PATCH)
+	OS=SOLARIS
+	;;
+*-*-freebsd*) AC_DEFINE(FREEBSD)
+	OS=FREEBSD
+	;;
+*-*-darwin*) AC_DEFINE(MACOSX)
+	OS=MACOSX
 	;;
 esac
 
@@ -128,9 +132,136 @@ else
         AC_SUBST(ICMHOME)
         AC_SUBST(TK_ICM)
 	AC_DEFINE(ICM_DEF)
-        ICM_LIB="-licm"
+        ICM_LIB="-licm -lpthread"
         AC_SUBST(ICM_LIB)
 fi
+
+
+GCCINCLUDES=
+AC_ARG_WITH(gcclib,
+[--with-gcclib   Indicate location of gcc STL includes],
+[GCCINCLUDES=-I${withval}],
+[GCCINCLUDES= ])
+AC_SUBST(GCCINCLUDES)
+
+if test "$ICM" != NO_ICM; then
+###### FIND Tcl/Tk ##########
+if test "$OS" = MACOSX; then
+FRAME="-dynamiclib -framework tcl"
+AC_SUBST(FRAME)
+
+echo "Looking for tk/tcl"
+dnl Figure out where to get libtk
+AC_ARG_WITH(libtk,
+[--with-libtk   Indicate location of libtk dir],
+[libtkdir=${withval}],
+[libtkdir=/Library/Frameworks/Tk.framework])
+
+libtkfile=tkXXXXXX
+libtktmp=tmpXXXXXX
+for i in `echo $libtkdir | sed -e "s/:/ /g"`;
+do if test -d $i
+ then
+   for j in `ls $i`; do echo $i/$j >> $libtkfile; done;
+ fi
+done
+
+egrep "libtkstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtkfile > $libtktmp
+if test `grep -c libtkstub\.a $libtktmp` = 0
+  then
+    if test `egrep -c "libtkstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtktmp` = 0
+      then
+        rm $libtktmp
+        rm $libtkfile
+        AC_MSG_ERROR(Cannot find libtk)
+      else
+        tkfile=`cat $libtktmp | head -1`
+        TKDIR=`dirname $tkfile`
+        TKL=`basename $tkfile .a | sed -e "s/lib//"`
+    fi
+  else
+     tkfile=`grep libtk\.a $libtktmp | head -1`
+     TKDIR=`dirname $tkfile`
+     TKL=`basename $tkfile .a | sed -e "s/lib//"`
+fi
+rm $libtktmp
+rm $libtkfile
+AC_SUBST(TKDIR)
+AC_SUBST(TKL)
+
+dnl Figure out where to get libtcl
+AC_ARG_WITH(libtcl,
+[--with-libtcl   Indicate location of libtcl dir],
+[libtcldir=${withval}],
+[libtcldir=/Library/Frameworks/Tcl.framework])
+
+libtclfile=tclXXXXXX
+libtcltmp=tmpXXXXXX
+for i in `echo $libtcldir | sed -e "s/:/ /g"`;
+do if test -d $i
+ then
+   for j in `ls $i`; do echo $i/$j >> $libtclfile; done;
+  fi
+done
+
+egrep "libtclstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtclfile > $libtcltmp
+if test `grep -c libtclstub\.a $libtcltmp` = 0
+  then
+    if test `egrep -c "libtclstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtcltmp` = 0
+      then
+        rm $libtcltmp
+        rm $libtclfile
+        AC_MSG_ERROR(Cannot find libtcl)
+      else
+        tclfile=`cat $libtcltmp | head -1`
+        TCLDIR=`dirname $tclfile`
+        TCLL=`basename $tclfile .a | sed -e "s/lib//"`
+    fi
+  else
+     tclfile=`grep libtclstub\.a $libtcltmp | head -1`
+     TCLDIR=`dirname $tclfile`
+     TCLL=`basename $tclfile .a | sed -e "s/lib//"`
+fi
+rm $libtcltmp
+rm $libtclfile
+AC_SUBST(TCLDIR)
+AC_SUBST(TCLL)
+
+
+dnl Figure out where to get tk.h
+AC_ARG_WITH(tkinclude,
+[--with-tkinclude   Indicate location of tk.h],
+[tkincludedir=${withval}],
+[tkincludedir=/Library/Frameworks/Tk.framework/Headers])
+
+tkfile=tkXXXXXX
+tktmp=tmpXXXXXX
+for i in `echo $tkincludedir | sed -e "s/:/ /g"`;
+do if test -d $i
+ then
+   for j in `ls $i`; do echo $i/$j >> $tkfile; done;
+ fi
+done
+
+egrep "tk\.h" $tkfile > $tktmp
+if test `grep -c tk\.h $tktmp` = 0
+  then
+     rm $tktmp
+     rm $tkfile
+     AC_MSG_ERROR(Cannot find tk.h)
+  else
+     tkf=`cat $tktmp | head -1`
+     TKHDIR=`dirname $tkf`
+fi
+rm $tktmp
+rm $tkfile
+AC_SUBST(TKHDIR)
+
+echo "tk/tcl found"
+
+else
+FRAME=
+AC_SUBST(FRAME)
 
 echo "Looking for tk/tcl"
 dnl Figure out where to get libtk
@@ -240,6 +371,10 @@ rm $tkfile
 AC_SUBST(TKHDIR)
 
 echo "tk/tcl found"
+fi
+
+###### END FIND Tcl/Tk ##########
+fi
 
 AC_PATH_PROG(PRINTF, printf, NO_PRINTF,\
 	$PATH:/bin:/usr/bin:/usr/local/bin:$HOME/bin)
@@ -269,9 +404,6 @@ AC_CHECK_HEADERS(\
 		 sys/sockio.h \
 		 unistd.h \
 		)
-
-AC_CHECK_HEADERS(pthread.h)
-AC_CHECK_LIB(pthread, pthread_create)
 
 # TO DO: Make this formal.
 # dnl ICM stuff
@@ -532,6 +664,10 @@ AC_OUTPUT(LOGIN_CMDS \
 	  bin/qc1.boot \
 	  bin/qcc \
 	  bin/qppp \
+	  bin/qp_gui \
+	  bin/qp_debug_gui \
+	  examples/monitor_gui \
+	  examples/template_gui \
 	  prolog/Makefile \
 	  prolog/compiler/Makefile \
 	  prolog/library/Makefile \
@@ -558,5 +694,8 @@ chmod -f a+x bin/kq \
 	  bin/qc1.boot \
 	  bin/qcc \
 	  bin/qppp \
-	  bin/qp_gui
+	  examples/monitor_gui \
+	  examples/template_gui \
+	  bin/qp_gui \
+	  bin/qp_debug_gui
 

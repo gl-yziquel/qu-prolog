@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_qp.h,v 1.2 2001/11/21 00:21:14 qp Exp $
+// $Id: heap_qp.h,v 1.4 2002/12/04 00:36:13 qp Exp $
 
 #ifndef HEAP_QP_H
 #define HEAP_QP_H
@@ -177,7 +177,6 @@ public:
   inline ObjectVariable *newObjectVariable(void);
 
   inline Structure *newStructure(const size_t arity);
-  inline Structure *newStructure(const size_t arity, Object *, ...);
 
   // Both constructors for the list type.
   inline Cons *newCons(void);
@@ -282,24 +281,13 @@ inline Heap::Heap(char* name, unsigned long size, bool GC)
   //
   DEBUG_ASSERT(sizeof (heapobject) == sizeof (void *));
 
-  //
-  // Make sure all the allocation stuff worked
-  //
-  if (data == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  else
-    {
-      top = data + size * K / sizeof (heapobject);
-      gcMark = data + 
-	(9 * size * K) / (10 * sizeof (heapobject)); // 90% of heap
-      next = data;
-      highwater = data;
-      doGC = GC;
-      heapname = name;
-      savedTop = data;
-    }
+  top = data + size * K / sizeof (heapobject);
+  gcMark = data + (9 * size * K) / (10 * sizeof (heapobject)); // 90% of heap
+  next = data;
+  highwater = data;
+  doGC = GC;
+  heapname = name;
+  savedTop = data;
 }
 
 //
@@ -469,27 +457,6 @@ Heap::newStructure(const size_t arity)
   return reinterpret_cast<Structure *>(x);
 }
 
-inline Structure *
-Heap::newStructure(const size_t arity, Object *functor, ...)
-{
-  Structure *structure = newStructure(arity);
-
-  va_list ap;
-
-  va_start(ap, functor);
-  
-  structure->setFunctor(functor);
-
-  for (size_t i = 1; i <= arity; i++) 
-    {
-      structure->setArgument(i, va_arg(ap, Object *));
-    }
-
-  va_end(ap);
-
-  return structure;
-}
-
 //
 // Create a new List (cons) cell on the heap
 //
@@ -615,14 +582,6 @@ Heap::newFloat(double val)
 {
   heapobject *x = allocateHeapSpace(Float::size());
   double *k = (double *) malloc(sizeof (double));
-
-  //
-  // Die if there's not enough memory for the double
-  //
-  if (k == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   *k = val;
   x[0] = Constant::ConstFloat | Object::TypeConst;

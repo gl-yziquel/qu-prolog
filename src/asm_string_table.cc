@@ -53,21 +53,17 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.cc,v 1.2 2001/11/21 00:21:10 qp Exp $
+// $Id: asm_string_table.cc,v 1.4 2002/11/08 00:44:13 qp Exp $
 
 #include "asm_string_table.h"
 #include "code.h"
 
 template <class EntryType>
-ASMTable<EntryType>::ASMTable(int size = 512)
+ASMTable<EntryType>::ASMTable(int size)
 {
   table_size = size;
   
   table = new (EntryType)[table_size];
-  if (table == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
   
   table_num_entries = 0;
 }
@@ -87,7 +83,7 @@ ASMStringTable::save(ostream& ostrm) const
   for (ASMLoc i = 0; i < tableNumEntries(); i++)
     {
       // Number of characters + 1 for null byte
-      num_bytes += (getEntry(i).value)->Length() + 1;
+      num_bytes += (getEntry(i).value)->length() + 1;
     }
   
   // Write out the number of bytes
@@ -96,7 +92,7 @@ ASMStringTable::save(ostream& ostrm) const
   // Write out the strings.
   for (ASMLoc i = 0; i < tableNumEntries(); i++)
     {
-      ostrm << (getEntry(i).value)->Str() << ends;
+      ostrm << *(getEntry(i).value) << ends;
       if (ostrm.fail())
 	{
 	  SaveFailure(__FUNCTION__, "strings");

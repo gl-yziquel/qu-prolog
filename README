@@ -1,6 +1,6 @@
-Welcome to Qu-Prolog 6.0.
+Welcome to Qu-Prolog 6.2.
 
-Qu-Prolog 6.0 is an extended Prolog with built-in support for quantifiers, 
+Qu-Prolog 6.2 is an extended Prolog with built-in support for quantifiers, 
 object-variables and substitutions. It is designed as an implementation
 language for systems such as interactive theorem provers.
 
@@ -16,10 +16,10 @@ For the HTML document point your web browser at
 doc/manual/MAIN.html
 
 The examples directory contains some example programs that use the extensions
-of Qu-Prolog. These examples are refer ed to from the user manual.
+of Qu-Prolog. These examples are referred to from the user manual.
 
 If you wish to join the Qu-Prolog mailing list or have any comments or 
 problems please email to
 
-pjr@csee.uq.edu.au
+pjr@itee.uq.edu.au
 

@@ -15,80 +15,20 @@
 
 #include "icm_support.h"
 
+
 /* The connection to the ICM server */
-icmConn conn=NULL;
+static icmConn conn=NULL;
 
 /* Our ICM handle */
-icmHandle ourHandle = NULL;
+static icmHandle ourHandle = NULL;
 
 /* Our handle name */
-char handle_name[HANDLE_NAME_SIZE];
+static char handle_name[HANDLE_NAME_SIZE];
 
-/* The pipe for connecting the ICM message in thread to the main (Tk) thread */
-int icm_msg_pipe[2];
+/* Tcl channel for communication */
+static Tcl_Channel channel;
 
-/* Tcl channel for the pipe */
-Tcl_Channel channel;
-
-/*
- * The icm event loop - executed as a sub-thread
- *
- * Assumes all messages sent to this process are ICM-strings.
- */
-void * icm_thread_event_loop()
-{
-    long seqNo = -LONG_MAX;
-    icmHandle recip;
-    icmHandle sender;
-    icmMsg msg;
-    icmOption opts;
-    size_t len;
-    char sender_handle_name[HANDLE_NAME_SIZE];
-    char replyto_handle_name[HANDLE_NAME_SIZE];
-
-    for(;;)
-    {
-        icmDataRec data;
-        icmHandle hh;
-        char res[MAXSTRING];
-        icmGetMsg(conn, &recip, &sender, &opts, &msg, &seqNo);
-	if (icmScanMsg(msg, "%S", &data) == icmOk)
-        {
-	    icmHandle replyto = sender;
-            // If this call fails, replyto is unchanged
-            (void) icmIsOption(opts, icmReplyto, &replyto);
-
-	    icmHandleName(sender, sender_handle_name,HANDLE_NAME_SIZE);
-	    icmHandleName(replyto, replyto_handle_name,HANDLE_NAME_SIZE);
-	    write(icm_msg_pipe[1], data.data, data.size);
-	    len = strlen(ICM_MESSAGE_SEPARATOR);
-	    write(icm_msg_pipe[1], ICM_MESSAGE_SEPARATOR, len);
-	    len = strlen(sender_handle_name);
-	    write(icm_msg_pipe[1], sender_handle_name, len);
-	    len = strlen(ICM_ADDRESS_SEPARATOR);
-	    write(icm_msg_pipe[1], ICM_ADDRESS_SEPARATOR, len);
-	    len = strlen(replyto_handle_name);
-	    write(icm_msg_pipe[1], replyto_handle_name, len);
-	    len = strlen(ICM_END_MESSAGE);
-	    write(icm_msg_pipe[1], ICM_END_MESSAGE, len);
-            free(data.data);
-	    icmReleaseMsg(msg);
-	    icmReleaseOptions(opts);
-	    seqNo = -LONG_MAX;
-        }
-        else 
-        if (sender == conn->server
-            && icmScanMsg(msg,"%(icmDeregisterAgent%s%h%)",&res,&hh)==icmOk
-            && icmSameAgentHandle(hh,ourHandle)==icmOk)
-        {
-            icmReleaseMsg(msg);
-            icmReleaseOptions(opts);
-            exit(0);
-        }
-
-    }
-    return NULL;
-}
+static long seqNo = -LONG_MAX;
 
 
 /*
@@ -103,20 +43,20 @@ c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
     int port;
     if (argc != 3)
     {
-        interp->result = "Usage: icmInitComms port ipaddress";
-        return TCL_ERROR;
+      Tcl_SetResult(interp, "Usage: icmInitComms port ipaddress", TCL_STATIC);
+      return TCL_ERROR;
     }
     if (conn != NULL)
     {
-        interp->result = "Process already initialized";
-	 return TCL_ERROR;
+      Tcl_SetResult(interp, "Process already initialized", TCL_STATIC);
+      return TCL_ERROR;
     }
     sscanf(argv[1], "%d", &port);
     if (*argv[2] == '\0')
     {
       if(icmInitComms(port,NULL,&conn)!=icmOk)
       {
-        interp->result = "Failed to initialise process";
+	Tcl_SetResult(interp, "Failed to initialise process", TCL_STATIC);
         return TCL_ERROR;
       }
     }
@@ -124,7 +64,7 @@ c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
     {
       if(icmInitComms(port,argv[2],&conn)!=icmOk)
       {
-        interp->result = "Failed to initialise process";
+	Tcl_SetResult(interp, "Failed to initialise process", TCL_STATIC);
         return TCL_ERROR;
       }
     }
@@ -146,58 +86,42 @@ int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp,
 {
     if (argc != 2)
     {
-        interp->result = "Usage: icmRegisterAgent ?name?";
-        return TCL_ERROR;
+      Tcl_SetResult(interp, "Usage: icmRegisterAgent ?name?", TCL_STATIC);
+      return TCL_ERROR;
     }
     if (conn == NULL)
     {
-        interp->result = "Process not initialized";
-	 return TCL_ERROR;
+      Tcl_SetResult(interp, "Process not initialized", TCL_STATIC);
+      return TCL_ERROR;
     }
     if (ourHandle != NULL)
     {
-        interp->result = "Process already registered";
-	 return TCL_ERROR;
+      Tcl_SetResult(interp, "Process already registered", TCL_STATIC);
+      return TCL_ERROR;
     }
 
     /* Construct handle from supplied process name */
-
+    
     ourHandle = icmParseHandle(argv[1]);
-
+    
     if(icmRegisterAgent(conn,ourHandle,NULL,&ourHandle)==icmOk)
-    {
-	pthread_t icm_thread;
-        char tk_file_handle[TK_FILE_HANDLE_SIZE];
-
-	/* Open the pipe */
-	if (pipe(icm_msg_pipe) == -1)
-	{
-	     ourHandle = NULL;
-             interp->result = "Unable to open pipe";
-             return TCL_ERROR;
-	}
-
-	/* Start the sub-thread for processing ICM messages */
-
-	pthread_create(&icm_thread, NULL, icm_thread_event_loop, NULL);   
-
+      {
+	/* Get the ICM communications file descriptor */
+	int fd = icmCommSocket(conn);
 	/* Create a Tcl file channel */
-        channel = Tcl_MakeFileChannel((ClientData)icm_msg_pipe[0], 
-	                              TCL_READABLE);
-	/* Create the file handle string */
-        sprintf(tk_file_handle, "file%d",icm_msg_pipe[0]);
+        channel = Tcl_MakeFileChannel((ClientData)fd, TCL_READABLE);
 	/* Register the Tcl channel with Tcl */
         Tcl_RegisterChannel(interp, channel);
-	/* Return the file handle */
-        strcpy(interp->result, tk_file_handle);
+	/* Return the channel name */
+	Tcl_SetResult(interp, Tcl_GetChannelName(channel), TCL_VOLATILE);
         return TCL_OK;
-	}
+      }
     else
-    {
+      {
 	ourHandle = NULL;
-        interp->result = "Failed to register";
+	Tcl_SetResult(interp, "Failed to register", TCL_STATIC);
         return TCL_ERROR;
-    }
+      }
 }
 
 /*
@@ -206,38 +130,126 @@ int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp,
 int c_icmDeregisterAgent(ClientData clientData, Tcl_Interp *interp,
                          int argc, char *argv[])
 {
-    icmMsg msg;
-    
-    if (argc != 1)
+  icmStatus status;
+  if (argc != 1)
     {
-        interp->result = "Usage: icmDeregisterAgent";
-        return TCL_ERROR;
+      Tcl_SetResult(interp, "Usage: icmDeregisterAgent", TCL_STATIC);
+      return TCL_ERROR;
     }
-    if (ourHandle == NULL)
+  if (ourHandle == NULL)
     {
-        interp->result = "Process not registered";
-	 return TCL_ERROR;
+      Tcl_SetResult(interp, "Process not registered", TCL_STATIC);
+      return TCL_ERROR;
     }
-
-    msg = icmFormatMsg(NULL,"%(icmDeregisterAgent%h%)",ourHandle);
-    icmSendMsg(conn,conn->server,ourHandle,NULL,msg);
-    icmReleaseMsg(msg);
-
-    ourHandle = NULL;
-    if (close(icm_msg_pipe[0]) == -1)
+  status = icmDeregisterAgent(conn, ourHandle);
+  if (status != icmOk)
     {
-         interp->result = "Cannot close pipe0";
-         return TCL_ERROR;
+      Tcl_SetResult(interp, "Cannot deregister", TCL_STATIC);
+      return TCL_ERROR;
     }
-    if (close(icm_msg_pipe[1]) == -1)
-    {
-         interp->result = "Cannot close pipe1";
-         return TCL_ERROR;
-    }
-    Tcl_UnregisterChannel(interp, channel);
-    
-    return TCL_OK;
+  
+  Tcl_UnregisterChannel(interp, channel);
+  
+  return TCL_OK;
 }
+
+int c_icmGetMsg(ClientData clientData, Tcl_Interp *interp,
+                    int argc, char *argv[])
+{
+  if (argc != 1)
+    {
+      Tcl_SetResult(interp, "Usage: icmGetMsg", TCL_STATIC);
+      return TCL_ERROR;
+    }
+  if (ourHandle == NULL)
+    {
+      Tcl_SetResult(interp, "Process not registered", TCL_STATIC);
+      return TCL_ERROR;
+    }
+  {
+    icmHandle recip;
+    icmHandle sender;
+    icmMsg msg;
+    icmOption opts;
+    char sender_handle_name[HANDLE_NAME_SIZE];
+    char replyto_handle_name[HANDLE_NAME_SIZE];
+    icmStatus status = icmGetMsg(conn, &recip, &sender, &opts, &msg, &seqNo);
+    switch (status)
+      {
+      case icmOk:
+	{
+
+	  icmDataRec data;
+	  if (icmScanMsg(msg, "%S", &data) == icmOk)
+	    {
+	      Tcl_Obj* tcl_msg[3];
+	      Tcl_Obj* tcl_list;
+	      icmHandle replyto = sender;
+	      // If this call fails, replyto is unchanged
+	      (void) icmIsOption(opts, icmReplyto, &replyto);
+	      
+	      icmHandleName(sender, sender_handle_name,HANDLE_NAME_SIZE);
+	      icmHandleName(replyto, replyto_handle_name,HANDLE_NAME_SIZE);
+	      
+	      tcl_msg[0] = Tcl_NewStringObj(data.data, data.size);
+	      tcl_msg[1] = Tcl_NewStringObj(sender_handle_name, -1);
+	      tcl_msg[2] = Tcl_NewStringObj(replyto_handle_name, -1);
+	      tcl_list = Tcl_NewListObj(3, tcl_msg);
+	      Tcl_SetObjResult(interp, tcl_list);
+
+	      free(data.data);
+	      icmReleaseMsg(msg);
+	      icmReleaseOptions(opts);
+	      seqNo = -LONG_MAX;
+	    }
+	  else
+	    {
+	      icmReleaseMsg(msg);
+	      icmReleaseOptions(opts);
+	      exit(0);
+	    }
+	  break;
+	}
+      case icmFailed:
+	Tcl_SetResult(interp, "icmGetMsg() returned icmFailed", TCL_STATIC);
+	return TCL_ERROR;
+	break;
+      case icmError:
+	Tcl_SetResult(interp, "icmGetMsg() returned icmError", TCL_STATIC);
+	break;
+      case icmEndFile:
+	Tcl_SetResult(interp, "ICM Communicatons Server has closed connection",
+		      TCL_STATIC);
+	break;
+      }
+  }
+  return TCL_OK;
+}
+
+int c_icmMsgAvail(ClientData clientData, Tcl_Interp *interp, 
+                    int argc, char *argv[])
+{
+  if (argc != 1)
+    {
+      Tcl_SetResult(interp, "Usage: icmMsgAvail", TCL_STATIC);
+      return TCL_ERROR;
+    }
+  if (ourHandle == NULL)
+    {
+      Tcl_SetResult(interp, "Process not registered", TCL_STATIC);
+      return TCL_ERROR;
+    }
+  if (icmMsgAvail(conn, seqNo) == icmOk)
+    {
+      Tcl_SetResult(interp, "yes", TCL_STATIC);
+    }
+  else 
+    { 
+      Tcl_SetResult(interp, "no", TCL_STATIC);
+    }
+  return TCL_OK;
+}
+
 
 int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp, 
                     int argc, char *argv[])
@@ -264,8 +276,9 @@ int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp,
     }
     else
     {
-        interp->result = "Usage: icmFmtSendMsg ?to_addr? (?from?) ?msg?";
-        return TCL_ERROR;
+      Tcl_SetResult(interp, "Usage: icmFmtSendMsg ?to_addr? (?from?) ?msg?", 
+		    TCL_STATIC);
+      return TCL_ERROR;
     }
 
     opts = icmNewOpt(NULL, icmReplyto, reply);
@@ -273,15 +286,33 @@ int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp,
     if (icmFmtSendMsg(conn, tgt, ourHandle, opts, "%S", &data) == icmOk)
     {
 	icmReleaseOptions(opts);
-        interp->result = "sent";
+	Tcl_SetResult(interp, "sent", TCL_STATIC);
         return TCL_OK;
     }
     else
     {
 	icmReleaseOptions(opts);
-        interp->result = "unable to send message";
+	Tcl_SetResult(interp, "unable to send message", TCL_STATIC);
         return TCL_ERROR;
     }
+}
+
+int Tkicm_Init(Tcl_Interp *interp)
+{
+  Tcl_CreateCommand(interp, "icmInitComms", c_icmInitComms,
+		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+  Tcl_CreateCommand(interp, "icmRegisterAgent", c_icmRegisterAgent,
+		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+  Tcl_CreateCommand(interp, "icmDeregisterAgent", c_icmDeregisterAgent,
+		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+  Tcl_CreateCommand(interp, "icmGetMsg", c_icmGetMsg,
+		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL); 
+  Tcl_CreateCommand(interp, "icmMsgAvail", c_icmMsgAvail,
+		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);  
+  Tcl_CreateCommand(interp, "icmFmtSendMsg", c_icmFmtSendMsg,
+		    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);     
+
+  return TCL_OK;
 }
 
 #endif // ICM_DEF

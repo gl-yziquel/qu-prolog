@@ -144,6 +144,30 @@ end('$thread_wait_conditions/4$2'/1):
 
 '$thread_wait_conditions/4$3/4$0'/4:
 
+	switch_on_term(0, $10, $4, $4, $5, $4, $4)
+
+$5:
+	switch_on_structure(0, 8, ['$default':$4, '$'/0:$6, 'db'/1:$7, 'record_db'/1:$8, 'timeout'/1:$9])
+
+$6:
+	try(4, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$7:
+	try(4, $1)
+	trust($4)
+
+$8:
+	try(4, $2)
+	trust($4)
+
+$9:
+	try(4, $3)
+	trust($4)
+
+$10:
 	try(4, $1)
 	retry($2)
 	retry($3)
@@ -211,13 +235,15 @@ $1:
 $2:
 	get_list(0)
 	unify_x_variable(0)
-	allocate(4)
+	allocate(5)
 	unify_y_variable(3)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	get_y_variable(0, 3)
 	neck_cut
-	call_predicate('$thread_wait_conditions/4$3', 4, 4)
+	get_y_level(4)
+	call_predicate('$thread_wait_conditions/4$3', 4, 5)
+	cut(4)
 	put_y_value(3, 0)
 	put_y_value(2, 1)
 	put_y_value(1, 2)
@@ -603,7 +629,7 @@ end('$try_unify_thread_args/3$0'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(3, $1)
@@ -641,7 +667,7 @@ end('$try_unify_thread_args'/3):
 	switch_on_term(0, $14, 'fail', 'fail', $12, 'fail', 'fail')
 
 $12:
-	switch_on_structure(0, 32, ['default':'fail', '$'/0:$13, 'heap_size'/1:$1, 'scratchpad_size'/1:$2, 'binding_trail_size'/1:$3, 'object_trail_size'/1:$4, 'ip_trail_size'/1:$5, 'tag_trail_size'/1:$6, 'ref_trail_size'/1:$7, 'env_size'/1:$8, 'choice_size'/1:$9, 'name_table_size'/1:$10, 'ip_table_size'/1:$11])
+	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$13, 'heap_size'/1:$1, 'scratchpad_size'/1:$2, 'binding_trail_size'/1:$3, 'object_trail_size'/1:$4, 'ip_trail_size'/1:$5, 'tag_trail_size'/1:$6, 'ref_trail_size'/1:$7, 'env_size'/1:$8, 'choice_size'/1:$9, 'name_table_size'/1:$10, 'ip_table_size'/1:$11])
 
 $13:
 	try(3, $1)

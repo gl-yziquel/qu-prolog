@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: bios.cc,v 1.5 2002/06/05 02:31:33 qp Exp $
+// $Id: bios.cc,v 1.9 2002/11/13 04:04:13 qp Exp $
 
 #include <errno.h>
-#include <iostream.h>
+#include <iostream>
 
 // For lstat(2) call.
 #include <stdio.h>
@@ -87,10 +87,10 @@ Thread::psi_get_char(Object *& stream_arg, Object *& char_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
   
-  IS_READY_STREAM(stream, -1);
+  IS_READY_STREAM(stream);
 
   char c[2] = { '\0', '\0' };
 
@@ -145,7 +145,7 @@ Thread::psi_put_char(Object *& stream_arg,
   //
   // Check arguments.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, argS, 1, stream);
 
   //  IS_READY_STREAM(stream, -1);
@@ -174,10 +174,10 @@ Thread::psi_get_code(Object *& stream_arg,
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
 
-  IS_READY_STREAM(stream, -1);
+  IS_READY_STREAM(stream);
 
   //
   // Get the character.
@@ -229,7 +229,7 @@ Thread::psi_put_code(Object *& stream_arg,
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, argS, 1, stream);
 
   int32 c;
@@ -266,10 +266,10 @@ Thread::psi_get_line(Object *& stream_arg,
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
 
-  IS_READY_STREAM(stream, -1);
+  IS_READY_STREAM(stream);
   
   Object**  listPtr = &code_list;
   
@@ -305,7 +305,14 @@ Thread::psi_get_line(Object *& stream_arg,
 	  *listPtr = list;
 	  listPtr = list->getTailAddress();
 	}
-      c = stream->get();
+      if (stream->eof())
+	{
+	  c = -1;
+	}
+      else
+	{
+          c = stream->get();
+	}
     }
   return RV_SUCCESS;
 }
@@ -325,7 +332,7 @@ Thread::psi_put_line(Object *& stream_arg, Object *& code_list)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, argS, 1, stream);
 
   Object* chars = heap.dereference(code_list);

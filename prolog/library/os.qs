@@ -71,7 +71,7 @@ end('os/1$1'/2):
 	switch_on_term(0, $18, $17, $17, $9, $17, $17)
 
 $9:
-	switch_on_structure(0, 16, ['default':$17, '$'/0:$10, 'access'/2:$11, 'argv'/1:$12, 'exit'/1:$13, 'mktemp'/2:$14, 'system'/1:$15, 'system'/2:$16])
+	switch_on_structure(0, 16, ['$default':$17, '$'/0:$10, 'access'/2:$11, 'argv'/1:$12, 'exit'/1:$13, 'mktemp'/2:$14, 'system'/1:$15, 'system'/2:$16])
 
 $10:
 	try(1, $1)

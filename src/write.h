@@ -54,14 +54,14 @@
 // 
 // ##Copyright##
 //
-// $Id: write.h,v 1.2 2000/12/12 03:36:21 qp Exp $
+// $Id: write.h,v 1.3 2002/11/10 07:54:55 qp Exp $
 
 #ifndef WRITE_H
 #define WRITE_H
 
 private:
 void writeVarName(Object* ref, NameGen,
-		  word32& counter, Stream *stream);
+		  word32& counter, QPStream *stream);
 
 public:
 //

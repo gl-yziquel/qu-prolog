@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: encode.h,v 1.5 2002/05/03 01:32:28 qp Exp $
+// $Id: encode.h,v 1.8 2002/12/15 08:23:49 qp Exp $
 
 #ifndef ENCODE_H
 #define ENCODE_H
@@ -61,8 +61,8 @@
 #include "atom_table.h"
 #include "objects.h"
 #include "defs.h"
-#include "io_qp.h"
-#include <vector.h>
+// #include "io_qp.h"
+#include <vector>
 
 class Heap;
 class NameTable;
@@ -200,33 +200,33 @@ private:
   //
   // Write a character.
   //
-  bool	writeEncodeChar(Stream&, const word8);
+  bool	writeEncodeChar(QPStream&, const word8);
   
   //
   // Encode write a number
   //
-  bool writeEncodeNumber(Stream&, const int32);
+  bool writeEncodeNumber(QPStream&, const int32);
     
   //
   // Encode the string and write the result to the stream.
   //
-  bool	encodeWriteString(Stream&, Atom*, AtomTable& atoms);
+  bool	encodeWriteString(QPStream&, Atom*, AtomTable& atoms);
   
   //
   // Encode the variable name and sent it over.
   //
-  bool	encodeWriteVarName(Heap&, Stream&, Object*, AtomTable&);
+  bool	encodeWriteVarName(Heap&, QPStream&, Object*, AtomTable&);
   
   //
   // Encode the substitution and write the result to the stream.
   //
-  bool encodeWriteSub(Thread&, Heap&, Stream&, Object*, 
+  bool encodeWriteSub(Thread&, Heap&, QPStream&, Object*, 
 		      AtomTable&, const bool, NameTable&);
 
-  bool encodeWriteTerm(Thread&, Heap&, Stream&, Object*,
+  bool encodeWriteTerm(Thread&, Heap&, QPStream&, Object*,
 		       AtomTable&, const bool, NameTable&);
 public:
-  EncodeWrite(Thread& th, Heap& heap, Stream& stream, Object* term,
+  EncodeWrite(Thread& th, Heap& heap, QPStream& stream, Object* term,
 	      AtomTable& atoms, const bool remember, NameTable& names)
     {
       success = encodeWriteTerm(th, heap, stream, term,
@@ -241,25 +241,25 @@ private:
   //
   // Read a character.
   //
-  bool encodeReadChar(Stream&, word8&);
+  bool encodeReadChar(QPStream&, word8&);
   
   //
   // Read from a stream and decode back to a string.
   //
-  bool encodeReadString(Stream&, Atom*&, AtomTable&);
+  bool encodeReadString(QPStream&, Atom*&, AtomTable&);
 
   //
   // Read a number.
   //
-  bool encodeReadNumber(Stream&, int32&);
+  bool encodeReadNumber(QPStream&, int32&);
 
   //
   // Read from a stream and decode back to the substitution.
   //
-  bool encodeReadSub(Thread&, Heap&, Stream&, Object*&,
+  bool encodeReadSub(Thread&, Heap&, QPStream&, Object*&,
 		     AtomTable&, const bool, NameTable&);
 
-  bool encodeReadTerm(Thread&, Heap&, Stream&, Object*&,
+  bool encodeReadTerm(Thread&, Heap&, QPStream&, Object*&,
 		      AtomTable&, const bool, NameTable&);
     
 public:
@@ -267,7 +267,7 @@ public:
   // Read from a stream and decode back to the term.
   //
   EncodeRead(Thread& th,
-	     Heap& heap, Stream& stream,
+	     Heap& heap, QPStream& stream,
 	     Object*& term,
 	     AtomTable& atoms,
 	     const bool remember,

@@ -1,3 +1,3 @@
 #! /bin/sh
 
-pl -x /home/qp/rel/qp6.1/bin/qc1.boot.po -F none -f none -t halt -g "main(['$1'])"
+pl -x /home/pjr/qp_dev/rel/qp6.2/bin/qc1.boot.po -F none -f none -t halt -g "main(['$1'])"

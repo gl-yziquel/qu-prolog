@@ -75,7 +75,7 @@ end('consult/1$1'/1):
 	switch_on_term(0, $9, $8, $8, $5, $8, $8)
 
 $5:
-	switch_on_structure(0, 4, ['default':$8, '$'/0:$6, '-'/1:$7])
+	switch_on_structure(0, 4, ['$default':$8, '$'/0:$6, '-'/1:$7])
 
 $6:
 	try(1, $1)
@@ -507,7 +507,7 @@ end('$consult'/1):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 'user':$4])
+	switch_on_constant(0, 4, ['$default':$2, 'user':$4])
 
 $4:
 	try(1, $1)
@@ -561,7 +561,7 @@ end('$consult_a_file'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 'user':$4])
+	switch_on_constant(0, 4, ['$default':$2, 'user':$4])
 
 $4:
 	try(2, $1)
@@ -590,7 +590,7 @@ end('$consult_open'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(1, $1)
@@ -761,7 +761,7 @@ end('$read_assert_clauses/3$5'/3):
 	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
 
 $5:
-	switch_on_constant(0, 8, ['default':'fail', 'encoded':$1, 'encoded_expanded':$2, 'normal_expanded':$3, 'normal':$4])
+	switch_on_constant(0, 8, ['$default':'fail', 'encoded':$1, 'encoded_expanded':$2, 'normal_expanded':$3, 'normal':$4])
 
 $6:
 	try(3, $1)
@@ -848,7 +848,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$3, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$3, '[]':$6])
 
 $6:
 	try(3, $1)
@@ -902,6 +902,20 @@ end('$consult_clause/3$0'/1):
 
 '$consult_clause/3$1'/3:
 
+	switch_on_term(0, $6, $1, $1, $3, $1, $1)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, '/'/2:$5])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
+	try(3, $1)
+	trust($2)
+
+$6:
 	try(3, $1)
 	trust($2)
 
@@ -936,7 +950,7 @@ end('$consult_clause/3$1'/3):
 	switch_on_term(0, $7, $6, $6, $6, $6, $4)
 
 $4:
-	switch_on_constant(0, 4, ['default':$6, 'end_of_file':$5])
+	switch_on_constant(0, 4, ['$default':$6, 'end_of_file':$5])
 
 $5:
 	try(3, $1)
@@ -1038,7 +1052,7 @@ end('get_name/2$1'/2):
 	switch_on_term(0, $9, $8, $8, $5, $8, $8)
 
 $5:
-	switch_on_structure(0, 4, ['default':$8, '$'/0:$6, ':-'/2:$7])
+	switch_on_structure(0, 4, ['$default':$8, '$'/0:$6, ':-'/2:$7])
 
 $6:
 	try(2, $1)
@@ -1162,7 +1176,7 @@ end('get_name'/2):
 	switch_on_term(0, $5, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$4, '?-'/1:$1, ':-'/1:$2])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$4, '?-'/1:$1, ':-'/1:$2])
 
 $4:
 	try(1, $1)

@@ -53,12 +53,11 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_decode.h,v 1.3 2001/11/21 00:21:17 qp Exp $
+// $Id: thread_decode.h,v 1.4 2002/12/03 04:54:59 qp Exp $
 
 #ifndef	THREAD_DECODE_H
 #define	THREAD_DECODE_H
 
-#include "cond_list.h"
 #include "global.h"
 #include "thread_qp.h"
 #include "thread_table.h"
@@ -82,10 +81,14 @@ decode_thread(Heap& heap,
 #define DECODE_THREAD_ARG(heap, cell, thread_table, arg_num, thread)	\
 do {									\
   const ErrorValue result = decode_thread(heap, cell, thread_table, &thread);	\
-  if (result != EV_NO_ERROR)						\
-    {									\
-      PSI_ERROR_RETURN(result, arg_num);				\
-    }									\
+  if (result == EV_INST)                                            \
+    {                                                                   \
+      PSI_ERROR_RETURN(EV_INST, 1);                                     \
+    }                                                                   \
+  if (result != EV_NO_ERROR)                                        \
+    {                                                                   \
+      return RV_FAIL;                                                   \
+    }                                                                   \
 } while (0)								\
 
 ErrorValue

@@ -15,7 +15,6 @@
 #include "icm_support.h"
 #include "tcl.h"
 #include "tk.h"
-#include <pthread.h>
 #include <unistd.h>
 
 /*
@@ -115,6 +114,10 @@ Tcl_AppInit(Tcl_Interp *interp)
                        (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
      Tcl_CreateCommand(interp, "icmDeregisterAgent", c_icmDeregisterAgent,
                        (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+     Tcl_CreateCommand(interp, "icmGetMsg", c_icmGetMsg,
+                       (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL); 
+     Tcl_CreateCommand(interp, "icmMsgAvail", c_icmMsgAvail,
+                       (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);  
      Tcl_CreateCommand(interp, "icmFmtSendMsg", c_icmFmtSendMsg,
                        (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);     
 

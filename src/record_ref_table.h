@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: record_ref_table.h,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: record_ref_table.h,v 1.3 2002/11/03 08:37:31 qp Exp $
 
 #ifndef RECORD_REF_TABLE_H
 #define RECORD_REF_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 #include "config.h"

@@ -55,12 +55,12 @@
 // 
 // ##Copyright##
 //
-// $Id: string_table.h,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: string_table.h,v 1.3 2002/11/03 08:37:33 qp Exp $
 
 #ifndef	STRING_TABLE_H
 #define	STRING_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "defs.h"
@@ -88,6 +88,8 @@
 //	+--------+
 //	|        |
 //
+
+
 class	StringTab : public PrologStack <char>
 {
 
@@ -132,13 +134,13 @@ public:
   //
   // Save the data.
   //
-  void save(ostream& ostrm) const
+  void save(std::ostream& ostrm) const
     { saveStack(ostrm, STRING_TABLE_MAGIC_NUMBER); }
 
   //
   // Restore the data.
   //
-  void load(istream& istrm)
+  void load(std::istream& istrm)
     { loadStack(istrm); }
 
 };

@@ -495,7 +495,7 @@ end('$set_read_options'/10):
 	switch_on_term(0, $9, 'fail', 'fail', $7, 'fail', 'fail')
 
 $7:
-	switch_on_structure(0, 16, ['default':'fail', '$'/0:$8, 'variables'/1:$1, 'variable_names'/1:$2, 'singletons'/1:$3, 'remember_name'/1:$4, 'obvar_prefix_table'/1:$5, 'op_table'/1:$6])
+	switch_on_structure(0, 16, ['$default':'fail', '$'/0:$8, 'variables'/1:$1, 'variable_names'/1:$2, 'singletons'/1:$3, 'remember_name'/1:$4, 'obvar_prefix_table'/1:$5, 'op_table'/1:$6])
 
 $8:
 	try(10, $1)
@@ -557,6 +557,13 @@ end('$set_read_options1'/10):
 
 '$read_term/3$0'/5:
 
+	switch_on_term(0, $5, $4, $5, $4, $4, $4)
+
+$4:
+	try(5, $2)
+	trust($3)
+
+$5:
 	try(5, $1)
 	retry($2)
 	trust($3)
@@ -622,7 +629,7 @@ end('$read_term'/3):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, '[]':$4])
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
 
 $4:
 	try(1, $1)
@@ -677,12 +684,16 @@ end('$read_tokens/4$0'/6):
 
 
 $1:
-	allocate(6)
+	allocate(8)
 	get_y_variable(5, 0)
 	get_y_variable(4, 1)
 	get_y_variable(3, 2)
 	get_y_variable(2, 3)
-	pseudo_instr3(35, 25, 0, 1)
+	put_y_variable(7, 1)
+	put_y_variable(6, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(7, 0)
+	put_y_value(6, 1)
 	put_y_value(4, 2)
 	put_y_variable(1, 3)
 	put_y_value(5, 4)
@@ -704,6 +715,12 @@ end('$read_tokens'/4):
 
 '$collect_tokens/8$0'/3:
 
+	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
+
+$4:
+	switch_on_constant(0, 8, ['$default':'fail', 5:$1, 8:$2, 0:$3])
+
+$5:
 	try(3, $1)
 	retry($2)
 	trust($3)
@@ -736,10 +753,12 @@ end('$collect_tokens/8$0'/3):
 	trust($2)
 
 $1:
-	get_x_variable(8, 2)
-	get_x_variable(9, 4)
-	get_x_variable(10, 5)
-	get_x_variable(11, 6)
+	allocate(8)
+	get_y_variable(7, 2)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
 	put_constant('}', 2)
 	pseudo_instr2(110, 0, 2)
 	neck_cut
@@ -749,12 +768,20 @@ $1:
 	unify_x_ref(0)
 	get_list(0)
 	unify_constant('}')
-	unify_x_variable(2)
-	pseudo_instr3(35, 8, 0, 1)
-	put_x_value(8, 4)
-	put_x_value(9, 5)
-	put_x_value(10, 6)
-	put_x_value(11, 7)
+	unify_y_variable(2)
+	put_y_value(7, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(2, 2)
+	put_y_value(6, 3)
+	put_y_value(7, 4)
+	put_y_value(5, 5)
+	put_y_value(4, 6)
+	put_y_value(3, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $2:
@@ -787,52 +814,88 @@ end('$collect_tokens/8$1/7$0'/8):
 	trust($3)
 
 $1:
-	get_x_variable(8, 1)
-	get_x_variable(1, 2)
-	put_constant('{', 2)
-	pseudo_instr2(110, 0, 2)
+	allocate(8)
+	get_y_variable(7, 1)
+	get_y_variable(6, 2)
+	get_y_variable(5, 3)
+	get_y_variable(4, 4)
+	get_y_variable(3, 5)
+	get_y_variable(2, 6)
+	put_constant('{', 1)
+	pseudo_instr2(110, 0, 1)
 	neck_cut
-	pseudo_instr3(35, 8, 0, 2)
-	get_x_variable(7, 0)
-	get_x_variable(0, 2)
-	put_x_value(8, 2)
+	put_y_value(7, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(0, 0)
+	put_y_value(6, 1)
+	put_y_value(7, 2)
+	put_y_value(5, 3)
+	put_y_value(4, 4)
+	put_y_value(3, 5)
+	put_y_value(2, 6)
+	put_y_value(1, 7)
+	deallocate
 	execute_predicate('$collect_tokens/8$1/7$0', 8)
 
 $2:
-	get_x_variable(8, 1)
-	get_x_variable(9, 4)
-	get_x_variable(10, 5)
+	allocate(8)
+	get_y_variable(7, 1)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
 	put_constant('}', 1)
 	pseudo_instr2(110, 0, 1)
 	neck_cut
 	pseudo_instr2(70, 6, 0)
-	get_x_variable(7, 0)
+	get_y_variable(3, 0)
 	put_x_value(2, 0)
 	get_list(0)
 	unify_constant(')')
 	unify_x_ref(0)
 	get_list(0)
 	unify_constant('}')
-	unify_x_variable(2)
-	pseudo_instr3(35, 8, 0, 1)
-	put_x_value(8, 4)
-	put_x_value(9, 5)
-	put_x_value(10, 6)
+	unify_y_variable(2)
+	put_y_value(7, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(2, 2)
+	put_y_value(6, 3)
+	put_y_value(7, 4)
+	put_y_value(5, 5)
+	put_y_value(4, 6)
+	put_y_value(3, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $3:
-	get_x_variable(8, 1)
-	get_x_variable(9, 4)
-	get_x_variable(10, 5)
-	get_x_variable(7, 6)
+	allocate(8)
+	get_y_variable(7, 1)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
 	put_x_value(2, 1)
 	get_list(1)
 	unify_x_value(0)
-	unify_x_variable(2)
-	pseudo_instr3(35, 8, 0, 1)
-	put_x_value(8, 4)
-	put_x_value(9, 5)
-	put_x_value(10, 6)
+	unify_y_variable(2)
+	put_y_value(7, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(2, 2)
+	put_y_value(6, 3)
+	put_y_value(7, 4)
+	put_y_value(5, 5)
+	put_y_value(4, 6)
+	put_y_value(3, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 end('$collect_tokens/8$1'/7):
 
@@ -975,6 +1038,16 @@ end('$collect_tokens/8$4'/5):
 
 '$collect_tokens/8$5/6$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '}':$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -1007,20 +1080,22 @@ end('$collect_tokens/8$5/6$0'/3):
 	trust($2)
 
 $1:
-	allocate(8)
+	allocate(9)
 	get_y_variable(7, 0)
 	get_y_variable(6, 1)
-	get_x_variable(1, 2)
+	get_y_variable(8, 2)
 	get_y_variable(5, 3)
 	get_y_variable(4, 4)
 	get_y_variable(3, 5)
 	put_integer(0, 0)
 	pseudo_instr2(1, 0, 27)
 	neck_cut
-	pseudo_instr3(35, 26, 0, 2)
-	get_y_variable(2, 0)
-	get_y_variable(1, 2)
+	put_y_value(6, 0)
+	put_y_variable(2, 1)
+	put_y_variable(1, 2)
+	call_predicate('$read_next_token_or_nl', 3, 9)
 	put_y_value(1, 0)
+	put_y_value(8, 1)
 	put_y_variable(0, 2)
 	call_predicate('$collect_tokens/8$5/6$0', 3, 8)
 	put_y_value(2, 0)
@@ -1167,7 +1242,7 @@ end('$collect_tokens/8$7'/7):
 	switch_on_term(0, $18, 'fail', 'fail', 'fail', 'fail', $16)
 
 $16:
-	switch_on_constant(0, 32, ['default':'fail', 0:$17, 1:$3, 3:$4, 2:$5, 4:$6, 5:$7, 6:$8, 7:$9, 8:$10, 9:$11, 10:$12, 11:$13, 12:$14, 13:$15])
+	switch_on_constant(0, 32, ['$default':'fail', 0:$17, 1:$3, 3:$4, 2:$5, 4:$6, 5:$7, 6:$8, 7:$9, 8:$10, 9:$11, 10:$12, 11:$13, 12:$14, 13:$15])
 
 $17:
 	try(8, $1)
@@ -1201,12 +1276,17 @@ $2:
 	get_constant('[]', 2)
 	get_constant('[]', 3)
 	get_constant('true', 6)
-	allocate(4)
+	allocate(6)
 	get_y_variable(0, 1)
-	get_y_variable(3, 4)
+	get_y_variable(5, 4)
 	get_y_level(2)
-	call_predicate('repeat', 0, 4)
-	pseudo_instr3(35, 23, 0, 1)
+	call_predicate('repeat', 0, 6)
+	put_y_value(5, 0)
+	put_y_variable(4, 1)
+	put_y_variable(3, 2)
+	call_predicate('$read_next_token_or_nl', 3, 5)
+	put_y_value(4, 0)
+	put_y_value(3, 1)
 	put_y_variable(1, 2)
 	call_predicate('$collect_tokens/8$0', 3, 3)
 	cut(2)
@@ -1232,26 +1312,57 @@ $4:
 	get_integer(3, 0)
 	get_list(2)
 	unify_x_ref(0)
-	unify_x_variable(2)
+	allocate(8)
+	unify_y_variable(7)
 	get_structure('number', 1, 0)
 	unify_x_value(1)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $5:
 	get_integer(2, 0)
-	allocate(5)
+	allocate(11)
 	get_y_variable(4, 1)
 	get_list(2)
 	unify_y_variable(2)
-	unify_x_variable(2)
+	unify_y_variable(10)
 	get_list(3)
 	unify_y_value(2)
 	unify_y_variable(1)
+	get_y_variable(9, 4)
 	get_y_variable(3, 5)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(8, 6)
+	get_y_variable(7, 7)
 	get_y_level(0)
+	put_y_value(9, 0)
+	put_y_variable(6, 1)
+	put_y_variable(5, 2)
+	call_predicate('$read_next_token_or_nl', 3, 11)
+	put_y_value(6, 0)
+	put_y_value(5, 1)
+	put_y_value(10, 2)
 	put_y_value(1, 3)
+	put_y_value(9, 4)
+	put_y_value(3, 5)
+	put_y_value(8, 6)
+	put_y_value(7, 7)
 	call_predicate('$collect_tokens', 8, 5)
 	put_y_value(3, 0)
 	put_y_value(4, 1)
@@ -1266,15 +1377,28 @@ $5:
 
 $6:
 	get_integer(4, 0)
-	allocate(5)
+	allocate(11)
 	get_y_variable(4, 1)
 	get_list(2)
 	unify_y_variable(3)
-	unify_x_variable(2)
+	unify_y_variable(10)
 	get_y_variable(2, 3)
+	get_y_variable(9, 4)
 	get_y_variable(1, 5)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(8, 6)
+	get_y_variable(7, 7)
+	put_y_value(9, 0)
+	put_y_variable(6, 1)
+	put_y_variable(5, 2)
+	call_predicate('$read_next_token_or_nl', 3, 11)
+	put_y_value(6, 0)
+	put_y_value(5, 1)
+	put_y_value(10, 2)
 	put_y_variable(0, 3)
+	put_y_value(9, 4)
+	put_y_value(1, 5)
+	put_y_value(8, 6)
+	put_y_value(7, 7)
 	call_predicate('$collect_tokens', 8, 5)
 	put_y_value(1, 0)
 	put_y_value(4, 1)
@@ -1296,24 +1420,59 @@ $8:
 	get_integer(6, 0)
 	get_list(2)
 	unify_x_variable(0)
-	unify_x_variable(2)
+	allocate(8)
+	unify_y_variable(7)
 	get_list(3)
 	unify_x_value(0)
-	unify_x_variable(3)
+	unify_y_variable(6)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
 	get_structure('var', 2, 0)
 	unify_void(1)
 	unify_x_value(1)
-	pseudo_instr3(35, 4, 0, 1)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $9:
 	get_integer(7, 0)
 	get_list(2)
 	unify_x_ref(0)
-	unify_x_variable(2)
+	allocate(8)
+	unify_y_variable(7)
 	get_structure('atom', 1, 0)
 	unify_x_value(1)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $10:
@@ -1328,24 +1487,55 @@ $11:
 	get_integer(9, 0)
 	get_list(2)
 	unify_x_ref(0)
-	unify_x_variable(2)
+	allocate(8)
+	unify_y_variable(7)
 	get_structure('string', 1, 0)
 	unify_x_value(1)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $12:
 	get_integer(10, 0)
-	allocate(7)
+	allocate(13)
 	get_y_variable(5, 1)
 	get_list(2)
 	unify_y_variable(2)
-	unify_x_variable(2)
+	unify_y_variable(12)
 	get_y_variable(1, 3)
+	get_y_variable(11, 4)
 	get_y_variable(6, 5)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(10, 6)
+	get_y_variable(9, 7)
 	get_y_level(3)
+	put_y_value(11, 0)
+	put_y_variable(8, 1)
+	put_y_variable(7, 2)
+	call_predicate('$read_next_token_or_nl', 3, 13)
+	put_y_value(8, 0)
+	put_y_value(7, 1)
+	put_y_value(12, 2)
 	put_y_variable(0, 3)
+	put_y_value(11, 4)
+	put_y_value(6, 5)
+	put_y_value(10, 6)
+	put_y_value(9, 7)
 	call_predicate('$collect_tokens', 8, 7)
 	put_y_variable(4, 0)
 	put_y_value(5, 1)
@@ -1369,17 +1559,30 @@ $12:
 $13:
 	get_integer(11, 0)
 	get_list(2)
-	allocate(7)
+	allocate(12)
 	unify_y_variable(6)
 	unify_y_variable(5)
 	get_y_variable(4, 3)
+	get_y_variable(11, 4)
 	get_y_variable(3, 5)
-	pseudo_instr3(35, 4, 0, 1)
-	get_y_variable(2, 0)
-	get_y_variable(1, 1)
-	pseudo_instr3(35, 4, 0, 1)
+	get_y_variable(10, 6)
+	get_y_variable(9, 7)
+	put_y_value(11, 0)
+	put_y_variable(2, 1)
+	put_y_variable(1, 2)
+	call_predicate('$read_next_token_or_nl', 3, 12)
+	put_y_value(11, 0)
+	put_y_variable(8, 1)
+	put_y_variable(7, 2)
+	call_predicate('$read_next_token_or_nl', 3, 12)
+	put_y_value(8, 0)
+	put_y_value(7, 1)
 	put_y_value(5, 2)
 	put_y_variable(0, 3)
+	put_y_value(11, 4)
+	put_y_value(3, 5)
+	put_y_value(10, 6)
+	put_y_value(9, 7)
 	call_predicate('$collect_tokens', 8, 7)
 	put_y_value(2, 0)
 	put_y_value(1, 1)
@@ -1395,15 +1598,101 @@ $14:
 	get_integer(12, 0)
 	get_list(2)
 	unify_constant('quant_escape')
-	unify_x_variable(2)
-	pseudo_instr3(35, 4, 0, 1)
+	allocate(8)
+	unify_y_variable(7)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 
 $15:
 	get_integer(13, 0)
-	pseudo_instr3(35, 4, 0, 1)
+	allocate(8)
+	get_y_variable(7, 2)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
 	execute_predicate('$collect_tokens', 8)
 end('$collect_tokens'/8):
+
+
+
+'$read_next_token_or_nl/3$0'/1:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 13:$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_integer(13, 1)
+	get_x_value(0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('$read_next_token_or_nl/3$0'/1):
+
+
+
+'$read_next_token_or_nl'/3:
+
+
+$1:
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(1, 1)
+	get_y_variable(2, 2)
+	get_y_level(0)
+	call_predicate('repeat', 0, 4)
+	pseudo_instr3(35, 23, 0, 1)
+	get_y_value(1, 0)
+	get_y_value(2, 1)
+	put_y_value(1, 0)
+	call_predicate('$read_next_token_or_nl/3$0', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+end('$read_next_token_or_nl'/3):
 
 
 
@@ -1476,6 +1765,16 @@ end('$collect_var_tables/4$0'/2):
 
 '$collect_var_tables/4$1/3$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '_':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -1527,6 +1826,16 @@ end('$collect_var_tables/4$1'/3):
 
 '$collect_var_tables/4$2/5$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '_':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -1692,6 +2001,20 @@ end('$parse_term'/5):
 
 '$parse_start_term/6$0'/6:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, 'atom'/1:$5])
+
+$4:
+	try(6, $1)
+	trust($2)
+
+$5:
+	try(6, $1)
+	trust($2)
+
+$6:
 	try(6, $1)
 	trust($2)
 
@@ -1737,6 +2060,9 @@ end('$parse_start_term/6$0'/6):
 
 '$parse_start_term/6$1'/1:
 
+	switch_on_term(0, $3, $2, $3, $2, $2, $2)
+
+$3:
 	try(1, $1)
 	trust($2)
 
@@ -1758,7 +2084,7 @@ end('$parse_start_term/6$1'/1):
 	switch_on_term(0, $30, $16, $16, $17, $16, $24)
 
 $17:
-	switch_on_structure(0, 16, ['default':$16, '$'/0:$18, 'var'/2:$19, 'string'/1:$20, 'atom'/1:$21, 'number'/1:$22, 'obvar'/2:$23])
+	switch_on_structure(0, 16, ['$default':$16, '$'/0:$18, 'var'/2:$19, 'string'/1:$20, 'atom'/1:$21, 'number'/1:$22, 'obvar'/2:$23])
 
 $18:
 	try(6, $1)
@@ -1795,7 +2121,7 @@ $23:
 	trust($16)
 
 $24:
-	switch_on_constant(0, 16, ['default':$16, 'quant_escape':$25, '[':$26, '(':$27, ' (':$28, '{':$29])
+	switch_on_constant(0, 16, ['$default':$16, 'quant_escape':$25, '[':$26, '(':$27, ' (':$28, '{':$29])
 
 $25:
 	try(6, $6)
@@ -2358,6 +2684,16 @@ end('$parse_after_term/7$3/7$0'/9):
 
 '$parse_after_term/7$3'/7:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(7, $1)
+	trust($2)
+
+$5:
 	try(7, $1)
 	trust($2)
 
@@ -2827,7 +3163,7 @@ end('$check_prefixop'/4):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'fy':$1, 'fx':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'fy':$1, 'fx':$2])
 
 $4:
 	try(3, $1)
@@ -2905,7 +3241,7 @@ end('$check_infixop'/5):
 	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
-	switch_on_constant(0, 8, ['default':'fail', 'xfx':$1, 'xfy':$2, 'yfx':$3])
+	switch_on_constant(0, 8, ['$default':'fail', 'xfx':$1, 'xfy':$2, 'yfx':$3])
 
 $5:
 	try(4, $1)
@@ -3021,7 +3357,7 @@ end('$check_postfixop'/4):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'yf':$1, 'xf':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'yf':$1, 'xf':$2])
 
 $4:
 	try(3, $1)
@@ -3229,7 +3565,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$1, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$6])
 
 $6:
 	try(1, $1)
@@ -3563,7 +3899,7 @@ end('$report_syntax_error'/3):
 	switch_on_term(0, $14, $6, $6, $7, $6, $6)
 
 $7:
-	switch_on_structure(0, 16, ['default':$6, '$'/0:$8, 'atom'/1:$9, 'var'/2:$10, 'obvar'/2:$11, 'number'/1:$12, 'string'/1:$13])
+	switch_on_structure(0, 16, ['$default':$6, '$'/0:$8, 'atom'/1:$9, 'var'/2:$10, 'obvar'/2:$11, 'number'/1:$12, 'string'/1:$13])
 
 $8:
 	try(2, $1)
@@ -3650,7 +3986,7 @@ end('$strip_token'/2):
 	switch_on_term(0, $18, 'fail', 'fail', 'fail', 'fail', $17)
 
 $17:
-	switch_on_constant(0, 32, ['default':'fail', 1:$1, 2:$2, 3:$3, 4:$4, 5:$5, 6:$6, 7:$7, 8:$8, 9:$9, 10:$10, 11:$11, 12:$12, 13:$13, 14:$14, 15:$15, 16:$16])
+	switch_on_constant(0, 32, ['$default':'fail', 1:$1, 2:$2, 3:$3, 4:$4, 5:$5, 6:$6, 7:$7, 8:$8, 9:$9, 10:$10, 11:$11, 12:$12, 13:$13, 14:$14, 15:$15, 16:$16])
 
 $18:
 	try(2, $1)

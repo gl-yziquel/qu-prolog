@@ -23,7 +23,7 @@ end('build_structure'/4):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(3, $1)
@@ -586,7 +586,7 @@ end('transform_subterms'/3):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(4, $1)

@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: string_table.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: string_table.cc,v 1.2 2002/11/08 00:44:21 qp Exp $
 
 #include <string.h>
 
@@ -75,7 +75,7 @@ StringTab::add(const char *string)
 	{
 		//
 		// Hopefully we should never get here, so we return an
-		// "arbitrary" value.  OutOfMemory, OutOfPage in allocateBlock
+		// "arbitrary" value.  OutOfPage in allocateBlock
 		// should recover the program in the appropriate manner.
 		//
 		return(EMPTY_LOC);

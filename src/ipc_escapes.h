@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ipc_escapes.h,v 1.2 2001/11/21 00:21:14 qp Exp $
+// $Id: ipc_escapes.h,v 1.3 2003/10/05 04:50:46 qp Exp $
 
 #ifndef	IPC_ESCAPES_H
 #define	IPC_ESCAPES_H
@@ -135,6 +135,11 @@ ReturnValue psi_ipc_open(Object *&);
 //
 ReturnValue psi_ipc_close(Object *&);
 
+//
+// Broadcast message to all current local threads
+// mode(in)
+//
+ReturnValue psi_broadcast(Object *&);
 
 #endif	// IPC_ESCAPES_H
 

@@ -53,14 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: timeval.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: timeval.h,v 1.2 2002/11/03 08:37:35 qp Exp $
 
 #ifndef	TIMEVAL_H
 #define	TIMEVAL_H
 
 #include <sys/time.h>
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "errors.h"
 
@@ -167,7 +167,7 @@ public:
     }
 };
 
-inline ostream& operator<<(ostream& ostrm, const Timeval& t)
+inline std::ostream& operator<<(std::ostream& ostrm, const Timeval& t)
 {
   ostrm << "sec = " << t.Sec() << " usec = " << t.MicroSec();
 

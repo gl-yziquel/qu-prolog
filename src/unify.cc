@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: unify.cc,v 1.11 2002/07/26 00:39:58 qp Exp $
+// $Id: unify.cc,v 1.13 2002/12/04 00:36:14 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -152,8 +152,10 @@ Thread::extendBoundVarListLoop(Object* varSub, Object* variable,
 	  Variable* type = heap.newVariable();
 	  type->setOccursCheck();
 	  
-	  Structure* term = heap.newStructure(2, AtomTable::colon, 
-					 objectVariable, type); 
+	  Structure* term = heap.newStructure(2);
+	  term->setFunctor(AtomTable::colon); 
+	  term->setArgument(1, objectVariable);
+	  term->setArgument(2, type); 
 	  newList->setHead(term);
 	  //
 	  // Get object variables from head.
@@ -1475,7 +1477,7 @@ Thread::unifyVarVar(PrologValue& variable1, PrologValue& variable2,
 //
 bool
 Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2, 
-			  bool in_quant = false)
+			  bool in_quant)
 {
   if (term1.getTerm() == term2.getTerm() &&
       term1.getSubstitutionBlockList() == term2.getSubstitutionBlockList())
@@ -1673,7 +1675,7 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
 // General unify algorithm. 
 //
 bool
-Thread::unify(Object* term1, Object* term2, bool in_quant = false)
+Thread::unify(Object* term1, Object* term2, bool in_quant)
 {
   //
   // Do the full dereference.

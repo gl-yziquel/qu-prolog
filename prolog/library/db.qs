@@ -97,7 +97,7 @@ end('inline/3$1'/5):
 	switch_on_term(0, $8, $7, $7, $4, $7, $7)
 
 $4:
-	switch_on_structure(0, 4, ['default':$7, '$'/0:$5, '@'/2:$6])
+	switch_on_structure(0, 4, ['$default':$7, '$'/0:$5, '@'/2:$6])
 
 $5:
 	try(3, $1)

@@ -99,7 +99,7 @@ end('$compile_pred/3$0'/4):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, '/'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '/'/2:$5])
 
 $4:
 	try(3, $1)

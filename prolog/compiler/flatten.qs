@@ -44,7 +44,7 @@ end('$flatten_clauses'/5):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, '[]':$4])
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
 
 $4:
 	try(2, $1)
@@ -211,10 +211,10 @@ end('$flatten_body/8$0'/10):
 
 '$flatten_body'/8:
 
-	switch_on_term(0, $35, $34, $34, $18, $34, $34)
+	switch_on_term(0, $36, $17, $17, $18, $17, $17)
 
 $18:
-	switch_on_structure(0, 32, ['default':$34, '$'/0:$19, ','/2:$20, 'build_structure'/4:$21, 'map'/2:$22, 'filter'/3:$23, 'fold'/4:$24, 'fold_right'/4:$25, 'fold_left'/4:$26, 'front_with'/3:$27, 'after_with'/3:$28, '$pretrans_block'/1:$29, 'write_term_list'/1:$30, 'write_term_list'/2:$31, 'once'/1:$32, '\\+'/1:$33])
+	switch_on_structure(0, 64, ['$default':$17, '$'/0:$19, ','/2:$20, 'build_structure'/4:$21, 'map'/2:$22, 'filter'/3:$23, 'fold'/4:$24, 'fold_right'/4:$25, 'fold_left'/4:$26, 'front_with'/3:$27, 'after_with'/3:$28, '$pretrans_block'/1:$29, 'write_term_list'/1:$30, 'write_term_list'/2:$31, 'once'/1:$32, '\\+'/1:$33, '$if_then_else'/3:$34, ';'/2:$35])
 
 $19:
 	try(8, $1)
@@ -237,94 +237,69 @@ $19:
 
 $20:
 	try(8, $1)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $21:
 	try(8, $2)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $22:
 	try(8, $3)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $23:
 	try(8, $4)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $24:
 	try(8, $5)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $25:
 	try(8, $6)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $26:
 	try(8, $7)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $27:
 	try(8, $8)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $28:
 	try(8, $9)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $29:
 	try(8, $10)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $30:
 	try(8, $11)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $31:
 	try(8, $12)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $32:
 	try(8, $13)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $33:
 	try(8, $14)
-	retry($15)
-	retry($16)
 	trust($17)
 
 $34:
 	try(8, $15)
-	retry($16)
 	trust($17)
 
 $35:
+	try(8, $16)
+	trust($17)
+
+$36:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -1559,7 +1534,7 @@ end('$flatten_body'/8):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, '$if_then_else'/3:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$if_then_else'/3:$5])
 
 $4:
 	try(4, $1)
@@ -1800,7 +1775,7 @@ end('$unfold_map'/10):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(3, $1)
@@ -1875,7 +1850,7 @@ end('$list_of_vars'/1):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(5, $1)
@@ -1950,7 +1925,7 @@ end('$ht_lists'/3):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, ';'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ';'/2:$5])
 
 $4:
 	try(4, $1)
@@ -2156,7 +2131,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$1, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$6])
 
 $6:
 	try(3, $1)
@@ -2235,7 +2210,7 @@ end('$conj_var_lookup'/3):
 	switch_on_term(0, $4, 'fail', 'fail', $3, 'fail', $1)
 
 $3:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$2, ','/2:$2])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$2, ','/2:$2])
 
 $4:
 	try(1, $1)
@@ -2260,7 +2235,7 @@ end('$ho_close_tail'/1):
 	switch_on_term(0, $5, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$4, 'write_term_list'/1:$1, 'write_term_list'/2:$2])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$4, 'write_term_list'/1:$1, 'write_term_list'/2:$2])
 
 $4:
 	try(2, $1)
@@ -2305,7 +2280,7 @@ $4:
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$1, '[]':$6])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$6])
 
 $6:
 	try(3, $1)
@@ -2353,7 +2328,7 @@ end('$write_tl_expand1'/3):
 	switch_on_term(0, $29, $1, $1, $14, $1, $26)
 
 $14:
-	switch_on_structure(0, 32, ['default':$1, '$'/0:$15, 'tab'/1:$16, 'pc'/1:$17, 'wa'/1:$18, 'wqa'/1:$19, 'wi'/1:$20, 'w'/1:$21, 'q'/1:$22, 'wR'/1:$23, 'wRq'/1:$24, 'wl'/2:$25])
+	switch_on_structure(0, 32, ['$default':$1, '$'/0:$15, 'tab'/1:$16, 'pc'/1:$17, 'wa'/1:$18, 'wqa'/1:$19, 'wi'/1:$20, 'w'/1:$21, 'q'/1:$22, 'wR'/1:$23, 'wRq'/1:$24, 'wl'/2:$25])
 
 $15:
 	try(3, $1)
@@ -2409,7 +2384,7 @@ $25:
 	trust($13)
 
 $26:
-	switch_on_constant(0, 4, ['default':$1, 'nl':$27, 'sp':$28])
+	switch_on_constant(0, 4, ['$default':$1, 'nl':$27, 'sp':$28])
 
 $27:
 	try(3, $1)
@@ -2566,7 +2541,7 @@ $6:
 	trust($5)
 
 $7:
-	switch_on_constant(0, 4, ['default':$1, '[]':$8])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$8])
 
 $8:
 	try(4, $1)

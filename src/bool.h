@@ -54,12 +54,12 @@
 // 
 // ##Copyright##
 //
-// $Id: bool.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: bool.h,v 1.2 2002/11/03 08:37:24 qp Exp $
 
 #ifndef	BOOL_H
 #define	BOOL_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "int.h"
 

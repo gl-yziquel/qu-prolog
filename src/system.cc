@@ -54,25 +54,25 @@
 // 
 // ##Copyright##
 //
-// $Id: system.cc,v 1.9 2002/08/09 03:02:06 qp Exp $
+// $Id: system.cc,v 1.12 2002/12/23 21:45:52 qp Exp $
+
+#include "atom_table.h"
+#include "thread_qp.h"
 
 #include	<stdlib.h>
 #include	<string.h>
 #include	<unistd.h>
-#if defined(FREEBSD)
+#if defined(FREEBSD) || defined(MACOSX)
 #include        <pthread.h>
 #include        <signal.h>
 #include <sys/wait.h>
-#endif //defined(FREEBSD)
-
-#include "atom_table.h"
-#include "thread_qp.h"
+#endif //defined(FREEBSD) || defined(MACOSX)
 
 extern AtomTable *atoms;
 
 extern	"C"	int mkstemp(char *);
 
-#if defined(FREEBSD)
+#if defined(FREEBSD) || defined(MACOSX)
 extern char **environ;
 int bsd_system (char *command) {
   int pid, status;
@@ -101,7 +101,7 @@ int bsd_system (char *command) {
   } while(1);
 }
 
-#endif //defined(FREEBSD)
+#endif //defined(FREEBSD) || defined(MACOSX)
 
 //
 // psi_system(constant, var).
@@ -116,13 +116,13 @@ Thread::psi_system(Object *& object1, Object *& object2)
 
   DEBUG_ASSERT(val1->isAtom());
 
-#if defined(FREEBSD)
+#if defined(FREEBSD) || defined(MACOSX)
   object2 = 
     heap.newNumber(bsd_system(atoms->getAtomString(val1)));
 #else
   object2 = 
     heap.newNumber(system(atoms->getAtomString(val1)));
-#endif //defined(FREEBSD)
+#endif //defined(FREEBSD) || defined(MACOSX)
 
   return (RV_SUCCESS);
 }
@@ -175,7 +175,6 @@ Thread::ReturnValue
 Thread::psi_realtime(Object *& time_arg)
 {
   time_arg = heap.newNumber(time((time_t *) NULL));
-  
   return RV_SUCCESS;
 }
 

@@ -54,10 +54,10 @@
 // 
 // ##Copyright##
 //
-// $Id: write.cc,v 1.5 2002/05/12 06:06:17 qp Exp $
+// $Id: write.cc,v 1.8 2002/11/13 04:04:17 qp Exp $
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include <string.h>
 
 #include "config.h"
@@ -95,7 +95,7 @@ Thread::psi_write_atom(Object *& object1, Object *& object2)
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   // IS_READY_STREAM(stream, -1);
@@ -186,7 +186,7 @@ SafeAtom(const char *s)
 }
 
 void
-writeqAtom(const char *s, Stream *stream)
+writeqAtom(const char *s, QPStream *stream)
 {
   if (SafeAtom(s))
     {
@@ -237,7 +237,7 @@ Thread::psi_writeq_atom(Object *& object1, Object *& object2)
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (val2->isVariable())
@@ -248,10 +248,6 @@ Thread::psi_writeq_atom(Object *& object1, Object *& object2)
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
-
-  DEBUG_ASSERT(!stream->isEmpty());
-
-  // IS_READY_STREAM(stream, -1);
 
   const char *s = atoms->getAtomString(val2);
 
@@ -271,7 +267,7 @@ Thread::psi_write_integer(Object *& object1, Object *& object2)
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (val2->isVariable())
@@ -310,7 +306,7 @@ Thread::psi_write_var(Object *& object1, Object *& object2)
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (pval2.getTerm()->isVariable() && 
@@ -341,7 +337,8 @@ Thread::psi_write_var(Object *& object1, Object *& object2)
       //
       // No name.
       //
-      stream->form("_%X", reinterpret_cast<heapobject*>(var) - heap.getBase());
+     *(stream) << "_";
+     *(stream) << (int)(reinterpret_cast<heapobject*>(var) - heap.getBase());
     }
   return(RV_SUCCESS);
 }
@@ -352,7 +349,7 @@ Thread::psi_write_var(Object *& object1, Object *& object2)
 //
 void
 Thread::writeVarName(Object* ref, NameGen gen,
-		     word32& counter, Stream *stream)
+		     word32& counter, QPStream *stream)
 {
   DEBUG_ASSERT(ref->isAnyVariable());
 
@@ -395,7 +392,7 @@ Thread::psi_writeR_var(Object *& object1, Object *& object2)
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (pval2.getTerm()->isVariable() && 
@@ -441,7 +438,7 @@ Thread::psi_write_object_variable(Object *& object1, Object *& object2)
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (pval2.getTerm()->isObjectVariable() && 
@@ -496,7 +493,7 @@ Thread::psi_writeR_object_variable(Object *& object1, Object *& object2)
   heap.prologValueDereference(pval2);
 
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (pval2.getTerm()->isObjectVariable() && 
@@ -555,7 +552,7 @@ Thread::psi_writeq_object_variable(Object *& object1, Object *& object2)
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
 
   if (pval2.getTerm()->isObjectVariable() && 

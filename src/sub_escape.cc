@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: sub_escape.cc,v 1.4 2002/07/26 00:39:58 qp Exp $
+// $Id: sub_escape.cc,v 1.5 2003/06/26 00:10:40 qp Exp $
 
 #include "thread_qp.h"
 
@@ -165,33 +165,62 @@ Thread::psi_empty_sub(Object *& object1)
 }
 
 //
-// psi_new_sub(size, existing_sub, new_sub)
-// Create a new empty substitution block of a given size and link it with 
+// psi_new_sub(size, existing_sub, sublist, new_sub)
+// Create a new empty substitution block of a given size and link it with
 // existing substitutions.
-// mode(in, in, out)
+// mode(in, in, in, out)
 //
 Thread::ReturnValue
 Thread::psi_new_sub(Object *& object1,
-		    Object *& object2,
-		    Object *& object3)
+                         Object *& object2,
+                         Object *& object3,
+                         Object *& object4)
 {
   DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
   DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
-  
+  Object* val3 = heap.dereference(object3);
+
   DEBUG_ASSERT(val1->isShort());
   DEBUG_ASSERT(0 <= val1->getNumber() &&
-	       (u_int)(val1->getNumber()) <= ARITY_MAX);
+               (u_int)(val1->getNumber()) <= ARITY_MAX);
   DEBUG_ASSERT(val2->isNil() || val2->isCons() && OBJECT_CAST(Cons*, val2)->isSubstitutionBlockList());
-  
+
+  DEBUG_ASSERT(val3->isCons());
   //
   // Link the new substitution to the existing substitutions.
   //
-  object3 =
-    heap.newSubstitutionBlockList(heap.newSubstitutionBlock(val1->getNumber()),
-				  val2);
-							  
+  int size = val1->getNumber();
+  SubstitutionBlock* new_block = 
+    heap.newSubstitutionBlock(size);
+
+  Object* list = val3;
+  for (int i = size; i != 0; i--)
+    {
+      DEBUG_ASSERT(list->isCons());
+      Object* entry = OBJECT_CAST(Cons*, list)->getHead()->variableDereference();
+      list = OBJECT_CAST(Cons*, list)->getTail()->variableDereference();
+      if (!entry->isStructure())
+	{
+	  return RV_FAIL;
+	}
+      Structure* entry_struct = OBJECT_CAST(Structure*, entry);
+      if (entry_struct->getArity() != 2 || entry_struct->getFunctor()->variableDereference() != AtomTable::divide)
+	{
+	  return RV_FAIL;
+	}
+      Object* dom = entry_struct->getArgument(2)->variableDereference();
+      if (!dom->isObjectVariable())
+	{
+	  return RV_FAIL;
+	}
+      new_block->setDomain(i, dom);
+      new_block->setRange(i, entry_struct->getArgument(1)->variableDereference());
+    }
+  object4 =
+    heap.newSubstitutionBlockList(new_block, val2);
+
   return RV_SUCCESS;
 }
 

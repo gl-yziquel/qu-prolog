@@ -541,7 +541,7 @@ end('$call_delayed_problem'/2):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'all':$1, 'nfi':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'all':$1, 'nfi':$2])
 
 $4:
 	try(4, $1)
@@ -1069,6 +1069,20 @@ end('$extract_nfis'/8):
 
 '$split_delays/3$0'/5:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, 'not_free_in'/2:$5])
+
+$4:
+	try(5, $1)
+	trust($2)
+
+$5:
+	try(5, $1)
+	trust($2)
+
+$6:
 	try(5, $1)
 	trust($2)
 
@@ -1235,6 +1249,16 @@ end('$get_distinct_list'/2):
 
 '$get_distinct_list1/3$0'/4:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
 	try(4, $1)
 	trust($2)
 
@@ -1377,6 +1401,9 @@ end('delay_until/2$2'/2):
 
 'delay_until/2$3'/3:
 
+	switch_on_term(0, $3, $2, $3, $2, $2, $2)
+
+$3:
 	try(3, $1)
 	trust($2)
 
@@ -1449,6 +1476,20 @@ end('delay_until/2$4'/2):
 
 'delay_until/2$5'/2:
 
+	switch_on_term(0, $6, $1, $1, $3, $1, $1)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, 'bound'/1:$5])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
+	trust($2)
+
+$6:
 	try(2, $1)
 	trust($2)
 
@@ -1522,7 +1563,7 @@ end('delay_until/2$6'/3):
 	switch_on_term(0, $21, $20, $20, $11, $20, $20)
 
 $11:
-	switch_on_structure(0, 16, ['default':$20, '$'/0:$12, 'or'/2:$13, 'and'/2:$14, 'nonvar'/1:$15, 'ground'/1:$16, 'bound'/1:$17, '$bound'/1:$18, 'identical_or_apart'/2:$19])
+	switch_on_structure(0, 16, ['$default':$20, '$'/0:$12, 'or'/2:$13, 'and'/2:$14, 'nonvar'/1:$15, 'ground'/1:$16, 'bound'/1:$17, '$bound'/1:$18, 'identical_or_apart'/2:$19])
 
 $12:
 	try(2, $1)
@@ -1768,7 +1809,7 @@ end('identical_or_apart'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, '[]':$4])
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
 
 $4:
 	try(2, $1)
@@ -1837,7 +1878,7 @@ end('$delay_disjunctive_list_link'/2):
 	switch_on_term(0, $9, $8, $8, $5, $8, $8)
 
 $5:
-	switch_on_structure(0, 4, ['default':$8, '$'/0:$6, 'or'/2:$7])
+	switch_on_structure(0, 4, ['$default':$8, '$'/0:$6, 'or'/2:$7])
 
 $6:
 	try(3, $1)

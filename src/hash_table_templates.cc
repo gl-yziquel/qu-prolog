@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: hash_table_templates.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: hash_table_templates.cc,v 1.2 2003/10/03 01:19:39 qp Exp $
 
 #include "atom_table.h"
 #include "name_table.h"
@@ -62,9 +62,11 @@
 
 #include "hash_table.h"
 #include "hash_table.cc"
+#include "dynamic_hash_table.h"
+#include "dynamic_hash_table.cc"
 
 template class HashTable <Atom, AtomKey>;
 template class HashTable <NameEntry, NameEntry>;
 template class HashTable <PredEntry, PredEntry>;
-template class HashTable <ThreadTable::HashTableEntry, ThreadTable::HashTableKey>;
 template class HashTable <IPEntry, IPEntry>;
+template class DynamicHashTable <ThreadHashTableEntry>;

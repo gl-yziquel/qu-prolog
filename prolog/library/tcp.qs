@@ -45,6 +45,16 @@ end('open_socket_stream/3$0'/5):
 
 'open_socket_stream/3$1/4$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 

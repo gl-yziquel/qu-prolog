@@ -1,5 +1,15 @@
 '$qdeal/2$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'true':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -118,7 +128,7 @@ end('$get_instructions'/2):
 	switch_on_term(0, $7, 'fail', 'fail', 'fail', 'fail', $6)
 
 $6:
-	switch_on_constant(0, 16, ['default':'fail', 'db_try_dec_ref':$1, 'proceed':$2, 'execute_predicate':$3, 'execute_address':$4, 'fail':$5])
+	switch_on_constant(0, 16, ['$default':'fail', 'db_try_dec_ref':$1, 'proceed':$2, 'execute_predicate':$3, 'execute_address':$4, 'fail':$5])
 
 $7:
 	try(1, $1)
@@ -199,7 +209,7 @@ end('$get_inst_args'/5):
 	switch_on_term(0, $9, 'fail', 'fail', 'fail', 'fail', $8)
 
 $8:
-	switch_on_constant(0, 16, ['default':'fail', 'register':$1, 'constant':$2, 'integer':$3, 'number':$4, 'predatom':$5, 'address':$6, 'offset':$7])
+	switch_on_constant(0, 16, ['$default':'fail', 'register':$1, 'constant':$2, 'integer':$3, 'number':$4, 'predatom':$5, 'address':$6, 'offset':$7])
 
 $9:
 	try(4, $1)

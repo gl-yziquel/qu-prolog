@@ -276,6 +276,20 @@ end('$compile'/3):
 
 '$compileall/4$0'/7:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '/'/2:$5])
+
+$4:
+	try(7, $1)
+	trust($2)
+
+$5:
+	try(7, $1)
+	trust($2)
+
+$6:
 	try(7, $1)
 	trust($2)
 
@@ -436,6 +450,16 @@ end('$compile_query'/2):
 
 '$get_query/2$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -802,7 +826,7 @@ end('$read_one_case'/4):
 	switch_on_term(0, $17, 'fail', 'fail', $15, 'fail', 'fail')
 
 $15:
-	switch_on_structure(0, 32, ['default':'fail', '$'/0:$16, 'op'/3:$1, 'op'/4:$2, 'obvar_prefix'/1:$3, 'obvar_prefix'/2:$4, 'remove_obvar_prefix'/1:$5, 'remove_obvar_prefix'/2:$6, 'op_table'/1:$7, 'op_table_inherit'/2:$8, 'inline'/2:$9, 'inline'/3:$10, 'dynamic'/1:$11, 'abolish'/1:$12, 'index'/3:$13, 'compile_time_only'/1:$14])
+	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$16, 'op'/3:$1, 'op'/4:$2, 'obvar_prefix'/1:$3, 'obvar_prefix'/2:$4, 'remove_obvar_prefix'/1:$5, 'remove_obvar_prefix'/2:$6, 'op_table'/1:$7, 'op_table_inherit'/2:$8, 'inline'/2:$9, 'inline'/3:$10, 'dynamic'/1:$11, 'abolish'/1:$12, 'index'/3:$13, 'compile_time_only'/1:$14])
 
 $16:
 	try(1, $1)
@@ -914,7 +938,7 @@ end('$is_compiler_call'/1):
 	switch_on_term(0, $5, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$4, 'index'/3:$1, 'compile_time_only'/1:$2])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$4, 'index'/3:$1, 'compile_time_only'/1:$2])
 
 $4:
 	try(1, $1)

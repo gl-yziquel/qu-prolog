@@ -53,15 +53,15 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_message.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: icm_message.h,v 1.3 2002/12/03 05:09:18 qp Exp $
 
 #ifndef	ICM_MESSAGE_H
 #define	ICM_MESSAGE_H
 
 #include "objects.h"
 #include "icm.h"
-#include "mutex.h"
 
+#if 0
 class ICMMessage: public Mutex
 {
 private:
@@ -111,4 +111,5 @@ public:
   bool Committed(void) const { return committed; }
 };
 
+#endif // 0
 #endif	// ICM_MESSAGE_H

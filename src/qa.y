@@ -6,8 +6,8 @@
  */
 
 #include <stdio.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <vector>
 
 #include "asm_objects.h"
@@ -36,8 +36,8 @@ LabelTable *labels = NULL;
 %union {
   signed long int number_value;
 
-  String *label_name;
-  String *atom_name;
+  string *label_name;
+  string *atom_name;
 
   ASMLoc loc;
 
@@ -197,10 +197,6 @@ predicate: predicate_start source_line_list predicate_end
 predicate_start: atom '/' number ':'
 		{
 		  labels = new LabelTable;
-		  if (labels == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 
 		  // Is it the query code block?
 		  if ((*asm_string_table)[$1->Value()] == "$query" &&
@@ -208,15 +204,12 @@ predicate_start: atom '/' number ':'
 		    {
 		      if (query_code_block != NULL)
 			{
-			  Fatal(__FUNCTION__, "more than one query code block");
+			  Fatal(__FUNCTION__, 
+				"more than one query code block");
 			}
 		      query_code_block = new CodeBlock(QUERY_BLOCK,
 						       $1->Value(),
 						       $3->Value());
-		      if (query_code_block == NULL)
-			{
-			  OutOfMemory(__FUNCTION__);
-			}
 
 		      code_block = query_code_block;
 		    }
@@ -225,10 +218,6 @@ predicate_start: atom '/' number ':'
 		      code_block = new CodeBlock(PREDICATE_BLOCK,
 						 $1->Value(),
 						 $3->Value());
-		      if (code_block == NULL)
-			{
-			  OutOfMemory(__FUNCTION__);
-			}
 		    }
 
 		  delete $1;
@@ -241,7 +230,8 @@ predicate_end: END_TOKEN '(' atom '/' number ')' ':'
 		  if ($3->Value() != code_block->Atom() ||
 		      $5->Value() != code_block->Arity())
 		    {
-		      Fatal(__FUNCTION__, "atom or arity mismatch in predicate");
+		      Fatal(__FUNCTION__, 
+			    "atom or arity mismatch in predicate");
 		    }
 
 		  delete $3;
@@ -815,7 +805,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		  $5->Put(*code_block); 
 
-		  if (*$8 != "default")
+		  if (*$8 != "$default")
 		    {
 		      Fatal(__FUNCTION__,
 			    "invalid default atom in switch_on_structure");
@@ -843,7 +833,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		  $5->Put(*code_block);
 
-		  if (*$8 != "default")
+		  if (*$8 != "$default")
 		    {
 		      Fatal(__FUNCTION__,
 			    "invalid default atom in switch_on_structure");
@@ -871,7 +861,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		  $5->Put(*code_block);
 
-		  if (*$8 != "default")
+		  if (*$8 != "$default")
 		    {
 		      Fatal(__FUNCTION__,
 			    "invalid default atom in switch_on_quantifier");
@@ -954,11 +944,6 @@ constant_label_list: constant_label
 		{
 		  vector<ConstantLabel *> *tmp = new vector<ConstantLabel *>;
 
-		  if (tmp == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
-
 		  tmp->push_back($1);
 
 		  $$ = tmp;
@@ -975,10 +960,6 @@ constant_label: constant ':' switch_label
 		{
 		  $$ = new ConstantLabel($1, $3);
 		  
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -995,11 +976,6 @@ atom_arity_labels:
 atom_arity_label_list: atom_arity_label
 		{
 		  vector<AtomArityLabel *> *tmp = new vector<AtomArityLabel *>;
-
-		  if (tmp == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 
 		  tmp->push_back($1);
 
@@ -1020,17 +996,9 @@ atom_arity_label: ATOM_TOKEN '/' number ':' switch_label
 		  ASMInt<Code::ConstantSizedType> *atom = 
 		    new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
 
-		  if (atom == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 
 		  $$ = new AtomArityLabel(atom, $3, $5);
 
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -1047,11 +1015,6 @@ quantifier_labels:
 quantifier_label_list: quantifier_label
 		{
 		  vector<AtomArityLabel *> *tmp = new vector<AtomArityLabel *>;
-
-		  if (tmp == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 
 		  tmp->push_back($1);
 
@@ -1072,16 +1035,8 @@ quantifier_label: ATOM_TOKEN '/' number ':' switch_label
 
 		  ASMInt<Code::ConstantSizedType> *atom = 
 		    new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
-		  if (atom == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 
 		  $$ = new AtomArityLabel(atom, $3, $5);
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -1090,8 +1045,8 @@ switch_label: LABEL_TOKEN
 		{
 		  if (*$1 != "fail")
 		    {
-		      Fatal(__FUNCTION__, "invalid switch label %s\n",
-			    $1->Str());
+		      FatalS(__FUNCTION__, "invalid switch label ",
+			     $1->c_str());
 		    }
 		}
 	;
@@ -1102,47 +1057,28 @@ constant: ATOM_TOKEN
 		  const ASMLoc loc = asm_string_table->lookup(asm_atom);
 
 		  $$ = new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	| NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::ConstantSizedType>((word32)($1), ConstEntry::INTEGER_TYPE);
 
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	| '+' NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::ConstantSizedType>((word32)($2), ConstEntry::INTEGER_TYPE);
 
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	| '-' NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::ConstantSizedType>((word32)(-$2), ConstEntry::INTEGER_TYPE);
 
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
 number: NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::NumberSizedType>($1);
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
+
 		}
 	;
 
@@ -1150,10 +1086,6 @@ reg: NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::RegisterSizedType>($1);
 		  
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -1161,10 +1093,6 @@ address: NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::AddressSizedType>($1);
 
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -1173,10 +1101,6 @@ atom: ATOM_TOKEN
 		  ASMStringPointer asm_atom($1);
 		  const ASMLoc loc = asm_string_table->lookup(asm_atom);
 		  $$ = new ASMInt<Code::PredSizedType>(loc);
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -1184,10 +1108,6 @@ table_size: NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::TableSizeSizedType>($1);
 
-		  if ($$ == NULL)
-		    {
-		      OutOfMemory(__FUNCTION__);
-		    }
 		}
 	;
 
@@ -1204,10 +1124,6 @@ int
 main(int argc, char **argv)
 {
   qa_options = new QaOptions(argc, argv);
-  if (qa_options == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   if (!qa_options->Valid())
     {
@@ -1216,21 +1132,12 @@ main(int argc, char **argv)
 
   if (streq(qa_options->InputFile(), qa_options->OutputFile()))
     {
-      Fatal(Program, "Input and output file names are identical\n");
+      Fatal(__FUNCTION__, "Input and output file names are identical");
     }
 
   // Should also check for suspect extensions .qg, .qi, .qs, .ql, .qx
   asm_string_table = new ASMStringTable;
-  if (asm_string_table == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
   predicate_code_blocks = new vector<CodeBlock *>;
-  if (predicate_code_blocks == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   // Read in the assembler source
   yyin = fopen(qa_options->InputFile(), "r");
@@ -1289,5 +1196,5 @@ main(int argc, char **argv)
 int
 yyerror(const char *s)
 {
-  Fatal(__FUNCTION__, "%s\n", s);
+  Fatal(__FUNCTION__, s);
 }

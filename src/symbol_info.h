@@ -53,38 +53,31 @@
 // 
 // ##Copyright##
 //
-// $Id: symbol_info.h,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: symbol_info.h,v 1.4 2002/11/10 07:54:54 qp Exp $
 
 #ifndef	SYMBOL_INFO_H
 #define	SYMBOL_INFO_H
 
 #include "defs.h"
-#include "string_qp.h"
+//#include "string_qp.h"
 
 class SymbolInfo
 {
 private:
-  String *symbol;
+  string symbol;
 public:
   SymbolInfo(void) : symbol(NULL) { }
   ~SymbolInfo(void) { delete symbol; }
 
   bool SymbolSet(void) const { return symbol != NULL; }
-  const String& Symbol(void) const
+  const string& Symbol(void) const
   {
-    DEBUG_ASSERT(symbol != NULL);
-    return *symbol;
+    return symbol;
   }
 
-  void SetSymbol(const String& s)
+  void SetSymbol(const string& s)
   {
-    delete symbol;
-
-    symbol = new String(s);
-    if (symbol == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
+    symbol = s;
   }
 };
 

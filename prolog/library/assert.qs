@@ -117,7 +117,7 @@ end('$legal_body/1$1'/1):
 	switch_on_term(0, $18, $17, $17, $11, $17, $17)
 
 $11:
-	switch_on_structure(0, 16, ['default':$17, '$'/0:$12, ','/2:$13, ';'/2:$14, 'once'/1:$15, '\\+'/1:$16])
+	switch_on_structure(0, 16, ['$default':$17, '$'/0:$12, ','/2:$13, ';'/2:$14, 'once'/1:$15, '\\+'/1:$16])
 
 $12:
 	try(1, $1)
@@ -290,6 +290,16 @@ end('$legal_body'/1):
 
 '$legal_clause_head/1$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '.':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -328,6 +338,12 @@ end('$legal_clause_head'/1):
 
 '$is_dynamic/1$0'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 0:$1, 1:$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -346,6 +362,12 @@ end('$is_dynamic/1$0'/1):
 
 '$is_dynamic/1$1'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 0:$1, 1:$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -529,7 +551,7 @@ end('assert/2$3'/2):
 	switch_on_term(0, $9, $8, $8, $5, $8, $8)
 
 $5:
-	switch_on_structure(0, 4, ['default':$8, '$'/0:$6, ':-'/2:$7])
+	switch_on_structure(0, 4, ['$default':$8, '$'/0:$6, ':-'/2:$7])
 
 $6:
 	try(2, $1)
@@ -980,10 +1002,10 @@ end('$db_internal_form/8$4'/7):
 
 '$db_internal_form'/8:
 
-	switch_on_term(0, $24, $23, $23, $16, $23, $20)
+	switch_on_term(0, $26, $25, $25, $16, $25, $22)
 
 $16:
-	switch_on_structure(0, 8, ['default':$23, '$'/0:$17, ','/2:$18, ';'/2:$19])
+	switch_on_structure(0, 16, ['$default':$25, '$'/0:$17, ','/2:$18, ';'/2:$19, '$$get_level_ancestor$$'/1:$20, '='/2:$21])
 
 $17:
 	try(8, $1)
@@ -1002,8 +1024,6 @@ $18:
 	try(8, $1)
 	retry($2)
 	retry($4)
-	retry($10)
-	retry($11)
 	retry($12)
 	retry($13)
 	retry($14)
@@ -1014,21 +1034,23 @@ $19:
 	retry($2)
 	retry($5)
 	retry($6)
-	retry($10)
-	retry($11)
 	retry($12)
 	retry($13)
 	retry($14)
 	trust($15)
 
 $20:
-	switch_on_constant(0, 4, ['default':$23, 'true':$21, '!':$22])
+	try(8, $1)
+	retry($2)
+	retry($10)
+	retry($12)
+	retry($13)
+	retry($14)
+	trust($15)
 
 $21:
 	try(8, $1)
 	retry($2)
-	retry($3)
-	retry($10)
 	retry($11)
 	retry($12)
 	retry($13)
@@ -1036,29 +1058,37 @@ $21:
 	trust($15)
 
 $22:
-	try(8, $1)
-	retry($2)
-	retry($7)
-	retry($8)
-	retry($9)
-	retry($10)
-	retry($11)
-	retry($12)
-	retry($13)
-	retry($14)
-	trust($15)
+	switch_on_constant(0, 4, ['$default':$25, 'true':$23, '!':$24])
 
 $23:
 	try(8, $1)
 	retry($2)
-	retry($10)
-	retry($11)
+	retry($3)
 	retry($12)
 	retry($13)
 	retry($14)
 	trust($15)
 
 $24:
+	try(8, $1)
+	retry($2)
+	retry($7)
+	retry($8)
+	retry($9)
+	retry($12)
+	retry($13)
+	retry($14)
+	trust($15)
+
+$25:
+	try(8, $1)
+	retry($2)
+	retry($12)
+	retry($13)
+	retry($14)
+	trust($15)
+
+$26:
 	try(8, $1)
 	retry($2)
 	retry($3)

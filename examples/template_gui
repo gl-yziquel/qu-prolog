@@ -1,6 +1,9 @@
 #! /bin/sh
-# the next line restarts using tkICM \
-exec tkICM "$0" "$@"
+# the next line restarts using wish \
+exec wish "$0" "$@"
+
+# load icm interface functions
+load /home/pjr/qp_dev/rel/qp6.2/bin/tkICM.so tkICM
 
 #
 # A GUI template - add to this file to define a new GUI that
@@ -27,16 +30,16 @@ set gui_name ${thread_name}_${process_id}_gui
 icmInitComms 0 ""
 
 # Register the ICM-agent using gui_name as the name of this process
-# and returning the pipe file handle for incoming messages
-set icm_pipe [icmRegisterAgent $gui_name]
+# and returning the file handle for incoming messages
+set icm_channel [icmRegisterAgent $gui_name]
 
-# Set up the ICM pipe file event
-fconfigure $icm_pipe -blocking 0 -buffering line
-fileevent  $icm_pipe readable {eval [icm_msg_read]}
+# Set up the ICM file event
+fconfigure $icm_channel -blocking 0 -buffering line
+fileevent  $icm_channel readable {eval [icm_msg_read]}
 
 
 ###################################################################
-# The following function reads ICM messages from the ICM pipe
+# The following function reads ICM messages from ICM
 # and calls a user defined function process_icm_message that takes
 # the message and the sender address.
 # The special message $exit_gui causes the GUI to exit.
@@ -44,59 +47,23 @@ fileevent  $icm_pipe readable {eval [icm_msg_read]}
 # Do not change any of the following message processing code.
 # 
 
-# Initialise the message buffer
-set icm_msg_buffer ""
-
-# Set up the message delimiters
-set end_of_message "\$\$EICMM\$\$"
-set start_of_address "\$\$SICMA\$\$"
-set address_separator "\$\$ICMAS\$\$"
-set len_end_of_message [string length $end_of_message]
-set len_start_of_address [string length $start_of_address]
-set len_address_separator [string length $address_separator]
-
-# The function called for ICM pipe read events.
+# The function called for ICM read events.
 proc icm_msg_read {} {
-    global icm_msg_buffer
-    global end_of_message
-    global start_of_address
-    global address_separator
-    global len_end_of_message
-    global len_start_of_address
-    global len_address_separator
-    global icm_pipe
-
-    set term [read $icm_pipe]
-    if [eof $icm_pipe] {
-        fileevent  $icm_pipe ""
-        close $icm_pipe
-        exit 0
-    }
-    set icm_msg_buffer $icm_msg_buffer$term
-    set end_msg [string first $end_of_message $icm_msg_buffer]
-
-# Process all complete messages
-    while {$end_msg != -1} {
-        # Extract the message and sender address
-        set icm_msg [string range $icm_msg_buffer 0 [expr $end_msg - 1]]
-        set icm_msg_buffer [string range $icm_msg_buffer \
-                       [expr $end_msg + $len_end_of_message] end]
-        set end_msg [string first $end_of_message $icm_msg_buffer]
-        set end_command [string first $start_of_address $icm_msg]
-        set icm_addr [string range $icm_msg \
-                   [expr $end_command + $len_start_of_address] end]
-        set end_from [string first $address_separator $icm_addr]
-        set reply_to [string range $icm_addr \
-                   [expr $end_from + $len_address_separator] end]
-        set from [string range $icm_addr 0 [expr $end_from - 1]]
-        set icm_msg [string range $icm_msg 0 [expr $end_command -1]]
-        if { $icm_msg == "\$exit_gui"} {
-            exit 0
-        } else {
-            process_icm_message $icm_msg $from $reply_to
-        }
+    while {[icmMsgAvail] == "yes"} {
+      icm_msg_read_one
     }
 }
+
+proc icm_msg_read_one {} {
+    set icm_msg [icmGetMsg]
+    if { [lindex $icm_msg 0] == "\$exit_gui"} {
+        exit 0
+    } else {
+        process_icm_message [lindex $icm_msg 0] [lindex $icm_msg 1] [lindex $icm_msg 2]
+    }
+}
+
+
 
 ############# end of ICM message processing ####################
 

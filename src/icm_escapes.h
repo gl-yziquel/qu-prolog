@@ -53,12 +53,16 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_escapes.h,v 1.2 2001/02/23 01:11:44 qp Exp $
+// $Id: icm_escapes.h,v 1.4 2003/04/21 06:11:13 qp Exp $
 
 #ifndef	ICM_ESCAPES_H
 #define	ICM_ESCAPES_H
 
 public:
+
+ReturnValue psi_icm_register(Object *&, Object *&, Object *&);
+
+ReturnValue psi_icm_deregister(void);
 
 ReturnValue psi_icm_process_handle(Object *&);
 
@@ -74,6 +78,7 @@ ReturnValue psi_icm_handle_to_components(Object *&, Object *&, Object *&, Object
 
 ReturnValue psi_icm_address(Object *& );
 ReturnValue psi_icm_port(Object *& );
+ReturnValue psi_icm_symbolic_address_to_icm_handle(Object *&, Object *&);
 
 #endif	// ICM_ESCAPES_H
 

@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: qod.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: qod.cc,v 1.5 2002/12/05 03:39:33 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 #include <fstream.h>
 
 #include <string.h>
@@ -68,6 +68,18 @@
 #include "int.h"
 
 const char *Program = "qod";
+
+//
+// Handler for out of memory via new
+//
+typedef void (*new_handler) ();
+new_handler set_new_handler(new_handler p) throw();
+
+void noMoreMemory()
+{
+   cerr << "No more memory available for " << Program << endl;
+   abort();
+}
 
 static void dump_instruction(istream&, u_long&, u_long&,
 			     char *[], const size_t);
@@ -86,6 +98,9 @@ static void dump_table_label(const Code::OffsetSizedType, const u_long);
 int
 main(int argc, char **argv)
 {
+  // set the out-of-memory handler
+  set_new_handler(noMoreMemory);
+
   if (argc != 2)
     {
       Usage("qod", "input-file");
@@ -94,7 +109,7 @@ main(int argc, char **argv)
   ifstream ifstrm(argv[1]);
   if (ifstrm.bad())
     {
-      Fatal("Couldn't open %s for reading", argv[1]);
+      FatalS(__FUNCTION__, "Couldn't open ", argv([1]));
     }
 
   // Initialise
@@ -119,10 +134,6 @@ main(int argc, char **argv)
       cout.form("% 8lx: ", byte_count);
 
       char *str = new char[ATOM_LENGTH];
-      if (str == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
       
       // Read a string
       char c;
@@ -298,7 +309,7 @@ dump_instruction(istream& istrm,
   if (instruction == 0 ||
       instruction > UNIFY_Y_REF)
     {
-      Fatal(__FUNCTION__, "Bad instruction: %ld", instruction);
+      Fatal(__FUNCTION, "Bad instruction: ");
     }
 
   cout.form("%s[%s]", opnames[instruction], operands[instruction]);
@@ -390,7 +401,7 @@ dump_instruction(istream& istrm,
 	      }
 	      break;
 	    default:
-	      Fatal(__FUNCTION__, "Uncaught operand case %c", args[i]);
+	      Fatal(__FUNCTION__, "Uncaught operand case ");
 	      break;
 	    }
 
@@ -409,8 +420,7 @@ dump_instruction(istream& istrm,
   cout.form(" (%ld bytes)", instr_size);
   if (instr_size != opsizes[instruction])
     {
-      Fatal(__FUNCTION__, "Instruction size: computed=%ld != actual=%ld",
-	    opsizes[instruction], instr_size);
+      Fatal(__FUNCTION__, "Wrong instruction size");
     }
 
   if (instruction == SWITCH_ON_TERM ||

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: delay.cc,v 1.10 2002/03/27 23:23:47 qp Exp $
+// $Id: delay.cc,v 1.11 2002/11/03 08:37:25 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -883,7 +883,7 @@ Thread::wakeUpDelayedProblems(Object *ref)
 // type = BOTH then retry NFI and = problems
 //
 bool
-Thread::retry_delays(delaytype type = NOSIMPNFI)
+Thread::retry_delays(delaytype type)
 {
   bool both = (type == BOTH);
   // set the retry flag to fail

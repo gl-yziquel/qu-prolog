@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: c_to_prolog.cc,v 1.4 2001/11/21 00:21:11 qp Exp $
+// $Id: c_to_prolog.cc,v 1.7 2002/12/05 03:39:26 qp Exp $
 
 #include <stdarg.h>
 
@@ -111,10 +111,6 @@ Thread::initialise(Object* query, const word32 arity, va_list ap)
 			  refTrail,
 			  qem_options->EnvironmentStackSize(),
 			  qem_options->ChoiceStackSize());
-  if (th == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   //
   // Create a choice point to hold the state and the alternative is set

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compile.cc,v 1.5 2001/11/21 00:21:11 qp Exp $
+// $Id: compile.cc,v 1.6 2002/11/13 04:04:14 qp Exp $
 
 #include "thread_qp.h"
 #include "io_qp.h"
@@ -217,7 +217,7 @@ Thread::ReturnValue
 Thread::psi_ccompile(Object*& clause, Object*& type, 
 		Object*& str, Object*& codeptr)
 {
-  Stream *stream;
+  QPStream *stream;
   bool ctype = (type->variableDereference() == atoms->add("compile"));
   if (ctype)
     {

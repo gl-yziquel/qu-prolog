@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 6.1 Reference Manual - Built-in Predicates
+Qu-Prolog 6.2 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -745,6 +745,16 @@ Close the current output stream. Change the stream to <KBD>user_output</KBD>.
 Flush <KBD>Stream</KBD> or the current output stream.  Forces a write on any remaining output to the stream.
 </BLOCKQUOTE>
 
+<P><KBD><a name="set_autoflush"></a>set_autoflush(Stream)</KBD>
+
+<BLOCKQUOTE>
+Set <KBD>Stream</KBD> to automatically flush after each token is written.
+This is useful for streams that are to behave like standard error.
+(The default for streams is to flush only at a newline or at an explicit call
+to <KBD>flush_output</KBD>.)
+</BLOCKQUOTE>
+
+
 <P><KBD><a name="set_stream_position"></a>set_stream_position(Stream, N)</KBD>
 
 <BLOCKQUOTE>
@@ -894,6 +904,11 @@ A property of <KBD>Stream</KBD> is <KBD>Property</KBD>. The possible values for 
 <BR>no
 </KBD>
 
+<P><KBD><a name="get_open_streams"></a>get_open_streams(Streams)</KBD>
+
+<BLOCKQUOTE>
+Retrieve a list of all the current open streams.
+</BLOCKQUOTE>
 
 <!-- Section 3.3.2 -->
 <H3>
@@ -6969,6 +6984,7 @@ The first predicate displays a summary of the statistical information on the cur
 statistic for that thread is returned. 
 The three argument version is of most use for gathering thread specific
 statistics of another thread. 
+Fails if <KBD>ThreadID</KBD> is not a current thread.
 <P>The possible values for  <KBD>Key</KBD> are given below.
 
 <UL type="disc">
@@ -7632,6 +7648,7 @@ will generate a name.
 <BR><KBD>thread_exit(Thread)</KBD>
 <BLOCKQUOTE>
 <P>End execution of the current thread or the specified <KBD>Thread</KBD>.
+Fails if <KBD>Thread</KBD> is not a current thread.
 <BR><KBD>mode thread_exit</KBD>
 <BR><KBD>mode thread_exit(+thread_id)</KBD>
 </BLOCKQUOTE>
@@ -7641,6 +7658,7 @@ will generate a name.
 <P>Push <KBD>Goal</KBD> to the front of the current conjunction of goals 
 on the specified <KBD>Thread</KBD>. This predicate is used in the default handler for SIGINT. 
 The given thread must be different from the thread in which this call is made.
+Fails if <KBD>Thread</KBD> is not a current thread.
 <BR><KBD>mode thread_push_goal(+thread_id, +term)</KBD>
 </BLOCKQUOTE>
 
@@ -7810,6 +7828,25 @@ which it can access nondeterministically.
 No other thread has access to this queue.  
 
 <P> Predicates:
+
+<P><KBD><a name="icm_register"></a>icm_register(Name)</KBD>
+<BR><KBD>icm_register(Name, Port)</KBD>
+<BR><KBD>icm_register(Name, Port, MachineIP)</KBD>
+<BLOCKQUOTE>
+Register the name <KBD>Name</KBD> with ICM. This has the same effect as using
+the -A switch when starting the process. If required, values for the port and
+IP address of the ICM server can be supplied. The call fails if the process is
+already registered.
+<BR><KBD>mode icm_register(@atom, @number, @atom)</KBD>
+</BLOCKQUOTE>
+
+
+<P><KBD><a name="icm_deregister"></a>icm_deregister</KBD>
+<BLOCKQUOTE>
+Deregister from the ICM server. Fails if the process was not registered 
+at the time of the call.
+<BR><KBD>mode icm_deregister</KBD>
+</BLOCKQUOTE>
 
 <P><KBD><a name="icm_thread_handle"></a>icm_thread_handle(Handle)</KBD>
 
@@ -7995,6 +8032,12 @@ with <KBD>Msg</KBD>, <KBD>Address</KBD> and <KBD>RtAddress</KBD>.
 <BR>
 <BR>yes
 </KBD>
+
+<P><KBD><a name="broadcast"></a>broadcast(Term)</KBD>
+<BLOCKQUOTE>
+<P> Send <KBD>Term</KBD> as an ICM message to all current threads within this process.
+<BR><KBD>mode broadcast(+term)</KBD>
+</BLOCKQUOTE>
 
 <P><KBD><a name="message_choice"></a>message_choice(ChoiceGoals)</KBD>
 <BR><KBD>message_choice(ChoiceGoals;timeout(T) -&#62; TimeoutGoal)</KBD>

@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: state.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: state.cc,v 1.5 2002/12/05 03:39:34 qp Exp $
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 
 #include "config.h"
 

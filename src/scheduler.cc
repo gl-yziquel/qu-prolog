@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.cc,v 1.15 2002/08/25 23:35:10 qp Exp $
+// $Id: scheduler.cc,v 1.30 2003/10/03 01:19:40 qp Exp $
 
 #include <algorithm>
 
@@ -65,7 +65,6 @@
 #include "global.h"
 #include "atom_table.h"
 #include "code.h"
-#include "cond_list.h"
 #include "defs.h"
 #include "errors.h"
 #include "icm_handle.h"
@@ -102,99 +101,125 @@ static const int32 SLEEP_USECS = TIME_SLICE_USECS;
 
 static void handle_timeslice(int);
 
-Scheduler::Scheduler(void)
-  : last_process_blocked_wait(0)
+Scheduler::Scheduler(ThreadOptions& to, ThreadTable& tt, 
+		     Signals& s, PredTab& p)
+  : thread_options(to), thread_table(tt), signals(s), predicates(p)
 {
   //
   // Allow time slicing.
   //
   scheduler_status.setEnableTimeslice();
+  theTimeouts = 0;
 }
 
 Scheduler::~Scheduler(void) { }
 
+extern int* sigint_pipe;
+
+bool
+Scheduler::poll_fds(int32 poll_timeout)
+{
+  fd_set rfds, wfds;
+  FD_ZERO(&rfds);
+  FD_ZERO(&wfds);
+  //int max_fd = 0;
+  int max_fd = sigint_pipe[0];
+  FD_SET(sigint_pipe[0], &rfds);
+  for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
+	   iter != blocked_queue.end();
+	   iter++)
+    {
+      (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
+    }
+
+  for (list <MessageChannel*>::iterator iter = message_channels.begin();
+       iter != message_channels.end();
+       iter++)
+    {
+      (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
+    }
+
+  int result;
+  if (poll_timeout == 0)
+    {
+      result = select(max_fd + 1, &rfds, &wfds, NULL, NULL) > 0;
+    }
+  else
+    {
+      timeval timeout = { poll_timeout, 0 };
+
+      result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout) > 0;
+    }
+
+  return result > 0;
+
+}
+
 Thread::ReturnValue
-Scheduler::Sleep(CondList<ICMMessage *>& icm_message_queue,
-	         ThreadTable& thread_table,
-		 Signals& signals,
-		 ThreadOptions& thread_options)
+Scheduler::Sleep(bool doPoll)
 {
 #ifdef DEBUG_BLOCK
-  cerr.form("%s Sleeping\n", __FUNCTION__);
+  cerr << __FUNCTION__ << " Sleeping" << endl;
 #endif
-  while (! InterQuantum(icm_message_queue, thread_table))
+  while (! InterQuantum())
     {
-      if (blocked_io_info.Poll(SLEEP_USECS))
-	{
-	  break;
-	}
       // Were there any signals while we were napping?
       if (signals.Status().testSignals())
 	{
 #ifdef DEBUG_SCHED
-  cerr.form("%s Start signal handler\n", __FUNCTION__);
+	  cerr << __FUNCTION__ << " Start signal handler" << endl;
 #endif
-	  const Thread::ReturnValue result = 
-	    HandleSignal(thread_table, thread_options);
+	  const Thread::ReturnValue result = HandleSignal();
 #ifdef DEBUG_SCHED
-  cerr.form("%s Exit signal handler\n", __FUNCTION__);
+	  cerr << __FUNCTION__ << " Stop signal handler" << endl;
 #endif
 	  return result;
 	}
+      int timeout;
+      if (doPoll) timeout = 1;
+      else if (theTimeouts > 0) timeout = theTimeouts;
+      else timeout = 0;
+      if (poll_fds(timeout))
+	{
+	  break;
+	}
+#ifdef DEBUG_SCHED
+      cerr << "End poll" << endl;
+#endif
     }
 #ifdef DEBUG_BLOCK
-  cerr.form("%s Finished sleeping\n", __FUNCTION__);
+  cerr << __FUNCTION__ << " Finished sleeping" << endl;
 #endif
   return Thread::RV_SUCCESS;
 }
 
 //
 // Perform all the inter quantum actions:
+//	Process messages
 // 	Check on threads blocked on IO
 //	Check on threads blocked on ICM
 //	Check on threads blocked on waits
 //	Check on threads waiting on timeouts
-//	Process ICM messages
 //
 bool
-Scheduler::InterQuantum(CondList<ICMMessage *>& icm_message_queue,
-			ThreadTable& thread_table)
+Scheduler::InterQuantum(void)
 {
+#ifdef DEBUG_SCHED
+  cerr << "InterQuantum" << endl;
+#endif
+  // First shuffle any new messages
+  (void)ShuffleAllMessages();
+
   // 
   // Was anything actually done?
   //
-  bool result = false;
-  
-  // Check things that might timeout
-  result = result || ProcessTimeouts();
-  
-  // Check things blocked on IO
-  result = result || ProcessBlockedIO();
-  
-  // And things that are waiting on ICM messages
-  result = result || ProcessBlockedICM(icm_message_queue,
-				       thread_table);
-  
-  // And things waiting for changes in data areas
-  result = result || ProcessBlockedWait();
-
-  return result;
+  theTimeouts = 0;
+  return processBlockedThreads();
 }
 
-// Argument needs to be a SchedRec * since we're called from
-// a generic algorithm running over a list<SchedRec *>
-static bool
-sched_rec_removed(SchedRec *sr)
-{
-  return sr->Removed();
-}
 
 int32
-Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
-		    PredTab& predicates,
-		    Signals& signals,
-		    ThreadOptions& thread_options,
-		    ThreadTable& thread_table)
+Scheduler::Schedule(void)
 {
   Thread *thread = new Thread(NULL, thread_options);
 
@@ -212,13 +237,11 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
 
   thread->Condition(ThreadCondition::RUNNABLE);
 
-  const char *symbol = thread_table.MakeName(first);
+  const char *symbol = thread_table.MakeName(first).c_str();
   atoms->add(symbol);
   thread->TInfo().SetSymbol(symbol);
 
-  SchedRec *first_rec = new SchedRec(*thread);
-
-  run_queue.push_back(first_rec);
+  run_queue.push_back(thread);
 
   //
   // Get the timeslicing signal happening.
@@ -239,26 +262,26 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
   sa.sa_handler = handle_timeslice;
   sa.sa_mask = sigs;
   sa.sa_flags = SA_RESTART;
-#if !(defined(SOLARIS) || defined(FREEBSD))
+#if !(defined(SOLARIS) || defined(FREEBSD) || defined(MACOSX))
   sa.sa_restorer = NULL;
-#endif // !(defined(SOLARIS) || defined(FREEBSD))
+#endif // !(defined(SOLARIS) || defined(FREEBSD) || defined(MACOSX))
 
   SYSTEM_CALL_LESS_ZERO(sigaction(SIGTIMESLICE, &sa, NULL));
 #ifdef SOLARIS
   SYSTEM_CALL_LESS_ZERO(timer_create(CLOCK_REALTIME, &se, &timerid));
 #endif // SOLARIS
 			 
-  (void) InterQuantum(icm_message_queue, thread_table);
+  (void) InterQuantum();
 
   while (! run_queue.empty())		// Something to run?
     {
 #ifdef DEBUG_SCHED
-      cerr.form("%s Threads in run_queue = [", __FUNCTION__);
-      for (list<SchedRec *>::iterator iter = run_queue.begin();
+      cerr << __FUNCTION__ << "  Threads in run_queue = [";
+      for (list<Thread *>::iterator iter = run_queue.begin();
 	   iter != run_queue.end();
 	   iter++)
 	{
-	  cerr.form("%ld ", (*iter)->Thr().TInfo().ID());
+	  cerr << (*iter)->TInfo().ID() << " ";
 	}
       cerr << ']' << endl;
 #endif
@@ -268,26 +291,63 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
       //
       // Walk down the run queue, attempting to execute threads as we go...
       //
-      for (list<SchedRec *>::iterator iter = run_queue.begin();
+      for (list<Thread *>::iterator iter = run_queue.begin();
 	   iter != run_queue.end();
 	   // iterator is incremented at the end of the loop
 	   )
 	{
-	  SchedRec& sched_rec = **iter;
-	  Thread& thread = sched_rec.Thr();
+	  Thread& thread = **iter;
 	  
+	  if (thread.Condition() == Thread::EXITED)
+	    {
+	      // remove from blocked queue
+	      for (list<BlockingObject *>::iterator biter 
+		     = blocked_queue.begin();
+		   biter != blocked_queue.end();
+		   // iterator is advanced in loop
+		   )
+		{
+		  if ((*biter)->getThread() == &thread)
+		    {
+		      delete *biter;
+		      biter = blocked_queue.erase(biter);
+		    }
+		  else
+		    {
+		      biter++;
+		    }
+		}
+
+	      thread_table.RemoveID(thread.TInfo().ID());
+	      thread_table.DecLive();
+	      delete &thread;
+	      
+	      // Did it exit while executing in a forbid/permit section?
+	      if (scheduler_status.testEnableTimeslice())
+		{
+		  // No. It's exited nicely.
+	          iter = run_queue.erase(iter);
+		}
+	      else
+		{
+		  // Yes. It's exited unwisely.
+		  Fatal(__FUNCTION__, "Thread exited during forbid/permit section");
+		}
+	      continue;
+	    }
+
 	  BlockStatus& bs = thread.getBlockStatus();
 
 #ifdef DEBUG_SCHED
-	  cerr.form("%s Trying thread: %ld\n",
-		    __FUNCTION__, thread.TInfo().ID());
+	  cerr << __FUNCTION__ << " Trying thread: " 
+	       << thread.TInfo().ID() << endl;
 #endif	// DEBUG_SCHED
 
 	  // Can we run the thread?
-	  if (bs.IsBlocked() && !bs.IsRestarted())
+	  if (bs.isBlocked())
 	    {
 #ifdef DEBUG_BLOCK
-	      cerr << __FUNCTION__ << "... previously blocked, not restarted";
+	      cerr << __FUNCTION__ << "... previously blocked";
 #endif	// DEBUG_BLOCK
 
 	      // No, try another
@@ -307,9 +367,7 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
 		  cerr << " in forbid/permit section" << endl;
 #endif
 
-		  const Thread::ReturnValue result = 
-		    Sleep(icm_message_queue, thread_table, 
-			  signals, thread_options);
+		  const Thread::ReturnValue result = Sleep(false);
 		  if (result == Thread::RV_HALT)
 		    {
 		      return 0;
@@ -343,8 +401,12 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
 #endif // SOLARIS
 
 #ifdef DEBUG_SCHED	      
-	      cerr.form("%s Initialising the timer (%ld secs, %ld usecs)\n",
-			__FUNCTION__, TIME_SLICE_SECS, TIME_SLICE_USECS);
+	      cerr << __FUNCTION__ 
+		   << " Initialising the timer ("
+		   << TIME_SLICE_SECS
+		   << " secs, "
+		   << TIME_SLICE_USECS
+		   << " usecs)" << endl;
 #endif
 #ifdef SOLARIS
 	      SYSTEM_CALL_LESS_ZERO(timer_settime(timerid, 0, &set_timerval,
@@ -356,17 +418,19 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
 #endif // SOLARIS
 	    }
 
-	  SYSTEM_CALL_NON_ZERO(pthread_sigmask(SIG_UNBLOCK, &sigs, NULL));
-	  
 	  //
 	  // Run the thread until it drops out, for whatever reason
 	  //
 #ifdef DEBUG_SCHED
-	  cerr.form("%s Start execution of thread %ld\n", __FUNCTION__, thread.TInfo().ID());
+	  cerr << __FUNCTION__
+	       << " Start execution of thread " 
+	       << thread.TInfo().ID() << endl;
 #endif // DEBUG_SCHED
 	  const Thread::ReturnValue result = thread.Execute();
 #ifdef DEBUG_SCHED
-	  cerr.form("%s Exit execution of thread %ld\n", __FUNCTION__, thread.TInfo().ID());
+	  cerr << __FUNCTION__
+	       << " Exit execution of thread "
+	       << thread.TInfo().ID() << endl;
 #endif // DEBUG_SCHED
 
 	  {
@@ -415,32 +479,10 @@ Scheduler::Schedule(CondList<ICMMessage *>& icm_message_queue,
 	      cerr << "RV_EXIT" << endl;
 #endif
 	      {
-DEBUG_CODE(
-  for (list<SchedRec *>::iterator titer = timeout_queue.begin();
-       titer != timeout_queue.end(); titer++)
-    {
-      DEBUG_ASSERT(!(sched_rec == **titer));
-    }
-  for (list<SchedRec *>::iterator titer = blocked_io_queue.begin();
-       titer != blocked_io_queue.end(); titer++)
-    {
-      DEBUG_ASSERT(!(sched_rec == **titer));
-    }
-  for (list<SchedRec *>::iterator titer = blocked_wait_queue.begin();
-       titer != blocked_wait_queue.end(); titer++)
-    {
-//    cerr << "debug: " << (word32)(*titer) << endl;
-      DEBUG_ASSERT(!(sched_rec == **titer));
-    }
-);
-		// Clobber the associated thread.
-		Thread* th = &sched_rec.Thr();
-		thread_table.RemoveID(th->TInfo().ID());
+		// Clobber the thread.
+		thread_table.RemoveID(thread.TInfo().ID());
 		thread_table.DecLive();
-		delete th;
-
-		// Get rid of the scheduler information.
-		// delete *iter;
+		delete &thread;
 		break;
 	      }
 	    case Thread::RV_HALT:
@@ -463,101 +505,6 @@ DEBUG_CODE(
 		// Another blocked thread.
 		//
 		blocked++;
-
-		// Does the block have an associated timeout?
-		BlockStatus& bs = thread.getBlockStatus();
-		
-		if (bs.IsTimeout())
-		  {
-#if defined(DEBUG_BLOCK) || defined(DEBUG_TIMEOUT)
-		    cerr.form("%s Thread %ld has blocked on timeout %ld\n",
-			      __FUNCTION__, bs.IsTimeout());
-#endif
-
-		    list<SchedRec *>::iterator timeout_iter = timeout_queue.begin();
-		    for ( ;
-		         timeout_iter != timeout_queue.end();
-		         timeout_iter++)
-		      {
-			if (**timeout_iter == sched_rec)
-			  {
-			    break;
-			  }
-		      }
-
-		    if (timeout_iter == timeout_queue.end())
-                      {
-		        // Update the list of blocked threads with timeouts
-		        SchedRec *sr = new SchedRec(thread, bs.Timeout());
-		        sr->Block();
-                        list<SchedRec *>::iterator timeout_insert_iter =
-			  timeout_queue.begin();
-			for ( ;
-			     timeout_insert_iter != timeout_queue.end();
-			     timeout_insert_iter++)
-			  {
-		   	    if ((**timeout_insert_iter).Timeout() > bs.Timeout())
-			      {
-			        break;
-			      }
-			  }
-
-			timeout_queue.insert(timeout_insert_iter, sr);
-		      }
-		    else
-		      {
-			bs.setTimeout((**timeout_iter).Timeout());
-		      }
-		  }
-		if (bs.testBlockWait())
-		  {
-#if defined(DEBUG_BLOCK) || defined(DEBUG_TIMEOUT)
-		    cerr.form("%s Thread %ld blocks on wait\n",
-			      __FUNCTION__, thread.TInfo().ID());
-#endif
-		    SchedRec *sr = new SchedRec(thread);
-		    blocked_wait_queue.push_back(sr);
-
-		    bs.resetRestartWait();
-		  }
-		
-		// Did the thread block waiting on io?
-		else if (bs.testBlockIO())
-		  {
-#if defined(DEBUG_BLOCK) || defined(DEBUG_IO)
-		    cerr.form("%s Thread %ld blocks on IO (%ld %ld)\n",
-			      __FUNCTION__, thread.TInfo().ID(), 
-			      bs.getFD(), bs.getIOType());
-#endif
-		    // Update the list of blocked threads waiting on io
-		    SchedRec *sr = new SchedRec(thread);
-		    sr->Block();
-		    blocked_io_queue.push_back(sr);
-		    blocked_io_info.Add(bs.getFD(), bs.getIOType());
-
-		    // Clear the restart flag, which will be set when
-		    // the io operation can be restarted.
-		    bs.resetRestartIO();
-		  }
-		// Did the thread block waiting on icm?
-		else if (bs.testBlockICM())
-		  {
-#if defined(DEBUG_BLOCK) || defined(DEBUG_ICM)
-		    cerr.form("%s Thread %ld blocks on ICM\n",
-			      __FUNCTION__, thread.TInfo().ID());
-#endif
-		    SchedRec *sr = new SchedRec(thread);
-		    blocked_icm_queue.push_back(sr);
-
-		    // Clear the restart flag, which will be set when
-		    // the icm operation can be restarted.
-		    bs.resetRestartICM();
-		  }
-		else
-		  {
-		    // Should never happen!
-		    DEBUG_ASSERT(false);
-		  }
 		break;
 	      }
 	    case Thread::RV_SIGNAL:
@@ -570,8 +517,7 @@ DEBUG_CODE(
 		// signal handler. Then, continue with the thread that was
 		// being executed.
 		//
-		const Thread::ReturnValue result = 
-		  HandleSignal(thread_table, thread_options);
+		const Thread::ReturnValue result = HandleSignal();
 		if (result == Thread::RV_HALT)
 		  {
 		    return 0;
@@ -586,7 +532,7 @@ DEBUG_CODE(
 	      break;
 	    default:
 #ifdef DEBUG_SCHED
-	      cerr.form("%s Exit with result %ld\n", __FUNCTION__, result);
+	      cerr << __FUNCTION__ << " Exit with result " << result << endl;
 #endif	// DEBUG_SCHED
 	      
 	      return(result);
@@ -602,7 +548,7 @@ DEBUG_CODE(
 	      if (scheduler_status.testEnableTimeslice())
 		{
 		  // No. It's exited nicely.
-		  delete *iter;
+		  // delete *iter;
 	          iter = run_queue.erase(iter);
 		}
 	      else
@@ -622,14 +568,13 @@ DEBUG_CODE(
 	  else if (result == Thread::RV_BLOCK)
 	    {
 #ifdef DEBUG_BLOCK
-	      cerr.form("%s Thread %ld blocked in forbid/permit section\n",
-			__FUNCTION__, thread.TInfo().ID()); 
+	      cerr << __FUNCTION__ 
+		   << " Thread " << thread.TInfo().ID()
+		   << " blocked in forbid/permit section" << endl;
 #endif
 
 	      // Sleep until something useful happens (maybe).
-		  const Thread::ReturnValue result = 
-		    Sleep(icm_message_queue, thread_table, 
-			  signals, thread_options);
+		  const Thread::ReturnValue result = Sleep(false);
 		  if (result == Thread::RV_HALT)
 		    {
 		      return 0;
@@ -640,21 +585,22 @@ DEBUG_CODE(
 	  else
 	    {
 	      // Do the inter-quantum actions anyway.
-	      (void) InterQuantum(icm_message_queue, thread_table);
+	      (void) InterQuantum();
 	      // Iterator isn't advanced.
+
 	    }
+	  (void)ShuffleAllMessages(); // XXXXXX
 	}
 
 #ifdef DEBUG_SCHED
-      cerr.form("%s blocked = %ld (%ld in run_queue)\n",
-		__FUNCTION__, blocked, run_queue.size());
+      cerr << __FUNCTION__ << "  blocked = " << blocked
+	   << "(" << run_queue.size() << " in run_queue)" << endl;
 #endif
 
       // If none of the threads was runnable...
       if (! run_queue.empty() && blocked == run_queue.size())
 	{
-	  const Thread::ReturnValue result = 
-	    Sleep(icm_message_queue, thread_table, signals, thread_options);
+	  const Thread::ReturnValue result = Sleep(false);
 	  if (result == Thread::RV_HALT)
 	    {
 	      return 0;
@@ -664,384 +610,63 @@ DEBUG_CODE(
       //
       // Set up for next traversal of the run time queue
       //
-      (void) InterQuantum(icm_message_queue, thread_table);
+      (void) InterQuantum();
+
     }
 
   return 0;
 }
 
-// Argument needs to be a SchedRec * since it's being called from a 
-// generic algorithm working over a list<SchedRec *>
-static bool
-sched_rec_unblocked(SchedRec *sr)
-{
-#ifdef DEBUG_BLOCK
-  if (! sr->Blocked())
-    {
-      cerr.form("%s Thread %ld unblocked\n",
-		__FUNCTION__, sr->Thr().TInfo().ID());
-    }
-#endif
-
-  return ! sr->Blocked();
-}
-
 bool
-Scheduler::ProcessTimeouts(void)
+Scheduler::processBlockedThreads(void)
 {
-  const time_t now = time(NULL);
-      
   int woken = 0;	// Keep track of number of woken threads
       
-  for (list<SchedRec *>::iterator iter = timeout_queue.begin();
-       iter != timeout_queue.end() && (*iter)->Timeout() <= now;
+  for (list<BlockingObject *>::iterator iter = blocked_queue.begin();
+       iter != blocked_queue.end();
        // iterator is advanced in loop
-       woken++)
-    {
-      SchedRec& sched_rec = **iter;
-      
-      sched_rec.Unblock();
-      
-      Thread& thread = sched_rec.Thr();
-      
-#if defined(DEBUG_BLOCK) && defined(DEBUG_TIMEOUT)
-      cerr.form("%s Thread %ld timed out\n",
-		__FUNCTION__, sched_rec.Thr().TInfo().ID());
-#endif
-      
-      BlockStatus& bs = thread.getBlockStatus();
-      
-      bs.SetTimedOut();
-      
-      // A timeout will often be associated with an IO or ICM block,
-      // so check for these...
-      //
-      // We restart them since we want them to run, so that they can
-      // detect the timeout and fail.
-      //
-      // We also remove them from the other blocked queues because
-      // no one else will do the cleaning up!
-      if (bs.testBlockIO())
-	{
-	  bs.setRestartIO();
-	  
-	  for (list<SchedRec *>::iterator blocked_io_iter = blocked_io_queue.begin();
-	       blocked_io_iter != blocked_io_queue.end();
-	       blocked_io_iter++)
-	    {
-	      if (**blocked_io_iter == sched_rec)
-		{
-	  	  delete *blocked_io_iter;
-	  	  (void) blocked_io_queue.erase(blocked_io_iter);
-	  	  blocked_io_info.Remove(bs.getFD(), bs.getIOType());
-		  break;
-		}
-	    }
-	}
-      else if (bs.testBlockICM())
-	{
-	  bs.setRestartICM();
-	  
-	  for (list<SchedRec *>::iterator blocked_icm_iter = blocked_icm_queue.begin();
-	       blocked_icm_iter != blocked_icm_queue.end();
-	       blocked_icm_iter++)
-	    {
-	      if (**blocked_icm_iter == sched_rec)
-		{
-	  	  delete *blocked_icm_iter;
-	  	  (void) blocked_icm_queue.erase(blocked_icm_iter);
-		  break;
-		}
-	    }
-	}
-      else if (bs.testBlockWait())
-        {
-          bs.setRestartWait();
-
-          for (list<SchedRec *>::iterator blocked_wait_iter = blocked_wait_queue.begin();
-	       blocked_wait_iter != blocked_wait_queue.end();
-	       blocked_wait_iter++)
-	    {
-	      if (**blocked_wait_iter == sched_rec)
-		{
-		  delete *blocked_wait_iter;
-		  (void) blocked_wait_queue.erase(blocked_wait_iter);
-		  break;
-		}
-	    }
-	}
-//      else
-//	{
-//	  DEBUG_ASSERT(false);
-//	}
-
-      // Grab back storage.
-      delete *iter;
-      iter = timeout_queue.erase(iter);
-    }
-
-#ifdef DEBUG_TIMEOUT
-  cerr.form("%s woken = %ld\n", __FUNCTION__, woken);
-#endif
-
-  return woken > 0;
-}
-
-bool
-Scheduler::ProcessBlockedIO(void)
-{
-  bool unblocked = false;
-  for (list<SchedRec *>::iterator iter = blocked_io_queue.begin();
-       iter != blocked_io_queue.end();
        )
     {
-      SchedRec& sched_rec = **iter;
-
-      Thread& thread = sched_rec.Thr();
-
-      BlockStatus& bs = thread.getBlockStatus();
-      
-      if (is_ready(bs.getFD(), bs.getIOType()) 
-          || thread.Condition() == ThreadCondition::EXITED)
+      if ((*iter)->unblock(theTimeouts))
 	{
-#if defined(DEBUG_BLOCK) && defined(DEBUG_IO)
-	  cerr.form("%s Thread %ld unblocked on IO (%ld %ld)\n",
-		    __FUNCTION__, sched_rec.Thr().TInfo().ID(),
-		    bs.getFD(), bs.getIOType());
-#endif
-
-	  // Yes... mark it to be restarted
-	  bs.setRestartIO();
-	  
-	  // Update the information about which IO channels are being
-	  // waited on.
-	  blocked_io_info.Remove(bs.getFD(), bs.getIOType());
-	  
-	  sched_rec.Unblock();
-	  unblocked = true;
-          delete *iter;
-	  iter = blocked_io_queue.erase(iter);
+	  woken++;
+	  delete *iter;
+	  iter = blocked_queue.erase(iter);
 	}
       else
 	{
 	  iter++;
 	}
     }
-  
-#ifdef DEBUG_IO
-  cerr.form("%s unblocked = %ld\n", __FUNCTION__, unblocked ? 1 : 0);
-#endif
-
-  return unblocked;
-}
-
-bool 
-Scheduler::ShuffleMessage(ICMMessage *icm_message,
-			  ThreadTable& thread_table)
-{
-#ifdef ICM_DEF
-  char *icm_target;
-  
-  (void) icmAnalyseHandle(icm_message->Recipient(),
-			  &icm_target, NULL, NULL, NULL, NULL);
-  
-  ICMIncomingTarget target(icm_target);
-  
-  ThreadTableLoc id = (ThreadTableLoc) -1;
-  if (target.IsID())
-    {
-      id = target.ID();
-#ifdef DEBUG_ICM
-      cerr.form("%s Message for thread %ld\n", __FUNCTION__, id);
-#endif
-    }
-  else if (target.IsSymbol())
-    {
-      id = thread_table.LookupName(target.Symbol());
-      if (id == (ThreadTableLoc) -1)
-	{
-	  return false;
-	}
-#ifdef DEBUG_ICM
-      cerr.form("%s Message for thread %s = %ld\n",
-		__FUNCTION__, target.Symbol(), id);
-#endif
-    }
-  
-  if (!thread_table.IsValid(id))
-    {
-      return false;
-    }
-  else
-    {
-      Thread* thread = thread_table.LookupID(id);
-      if (thread == NULL)
-	{
-	  return false;
-	}
-      thread->ICMQueue().push_back(icm_message);
-      return true;
-    }
-#else // ICM_DEF
-  return false;
-#endif // ICM_DEF
-}
-      
-// Argument needs to be a SchedRec * since we're being called from
-// a generic algorithm working over a list<SchedRec *>
-static bool
-ready_icm(SchedRec *sr)
-{
-  Thread& thread = sr->Thr();
-  
-  BlockStatus& bs = thread.getBlockStatus();
-
-#if defined(DEBUG_BLOCK) || defined(DEBUG_ICM)
-cerr.form("%s Thread %ld testing for ready ready for ICM bs.QueueSize = %ld ICMQueueSize = %ld\n",
-		__FUNCTION__, sr->Thr().TInfo().ID(),
-	  bs.QueueSize(), thread.ICMQueue().size());
-#endif  
-  if (bs.QueueSize() != thread.ICMQueue().size() 
-      || thread.Condition() == ThreadCondition::EXITED)
-    {
-      // Yes... mark it to be restarted
-#if defined(DEBUG_BLOCK) || defined(DEBUG_ICM)
-      cerr.form("%s Thread %ld marked as ready for ICM\n",
-		__FUNCTION__, sr->Thr().TInfo().ID());
-#endif
-
-      bs.setRestartICM();
-     
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+  return woken > 0;
 }
 
 bool
-Scheduler::ProcessBlockedICM(CondList<ICMMessage *>& icm_message_queue,
-			     ThreadTable& thread_table)
+Scheduler::ShuffleAllMessages(void)
 {
   //
   // Distribute the messages that are waiting.
   //
-  if (icm_message_queue.Trylock())
+
+  bool msg_found = false;
+  for (list <MessageChannel*>::iterator iter = message_channels.begin();
+       iter != message_channels.end();
+       iter++)
     {
-      for (list<ICMMessage *>::iterator iter = icm_message_queue.begin();
-	   iter != icm_message_queue.end(); )
+      if ((*iter)->ShuffleMessages())
 	{
-	  ICMMessage *icm_message = *iter;
-	  if (ShuffleMessage(icm_message, thread_table))
-	    {
-	      iter = icm_message_queue.erase(iter);
-	    }
-	  else
-	    {
-	      iter++;
-	    }
+	  msg_found = true;
 	}
-
-      icm_message_queue.Unlock();
-
-      bool unblocked = false;
-      for (list<SchedRec *>::iterator iter = blocked_icm_queue.begin();
-           iter != blocked_icm_queue.end();
-	   )
-	{
-	  if (ready_icm(*iter))
-	    {
-	      unblocked = true;
-	      delete *iter;
-	      iter = blocked_icm_queue.erase(iter);
-	    }
-	  else
-	    {
-	      iter++;
-	    }
-	}
-
-#ifdef DEBUG_ICM
-      cerr.form("%s unblocked = %ld\n", __FUNCTION__, unblocked ? 1 : 0);
-#endif
-
-      return unblocked;
     }
-  else
-    {
-      // No messages were delivered, no threads were unblocked.
-      return false;
-    }
-}
-
-// Argument needs to be a SchedRec * since we're being called from
-// a genetic algorithm working over a list<SchedRec *>
-static void
-restart_wait(SchedRec *sr)
-{
-  Thread& thread = sr->Thr();
-
-#if defined(DEBUG_BLOCK) && defined(DEBUG_TIMEOUT)
-  cerr.form("%s Checking %ld\n",
-	    __FUNCTION__, sr->Thr().TInfo().ID());
-#endif
-
-  thread.getBlockStatus().setRestartWait();
-}
-
-bool
-Scheduler::ProcessBlockedWait(void)
-{
-  const word32 now = code->GetStamp();
-
-  if (now > last_process_blocked_wait)
-    {
-      last_process_blocked_wait = now;
-
-      // Set a restart for everything on the queue.
-      (void) for_each(blocked_wait_queue.begin(),
-		      blocked_wait_queue.end(),
-		      restart_wait);
-
-      // If there were more than 0 things on the queue, something was done.
-      const bool unblocked = ! blocked_wait_queue.empty();
-
-      // Clobber the queue.
-      for (list<SchedRec *>::iterator iter = blocked_wait_queue.begin();
-           iter != blocked_wait_queue.end(); )
-        {
-          for (list<SchedRec *>::iterator t_iter = timeout_queue.begin();
-	       t_iter != timeout_queue.end();
-	       t_iter++)
-	    {
-	      if (**t_iter == **iter)
-		{
-		  delete *t_iter;
-		  (void) timeout_queue.erase(t_iter);
-		  break;
-		}
-	    }
-           delete *iter;
-           iter = blocked_wait_queue.erase(iter);
-        }
-
-#ifdef DEBUG_RETRY
-      cerr.form("%s unblocked = %ld\n", __FUNCTION__, unblocked ? 1 : 0);
-#endif
-
-      return unblocked;
-    }
-  else
-    {
-      return false;
-    }
+  return msg_found;
 }
 
 Thread::ReturnValue
-Scheduler::HandleSignal(ThreadTable& thread_table, 
-			ThreadOptions& thread_options)
+Scheduler::HandleSignal(void)
 {
+  char buff[128];
+  read(sigint_pipe[0], buff, 120);
+
   Thread *thread = new Thread(NULL, thread_options);
 
   const ThreadTableLoc loc = thread_table.AddID(thread);
@@ -1063,11 +688,26 @@ Scheduler::HandleSignal(ThreadTable& thread_table,
   thread->Condition(Thread::RUNNABLE);
 
 #ifdef DEBUG_SCHED
-  cerr.form("%s Start execution of signal handler\n", __FUNCTION__);
+  cerr << __FUNCTION__ << "  Start execution of signal handler" << endl;
 #endif
-  const Thread::ReturnValue result = thread->Execute();
+
+  Thread::ReturnValue result;
+
+  while (true)
+    {
+      result = thread->Execute();
+      if (result == Thread::RV_BLOCK)
+	{
+	  Sleep(false);
+	}
+      else
+	{
+	  break;
+	}
+    }
+
 #ifdef DEBUG_SCHED
-  cerr.form("%s Stop execution of signal handler\n", __FUNCTION__);
+  cerr << __FUNCTION__ << "  Stop execution of signal handler" << endl;
 #endif
 
   thread_table.RemoveID(thread->TInfo().ID());
@@ -1077,48 +717,20 @@ Scheduler::HandleSignal(ThreadTable& thread_table,
   return result;
 }
 
-void
-Scheduler::block_icm(Thread* th)
-{
-  SchedRec *sr = new SchedRec(*th);
-  blocked_icm_queue.push_back(sr);
-}
-
-//
-// Delete the timeout for the given thread (if any).
-//
-void Scheduler::deleteTimeout(Thread* th)
-{
-  for (list<SchedRec *>::iterator iter = timeout_queue.begin();
-       iter != timeout_queue.end();
-       iter++
-       )
-    {
-      SchedRec& sched_rec = **iter;
-      if (sched_rec.Thr() == *th)
-	{
-	  delete *iter;
-	  (void) timeout_queue.erase(iter);
-	  break;
-	}
-    }
-}
-
 //
 // Insert new thread's record before thread in run queue
 //
-void Scheduler::insertThread(Thread* th, SchedRec* newrec)
+void Scheduler::insertThread(Thread* th, Thread* newth)
 {
-  for (list<SchedRec *>::iterator iter = run_queue.begin();
+  for (list<Thread *>::iterator iter = run_queue.begin();
        iter != run_queue.end();
        iter++
        )
     {
-      SchedRec& sched_rec = **iter;
-      if (sched_rec.Thr() == *th)
+      if (**iter == *th)
 	{
 	  // this makes it insert after parent iter++;
-	  (void) run_queue.insert(iter, newrec);
+	  (void) run_queue.insert(iter, newth);
 	  return;
 	}
     }
@@ -1126,73 +738,27 @@ void Scheduler::insertThread(Thread* th, SchedRec* newrec)
 }
 
 //
-// Reset the thread by removing the thread from all timeout and
-// blocked queues and clear block status.
+// Reset the thread by removing the thread from the
+// blocked queue and clear block status.
 //
 void Scheduler::resetThread(Thread* th)
 {
-  // Remove from timeout queue
+  // Remove from blocked queue
   //
-  for (list<SchedRec *>::iterator iter = timeout_queue.begin();
-       iter != timeout_queue.end();
+  for (list<BlockingObject *>::iterator iter = blocked_queue.begin();
+       iter != blocked_queue.end();
        iter++
        )
     {
-      SchedRec& sched_rec = **iter;
-      if (sched_rec.Thr() == *th)
+      BlockingObject& blockingObj = **iter;
+      if (blockingObj.getThread() == th)
 	{
 	  delete *iter;
-	  (void) timeout_queue.erase(iter);
+	  (void) blocked_queue.erase(iter);
 	  break;
 	}
     }
-  // Remove from blocked IO queue
-  //
-  for (list<SchedRec *>::iterator iter = blocked_io_queue.begin();
-       iter != blocked_io_queue.end();
-       iter++
-       )
-    {
-      SchedRec& sched_rec = **iter;
-      if (sched_rec.Thr() == *th)
-	{
-	  delete *iter;
-	  (void) blocked_io_queue.erase(iter);
-	  break;
-	}
-    }
-  // Remove from blocked ICM queue
-  //
-  for (list<SchedRec *>::iterator iter = blocked_icm_queue.begin();
-       iter != blocked_icm_queue.end();
-       iter++
-       )
-    {
-      SchedRec& sched_rec = **iter;
-      if (sched_rec.Thr() == *th)
-	{
-	  delete *iter;
-	  (void) blocked_icm_queue.erase(iter);
-	  break;
-	}
-    }
-  // Remove from blocked wait queue
-  //
-  for (list<SchedRec *>::iterator iter = blocked_wait_queue.begin();
-       iter != blocked_wait_queue.end();
-       iter++
-       )
-    {
-      SchedRec& sched_rec = **iter;
-      if (sched_rec.Thr() == *th)
-	{
-	  delete *iter;
-	  (void) blocked_wait_queue.erase(iter);
-	  break;
-	}
-    }
-  // clear flags
-  th->getBlockStatus().Clear();
+  th->getBlockStatus().setRunnable();
 }
 
 static void

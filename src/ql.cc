@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ql.cc,v 1.4 2002/06/30 05:30:03 qp Exp $
+// $Id: ql.cc,v 1.6 2002/11/10 07:54:53 qp Exp $
 
 #include <stdlib.h>
 
@@ -72,6 +72,18 @@
 const char *Program = "ql";
 
 //
+// Handler for out of memory via new
+//
+//typedef void (*new_handler) ();
+//new_handler set_new_handler(new_handler p) throw();
+
+void noMoreMemory()
+{
+   cerr << "No more memory available for " << Program << endl;
+   abort();
+}
+
+//
 // A 3-steps Qu-Prolog linker:
 //	1. Load the files.
 //	2. Resolve the code and symbols.
@@ -84,6 +96,9 @@ Code *code = NULL;
 int
 main(int32 argc, char** argv)
 {
+  // set the out-of-memory handler
+  std::set_new_handler(noMoreMemory);
+
   QlOptions ql_options(argc, argv);
 
   if (! ql_options.Valid())
@@ -97,46 +112,25 @@ main(int32 argc, char** argv)
   atoms =
     new AtomTable(ql_options.AtomTableSize(),
 		ql_options.StringTableSize(), 0);
-  if (atoms == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   PredTab predicates(atoms, ql_options.PredicateTableSize());
   
   code = new Code(ql_options.CodeSize());
-  if (code == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
   
   StringMap *string_map =
     new StringMap(ql_options.StringMapSize(), 0); 
-  if (string_map == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   //
   // Step 1 - load all the files in.
   // 
   ObjectIndex **ObjectIndices =
     new (ObjectIndex *)[ql_options.NumObjectFiles()];
-  if (ObjectIndices == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   word32 NumQuery = 0;
   for (int i = 0; i < ql_options.NumObjectFiles(); i++)
     {
       ObjectIndices[i] = 
 	new ObjectIndex(*code, *atoms, predicates);
-      if (ObjectIndices[i] == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
-
       ObjectIndices[i]->loadObjectFile(ql_options.ObjectArgv()[i],
 				    NumQuery,
 				    *string_map, predicates);

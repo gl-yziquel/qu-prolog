@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: executable.cc,v 1.3 2001/11/21 00:21:13 qp Exp $
+// $Id: executable.cc,v 1.6 2002/12/05 03:39:28 qp Exp $
 
 //
 // Format of a .qx file:
@@ -113,8 +113,8 @@
 //	+-----------------------+
 //
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 
 #include "config.h"
 
@@ -142,7 +142,7 @@ SaveExecutable(const char *file, Code& code, AtomTable& atoms,
       //
       // Fail to open the file.
       //
-      Fatal(__FUNCTION__, "cannot open %s for saving", file);
+      FatalS(__FUNCTION__, "cannot open ", file);
     }
   else
     {
@@ -179,7 +179,7 @@ LoadExecutable(const char *file, Code& code, AtomTable& atoms,
   ifstream istrm(file);
   if (istrm.fail())
     {
-      Fatal(__FUNCTION__, "cannot open %s for loading", file);
+      FatalS(__FUNCTION__, "cannot open ", file);
     }
   else
     {

@@ -149,6 +149,7 @@ $3:
 	put_y_variable(0, 2)
 	put_constant('write', 1)
 	call_predicate('open_msgstream', 3, 3)
+	pseudo_instr1(102, 20)
 	put_integer(0, 0)
 	pseudo_instr2(102, 0, 22)
 	put_integer(1, 0)
@@ -184,6 +185,7 @@ $1:
 	put_constant('$exit_gui', 0)
 	put_constant('[]', 1)
 	call_predicate('write_term', 2, 1)
+	call_predicate('flush_output', 0, 1)
 	put_integer(0, 0)
 	call_predicate('reset_std_stream', 1, 1)
 	put_integer(1, 0)
@@ -215,8 +217,9 @@ $1:
 	call_predicate('retract', 1, 0)
 	put_constant('$exit_gui', 0)
 	put_constant('[]', 1)
-	deallocate
-	execute_predicate('write_term', 2)
+	call_predicate('write_term', 2, 0)
+	call_predicate('flush_output', 0, 0)
+	fail
 
 $2:
 	proceed
@@ -229,7 +232,7 @@ end('exit_all_thread_guis'/0):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(1, $1)
@@ -244,13 +247,8 @@ $1:
 	neck_cut
 	put_integer(0, 1)
 	pseudo_instr2(101, 1, 0)
-	get_x_variable(1, 0)
-	put_integer(0, 0)
-	allocate(0)
-	call_predicate('$retract_msgstream', 2, 0)
 	put_integer(0, 0)
 	pseudo_instr1(95, 0)
-	deallocate
 	proceed
 
 $2:
@@ -429,6 +427,7 @@ $3:
 	put_y_variable(0, 2)
 	put_constant('write', 1)
 	call_predicate('open_msgstream', 3, 3)
+	pseudo_instr1(102, 20)
 	put_structure(3, 0)
 	set_constant('$thread_debug_set')
 	set_y_value(2)
@@ -442,6 +441,16 @@ end('start_debug_thread_gui'/0):
 
 'exit_debug_thread_gui/0$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 

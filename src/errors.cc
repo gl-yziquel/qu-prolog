@@ -53,18 +53,21 @@
 // 
 // ##Copyright##
 //
-// $Id: errors.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: errors.cc,v 1.5 2002/12/05 03:39:27 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "config.h"
 
 #include "area_offsets.h"
 #include "defs.h"
+
+using namespace std;
 
 extern const char *Program;
 
@@ -77,35 +80,36 @@ const	char    *ErrArea = NULL;
 // General error message handlers.
 //
 
-//
-// Just print out the message and continue the execution.
-//
 void
-Warning(const char *where, const char *message, ...)
+Fatal(const char *where, const char *message)
 {
-	va_list	ap;
-
-	cerr.form("%s(%ld): %s: Warning: ",
-		  Program, getpid(), where);
-	va_start(ap, message);
-	cerr.vform(message, ap) << endl;
-	va_end(ap);
+   cerr << Program << "(" << (long)getpid() << ") : " 
+	<< where << ": Fatal : " << message << endl;
+   exit(EXIT_FAILURE);
 }
 
-//
-// Print out the message and exit with an error code.
-//
 void
-Fatal(const char *where, const char *message, ...)
+FatalS(const char *where, const char *message, const char *extra_message)
 {
-	va_list	ap;
+   cerr << Program << "(" << (long)getpid() << ") : " 
+	<< where << ": Fatal : " << message
+	<< " : " << extra_message << endl;
+   exit(EXIT_FAILURE);
+}
 
-	cerr.form("%s(%ld): %s: Fatal: ",
-		  Program, getpid(), where);
-	va_start(ap, message);
-	cerr.vform(message, ap) << '\n';
-	va_end(ap);
-	exit(EXIT_FAILURE);
+void
+Warning(const char *where, const char *message)
+{
+   cerr << Program << "(" << (long)getpid() << ") : " 
+	<< where << ": Warning : " << message << endl;
+}
+
+void
+WarningS(const char *where, const char *message, const char *extra_message)
+{
+   cerr << Program << "(" << (long)getpid() << ") : " 
+	<< where << ": Warning : " << message 
+	<< " : " << extra_message << endl;
 }
 
 //
@@ -114,7 +118,7 @@ Fatal(const char *where, const char *message, ...)
 void
 Usage(const char *program, const char *usage)
 {
-  cerr.form("Usage: %s %s\n", program, usage);
+  cerr << "Usage: " << program << " " << usage << endl;
 
   exit(EXIT_FAILURE);
 }
@@ -125,49 +129,70 @@ Usage(const char *program, const char *usage)
 void
 SegmentTooLarge(const char *where, const char* which)
 {
-  Fatal(where, "too large segment request in %s", which);
-}
-
-void
-OutOfMemory(const char *where)
-{
-  Fatal(where, "out of system (C++) memory");
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : too large segment request in " << which;
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 OutOfPage(const char *where, const char *which, const word32 size)
 {
-  Fatal(where, "out of memory in %s (%dK)", which, size);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : out of memory in " << which
+       << "(" << size << "K)";
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 OutOfHashTable(const char *where, const char *which, const word32 size)
 {
-  Fatal(where, "out of memory in %s (%d entries)", which, size);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : out of memory in " << which
+       << "(" << size << " entries)";
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 EmptyStack(const char *where, const char *which)
 {
-  Fatal(where, "empty stack in %s", which);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : empty stack in " << which;
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 BadReset(const char *where, const char *which, const StackLoc loc)
 {
-  Fatal(where, "bad reset to location %#x in %s", loc, which);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : bad reset to location " 
+       << hex << loc << dec
+       << " in " << which;
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 BadReference(const char *where, const char *which, const StackLoc loc)
 {
-  Fatal(where, "bad reference to location %#x in %s", loc, which);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : bad reference to location " 
+       << hex << loc << dec
+       << " in " << which;
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
 WrongFileFormat(const char *where, const char *which)
 {
-  Fatal(where, "wrong format for file %s", which);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : wrong format for file " << which;
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -175,11 +200,17 @@ SaveFailure(const char *where, const char *data, const char *which)
 {
   if (which == NULL)
     {
-      Fatal(where, "failed to save %s", data);
+      cerr << Program << "(" << (long)getpid() << ") : " << where
+	   << ": Fatal : failed to save " << which;
+      cerr << endl;
+      exit(EXIT_FAILURE);
     }
   else
     {
-      Fatal(where, "failed to save %s (%s)", data, which);
+      cerr << Program << "(" << (long)getpid() << ") : " << where
+	   << ": Fatal : failed to save " << data << " (" << which << ")";
+      cerr << endl;
+      exit(EXIT_FAILURE);
     }
 }
 
@@ -188,16 +219,26 @@ ReadFailure(const char *where, const char *data, const char *which)
 {
   if (which == NULL)
     {
-      Fatal(where, "failed to read %s", data);
+      cerr << Program << "(" << (long)getpid() << ") : " << where
+	   << ": Fatal : failed to read " << which;
+      cerr << endl;
+      exit(EXIT_FAILURE);
     }
   else
     {
-      Fatal(where, "failed to read %s (%s)", data, which);
+      cerr << Program << "(" << (long)getpid() << ") : " << where
+	   << ": Fatal : failed to read " << data << " (" << which << ")";
+      cerr << endl;
+      exit(EXIT_FAILURE);
     }
 }
 void OutOfHeapSpace(const char *where, char *which, const word32 size)
 {
-  Fatal(where, "out of heap space in %s (%dK)", which, size);
+  cerr << Program << "(" << (long)getpid() << ") : " << where
+       << ": Fatal : out of heap space in  " << which
+       << "(" << size << "K)";
+  cerr << endl;
+  exit(EXIT_FAILURE);
 }
 
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: statistics.cc,v 1.3 2001/11/21 00:21:17 qp Exp $
+// $Id: statistics.cc,v 1.4 2003/11/05 21:33:31 qp Exp $
 
 #include <limits.h>
 #include <unistd.h>
@@ -71,7 +71,7 @@ extern Code *code;
 extern PredTab *predicates;
 
 #ifndef	CLK_TCK
-#define	CLK_TCK	sysconf(3)
+#define	CLK_TCK	sysconf(_SC_CLK_TCK)
 #endif	// CLK_TCK
 
 //
@@ -85,7 +85,7 @@ Thread::psi_cputime(Object *& object1)
   struct	tms	usage;
   int32	msec;
   times(&usage);
-  msec = (usage.tms_utime + usage.tms_cutime) * 1000 / CLK_TCK;
+  msec = (usage.tms_utime + usage.tms_stime) * 1000 / CLK_TCK;
   object1 = heap.newNumber(msec);
   return RV_SUCCESS;
 }

@@ -1,0 +1,78 @@
+#! /bin/sh
+# the next line restarts using wish \
+exec wish "$0" "$@"
+
+# load icm interface functions
+load @QPHOME@/bin/tkICM.so tkICM
+
+#
+# A monitor GUI - displays a received message and addresses and 
+# forwards the message on to the reply-to address of the message.
+
+# The name of the GUI
+set gui_name monitor_gui
+
+# Initialises the ICM-Comms
+icmInitComms 0 ""
+
+# Register the ICM-agent using gui_name as the name of this process
+# and returning the file handle for incoming messages
+set icm_channel [icmRegisterAgent $gui_name]
+
+# Set up the ICM file event
+fconfigure $icm_channel -blocking 0 -buffering line
+fileevent  $icm_channel readable {eval [icm_msg_read]}
+
+###################################################################
+# The following function reads ICM messages from ICM
+# and calls a user defined function process_icm_message that takes
+# the message and the sender address.
+# The special message $exit_gui causes the GUI to exit.
+#
+# Do not change any of the following message processing code.
+# 
+
+# The function called for ICM read events.
+proc icm_msg_read {} {
+    while {[icmMsgAvail] == "yes"} {
+      icm_msg_read_one
+    }
+}
+
+
+proc icm_msg_read_one {} {
+    set icm_msg [icmGetMsg]
+    if { [lindex $icm_msg 0] == "\$exit_gui"} {
+        exit 0
+    } else {
+        process_icm_message [lindex $icm_msg 0] [lindex $icm_msg 1] [lindex $icm_msg 2]
+    }
+}
+
+
+
+############# end of ICM message processing ####################
+
+scrollbar .s -relief flat -command ".appio yview"
+pack .s -side right -fill y
+text .appio -relief raised -bd 2 -yscrollcommand ".s set" -setgrid true -width 80 -height 40
+pack .appio -side left -fill both -expand 1
+.appio configure -font -Adobe-Courier-Medium-R-*-*-140-*
+.appio configure -foreground blue
+.appio tag configure color1 -foreground black
+
+
+.appio mark set insert end
+
+bind .appio <Destroy> {
+        icmDeregisterAgent
+        }
+
+
+proc process_icm_message {msg addr reply} {
+    .appio insert end "Message: <|$msg|>\nFrom: $addr\nTo  : $reply\n\n"
+    .appio mark set insert end
+    .appio see end
+    icmFmtSendMsg $reply $addr $msg
+}
+

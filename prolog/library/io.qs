@@ -93,6 +93,16 @@ end('seen'/0):
 
 'tell/1$0/1$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'stdout':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -335,6 +345,35 @@ end('get'/1):
 
 
 
+'get/2$0'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
+	get_y_level(2)
+	call_predicate('get_code', 2, 3)
+	cut(2)
+	put_integer(32, 0)
+	pseudo_instr2(1, 0, 21)
+	put_integer(126, 0)
+	pseudo_instr2(2, 21, 0)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	allocate(1)
+	get_y_variable(0, 2)
+	cut(0)
+	fail
+end('get/2$0'/3):
+
+
+
 'get'/2:
 
 
@@ -346,14 +385,9 @@ $1:
 	call_predicate('repeat', 0, 3)
 	put_y_value(2, 0)
 	put_y_value(1, 1)
-	call_predicate('get_code', 2, 2)
-	put_integer(32, 0)
-	pseudo_instr2(1, 0, 21)
-	put_integer(126, 0)
-	pseudo_instr2(2, 21, 0)
-	cut(0)
+	put_y_value(0, 2)
 	deallocate
-	proceed
+	execute_predicate('get/2$0', 3)
 end('get'/2):
 
 

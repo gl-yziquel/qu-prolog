@@ -7,7 +7,7 @@
  * University of Queensland
  */
 
-#include <iostream.h>
+#include <iostream>
 
 #include "asm_objects.h"
 #include "errors.h"
@@ -18,17 +18,13 @@
 	do {								\
 	  yylval.instruction =						\
             new ASMInt<Code::InstructionSizedType>(opcode);		\
-	  if (yylval.instruction == NULL)				\
-	    {								\
-              OutOfMemory(Program);					\
-	    }								\
 									\
 	  return token;							\
 	} while (0)
 
 void read_comment(void);
 
-size_t read_atom(char *, const size_t);
+size_t read_atom(string&, const size_t);
 
 %}
 %%
@@ -126,18 +122,13 @@ pseudo_instr5		RETURN_INSTR(PSEUDO_INSTR5, pseudo_instr5);
 "/*"  			read_comment();
 
 '			{
-				static char buf[ATOM_LENGTH];
-
-				const int len = read_atom(buf, ATOM_LENGTH);
+                                string* buf = new string;
+				const int len = read_atom(*buf, ATOM_LENGTH);
 				if (len == -1)
 				{
 				  Fatal(__FUNCTION__, "bad atom");
 				}
-				yylval.atom_name = new String(buf);
-				if (yylval.atom_name == NULL)
-				  {
-                                    OutOfMemory(Program);
-				  }
+				yylval.atom_name = buf;
 
 				return ATOM_TOKEN;
 			}
@@ -153,12 +144,7 @@ end			{
 			}
 
 "$"([_[:alnum:]])+	{
-  				yylval.label_name = new String(yytext);
-
-				if (yylval.label_name == NULL)
-				  {
-                                    OutOfMemory(Program);
-				  }
+  				yylval.label_name = new string(yytext);
 
 				return LABEL_TOKEN;
 			}
@@ -215,7 +201,8 @@ void read_comment(void)
     }
 }
 
-size_t read_atom(char *buf, const size_t len)
+
+size_t read_atom(string& buf, const size_t len)
 {
   unsigned i = 0;
   bool done = false;
@@ -233,67 +220,71 @@ size_t read_atom(char *buf, const size_t len)
       if(!done)
 	if(c == '\n') 
 	  {
-	    buf[i++] = '\n';
+	    i++;
+	    buf.push_back('\n');
 	    c = yyinput();
 	  }
 	else if (c == '\t')
 	  {
-	    buf[i++] = '\t';
+	    i++;
+	    buf.push_back('\t');
 	    c = yyinput();
 	  }
 	else if (c == '\\')
 	  {
 	    c = yyinput();
+	    i++;
 	    switch (c)
 	      {
 	      case 'a':
-		buf[i++] = '\a';
+		buf.push_back('\a');
 		c = yyinput();
 		break;
 	      case 'b':
-		buf[i++] = '\b';
+		buf.push_back('\b');
 		c = yyinput();
 		break;
 	      case 'f':
-		buf[i++] = '\f';
+		buf.push_back('\f');
 		c = yyinput();
 		break;
 	      case 'n':
-		buf[i++] = '\n';
+		buf.push_back('\n');
 		c = yyinput();
 		break;
 	      case 'r':
-		buf[i++] = '\r';
+		buf.push_back('\r');
 		c = yyinput();
 		break;
 	      case 't':
-		buf[i++] = '\t';
+		buf.push_back('\t');
 		c = yyinput();
 		break;
 	      case 'v':
-		buf[i++] = '\v';
+		buf.push_back('\v');
 		c = yyinput();
 		break;
 	      case '\\':
-		buf[i++] = '\\';
+		buf.push_back('\\');
 		c = yyinput();
 		break;
 	      case '\'':
-		buf[i++] = '\'';
+		buf.push_back('\'');
 		c = yyinput();
 		break;
 	      case '\"':
-		buf[i++] = '\"';
+		buf.push_back('\"');
 		c = yyinput();
 		break;
 	      default:
-		buf[i++] = '\\';
+		buf.push_back('\\');
 		break;
 	      }
 	  }
 	else			
 	  {
-	    buf[i++] = c;
+	    i++;
+	    buf.push_back(c);
 	    c = yyinput();
 	  }
     }
@@ -302,10 +293,8 @@ size_t read_atom(char *buf, const size_t len)
 
   if(i > len - 1) 
     {
-      Fatal(Program, "atom too long (>%d chars) %s\n", i, buf);
+      FatalS(__FUNCTION__, "atom too long ", buf.c_str());
     }
-
-  buf[i] = '\0';
 
   return i;
 }

@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: environment.cc,v 1.2 2001/12/06 02:56:06 qp Exp $
+// $Id: environment.cc,v 1.3 2002/11/03 08:37:26 qp Exp $
 
 #include "area_offsets.h"
 #include "objects.h"
@@ -99,10 +99,10 @@ EnvironmentStack::Display(ostream& ostrm, const EnvLoc index,
   Environment *e = fetchEnv(index);
 
   Indent(ostrm, depth);
-  cerr.form("previousEnvironment=%#lx\n", e->previousEnvironment);
+  cerr << "previousEnvironment=" << hex <<  e->previousEnvironment << dec << endl;
 
   Indent(ostrm, depth);
-  cerr.form("continuationInstruction=%#lx\n", e->continuationInstruction);
+  cerr << "continuationInstruction=" << hex << e->continuationInstruction << dec << endl;
   
   return ostrm;
 }

@@ -1,5 +1,19 @@
 'retract/1$0'/1:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ':-'/2:$5])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$6:
 	try(1, $1)
 	trust($2)
 
@@ -20,7 +34,7 @@ end('retract/1$0'/1):
 	switch_on_term(0, $9, $8, $8, $5, $8, $8)
 
 $5:
-	switch_on_structure(0, 4, ['default':$8, '$'/0:$6, ':-'/2:$7])
+	switch_on_structure(0, 4, ['$default':$8, '$'/0:$6, ':-'/2:$7])
 
 $6:
 	try(1, $1)
@@ -120,6 +134,16 @@ end('$retract/2$0'/0):
 
 '$retract/2$1'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'true':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -192,7 +216,7 @@ end('retractall'/1):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, '/'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '/'/2:$5])
 
 $4:
 	try(1, $1)

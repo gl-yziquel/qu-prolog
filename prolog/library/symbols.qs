@@ -10,6 +10,16 @@ end('current_atom'/1):
 
 '$current_atom/2$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'fail':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -97,6 +107,16 @@ end('current_predicate'/1):
 
 '$current_predicate/2$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -138,6 +158,16 @@ end('$current_predicate/2$1'/2):
 
 '$current_predicate/2$2'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'fail':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -160,7 +190,7 @@ end('$current_predicate/2$2'/2):
 	switch_on_term(0, $6, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$4, '/'/2:$5])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$4, '/'/2:$5])
 
 $4:
 	try(2, $1)
@@ -333,6 +363,16 @@ end('predicate_property'/2):
 
 '$predicate_property/3$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'fail':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.cc,v 1.6 2002/03/24 05:58:30 qp Exp $
+// $Id: gc.cc,v 1.9 2003/08/06 23:42:34 qp Exp $
 
 #include "global.h"
 #include "gc.h"
@@ -107,18 +107,110 @@ bool check_after_GC(Heap& heap)
   return true;
 }
 
+bool check_term(Object* term)
+{
+  if (term == NULL) return false;
+
+    switch (term->utag())
+    {
+    case Object::uVar:
+      {
+      Object* n  = OBJECT_CAST(Reference*, term)->getReference();
+      if (n == term) return true;
+      return (check_term(n));
+      }
+      break;
+    case Object::uObjVar:
+      {
+	Object* n = OBJECT_CAST(Reference*, term)->getReference();
+      if (n == term) return true;
+      return (check_term(n));
+      }
+      break;
+    case Object::uStruct:
+      {
+	Structure* s = OBJECT_CAST(Structure *, term);
+      for (int i = 0; i <= s->getArity(); i++)
+	{
+	  if (!check_term(s->getArgument(i)))return false;
+	}
+      return true;
+      }
+      break;
+    case Object::uCons:
+      {
+	Cons* l = OBJECT_CAST(Cons *, term);
+      return (check_term(l->getHead()) && check_term(l->getTail()));
+      }
+      break;
+    case Object::uQuant:
+      {
+	QuantifiedTerm* q = OBJECT_CAST(QuantifiedTerm *, term);
+      return (check_term(q->getQuantifier()) && 
+	      check_term(q->getBoundVars()) && check_term(q->getBody()));
+      }
+      break;
+    case Object::uConst:
+      return true;
+      break;
+    case Object::uSubst:
+      {
+	Substitution* s = OBJECT_CAST(Substitution *, term);
+      return(check_term(s->getTerm()) && check_term(s->getSubstitutionBlockList()));
+      }
+      break;
+    case Object::uSubsBlock:
+      {
+	SubstitutionBlock * s = OBJECT_CAST(SubstitutionBlock *, term);
+      for (int i = 1; i <= s->getSize(); i++)
+	{
+	  if (!check_term(s->getDomain(i)) || !check_term(s->getRange(i)) )return false;
+	}
+      return true;
+      }
+      break;
+    default:
+      return false;
+    }
+}
+
+bool check_heap2(Heap& heap)
+{
+  for (heapobject* ptr = heap.getBase(); ptr < heap.getTop(); )
+    {
+      Object* term =  reinterpret_cast<Object*>(ptr);
+      if (!check_term(term)) return false;
+      ptr += term->size_dispatch();
+    }
+  return true;
+
+}
+
 #endif // DEBUG
 
 
 void gc_mark_pointer(Object* start, int32& total_marked, Heap& heap)
 {
+
   if (start == NULL || 
       !heap.isHeapPtr(reinterpret_cast<heapobject*>(start)) ||
       start->gc_isMarked())
     {
+
       // Nothing to do
       return;
     }
+  DEBUG_CODE(
+  {
+    if (!check_term(start))
+      {
+	//  Structure* ss = OBJECT_CAST(Structure*, start);
+	//  ss->setArgument(1, AtomTable::nil);
+	start->printMe_dispatch(*atoms,false);
+      }
+  }
+  );
+
   DEBUG_ASSERT(reinterpret_cast<heapobject*>(start) < heap.getTop());
   // Mark the object (by marking the tag word)
   start->gc_mark();
@@ -143,6 +235,7 @@ DEBUG_ASSERT(next != NULL);
   DEBUG_ASSERT((*(reinterpret_cast<heapobject*>(start)) & Object::GC_F) == 0);
  forward:
   {
+    DEBUG_ASSERT(next != NULL);
     DEBUG_ASSERT((*(reinterpret_cast<heapobject*>(next)) & Object::GC_F) == 0);
     if (next->gc_isMarked() || 
 	!heap.isHeapPtr(reinterpret_cast<heapobject*>(next)))
@@ -161,6 +254,8 @@ DEBUG_ASSERT(next != NULL);
     next->gc_setfs();
 
     // Move to the next chain object
+
+DEBUG_ASSERT(current != NULL);
     heapobject* tmp = current;
     current = next->last();
 DEBUG_ASSERT(current != NULL);
@@ -172,6 +267,8 @@ DEBUG_ASSERT(next != NULL);
 
  backward:
   {
+DEBUG_ASSERT(next != NULL);
+DEBUG_ASSERT(current != NULL);
     DEBUG_ASSERT(( *(reinterpret_cast<heapobject*>(next)) & Object::GC_F) == 0);
     DEBUG_ASSERT((*current & Object::GC_F) == Object::GC_F);
     // re-reverse the pointer 
@@ -179,7 +276,7 @@ DEBUG_ASSERT(next != NULL);
       reinterpret_cast<heapobject*>(*current & ~Object::GC_Mask);
 DEBUG_ASSERT(tmp != NULL);
     *current = reinterpret_cast<heapobject>(next);
-
+DEBUG_ASSERT(current != NULL);
     // Move the previous "argument" of the object
     current--;
     //
@@ -190,9 +287,11 @@ DEBUG_ASSERT(tmp != NULL);
         *current = 0;
 	current--;
       }
+DEBUG_ASSERT(current != NULL);
     if (current == reinterpret_cast<heapobject*>(start))
       {
 	// returned to the start - finished marking
+	DEBUG_ASSERT(check_term(start));
 	return;
       }
     if ((*current & Object::GC_F) == 0)
@@ -206,6 +305,7 @@ DEBUG_ASSERT(current != NULL);
 	goto backward;
       }
     // Otherwise move into the new "argument" chain for marking.
+DEBUG_ASSERT(current != NULL);
     next = reinterpret_cast<Object*>(*current & ~Object::GC_Mask);
 DEBUG_ASSERT(next != NULL);
     *current = 

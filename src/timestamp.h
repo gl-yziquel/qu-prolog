@@ -53,13 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: timestamp.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: timestamp.h,v 1.3 2002/12/03 04:55:00 qp Exp $
 
 #ifndef	TIMESTAMP_H
 #define	TIMESTAMP_H
 
 #include "defs.h"
-#include "mutex.h"
 
 class Timestamp
 {
@@ -73,8 +72,8 @@ public:
   const word32 GetStamp(void) const { return count; }
 };
 
-inline ostream&
-operator<<(ostream& ostrm, const Timestamp& ts)
+inline std::ostream&
+operator<<(std::ostream& ostrm, const Timestamp& ts)
 {
   ostrm << " count = " << ts.GetStamp();
 

@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: stream_escapes.cc,v 1.5 2001/09/27 00:55:40 qp Exp $
+// $Id: stream_escapes.cc,v 1.11 2002/12/13 00:19:55 qp Exp $
 
 #include <errno.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <strstream.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "atom_table.h"
 #include "io_qp.h"
@@ -70,6 +70,26 @@
 extern AtomTable *atoms;
 extern IOManager *iom;
 extern ICMEnvironment *icm_environment;
+
+//
+// psi_get_open_streams(StreamList)
+// Make a list of all the open stream nums.
+// mode psi_get_open_streams(out)
+//
+Thread::ReturnValue
+Thread::psi_get_open_streams(Object *& result)
+{
+  result = AtomTable::nil;
+  for (u_int i = 0; i < NUM_OPEN_STREAMS; i++)
+    {
+      if (iom->GetStream(i) != NULL)
+	{
+	  Cons* list = heap.newCons(heap.newNumber(i), result);
+	  result = list;
+	}
+    }
+  return RV_SUCCESS;
+}
 
 //
 // psi_open(file, iomode, var)
@@ -117,22 +137,12 @@ Thread::psi_open(Object *& filename_arg,
     {
     case AM_READ:
       {
-	ifstream *istrm = new ifstream(file);
-	if (istrm == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
+	QPistream *stream = new QPistream(file);
 
-	if (istrm->bad())
+	if (stream->bad())
 	  {
-	    delete istrm;
+	    delete stream;
 	    PSI_ERROR_RETURN(EV_VALUE, 0);
-	  }
-
-	Stream *stream = new Stream(istrm);
-	if (stream == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
 	  }
 
 	//
@@ -144,22 +154,12 @@ Thread::psi_open(Object *& filename_arg,
       break;
     case AM_WRITE:
       {
-	ofstream *ostrm = new ofstream(file, ios::out|ios::trunc);
-	if (ostrm == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
+	QPostream *stream = new QPostream(file, ios::out|ios::trunc);
 
-	if (ostrm->bad())
+	if (stream->bad())
 	  {
-	    delete ostrm;
+	    delete stream;
 	    PSI_ERROR_RETURN(EV_VALUE, 0);
-	  }
-
-	Stream *stream = new Stream(ostrm);
-	if (stream == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
 	  }
 
 	//
@@ -171,22 +171,12 @@ Thread::psi_open(Object *& filename_arg,
       break;
     case AM_APPEND:
       {
-	ofstream *astr = new ofstream(file, ios::out|ios::app);
-	if (astr == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
+	QPostream *stream = new QPostream(file, ios::out|ios::app);
 
-	if (astr->bad())
+	if (stream->bad())
 	  {
-	    delete astr;
+	    delete stream;
 	    PSI_ERROR_RETURN(EV_VALUE, 0);
-	  }
-
-	Stream *stream = new Stream(astr);
-	if (stream == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
 	  }
 
 	//
@@ -259,24 +249,7 @@ Thread::psi_open_string(Object *& string_arg,
 	
 	if (argT->getNumber() == 0)
 	  {
-	    istrstream *istrstr =
-	      new istrstream(atoms->getAtomString(OBJECT_CAST(Atom*, argS)));
-	    if (istrstr == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
-
-	    if (istrstr->bad())
-	      {
-		delete istrstr;
-		PSI_ERROR_RETURN(EV_VALUE, 0);
-	      }
-
-	    Stream *stream = new Stream(istrstr);
-	    if (stream == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
+	    QPistringstream *stream = new QPistringstream(atoms->getAtomString(OBJECT_CAST(Atom*, argS)));
 	    
 	    //
 	    // Return the index of the stream.
@@ -290,17 +263,7 @@ Thread::psi_open_string(Object *& string_arg,
 	    // Open strstream for converting a list of characters
 	    // to an array, and then for reading.
 	    //
-	    strstream *strstr = new strstream();
-	    if (strstr == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
-	    
-	    if (strstr->bad())
-	      {
-		delete strstr;
-		PSI_ERROR_RETURN(EV_VALUE, 0);
-	      }
+	    ostringstream *strstr = new ostringstream;
 
 	    //
 	    // Converting a list of characters to an array.
@@ -326,12 +289,8 @@ Thread::psi_open_string(Object *& string_arg,
 	    
 	    DEBUG_ASSERT(argS->isNil());
 	    
-	    Stream *stream = new Stream((istrstream *)strstr);
-	    if (stream == NULL)
-	      {
-		OutOfMemory(__FUNCTION__);
-	      }
-	    
+	    QPistringstream *stream = new QPistringstream(strstr->str());
+	    delete strstr;
 	    //
 	    // Return the index of the stream.
 	    //
@@ -346,24 +305,7 @@ Thread::psi_open_string(Object *& string_arg,
     break;
     case AM_WRITE:
       {
-	// XXX Deleted on destruction of stream
-	ostrstream *ostrm = new ostrstream();
-	if (ostrm == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
-
-	if (ostrm->bad())
-	  {
-	    delete ostrm;
-	    PSI_ERROR_RETURN(EV_VALUE, 0);
-	  }
-	
-	Stream *stream = new Stream(ostrm);
-	if (stream == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
+	QPostringstream *stream = new QPostringstream;
 	//
 	// Return the index of the stream.
 	//
@@ -389,7 +331,7 @@ Thread::psi_close(Object *& stream_arg,
   //
   // Check arguments.
   //
-  Stream *stream;
+  QPStream *stream;
   IODirection dir;
   DECODE_STREAM_ARG(heap, *iom, strm, 1, stream, dir);
 
@@ -408,10 +350,8 @@ Thread::psi_close(Object *& stream_arg,
       PSI_ERROR_RETURN(EV_VALUE, 2);
     }
   
-  stream->close();
-  iom->CloseStream(strm->getNumber());
-  
-  return RV_SUCCESS;
+  //stream->close();
+  return BOOL_TO_RV(iom->CloseStream(strm->getNumber()));
 }
 
 //
@@ -445,7 +385,7 @@ Thread::psi_set_input(Object *& stream_arg)
 {
   Object* stream_object = heap.dereference(stream_arg);
   
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, stream_object, 1, stream);
   
   //
@@ -467,7 +407,7 @@ Thread::psi_set_output(Object *& stream_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
   
   //
@@ -489,15 +429,36 @@ Thread::psi_flush_output(Object *& stream_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
   
   //
   // Flush the output stream.
   //
   stream->flush();
+
   
   return RV_SUCCESS;
+}
+
+//
+// psi_set_autoflush(stream)
+// Set the output stream to be unbuffered - i.e. flushes at each output.
+//
+Thread::ReturnValue
+Thread::psi_set_autoflush(Object *& stream_arg)
+{
+  Object* stream_object = heap.dereference(stream_arg);
+  //
+  // Check argument.
+  //
+  QPStream *stream;
+  DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
+  
+  //
+  // Set auto flush - fails if not an QPofdstream or an QPomstream
+  //
+  return BOOL_TO_RV(stream->set_autoflush());
 }
 
 //
@@ -511,7 +472,7 @@ Thread::psi_at_end_of_stream(Object *& stream_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   IODirection dir;
   DECODE_STREAM_ARG(heap, *iom, stream_object, 1, stream, dir);
   
@@ -523,10 +484,6 @@ Thread::psi_at_end_of_stream(Object *& stream_arg)
   if (stream->isOutput())
     {
       return RV_FAIL;
-    }
-  else if (stream->isEmpty())
-    {
-      PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
     }
   else if (! stream->isReady())
     {
@@ -556,7 +513,7 @@ Thread::psi_past_end_of_stream(Object *& stream_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   IODirection dir;
   DECODE_STREAM_ARG(heap, *iom, stream_object, 1, stream, dir);
   
@@ -566,10 +523,6 @@ Thread::psi_past_end_of_stream(Object *& stream_arg)
   if (stream->isOutput())
     {
       return RV_FAIL;
-    }
-  else if (stream->isEmpty())
-    {
-      PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
     }
   else
     {
@@ -588,13 +541,8 @@ Thread::psi_reset_stream(Object *& stream_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, stream_object, 1, stream);
-
-  if (stream->isEmpty())
-    {
-      PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
-    }
 
   //
   // Reset the input stream.
@@ -615,7 +563,7 @@ Thread::psi_stream_position(Object *& stream_arg, Object *& pos_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   IODirection dir;
   DECODE_STREAM_ARG(heap, *iom, stream_object, 1, stream, dir);
 
@@ -623,11 +571,6 @@ Thread::psi_stream_position(Object *& stream_arg, Object *& pos_arg)
   // Get position.
   //
   int32 pos = 0;
-
-  if (stream->isEmpty())
-    {
-      PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
-    }
 
   pos = stream->tell();
   
@@ -650,7 +593,7 @@ Thread::psi_set_stream_position(Object *& stream_arg, Object *& pos_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   IODirection dir;
   DECODE_STREAM_ARG(heap, *iom, stream_object, 1, stream, dir);
 
@@ -667,20 +610,10 @@ Thread::psi_set_stream_position(Object *& stream_arg, Object *& pos_arg)
   //
   if (stream->isInput())
     {
-      if (stream->isEmpty())
-	{
-	  PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
-	}
-
       stream->seekg(pos);
     }
   else
     {
-      if (stream->isEmpty())
-	{
-	  PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
-	}
-
       stream->seekp(pos);
     }
   
@@ -698,7 +631,7 @@ Thread::psi_line_number(Object *& stream_arg, Object *& line_num_arg)
   //
   // Check argument.
   //
-  Stream *stream;
+  QPStream *stream;
   IODirection dir;
   DECODE_STREAM_ARG(heap, *iom, stream_object, 1, stream, dir);
 
@@ -783,31 +716,19 @@ Thread::psi_open_msgstream(Object *& address,
     {
     case AM_READ:
       {
-	imstream* istrm = new imstream(handle, this);
-	Stream *stream = new Stream(istrm);
+	QPimstream *stream = new QPimstream(handle);
 	//
 	// Return the index of the stream.
 	//
-	stream_arg = heap.newNumber(iom->OpenStream(stream));
+	int iom_fd = iom->OpenStream(stream);
+	stream->setFD(iom_fd);
+	stream_arg = heap.newNumber(iom_fd);
 	return RV_SUCCESS;
       }
     break;
     case AM_WRITE:
       {
-//	icmHandle sender_handle = icm_thread_handle(*icm_environment,
-//						    *this);
-
-	omstream *ostrm = new omstream(handle, this, icm_environment);
-	if (ostrm == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
-
-	Stream *stream = new Stream(ostrm);
-	if (stream == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
+	QPomstream *stream = new QPomstream(handle, this, icm_environment);
 	//
 	// Return the index of the stream.
 	//
@@ -831,7 +752,7 @@ Thread::psi_set_stream_properties(Object *& stream_num, Object *& prop)
 {
   Object* strnum = heap.dereference(stream_num);
   int dir;
-  Stream* stream;
+  QPStream* stream;
   DECODE_STREAM_ARG(heap, *iom, strnum, 1, stream, dir);
   Object* props = heap.dereference(prop);
 
@@ -955,7 +876,7 @@ Thread::psi_get_msgstream_handle(Object *& stream_num, Object *& handle_object)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  Stream *s = iom->GetStream(num);
+  QPStream *s = iom->GetStream(num);
   if (s == NULL || s->Type() != IMSTREAM)   
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);

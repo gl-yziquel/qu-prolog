@@ -53,13 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: regalloc.h,v 1.3 2001/11/21 00:21:17 qp Exp $
+// $Id: regalloc.h,v 1.4 2002/11/13 04:04:16 qp Exp $
 
 #ifndef	REGALLOC_H
 #define	REGALLOC_H
 
 #include "compiler_support.h"
-#include "io_qp.h"
+//#include "io_qp.h"
 
 void alloc_registers(WordArray&, xreglife&, WordArray&, bool&);
 Object* excess_realloc_reg(Object*, int&, Object**, Object**);

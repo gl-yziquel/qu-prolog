@@ -16,7 +16,7 @@ end('$escape_builtin'/1):
 	switch_on_term(0, $18, 'fail', 'fail', 'fail', 'fail', $17)
 
 $17:
-	switch_on_constant(0, 32, ['default':'fail', 'true':$1, 'fail':$2, '$$get_level$$':$3, '$$get_level_ancestor$$':$4, '$$cut$$':$5, '$$cut_ancestor$$':$6, 'check_binder':$7, '$pseudo_instr0':$8, '$pseudo_instr1':$9, '$pseudo_instr2':$10, '$pseudo_instr3':$11, '$pseudo_instr4':$12, '$pseudo_instr5':$13, '$piarg':$14, '$pieq':$15, '$psi_life':$16])
+	switch_on_constant(0, 32, ['$default':'fail', 'true':$1, 'fail':$2, '$$get_level$$':$3, '$$get_level_ancestor$$':$4, '$$cut$$':$5, '$$cut_ancestor$$':$6, 'check_binder':$7, '$pseudo_instr0':$8, '$pseudo_instr1':$9, '$pseudo_instr2':$10, '$pseudo_instr3':$11, '$pseudo_instr4':$12, '$pseudo_instr5':$13, '$piarg':$14, '$pieq':$15, '$psi_life':$16])
 
 $18:
 	try(2, $1)
@@ -148,6 +148,16 @@ end('$split_arg/4$0'/1):
 
 '$split_arg/4$1/4$0/3$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -189,6 +199,9 @@ end('$split_arg/4$1/4$0'/3):
 
 '$split_arg/4$1'/4:
 
+	switch_on_term(0, $3, $1, $3, $1, $1, $1)
+
+$3:
 	try(4, $1)
 	trust($2)
 
@@ -424,7 +437,7 @@ end('$c_gc'/1):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, '$compileclause'/3:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$compileclause'/3:$5])
 
 $4:
 	try(1, $1)
@@ -648,7 +661,7 @@ end('$y_reg'/2):
 	switch_on_term(0, $5, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$4, '$xreg'/1:$1, '$yreg'/1:$2])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$4, '$xreg'/1:$1, '$yreg'/1:$2])
 
 $4:
 	try(2, $1)

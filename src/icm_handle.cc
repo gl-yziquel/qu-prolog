@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_handle.cc,v 1.3 2000/12/13 23:10:01 qp Exp $
+// $Id: icm_handle.cc,v 1.7 2003/10/05 04:50:45 qp Exp $
 
 #include "config.h"
 
@@ -146,10 +146,10 @@ icm_thread_handle(ICMEnvironment& icm_environment,
       Fatal(__FUNCTION__, "Bad icmHandle");
     }
   
-  char *thread_target = NULL;
+  string thread_target;
   if (thread.TInfo().SymbolSet())
     {
-      ICMOutgoingTarget icm_outgoing_target(thread.TInfo().Symbol().Str());
+      ICMOutgoingTarget icm_outgoing_target(thread.TInfo().Symbol());
       thread_target = icm_outgoing_target.Target();
     }
   else
@@ -158,14 +158,11 @@ icm_thread_handle(ICMEnvironment& icm_environment,
       thread_target = icm_outgoing_target.Target();
     }
 
-  DEBUG_ASSERT(thread_target != NULL);
+  DEBUG_ASSERT(thread_target != "");
 
-  icmHandle thread_handle = icmMakeHandle(thread_target,
-					  name,
-					  home,
-					  len,
-					  locations);
-  delete [] thread_target;
+  icmHandle thread_handle = 
+    icmMakeHandle(const_cast<char *>(thread_target.c_str()),
+		  name, home, len, locations);
 
   if (thread_handle == NULL)
     {

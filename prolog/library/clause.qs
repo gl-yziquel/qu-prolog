@@ -14,6 +14,16 @@ end('clause/2$0'/0):
 
 'clause/2$1'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'true':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -184,7 +194,7 @@ end('$post_trans_decompile_aux/3$0'/2):
 	switch_on_term(0, $27, $12, $12, $13, $12, $25)
 
 $13:
-	switch_on_structure(0, 32, ['default':$12, '$'/0:$14, '$get_level'/1:$15, '$cut'/1:$16, '$psi0_calls$'/1:$17, '$psi1_calls$'/2:$18, '$psi2_calls$'/3:$19, '$psi3_calls$'/4:$20, '$psi4_calls$'/5:$21, '$psi5_calls$'/6:$22, '$ite_call'/4:$23, '$or_call'/3:$24])
+	switch_on_structure(0, 32, ['$default':$12, '$'/0:$14, '$get_level'/1:$15, '$cut'/1:$16, '$psi0_calls$'/1:$17, '$psi1_calls$'/2:$18, '$psi2_calls$'/3:$19, '$psi3_calls$'/4:$20, '$psi4_calls$'/5:$21, '$psi5_calls$'/6:$22, '$ite_call'/4:$23, '$or_call'/3:$24])
 
 $14:
 	try(3, $1)
@@ -240,7 +250,7 @@ $24:
 	trust($12)
 
 $25:
-	switch_on_constant(0, 4, ['default':$12, '$$neckcut':$26])
+	switch_on_constant(0, 4, ['$default':$12, '$$neckcut':$26])
 
 $26:
 	try(3, $3)
@@ -517,7 +527,7 @@ $5:
 	trust($4)
 
 $6:
-	switch_on_structure(0, 4, ['default':$4, '$'/0:$7, '/'/2:$8])
+	switch_on_structure(0, 4, ['$default':$4, '$'/0:$7, '/'/2:$8])
 
 $7:
 	try(1, $3)
@@ -528,7 +538,7 @@ $8:
 	trust($4)
 
 $9:
-	switch_on_constant(0, 4, ['default':$4, '[]':$10])
+	switch_on_constant(0, 4, ['$default':$4, '[]':$10])
 
 $10:
 	try(1, $1)

@@ -257,6 +257,16 @@ end('default_exception_handler'/1):
 
 '$default_exception_handler/5$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'SIGSEGV':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -342,7 +352,7 @@ end('$default_exception_handler/5$2'/2):
 	switch_on_term(0, $9, $4, $4, $4, $4, $5)
 
 $5:
-	switch_on_constant(0, 8, ['default':$4, 'signal':$6, '$undefined_predicate':$7, 'undefined_predicate':$8])
+	switch_on_constant(0, 8, ['$default':$4, 'signal':$6, '$undefined_predicate':$7, 'undefined_predicate':$8])
 
 $6:
 	try(5, $1)
@@ -533,7 +543,7 @@ end('exception_severity'/3):
 	switch_on_term(0, $7, 'fail', 'fail', 'fail', 'fail', $6)
 
 $6:
-	switch_on_constant(0, 16, ['default':'fail', 'information':$1, 'warning':$2, 'recoverable':$3, 'unrecoverable':$4, 'fatal':$5])
+	switch_on_constant(0, 16, ['$default':'fail', 'information':$1, 'warning':$2, 'recoverable':$3, 'unrecoverable':$4, 'fatal':$5])
 
 $7:
 	try(4, $1)
@@ -693,7 +703,7 @@ end('$get_exception_message'/6):
 	switch_on_term(0, $26, 'fail', 'fail', 'fail', 'fail', $22)
 
 $22:
-	switch_on_constant(0, 64, ['default':'fail', 'type_error':$23, 'instantiation_error':$24, 'stream_error':$5, 'permission_error':$6, 'dynamic_code_error':$7, 'undefined_predicate':$8, 'range_error':$9, 'value_error':$10, 'zero_divide':$11, 'syntax_error':$12, 'signal':$25, 'exception_error':$15, 'context_error':$16, 'declaration_error':$17, 'allocation_failure_error':$18, 'system_call_error':$19, 'unimplemented_error':$20, 'unsupported_error':$21])
+	switch_on_constant(0, 64, ['$default':'fail', 'type_error':$23, 'instantiation_error':$24, 'stream_error':$5, 'permission_error':$6, 'dynamic_code_error':$7, 'undefined_predicate':$8, 'range_error':$9, 'value_error':$10, 'zero_divide':$11, 'syntax_error':$12, 'signal':$25, 'exception_error':$15, 'context_error':$16, 'declaration_error':$17, 'allocation_failure_error':$18, 'system_call_error':$19, 'unimplemented_error':$20, 'unsupported_error':$21])
 
 $23:
 	try(6, $1)
@@ -1743,7 +1753,7 @@ end('$signal_exception_test'/1):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 'SIGSEGV':$4])
+	switch_on_constant(0, 4, ['$default':$2, 'SIGSEGV':$4])
 
 $4:
 	try(2, $1)

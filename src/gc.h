@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.h,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: gc.h,v 1.3 2003/07/03 04:45:44 qp Exp $
 
 #ifndef	GC_H
 #define	GC_H
@@ -61,6 +61,9 @@
 #include "heap_qp.h"
 #include "objects.h"
 
+#ifdef DEBUG
+bool check_heap2(Heap&);
+#endif // DEBUG
 //
 // In the "upward" phase of compression an entry in the heap
 // with the F bit set can be found. This happens when the object

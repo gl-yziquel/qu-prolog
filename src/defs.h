@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: defs.h,v 1.3 2001/11/21 00:21:12 qp Exp $
+// $Id: defs.h,v 1.7 2003/11/05 21:33:30 qp Exp $
 
 #ifndef	DEFS_H
 #define	DEFS_H
@@ -84,7 +84,7 @@ const	word32	K			= 1024;
 
 const	word32	NUMBER_X_REGISTERS	= 20;
 
-const	word32	PILE_SIZE		= 10;
+const	word32	PILE_SIZE		= 1;
 
 const word32 WORD32_MAX	= (word32) -1;
 
@@ -139,7 +139,27 @@ inline bool streqn(const char *x, const char *y, const size_t len)
 }
 
 
+enum IOType {
+  ISTREAM,
+  OSTREAM,
+  ISTRSTREAM,
+  OSTRSTREAM,
+  IFDSTREAM,
+  OFDSTREAM,
+  IMSTREAM,
+  OMSTREAM,
+  SOCKET
+};
+
+enum IODirection {
+  INPUT,
+  OUTPUT,
+  INPUT_OUTPUT
+};
+
+
 #endif	// DEFS_H
+
 
 
 

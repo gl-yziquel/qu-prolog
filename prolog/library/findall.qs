@@ -3,6 +3,8 @@
 
 $1:
 	pseudo_instr1(91, 3)
+	allocate(1)
+	get_y_level(0)
 	put_structure(4, 4)
 	set_constant('$findall')
 	set_x_value(3)
@@ -28,7 +30,10 @@ $1:
 	set_constant(',')
 	set_x_value(4)
 	set_x_value(3)
-	execute_predicate('catch', 3)
+	call_predicate('catch', 3, 1)
+	cut(0)
+	deallocate
+	proceed
 end('findall'/3):
 
 
@@ -59,6 +64,16 @@ end('$findall'/4):
 
 'bagof/3$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -76,6 +91,16 @@ end('bagof/3$0'/1):
 
 'bagof/3$1'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -180,7 +205,7 @@ end('$free_vars'/3):
 	switch_on_term(0, $24, $23, $23, $12, $23, $23)
 
 $12:
-	switch_on_structure(0, 32, ['default':$23, '$'/0:$13, '\\+'/1:$14, 'call'/1:$15, 'once'/1:$16, ','/2:$17, ';'/2:$18, '->'/2:$19, '^'/2:$20, 'bagof'/3:$21, 'setof'/3:$22])
+	switch_on_structure(0, 32, ['$default':$23, '$'/0:$13, '\\+'/1:$14, 'call'/1:$15, 'once'/1:$16, ','/2:$17, ';'/2:$18, '->'/2:$19, '^'/2:$20, 'bagof'/3:$21, 'setof'/3:$22])
 
 $13:
 	try(2, $1)
@@ -632,7 +657,7 @@ end('$merge_sort'/3):
 	switch_on_term(0, $9, $4, $4, $4, $4, $5)
 
 $5:
-	switch_on_constant(0, 8, ['default':$4, 0:$6, 1:$7, 2:$8])
+	switch_on_constant(0, 8, ['$default':$4, 0:$6, 1:$7, 2:$8])
 
 $6:
 	try(5, $1)

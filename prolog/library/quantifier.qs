@@ -3,7 +3,7 @@
 	switch_on_term(0, $6, $1, $1, $3, $1, $1)
 
 $3:
-	switch_on_structure(0, 4, ['default':$1, '$'/0:$4, ':'/2:$5])
+	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, ':'/2:$5])
 
 $4:
 	try(1, $1)

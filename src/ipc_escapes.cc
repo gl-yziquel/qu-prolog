@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ipc_escapes.cc,v 1.14 2002/05/03 01:32:28 qp Exp $
+// $Id: ipc_escapes.cc,v 1.24 2003/10/05 04:50:46 qp Exp $
 
 #include <algorithm>
 
@@ -72,11 +72,13 @@
 #include "icm_handle.h"
 #include "is_ready.h"
 #include "thread_qp.h"
+#include "thread_table.h"
 #include "timeval.h"
 #include "tcp_qp.h"
 
 extern AtomTable *atoms;
-extern ICMEnvironment *icm_environment;
+extern ICMMessageChannel* icm_channel;
+extern ICMEnvironment* icm_environment;
 extern const char *Program;
 extern char *process_symbol;
 
@@ -90,7 +92,7 @@ extern char *process_symbol;
       {									  \
 	PSI_ERROR_RETURN(EV_TYPE, arg_num);				  \
       }									  \
-    reference = reinterpret_cast<list<ICMMessage *>::iterator *> (object->getNumber()); \
+    reference = reinterpret_cast<list<Message *>::iterator *> (object->getNumber()); \
   } while (0)
 
 #define DECODE_NONNEG_INT_ARG(heap, object, arg_num, val)	\
@@ -152,19 +154,7 @@ Thread::psi_ipc_send(Object *& message_cell,
 
   if (encoded)
     {
-      // XXX Deleted on destruction of Stream stream
-      ostrstream *ostrm = new ostrstream();
-      if (ostrm == NULL)
-        {
-          OutOfMemory(__FUNCTION__);
-        }
-
-      if (ostrm->bad())
-	{
-	  PSI_ERROR_RETURN(EV_SYSTEM, 0);
-	}
-
-      Stream stream(ostrm);
+      QPostringstream stream;
 
       EncodeWrite ew(*this,
                      heap,
@@ -178,28 +168,15 @@ Thread::psi_ipc_send(Object *& message_cell,
           PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
         }
 
-      icmDataRec data = { ostrm->pcount(), ostrm->str() };
-      
+      int size = stream.str().length();
+
+      icmDataRec data = { size, const_cast<char*>(stream.str().data()) };
+
       message = icmFormatMsg(NULL, "%(%S%)", &data);
-      free(data.data);
     }
   else
     {
-      // Raw format (not encoded).
-      // XXX Deleted on destruction of Stream stream
-      ostrstream *ostrm = new ostrstream();
-      if (ostrm == NULL)
-        {
-          OutOfMemory(__FUNCTION__);
-        }
-
-      if (ostrm->bad())
-        {
-          PSI_ERROR_RETURN(EV_SYSTEM, 0);
-        }
-
-      Stream stream(ostrm);
-
+      QPostringstream stream;
 
       while (message_arg->isCons())
         {
@@ -223,40 +200,29 @@ Thread::psi_ipc_send(Object *& message_cell,
         }
 
 
-      icmDataRec data = { ostrm->pcount(), ostrm->str() };
-      
-      message = icmFormatMsg(NULL, "%S", &data);
-      free(data.data);
-    }
+      int size = stream.str().length();
+      icmDataRec data = { size, const_cast<char*>(stream.str().data()) };
 
-  // Did anything go wrong the formatting of the message?
-  //if (status == icmFailed)
-  //  {
-  //    PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-  //  }
+      message = icmFormatMsg(NULL, "%S", &data);
+    }
 
   icmHandle sender_handle = icm_thread_handle(*icm_environment,
 					      *this);
-  if (sender_handle == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   // If the message is destined for the same process then simply add
   // to the message queue otherwise send the message using the ICM.
 
   if (icmSameAgentHandle(sender_handle, recipient_handle) == icmOk)
     {
-      ICMMessage *icm_message = new ICMMessage(recipient_handle,
+
+      ICMMessage *icm_message = new ICMMessage(sender_handle,
 					       replyto_handle,
-					       sender_handle, message);
-      if (icm_message == NULL)
+					       recipient_handle,
+					       message);
+      if (!icm_channel->msgToThread(icm_message))
 	{
-	  OutOfMemory(__FUNCTION__);
+	  icm_channel->pushMessageToBuff(icm_message);
 	}
-      icm_environment->Queue().Lock();
-      icm_environment->Queue().push_back(icm_message);
-      icm_environment->Queue().Unlock();
       return RV_SUCCESS;
     }
       
@@ -264,6 +230,7 @@ Thread::psi_ipc_send(Object *& message_cell,
   icmOption options = icmNewOpt(NULL, icmReplyto, replyto_handle);
 
   // Away it goes!
+
   icmStatus status = icmSendMsg(icm_environment->Conn(),
 		                recipient_handle,
 		                sender_handle,
@@ -304,42 +271,26 @@ Thread::psi_ipc_send(Object *& message_cell,
 Thread::ReturnValue 
 Thread::psi_make_iterator(Object *& reference_cell)
 {
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
-  list<ICMMessage *>::iterator *iter = new list<ICMMessage *>::iterator;
+  list<Message *>::iterator *iter = new list<Message *>::iterator;
 
   reference_cell = heap.newNumber(reinterpret_cast<unsigned> (iter));
 
   return RV_SUCCESS;
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
 }
 
 //
-// Get the first thing on the ICM queue for this thread.
+// Get the first thing on the message queue for this thread.
 //
 Thread::ReturnValue
 Thread::psi_ipc_first(Object *& reference0_cell,
 		      Object *& timeout_cell,
                       Object *& reference1_cell)
 {
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
   Object* reference0_arg = heap.dereference(reference0_cell);
   Object* timeout_arg = heap.dereference(timeout_cell);
 
-  list<ICMMessage *>::iterator *iter = NULL;
+
+  list<Message *>::iterator *iter = NULL;
   DECODE_REFERENCE_ARG(heap, reference0_arg, 1, iter);
 
   if (iter == NULL)
@@ -350,37 +301,27 @@ Thread::psi_ipc_first(Object *& reference0_cell,
   time_t timeout;
   DECODE_TIMEOUT_ARG(heap, timeout_arg, 2, timeout);
 
-  *iter = icm_queue.begin();
+  *iter = message_queue.begin();
 
-  IS_READY_ICM(*atoms, icm_queue, *iter, timeout);
+  IS_READY_MESSAGE(*atoms, message_queue, *iter, timeout);
 
   (**iter)->IncReferences();
 
   reference1_cell = heap.newNumber(reinterpret_cast<unsigned> (iter));
   
   return RV_SUCCESS;
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
 }
 
-// Get the next thing on the IPC queue for this thread.
+// Get the next thing on the message queue for this thread.
 Thread::ReturnValue
 Thread::psi_ipc_next(Object *& reference0_cell,
 		     Object *& reference1_cell,
 		     Object *& timeout_cell)
 {
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
   Object* reference0_arg = heap.dereference(reference0_cell);
   Object* timeout_arg = heap.dereference(timeout_cell);
  
-  list<ICMMessage *>::iterator *iter = NULL;
+  list<Message *>::iterator *iter = NULL;
   DECODE_REFERENCE_ARG(heap, reference0_arg, 1, iter);
 
   if (iter == NULL)
@@ -392,23 +333,20 @@ Thread::psi_ipc_next(Object *& reference0_cell,
   DECODE_TIMEOUT_ARG(heap, timeout_arg, 2, timeout);
 
   // Save the current position
-  ICMMessage& icm_message = ***iter;
+  Message& message = ***iter;
 
   // Advance to the next message
   (*iter)++;
 
-  IS_READY_ICM(heap, icm_queue, *iter, timeout);
+  IS_READY_MESSAGE(heap, message_queue, *iter, timeout);
 
-  icm_message.DecReferences();
+  message.DecReferences();
   
   (**iter)->IncReferences();
   
   reference1_cell =  heap.newNumber(reinterpret_cast<unsigned> (iter));
   
   return RV_SUCCESS;
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
 }
 		   
 Thread::ReturnValue
@@ -418,17 +356,10 @@ Thread::psi_ipc_get_message(Object *& message_cell,
 			    Object *& replyto_handle_cell,
 			    Object *& remember_names_cell)
 {
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
   Object* reference_arg = heap.dereference(reference_cell);
   Object* remember_names_arg = heap.dereference(remember_names_cell);
 
-  list<ICMMessage *>::iterator *iter = NULL;
+  list<Message *>::iterator *iter = NULL;
   DECODE_REFERENCE_ARG(heap, reference_arg, 2, iter);
 
   if (iter == NULL)
@@ -439,112 +370,21 @@ Thread::psi_ipc_get_message(Object *& message_cell,
   bool remember_names;
   DECODE_BOOLEAN_ARG(*atoms, remember_names_arg, 5, remember_names);
   
-  ICMMessage& icm_message = ***iter;
+  Message& message = ***iter;
 
-  icmHandle from_handle = icm_message.Sender();
-  icm_handle_to_heap(heap, *atoms, from_handle, from_handle_cell);
-
-  icmHandle replyto_handle = icm_message.ReplyTo();
-  icmHandle dummy_handle = icmDummyHandle();
-  if (icmSameHandle(replyto_handle, dummy_handle) == icmOk)
-    {
-      replyto_handle_cell = from_handle_cell;
-    }
-  else
-    {
-      icm_handle_to_heap(heap, *atoms, replyto_handle, replyto_handle_cell);
-    }
-
-  icmDataRec data;
-  if (icmScanMsg(icm_message.Message(), "%(%S%)", &data) == icmOk)
-    {
-	// XXX Deleted on destruction of stream.
-	istrstream *istrm = new istrstream(data.data, data.size);
-	if (istrm == NULL)
-	  {
-	    OutOfMemory(__FUNCTION__);
-	  }
-	if (istrm->bad())
-	  {
-	    // Free the data.
-	    free(data.data);
-
-	    PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-	  }
-	
-	Stream stream(istrm);
-	Object* object_variablenames;
-	
-	EncodeRead er(*this,
-		      heap,
-		      stream,
-		      message_cell,
-		      *atoms,
-		      remember_names,
-		      names,
-		      object_variablenames);
-        free(data.data);
-	if (! er.Success())
-	  {
-	    // XXX Should raise an exception
-	    Fatal(__FUNCTION__, "Couldn't decode message!");
-	  }
-      return RV_SUCCESS;
-    }
-  // The message is not encoded
-  icmStatus status = icmScanMsg(icm_message.Message(), "%S", &data);
-  if (status == icmOk)
-    {
-      // Nothing.
-    }
-  else if (status == icmFailed)
-    {
-      Fatal(__FUNCTION__, "Format of message doesn't match QP message format");
-    }
-  else if (status == icmError)
-    {
-      Fatal(__FUNCTION__, "icmScanMsg() returned icmError");
-    }
-
-  /*
-  The old way was to turn the message into an atom
-  char buf[data.size+1];
-  strncpy(buf, data.data, data.size);
-  buf[data.size] = '\0';
-  message_cell = atoms->add(buf);
-  The new way is to make a list of ASCII values
-  */
-
-  message_cell = AtomTable::nil;
-  for (int i = data.size-1; i >= 0 ; i--)
-    {
-      Object* entry = heap.newNumber(data.data[i]);
-      Cons* list = heap.newCons(entry, message_cell);
-      message_cell = list;
-    }
-  
-  // Free the data.
-  free(data.data);
+  from_handle_cell = message.constructSenderTerm(*this, *atoms);
+  replyto_handle_cell = message.constructReplyToTerm(*this, *atoms);
+  message_cell = message.constructMessageTerm(*this, *atoms, remember_names);
 
   return RV_SUCCESS;
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
 }
 
 Thread::ReturnValue
 Thread::psi_ipc_commit(Object *& reference_cell)
 {
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
   Object* reference_arg = heap.dereference(reference_cell);
 
-  list<ICMMessage *>::iterator *iter;
+  list<Message *>::iterator *iter;
   DECODE_REFERENCE_ARG(heap, reference_arg, 1, iter);
 
   if (iter == NULL)
@@ -552,33 +392,25 @@ Thread::psi_ipc_commit(Object *& reference_cell)
       Fatal(__FUNCTION__, "Null iterator");
     }
 
-  ICMMessage *icm_message = **iter;
+  Message *message = **iter;
 
-  icm_message->Commit();
-  icm_message->DecReferences();
+  message->Commit();
+  message->DecReferences();
 
-  if (icm_message->References() == 0)
+  if (message->References() == 0)
     {
-      delete icm_message;
-      (void)icm_queue.erase(*iter);
+      delete message;
+      (void)message_queue.erase(*iter);
     }
   delete iter;
 
-  // Remove any remaining timeouts (that must have been generated by
-  // an ipc_first or ipc_next call).
-
-  scheduler->deleteTimeout(this);
-
   return RV_SUCCESS;
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
 }
 
 Thread::ReturnValue
 Thread::psi_ipc_open(Object *& level_cell)
 {
-#ifdef ICM_DEF
+#ifdef ICM_DEF_XXX
   if (process_symbol == NULL)
     {
       Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
@@ -589,12 +421,12 @@ Thread::psi_ipc_open(Object *& level_cell)
   level_cell = heap.newNumber(icm_level);
 
   return RV_SUCCESS;
-#else // ICM_DEF
+#else // ICM_DEF_XXX
   return RV_FAIL;
-#endif // ICM_DEF
+#endif // ICM_DEF_XXX
 }
 
-#ifdef ICM_DEF
+#ifdef ICM_DEF_XXX
 static bool commit_delete(ICMMessage *msg)
 {
   if (msg->Committed())
@@ -607,12 +439,12 @@ static bool commit_delete(ICMMessage *msg)
       return false;
     }
 }
-#endif // ICM_DEF
+#endif // ICM_DEF_XXX
 
 Thread::ReturnValue
 Thread::psi_ipc_close(Object *& level_cell)
 {
-#ifdef ICM_DEF
+#ifdef ICM_DEF_XXX
   if (process_symbol == NULL)
     {
       Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
@@ -640,11 +472,71 @@ Thread::psi_ipc_close(Object *& level_cell)
     }
 
   return RV_SUCCESS;
+#else // ICM_DEF_XXX
+  return RV_FAIL;
+#endif // ICM_DEF_XXX
+}
+
+//
+// Broadcast message to all current local threads
+// mode(in)
+//
+Thread::ReturnValue
+Thread::psi_broadcast(Object *& message_cell)
+{
+#ifdef ICM_DEF
+  if (process_symbol == NULL)
+    {
+      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
+      return RV_FAIL;
+    }
+
+  Object* message_arg = heap.dereference(message_cell);
+  icmMsg message;
+
+  QPostringstream stream;
+
+  EncodeWrite ew(*this,
+		 heap,
+		 stream,
+		 message_arg,
+		 *atoms,
+		 true,
+		 names);
+  if (!ew.Success())
+    {
+      PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
+    }
+
+  icmHandle sender_handle = icm_thread_handle(*icm_environment,
+					      *this);
+
+
+  for (ThreadTableLoc loc = 0; loc < thread_table->Size(); loc++)
+    {
+      if ((*thread_table)[loc] != NULL)
+	{
+	  int size = stream.str().length();
+	  
+	  icmDataRec data = { size, const_cast<char*>(stream.str().data()) };
+	  
+	  message = icmFormatMsg(NULL, "%(%S%)", &data);
+
+	  ICMMessage *icm_message = new ICMMessage(sender_handle,
+						   sender_handle,
+						   sender_handle,
+						   message);
+
+	  Thread& thread = *(thread_table->LookupID(loc));
+	  thread.MessageQueue().push_back(icm_message);
+	}
+    }
+  return RV_SUCCESS;
+
 #else // ICM_DEF
   return RV_FAIL;
 #endif // ICM_DEF
+
 }
-
-
 
 

@@ -54,9 +54,9 @@
 // 
 // ##Copyright##
 //
-// $Id: hash_table.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: hash_table.cc,v 1.6 2002/12/23 00:22:10 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 #include <time.h>
 
 #include "hash_table.h"
@@ -71,14 +71,7 @@ HashTable<HashType, HashKey>::HashTable(word32 TabSize)
 {
   tableSize = next_2power(TabSize);
   table = new HashType[tableSize];
-  if (table == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  else
-    {
-      tableSizeMask = tableSize-1;
-    }
+  tableSizeMask = tableSize-1;
 }
 
 //
@@ -175,7 +168,7 @@ HashTable<HashType, HashKey>::saveTable(ostream& ostrm, const u_long magic) cons
 
   // XXX Endian problem
   if (ostrm.good() &&
-      ostrm.write(table, tableSize * sizeof(HashType)).fail())
+      ostrm.write((char*)table, tableSize * sizeof(HashType)).fail())
     {
       SaveFailure(__FUNCTION__, "data", getAreaName());
     }
@@ -191,18 +184,22 @@ HashTable<HashType, HashKey>::loadTable(istream& istrm)
   const word32	ReadSize = IntLoad<word32>(istrm);
   if (ReadSize != tableSize)
     {
-      Fatal(__FUNCTION__, "wrong size for %s", (int32)(getAreaName()));
+      FatalS(__FUNCTION__, "wrong size for ", getAreaName());
     }
 
   //
   // Read in the table.
   //
   // XXX Endian problem
+#if defined(MACOSX)
+    istrm.read((char*)table, tableSize * sizeof(HashType));
+#else
   if (istrm.good() &&
-      istrm.read(table, tableSize * sizeof(HashType)).fail())
+      istrm.read((char*)table, tableSize * sizeof(HashType)).fail())
     {
       ReadFailure(__FUNCTION__,
 		  "data",
 		  getAreaName());
     }
+#endif //defined(MACOSX)
 }

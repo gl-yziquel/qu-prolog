@@ -3,7 +3,7 @@
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 'SIGINT':$4])
+	switch_on_constant(0, 4, ['$default':$2, 'SIGINT':$4])
 
 $4:
 	try(1, $1)
@@ -37,23 +37,47 @@ end('$signal_handler'/1):
 
 
 
+'$read_option/1$0'/2:
+
+	switch_on_term(0, $3, $2, $3, $2, $2, $2)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_list(0)
+	unify_x_value(1)
+	unify_void(1)
+	neck_cut
+	proceed
+
+$2:
+	put_integer(99, 0)
+	get_x_value(1, 0)
+	proceed
+end('$read_option/1$0'/2):
+
+
+
 '$read_option'/1:
 
 
 $1:
-	allocate(1)
-	get_y_variable(0, 0)
-	call_predicate('errornl', 0, 1)
-	call_predicate('repeat', 0, 1)
+	allocate(2)
+	get_y_variable(1, 0)
+	call_predicate('errornl', 0, 2)
+	call_predicate('repeat', 0, 2)
 	put_constant('SIGINT interrupt [cehtpx?] ? ', 0)
-	call_predicate('error', 1, 1)
+	call_predicate('error', 1, 2)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
-	put_list(0)
-	set_y_value(0)
-	set_void(1)
+	put_y_variable(0, 0)
+	call_predicate('get_line', 1, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
 	deallocate
-	execute_predicate('get_line', 1)
+	execute_predicate('$read_option/1$0', 2)
 end('$read_option'/1):
 
 
@@ -63,7 +87,7 @@ end('$read_option'/1):
 	switch_on_term(0, $9, 'fail', 'fail', 'fail', 'fail', $8)
 
 $8:
-	switch_on_constant(0, 16, ['default':'fail', 99:$1, 101:$2, 104:$3, 116:$4, 112:$5, 120:$6, 63:$7])
+	switch_on_constant(0, 16, ['$default':'fail', 99:$1, 101:$2, 104:$3, 116:$4, 112:$5, 120:$6, 63:$7])
 
 $9:
 	try(1, $1)
@@ -76,13 +100,7 @@ $9:
 
 $1:
 	get_integer(99, 0)
-	allocate(0)
-	call_predicate('errornl', 0, 0)
-	put_constant('thread0', 0)
-	put_constant('$redo_prompt', 1)
-	pseudo_instr2(103, 0, 1)
-	deallocate
-	proceed
+	execute_predicate('errornl', 0)
 
 $2:
 	get_integer(101, 0)
@@ -301,7 +319,7 @@ end('$format'/2):
 	switch_on_term(0, $36, 'fail', 'fail', 'fail', 'fail', $35)
 
 $35:
-	switch_on_constant(0, 128, ['default':'fail', 'SIGHUP':$1, 'SIGINT':$2, 'SIGQUIT':$3, 'SIGILL':$4, 'SIGTRAP':$5, 'SIGIOT':$6, 'SIGABRT':$7, 'SIGBUS':$8, 'SIGFPE':$9, 'SIGKILL':$10, 'SIGUSR1':$11, 'SIGSEGV':$12, 'SIGUSR2':$13, 'SIGPIPE':$14, 'SIGALRM':$15, 'SIGTERM':$16, 'SIGSTKFLT':$17, 'SIGCLD':$18, 'SIGCHLD':$19, 'SIGCONT':$20, 'SIGSTOP':$21, 'SIGTSTP':$22, 'SIGTTIN':$23, 'SIGTTOU':$24, 'SIGURG':$25, 'SIGXCPU':$26, 'SIGXFSZ':$27, 'SIGVTALRM':$28, 'SIGPROF':$29, 'SIGWINCH':$30, 'SIGPOLL':$31, 'SIGIO':$32, 'SIGPWR':$33, 'SIGUNUSED':$34])
+	switch_on_constant(0, 128, ['$default':'fail', 'SIGHUP':$1, 'SIGINT':$2, 'SIGQUIT':$3, 'SIGILL':$4, 'SIGTRAP':$5, 'SIGIOT':$6, 'SIGABRT':$7, 'SIGBUS':$8, 'SIGFPE':$9, 'SIGKILL':$10, 'SIGUSR1':$11, 'SIGSEGV':$12, 'SIGUSR2':$13, 'SIGPIPE':$14, 'SIGALRM':$15, 'SIGTERM':$16, 'SIGSTKFLT':$17, 'SIGCLD':$18, 'SIGCHLD':$19, 'SIGCONT':$20, 'SIGSTOP':$21, 'SIGTSTP':$22, 'SIGTTIN':$23, 'SIGTTOU':$24, 'SIGURG':$25, 'SIGXCPU':$26, 'SIGXFSZ':$27, 'SIGVTALRM':$28, 'SIGPROF':$29, 'SIGWINCH':$30, 'SIGPOLL':$31, 'SIGIO':$32, 'SIGPWR':$33, 'SIGUNUSED':$34])
 
 $36:
 	try(2, $1)
@@ -529,7 +547,7 @@ end('get_signals_flag'/1):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 0:$1, 1:$2])
+	switch_on_constant(0, 4, ['$default':'fail', 0:$1, 1:$2])
 
 $4:
 	try(2, $1)
@@ -553,7 +571,7 @@ end('$get_signals_flag'/2):
 	switch_on_term(0, $9, $8, $8, $8, $8, $5)
 
 $5:
-	switch_on_constant(0, 4, ['default':$8, 'off':$6, 'on':$7])
+	switch_on_constant(0, 4, ['$default':$8, 'off':$6, 'on':$7])
 
 $6:
 	try(1, $1)
@@ -734,7 +752,7 @@ end('clear_signal'/1):
 	switch_on_term(0, $8, $7, $7, $7, $7, $5)
 
 $5:
-	switch_on_constant(0, 4, ['default':$7, 'SIGINT':$6])
+	switch_on_constant(0, 4, ['$default':$7, 'SIGINT':$6])
 
 $6:
 	try(1, $1)
@@ -1329,7 +1347,7 @@ end('$psi5_resume'/7):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277/0$0'/0:
+'$query_handlers2003_11_12_12_42_42_447/0$0'/0:
 
 
 $1:
@@ -1343,11 +1361,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277/0$0'/0):
+end('$query_handlers2003_11_12_12_42_42_447/0$0'/0):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277/0$1'/0:
+'$query_handlers2003_11_12_12_42_42_447/0$1'/0:
 
 
 $1:
@@ -1361,11 +1379,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277/0$1'/0):
+end('$query_handlers2003_11_12_12_42_42_447/0$1'/0):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277/0$2'/0:
+'$query_handlers2003_11_12_12_42_42_447/0$2'/0:
 
 
 $1:
@@ -1379,11 +1397,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277/0$2'/0):
+end('$query_handlers2003_11_12_12_42_42_447/0$2'/0):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277/0$3'/0:
+'$query_handlers2003_11_12_12_42_42_447/0$3'/0:
 
 
 $1:
@@ -1397,11 +1415,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277/0$3'/0):
+end('$query_handlers2003_11_12_12_42_42_447/0$3'/0):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277/0$4'/0:
+'$query_handlers2003_11_12_12_42_42_447/0$4'/0:
 
 
 $1:
@@ -1415,11 +1433,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277/0$4'/0):
+end('$query_handlers2003_11_12_12_42_42_447/0$4'/0):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277/0$5'/0:
+'$query_handlers2003_11_12_12_42_42_447/0$5'/0:
 
 
 $1:
@@ -1433,11 +1451,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277/0$5'/0):
+end('$query_handlers2003_11_12_12_42_42_447/0$5'/0):
 
 
 
-'$query_handlers2002_9_26_11_20_38_277'/0:
+'$query_handlers2003_11_12_12_42_42_447'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1449,37 +1467,37 @@ end('$query_handlers2002_9_26_11_20_38_277/0$5'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_handlers2002_9_26_11_20_38_277/0$0', 0, 0)
+	call_predicate('$query_handlers2003_11_12_12_42_42_447/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_handlers2002_9_26_11_20_38_277/0$1', 0, 0)
+	call_predicate('$query_handlers2003_11_12_12_42_42_447/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_handlers2002_9_26_11_20_38_277/0$2', 0, 0)
+	call_predicate('$query_handlers2003_11_12_12_42_42_447/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_handlers2002_9_26_11_20_38_277/0$3', 0, 0)
+	call_predicate('$query_handlers2003_11_12_12_42_42_447/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_handlers2002_9_26_11_20_38_277/0$4', 0, 0)
+	call_predicate('$query_handlers2003_11_12_12_42_42_447/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_handlers2002_9_26_11_20_38_277/0$5', 0, 0)
+	call_predicate('$query_handlers2003_11_12_12_42_42_447/0$5', 0, 0)
 	fail
 
 $7:
 	proceed
-end('$query_handlers2002_9_26_11_20_38_277'/0):
+end('$query_handlers2003_11_12_12_42_42_447'/0):
 
 
 
@@ -1487,7 +1505,7 @@ end('$query_handlers2002_9_26_11_20_38_277'/0):
 
 
 $1:
-	execute_predicate('$query_handlers2002_9_26_11_20_38_277', 0)
+	execute_predicate('$query_handlers2003_11_12_12_42_42_447', 0)
 end('$query'/0):
 
 

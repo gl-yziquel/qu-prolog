@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: copy_term.cc,v 1.5 2001/11/21 00:21:11 qp Exp $
+// $Id: copy_term.cc,v 1.6 2002/11/08 00:44:15 qp Exp $
 
 #include "heap_qp.h"
 
@@ -128,10 +128,6 @@ Heap::copy_object_variable(Object* source_object_variable,
       VarRec *object_variable_rec 
 	= new VarRec(reinterpret_cast<heapobject*>(source_object_variable),
 		     target_heap.getTop());
-      if (object_variable_rec == NULL)
-	{
-	  OutOfMemory( __FUNCTION__);
-	}
       
       object_variable_rec_list.push_back(object_variable_rec);
 

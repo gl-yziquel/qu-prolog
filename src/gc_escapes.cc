@@ -53,14 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.cc,v 1.12 2002/08/09 03:02:06 qp Exp $
+// $Id: gc_escapes.cc,v 1.16 2003/07/03 04:45:45 qp Exp $
 
 #include <stdlib.h>
 
 #include "global.h"
 #include "gc.h"
 #include "thread_qp.h"
-
+ 
 #ifdef DEBUG
 //
 // Check heap for correct pointers
@@ -138,6 +138,10 @@ Thread::gc_mark_registers(word32 arity, int32& total_marked)
   for (u_int i = 0; i < arity; i++)
     {
       gc_mark_pointer(X[i], total_marked, heap);
+    }
+  for (u_int i = arity; i < NUMBER_X_REGISTERS; i++)
+    {
+      X[i] = AtomTable::nil;
     }
 }
 
@@ -634,12 +638,15 @@ Thread::gc(word32 arity)
     }
 
   DEBUG_ASSERT(check_heap(heap, atoms));
+  // DEBUG_ASSERT(check_heap2(heap));
   gc_marking_phase(arity, total_marked);
 
   DEBUG_ASSERT(check_heap(heap, atoms));
   gc_compaction_phase(arity, total_marked);
 
   DEBUG_ASSERT(check_heap(heap, atoms));
+  //  DEBUG_ASSERT(check_heap2(heap));
+
   if (print_gc_stats)
     {
       cerr << "GC END   - heap size = " 

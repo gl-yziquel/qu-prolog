@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr.cc,v 1.3 2000/12/13 23:10:02 qp Exp $
+// $Id: pseudo_instr.cc,v 1.4 2003/07/03 04:45:45 qp Exp $
 
 #include "global.h"
 #include "atom_table.h"
@@ -178,9 +178,11 @@ Thread::psiSaveState(void)
 
   for (u_int i = 0; i < NUMBER_X_REGISTERS; i++)
     {
+      DEBUG_ASSERT(X[i] != NULL);
       if (X[i] == NULL) 
 	{
-	  X[i] = heap.newVariable();
+	  //X[i] = heap.newVariable();
+          X[i] = AtomTable::nil;
 	}
       state->setArgument(i+1, X[i]);
     }
@@ -228,7 +230,6 @@ Thread::psi2BuildCall(word32 n, Object * object1, Object * object2)
   Structure* problem = heap.newStructure(4);
 
   problem->setFunctor(AtomTable::psi2_resume);   // "$psi2_resume"
-
   problem->setArgument(1, psiSaveState());
   problem->setArgument(2, instr);
   problem->setArgument(3, object1);

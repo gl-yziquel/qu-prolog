@@ -1,7 +1,6 @@
 export COMMAND.qem = qem
 
 export SOURCES.qem = \
-	interrupt_handler.cc \
 	qem.cc \
 	qem_options.cc \
 	scheduler.cc

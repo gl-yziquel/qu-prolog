@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_condition.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: thread_condition.h,v 1.2 2002/11/03 08:37:34 qp Exp $
 
 #ifndef	THREAD_CONDITION_H
 #define	THREAD_CONDITION_H
 
-#include <iostream.h>
+#include <iostream>
 
 // Information about the status of the thread.
 class ThreadCondition
@@ -85,6 +85,7 @@ public:
   void ClearStopped(void) { stopped = false; }
 };
 
+using namespace std;
 // Print out a ThreadCondition in a form that can be read by a person.
 extern ostream& operator<<(ostream&, const ThreadCondition&);
 

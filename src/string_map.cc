@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: string_map.cc,v 1.3 2002/09/12 01:06:23 qp Exp $
+// $Id: string_map.cc,v 1.4 2002/11/03 08:37:33 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include <stdio.h>
 

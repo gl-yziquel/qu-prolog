@@ -53,12 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_buffer.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: heap_buffer.cc,v 1.3 2002/12/05 03:39:29 qp Exp $
 
 #include	<stdio.h>
 #include	<string.h>
 
 #include "heap_buffer.h"
+
+extern const char *Program;
 
 word32
 HeapBufferManager::allocate(heapobject* heapTop, heapobject* scratchTop)

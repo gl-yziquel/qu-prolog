@@ -88,7 +88,7 @@ end('statistics'/3):
 	switch_on_term(0, $23, 'fail', 'fail', 'fail', 'fail', $22)
 
 $22:
-	switch_on_constant(0, 64, ['default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'program':$7, 'runtime':$8, 'stack_shifts':$9, 'binding_trail':$10, 'object_trail':$11, 'ip_trail':$12, 'tag_trail':$13, 'ref_trail':$14, 'code':$15, 'string':$16, 'name':$17, 'ip_table':$18, 'scratchpad':$19, 'atom':$20, 'predicate':$21])
+	switch_on_constant(0, 64, ['$default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'program':$7, 'runtime':$8, 'stack_shifts':$9, 'binding_trail':$10, 'object_trail':$11, 'ip_trail':$12, 'tag_trail':$13, 'ref_trail':$14, 'code':$15, 'string':$16, 'name':$17, 'ip_table':$18, 'scratchpad':$19, 'atom':$20, 'predicate':$21])
 
 $23:
 	try(1, $1)
@@ -202,6 +202,16 @@ end('$stat_key'/1):
 
 '$statistics/3$0'/1:
 
+	switch_on_term(0, $5, $1, $1, $1, $1, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$1, 0:$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -224,7 +234,7 @@ end('$statistics/3$0'/1):
 	switch_on_term(0, $24, 'fail', 'fail', 'fail', 'fail', $23)
 
 $23:
-	switch_on_constant(0, 64, ['default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'memory':$7, 'program':$8, 'runtime':$9, 'stack_shifts':$10, 'binding_trail':$11, 'object_trail':$12, 'ip_trail':$13, 'tag_trail':$14, 'ref_trail':$15, 'code':$16, 'string':$17, 'name':$18, 'ip_table':$19, 'scratchpad':$20, 'atom':$21, 'predicate':$22])
+	switch_on_constant(0, 64, ['$default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'memory':$7, 'program':$8, 'runtime':$9, 'stack_shifts':$10, 'binding_trail':$11, 'object_trail':$12, 'ip_trail':$13, 'tag_trail':$14, 'ref_trail':$15, 'code':$16, 'string':$17, 'name':$18, 'ip_table':$19, 'scratchpad':$20, 'atom':$21, 'predicate':$22])
 
 $24:
 	try(3, $1)

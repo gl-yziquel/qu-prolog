@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_support.h,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: icm_support.h,v 1.5 2003/05/16 01:22:32 qp Exp $
 
 #ifndef ICM_SUPPORT_H
 #define ICM_SUPPORT_H
@@ -63,11 +63,9 @@
 #include "icmP.h"
 #include "icmFile.h"
 #include "tcl.h"
-#include "pthread_qp.h"
 
 /*
  * Tk interface function declarations
- */
 
 int c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
                        int argc, char *argv[]);
@@ -75,9 +73,14 @@ int c_icmRegisterAgent(ClientData clientData, Tcl_Interp *interp,
                        int argc, char *argv[]);
 int c_icmDeregisterAgent(ClientData clientData, Tcl_Interp *interp,
                        int argc, char *argv[]);
+int c_icmGetMsg(ClientData clientData, Tcl_Interp *interp,
+                    int argc, char *argv[]);
+int c_icmMsgAvail(ClientData clientData, Tcl_Interp *interp,
+                    int argc, char *argv[]);
 int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp,
                     int argc, char *argv[]);
 
+ */
 /*
  * Declarations of some string sizes
  */
@@ -91,27 +94,11 @@ int c_icmFmtSendMsg(ClientData clientData, Tcl_Interp *interp,
 #define TK_FILE_HANDLE_SIZE 20
 /* ICM message delimiters for transfer to Tk */
 #define ICM_END_MESSAGE "$$EICMM$$"
+#define ICM_MESSAGE_SEPARATOR_SIZE 9
 #define ICM_MESSAGE_SEPARATOR "$$SICMA$$"
+#define ICM_ADDRESS_SEPARATOR_SIZE 9
 #define ICM_ADDRESS_SEPARATOR "$$ICMAS$$"
 
-/*
- * Variables used by ICM-API and sub-thread
- */
-
-/* The connection to the ICM server */
-extern icmConn conn;
-
-/* Our ICM handle */
-extern icmHandle ourHandle;
-
-/* Our handle name */
-extern char handle_name[];
-
-/* The pipe for connecting the ICM message in thread to the main (Tk) thread */
-extern int icm_msg_pipe[];                 
-
-/* Tcl channel for the pipe */
-extern Tcl_Channel channel;
 
 #endif // ICM_SUPPORT_H
 

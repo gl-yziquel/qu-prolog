@@ -53,265 +53,152 @@
 // 
 // ##Copyright##
 //
-// $Id: block.h,v 1.2 2000/12/13 23:10:00 qp Exp $
+// $Id: block.h,v 1.9 2003/04/21 06:11:12 qp Exp $
 
 #ifndef	BLOCK_H
 #define	BLOCK_H
 
-#include <string.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <time.h>
-
-#include "cond_list.h"
 #include "defs.h"
-#include "config.h"
-#include "debug.h"
-#include "errors.h"
 #include "icm_message.h"
-#include "io_qp.h"
-#include "status.h"
+#include <list>
 
-class BlockStatus : private Status <word8>
+class Thread;
+class Code;
+class IOManager;
+class Message;
+
+time_t absoluteTimeout(const time_t timeout);
+
+class BlockStatus
 {
 private:
-  //
-  // Status values.
-  //
-  static const word8 BLOCK_RETRY	= 0x01;	// Waiting to retry
-  static const word8 RESTART_RETRY	= 0x02;	// Retry the operation
+  enum RunType {
+    RUNNABLE,       
+    RESTART_IO,
+    RESTART_MSG,
+    RESTART_TIME,
+    RESTART_WAIT,
+    BLOCKED
+  };
 
-  static const word8 BLOCK_ICM		= 0x04;	// Waiting for IPC message
-  static const word8 RESTART_ICM	= 0x08; // Restart IPC operation
+  RunType status;
+ public:
+  BlockStatus() : status(RUNNABLE) {}
 
-  static const word8 BLOCK_IO		= 0x10;	// Waiting for IO
-  static const word8 RESTART_IO		= 0x20;	// Restart IO operation
+  ~BlockStatus() {}
 
-  static const word8 BLOCK_WAIT		= 0x40;	// Waiting for something
-  static const word8 RESTART_WAIT	= 0x80; // Restart
+  bool isBlocked(void) const { return status == BLOCKED; }
+  bool isRunnable(void) const { return status == RUNNABLE; }
+  bool isRestarted(void) const 
+    { return (status != BLOCKED) && (status != RUNNABLE); }
 
-  //
-  // Timeouts
-  //
-  time_t timeout;		// 0 if no timeout
-				// >0 if timeout (absolute time value)
-  bool timed_out;		// true if timeout has passed
+  bool isRestartTime(void) const { return status == RESTART_TIME; }
+  bool isRestartIO(void)   const { return status == RESTART_IO; }
+  bool isRestartMsg(void)  const { return status == RESTART_MSG; }
+  bool isRestartWait(void) const { return status == RESTART_WAIT; }
 
-  //
-  // Retry
-  //
-  time_t retry_time;		// Absolute time of retry
+  void setBlocked(void)     { status = BLOCKED; }
+  void setRunnable(void)    { status = RUNNABLE; }
+  void setRestartIO(void)   { status = RESTART_IO; }
+  void setRestartMsg(void)  { status = RESTART_MSG; }
+  void setRestartTime(void) { status = RESTART_TIME; }
+  void setRestartWait(void) { status = RESTART_WAIT; }
 
-  //
-  // IO
-  //
-  int fd;			// The fd to wait on
-  IOType io_type;		// Type of io to be waited on
-
-  // 
-  // ICM
-  //
-  CondList<ICMMessage *>::iterator iter;
-  size_t queue_size;
-
-  //
-  // Wait
-  //
-  word32 db_stamp;			// Stamp value when the wait started
-  word32 record_db_stamp;		// Stamp value when the wait started
-
-public:
-  BlockStatus(void)
-  {
-    Clear();
-  }
-
-  ~BlockStatus(void) { }
-
-  //
-  // Timeout information.
-  //
-  bool IsTimeout(void) const { return timeout > 0; }
-  time_t Timeout(void) const { return timeout; }
-  void setTimeout(time_t t) { timeout = t; }
-  
-  bool IsTimedOut(void) const { return timed_out; }
-  void SetTimedOut(void) { timed_out = true; }
-
-  //
-  // Test block/restart status.
-  //
-  bool IsBlocked(void) const { return (testBlockWait() ||
-				       testBlockICM() ||
-				       testBlockIO()); }
-  bool IsRestarted(void) const { return (testRestartICM() ||
-					 testRestartWait() ||
-					 testRestartIO()); }
-
-//  bool testBlockRetry(void) const { return test(BLOCK_RETRY); }
-//  bool testRestartRetry(void) const { return test(RESTART_RETRY); }
-  bool testBlockIO(void) const { return test(BLOCK_IO); }
-  bool testRestartIO(void) const { return test(RESTART_IO); }
-  bool testBlockICM(void) const { return test(BLOCK_ICM); }
-  bool testRestartICM(void) const { return test(RESTART_ICM); }
-  bool testBlockWait(void) const { return test(BLOCK_WAIT); }
-  bool testRestartWait(void) const { return test(RESTART_WAIT); }
-
-  //
-  // Set/clear a block waiting on a retry.
-  //
-//  void setBlockRetry(const time_t);		// When to retry
-//  void resetBlockRetry(void) { reset(BLOCK_RETRY); }
-
-  //
-  // Set/clear a restart on a retry
-  //
-//  void setRestartRetry(void) { set(RESTART_RETRY); }
-//  void resetRestartRetry(void) { reset(RESTART_RETRY); }
-
-  //
-  // Set/clear a block waiting on some IO.
-  //
-  void setBlockIO(const int,
-		  const IOType,
-		  const time_t = 0);		// Optional timeout
-  void resetBlockIO(void) { reset(BLOCK_IO); }
-
-  //
-  // Set/clear a restart for an IO operation.
-  //
-  void setRestartIO(void) { set(RESTART_IO); }
-  void resetRestartIO(void) { reset(RESTART_IO); }
-
-  // 
-  // Set/clear a block waiting on an ICM message.
-  //
-  void setBlockICM(CondList<ICMMessage *>::iterator,
-		   const size_t,
-		   const time_t = 0);		// Optional timeout
-  void resetBlockICM(void) { reset(BLOCK_ICM); }
-
-  //
-  // Set/clear a restart on an ICM operation.
-  //
-  void setRestartICM(void) { set(RESTART_ICM); }
-  void resetRestartICM(void) { reset(RESTART_ICM); }
-
-  //
-  // Set/clear a block waiting on some sort of timeout.
-  //
-  void setBlockWait(const word32,		// Stamp value of db
-		    const word32,		// Stamp value of record_db
-		    const time_t);		// Compulsory timeout
-  void resetBlockWait(void) { reset(BLOCK_WAIT); }
-
-  //
-  // Set/clear a restart
-  //
-  void setRestartWait(void) { set(RESTART_WAIT); }
-  void resetRestartWait(void) { reset(RESTART_WAIT); }
-
-  //
-  // Clear status completely.
-  //
-  void Clear(void);
-
-  //
-  // When should this thread be retried?
-  //
-//  time_t RetryTime(void) const
-//  {
-//    DEBUG_ASSERT(testBlockRetry() || testRestartRetry());
-//
-//    return retry_time;
-//  }
-
-  //
-  // Return the FD for the IO block (IO block only).
-  //
-  int getFD(void) const
-  {
-    DEBUG_ASSERT(testBlockIO() || testRestartIO());
-
-    return fd;
-  }
-
-  //
-  // Return the input/output type of the IO required (IO block only).
-  //
-  IOType getIOType(void) const
-  {
-    DEBUG_ASSERT(testBlockIO() || testRestartIO());
-
-    return io_type;
-  }
-
-  CondList<ICMMessage *>::iterator getIter(void) 
-    {
-      DEBUG_ASSERT(testBlockICM());
-
-      return iter;
-    }
-
-  size_t QueueSize(void) const
-    { 
-//      DEBUG_ASSERT(testBlockICM() || testBlockWait() || testRestartIO());
-
-      return queue_size;
-    }
-
-  word32 DBStamp(void) const
-    {
-      DEBUG_ASSERT(testBlockWait());
-
-      return db_stamp;
-    }
-
-  word32 RecordDBStamp(void) const
-    {
-      DEBUG_ASSERT(testBlockWait());
-
-      return record_db_stamp;
-    }
 };
 
-//
-// This is a class for keeping track of IO descriptors that are blocked.
-// It should work with SYSV and BSD systems, but I don't know about POSIX.
-//
-class BlockedIO
+
+// The base class for blocking objects
+
+class BlockingObject
 {
 private:
-  fd_set blocked_read;	// fds that someone is waiting on reading from
-  fd_set blocked_write;	// fds that someone is waiting on writing to
-
-  fd_set polled_read;	// fds that have recently been polled for reading
-  fd_set polled_write;	// fds that have recenlty been polled for writing
-
-  int max_blocked_fd;	// Top blocked fd
-
-  //
-  // Arrays for counting how many threads are blocked on each fd.
-  //
-  int *blocked_input_counts;
-  int *blocked_output_counts;
+  Thread* thread;     // the blocked thread
 public:
-  BlockedIO(void);
-  
-  ~BlockedIO(void)
-  {
-    delete blocked_input_counts;
-    delete blocked_output_counts;
-  }
+  BlockingObject(Thread* const t) : thread(t) {}
 
-  void Add(const int, const IOType);
+  virtual ~BlockingObject() {}
 
-  void Remove(const int, const IOType);
+  Thread* getThread(void) { return thread; }
 
-  bool Poll(const int msec = 0);
+  virtual bool unblock(int& tout) = 0;
 
-  //  bool IsReady(const int fd, const IOType) const;
+  virtual bool hasFD(void) = 0;
+
+  virtual void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) = 0;
 };
+
+class BlockingIOObject : public BlockingObject
+{
+ private:
+  time_t retry_time;            // Absolute time of retry
+  int fd;                       // The fd to wait on
+  IOType io_type;               // Type of io to be waited on
+  IOManager* iomp;
+ public:
+  BlockingIOObject(Thread* const t, time_t to, int f, IOType iot, IOManager* mp)
+    : BlockingObject(t), retry_time(to), fd(f), io_type(iot), iomp(mp) {}
+
+  bool unblock(int& tout);
+
+  bool hasFD(void) { return true; }
+
+  void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
+};
+
+class BlockingTimeoutObject : public BlockingObject
+{
+ private:
+  time_t timeout;
+ public:
+  BlockingTimeoutObject(Thread* const t, time_t to) 
+    : BlockingObject(t)
+    {
+      timeout = absoluteTimeout(to);
+    }
+  bool unblock(int& tout);
+
+  bool hasFD(void) { return false; }
+
+  void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) {}
+
+};
+
+class BlockingMessageObject : public BlockingObject
+{
+ private:
+  time_t timeout;
+  list<Message *>::iterator *iter;
+  u_int size;
+ public:
+  BlockingMessageObject(Thread* const t, time_t to, 
+			list<Message *>::iterator *i);
+
+  bool unblock(int& tout);
+
+  bool hasFD(void) { return true; }
+
+  void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
+
+};
+
+class BlockingWaitObject : public BlockingObject
+{
+ private:
+  Code* code; 
+  time_t timeout;
+  u_int stamp;
+ public:
+  BlockingWaitObject(Thread* const t, Code* c, time_t to);
+
+  bool unblock(int& tout);
+
+  bool hasFD(void) { return false; }
+
+  void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) {}
+
+};
+
+
 
 #endif	// BLOCK_H
 

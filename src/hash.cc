@@ -53,14 +53,17 @@
 // 
 // ##Copyright##
 //
-// $Id: hash.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: hash.cc,v 1.3 2002/11/03 08:37:27 qp Exp $
 
 #include <sys/types.h>
 
-#include <strstream.h>
+#include <sstream>
 
 #include "defs.h"
 #include "hash_qp.h"
+
+
+using namespace std;
 
 //
 // No idea of this algorithm.  It is from Ross.
@@ -95,13 +98,11 @@ Hash(const char *s, const size_t len)
 word32
 Hash(const word32 i)
 {
-  ostrstream ostrm;
+  ostringstream ostrm;
 
   ostrm << i << ends;
 
-  const word32 hash = Hash(ostrm.str());
-
-  ostrm.freeze(0);
+  const word32 hash = Hash(ostrm.str().data());
 
   return hash;
 }

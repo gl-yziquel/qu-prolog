@@ -55,17 +55,17 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.h,v 1.3 2001/11/21 00:21:10 qp Exp $
+// $Id: asm_string_table.h,v 1.6 2002/11/10 07:54:50 qp Exp $
 
 #ifndef	ASM_STRING_TABLE_H
 #define	ASM_STRING_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "asm_int.h"
 #include "code.h"
 #include "defs.h"
-#include "string_qp.h"
+//#include "string_qp.h"
 
 typedef u_int ASMLoc;
 
@@ -83,10 +83,6 @@ private:
     ASMLoc new_size = 2 * table_size;
     
     EntryType *tmp = new (EntryType)[new_size];
-    if (tmp == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
 
     for (u_int i = 0; i < table_size; i++)
       {
@@ -140,11 +136,6 @@ public:
 	
 	table[index] = EntryType(s);
 	
-	//	if (table[index] == NULL)
-	//{
-	//  OutOfMemory(__FUNCTION__);
-	//}
-	
 	table_num_entries++;
 	return index;
       }
@@ -159,7 +150,7 @@ public:
 class ASMStringPointer
 {
 public:
-  String* value;
+  string* value;
 
   bool operator==(const ASMStringPointer s) const
     { return (*value == *s.value); }
@@ -169,9 +160,9 @@ public:
       value = NULL;
     }
 
-  ASMStringPointer(String* s)
+  ASMStringPointer(string* s)
     {
-      value = new String(*s);
+      value = new string(*s);
     }
 
   ~ASMStringPointer(void)
@@ -188,7 +179,7 @@ class ASMStringTable : public ASMTable <ASMStringPointer>
 public:
   ASMStringTable(void) : ASMTable <ASMStringPointer>() {}
 
-  const String& operator[](const ASMLoc i) const
+  const string& operator[](const ASMLoc i) const
   {
     DEBUG_ASSERT(i < tableNumEntries());
     

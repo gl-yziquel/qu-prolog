@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_qp.h,v 1.5 2001/12/17 04:27:34 qp Exp $
+// $Id: thread_qp.h,v 1.8 2002/12/20 02:15:53 qp Exp $
 
 #ifndef	THREAD_QP_H
 #define	THREAD_QP_H
 
-#include <iostream.h>
+//#include <iostream>
 #include <list>
 #include <stdarg.h>
 
@@ -75,6 +75,7 @@
 #include "foreign_handle.h"
 #include "heap_qp.h"
 #include "heap_buffer.h"
+#include "messages.h"
 #include "icm_environment.h"
 #include "indexing.h"
 #include "name_table.h"
@@ -126,8 +127,10 @@ public:
 //
 class Thread : public ThreadCondition
 {
+#ifdef DEBUG
   // The Trace class may gaze into a Thread's soul.
   friend class Trace;
+#endif // DEBUG
   friend class Scheduler;
 
 private:
@@ -173,10 +176,10 @@ private:
   ChoiceStack choiceStack;
 
   // Messages that are pending.
-  list<ICMMessage *> icm_queue;
+  list<Message *> message_queue;
 
-  // Number of active ICM queue scans in progress. 
-  size_t icm_level;
+  // Number of active message queue scans in progress. 
+  size_t queue_level;
 
   CodeLoc savedPC;
 
@@ -213,9 +216,10 @@ private:
   word32 error_arg;
 
   ThreadStatus status;
-
+#ifdef DEBUG
   // Trace class used for following the actions of the WAM.
   Trace trace;
+#endif // DEBUG
 
   // Save the X registers in SavedX
   void SaveXRegisters(void);
@@ -227,7 +231,7 @@ public:
   RefTrail& getRefTrail(void) { return refTrail; }
 
   // Pending IPC messages.
-  list<ICMMessage *>& ICMQueue(void) { return icm_queue; }
+  list<Message *>& MessageQueue(void) { return message_queue; }
 
   // Get the IP table
   IPTable& getIPTable(void) { return ipTable; }
@@ -240,10 +244,10 @@ public:
   // Thread identification, etc.
   ThreadInfo& TInfo(void) { return thread_info; }
   const ThreadInfo& InspectTInfo(void) const { return thread_info; }
-
+#ifdef DEBUG
   // Trace information.
   Trace& GetTrace(void) { return trace; }
-
+#endif // DEBUG
   // Save the state of the heap and trails for choice pointes.
   void saveHeapAndTrails(HeapAndTrailsChoice& state)
     {

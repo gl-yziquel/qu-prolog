@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.9 2002/07/09 02:00:51 qp Exp $
+// $Id: qem.cc,v 1.24 2003/10/03 01:19:40 qp Exp $
 
 #include <typeinfo>
 
@@ -70,12 +70,10 @@
 
 #include "atom_table.h"
 #include "code.h"
-#include "cond_list.h"
 #include "defs.h"
 #include "executable.h"
 #include "icm_aux.h"
 #include "icm_environment.h"
-#include "icm_message_handler.h"
 #include "interrupt_handler.h"
 #include "io_qp.h"
 #include "pred_table.h"
@@ -89,17 +87,26 @@
 #include "thread_qp.h"
 #include "thread_options.h"
 #include "thread_table.h"
-#include "unix_thread.h"
 
 const char *Program = "qem";
+
+//
+// Handler for out of memory via new
+//
+//typedef void (*new_handler) ();
+//new_handler set_new_handler(new_handler p) throw();
+
+void noMoreMemory()
+{
+   cerr << "No more memory available for " << Program << endl;
+   abort();
+}
 
 AtomTable *atoms = NULL;
 Object **lib_path = NULL;
 Code *code = NULL;
-ICMEnvironment *icm_environment = NULL;
 IOManager *iom = NULL;
 SocketManager *sockm = NULL;
-CondList<ICMMessage *> *incoming_icm_message_queue = NULL;
 PredTab *predicates = NULL;
 QemOptions *qem_options = NULL;
 RecordDB *record_db = NULL;
@@ -112,7 +119,32 @@ char *process_symbol = NULL;
 char *icm_address = NULL;
 int icm_port = 0;
 
-pthread_t *interrupt_handler_thread = NULL;
+ICMMessageChannel* icm_channel = NULL;
+ICMEnvironment* icm_environment = NULL;
+
+// In order that signals to unblock selects we create a pipe and write to
+// it when a signal arrives. By putting the read end of the pipe in
+// the file descriptor set of the select, the select will unblock
+// when a signal arrives. 
+int *sigint_pipe;
+
+// SIGINT signal handler
+static void
+handle_sigint(int)
+{
+  extern Signals *signals;
+  extern int *sigint_pipe;
+  if (signals != NULL)
+    {
+      char buff[128];
+      read(sigint_pipe[0], buff, 120);
+      buff[0] = 'a';
+      write(sigint_pipe[1], buff, 1);
+      signals->Increment(SIGINT);
+      signals->Status().setSignals();
+    }
+}
+
 
 // Most of the data structures are dynamically allocated for 2 reasons:
 // 1) The stack for the process might blow out;
@@ -120,33 +152,35 @@ pthread_t *interrupt_handler_thread = NULL;
 int
 main(int32 argc, char** argv)
 {
-  // Block all signals, except the one used for time slicing.
-  sigset_t sigs;
+  // set the out-of-memory handler
+  std::set_new_handler(noMoreMemory);
 
-  sigemptyset(&sigs);
-  sigaddset(&sigs, SIGINT);
-
-  SYSTEM_CALL_NON_ZERO(pthread_sigmask(SIG_SETMASK, &sigs, NULL));
+  sigint_pipe = new int[2];
+  pipe(sigint_pipe);
+  fcntl(sigint_pipe[0], F_SETFL, O_NONBLOCK);
 
   // Signal communication structure
   signals = new Signals;
-  if (signals == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
+  // SIGINT signal handler
+  //  
+  sigset_t sigs;
+  sigemptyset(&sigs);
+  sigaddset(&sigs, SIGINT);
 
-  // Spin off signal processing thread
-  pthread_t int_hand = thread_create(interrupt_handler, signals);
-  interrupt_handler_thread = &int_hand;
-
+  struct sigaction sa;
+  sa.sa_handler = handle_sigint;
+  sa.sa_mask = sigs;
+  sa.sa_flags = SA_RESTART;
+#if !(defined(SOLARIS) || defined(FREEBSD) || defined(MACOSX))
+  sa.sa_restorer = NULL;
+#endif // !(defined(SOLARIS) || defined(FREEBSD) || defined(MACOSX))
+  SYSTEM_CALL_LESS_ZERO(sigaction(SIGINT, &sa, NULL));
+  //
+  // End of SIGINT signal handler
 
   // Parse the options.
   qem_options = new QemOptions(argc, argv);
-  if (qem_options == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   if (! qem_options->Valid())
     {
@@ -154,52 +188,27 @@ main(int32 argc, char** argv)
     }
 
   thread_options = new ThreadOptions(*qem_options);
-  if (thread_options == NULL)
-    {
-      OutOfMemory(Program);
-    }
  
   // Allocate areas in the Qu-Prolog Abstract Machine.
   atoms = new AtomTable(qem_options->AtomTableSize(),
 			qem_options->StringTableSize(),
 			0);
-  if (atoms == NULL)
-    {
-      OutOfMemory(Program);
-    }
-
   predicates = new PredTab(atoms, qem_options->PredicateTableSize());
-  if (predicates == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   code = new Code(qem_options->CodeSize());
-  if (code == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   record_db = new RecordDB(qem_options->RecordDBSize(), 0); 
-  if (record_db == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   // Load executable file.
   LoadExecutable(qem_options->QxFile(), *code, *atoms, *predicates);
 
   // Library path.
   lib_path = new Object*;
-  if (lib_path == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   const char *lp = getenv("QPLIBPATH");
   if (lp == NULL)
     {
-      Fatal(Program, "QPLIBPATH is undefined.");
+      Fatal(Program, " QPLIBPATH is undefined.");
     }
   *lib_path = atoms->add(lp);
 
@@ -212,64 +221,28 @@ main(int32 argc, char** argv)
 //  fflush(stderr);
   setvbuf(stderr, NULL, _IONBF, 0);
 
-  Stream *current_input_stream = new Stream((istream *)&cin, qp_fileno(cin));
-  Stream *current_output_stream = new Stream((ostream *)&cout, qp_fileno(cout));
-  Stream *current_error_stream = new Stream((ostream *)&cerr, qp_fileno(cerr));
-  if (current_input_stream == NULL ||
-      current_output_stream == NULL ||
-      current_error_stream == NULL)
-    {
-      OutOfMemory(Program);
-    }
+  QPifdstream *current_input_stream = new QPifdstream(fileno(stdin));
+  QPostream *current_output_stream = new QPostream(&cout);
+  QPostream *current_error_stream = new QPostream(&cerr);
 
   iom = new IOManager(current_input_stream,
 		      current_output_stream,
 		      current_error_stream);
-  if (iom == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   sockm = new SocketManager();
 
-  if (sockm == NULL)
-    {
-      OutOfMemory(Program);
-    }
-
-
   scheduler_status = new SchedulerStatus;
-  if (scheduler_status == NULL)
-    {
-      OutOfMemory(Program);
-    }
-
-  // Build the scheduler.
-  scheduler = new Scheduler;
-  if (scheduler == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
   // Thread table.
   thread_table = new ThreadTable(qem_options->ThreadTableSize());
-  if (thread_table == NULL)
-    {
-      OutOfMemory(Program);
-    }
 
-  // This has to be created regardless of the ICM status - the 
-  // scheduler looks for messages there anyway.
-  // TO DO: Fix this situation.
-  incoming_icm_message_queue = new CondList<ICMMessage *>;
-  if (incoming_icm_message_queue == NULL)
-    {
-      OutOfMemory(Program);
-    }
+  // Build the scheduler.
+  scheduler 
+    = new Scheduler(*thread_options, *thread_table, *signals, *predicates);
 
 #ifdef ICM_DEF
+  initICMIo();
   icmConn icm_conn;
-  pthread_t icm_incoming_message_handler_thread = 0;
 
   process_symbol = qem_options->ProcessSymbol();
   icm_address = qem_options->ICMServer();
@@ -278,7 +251,7 @@ main(int32 argc, char** argv)
   if (process_symbol != NULL)
     {
 #ifdef DEBUG_ICM
-      cerr.form("%s Before starting ICM\n", __FUNCTION__);
+      cerr << "Before starting ICM" << endl;
 #endif
 
       // Start up communications
@@ -287,28 +260,29 @@ main(int32 argc, char** argv)
 						&icm_conn);
       if (icm_status == icmFailed)
 	{
-	  Fatal(Program, "Couldn't contact ICM communications server");
+	  Fatal(Program, " Couldn't contact ICM communications server");
 	}
       else if (icm_status == icmError)
 	{
-	  Fatal(Program, "ICM communications refused connection");
+	  Fatal(Program, " ICM communications refused connection");
 	}
       
-      icm_environment = new ICMEnvironment(icm_conn, *incoming_icm_message_queue);
-      if (icm_environment == NULL)
+      // Set up icm and register
+      icm_environment = new ICMEnvironment(icm_conn);
+      
+      if (!icm_environment->Register(process_symbol))
 	{
-	  OutOfMemory(Program);
+	  Fatal(Program, " Cannot register process with ICM");
 	}
-      
-      icm_environment->Register(process_symbol);
 
-      // Start the handling of ICM messages.
-      icm_incoming_message_handler_thread = 
-	thread_create(incoming_icm_message_handler, icm_environment);
 
-#ifdef DEBUG_ICM
-      cerr.form("%s After starting ICM\n", __FUNCTION__);
-#endif
+      // Create a channel for ICM messages
+      icm_channel = 
+	new ICMMessageChannel(*icm_environment, *thread_table, *iom, *signals);
+
+      // Add ICM channel to scheduler channels
+      scheduler->getChannels().push_back(icm_channel);
+      DEBUG_ASSERT(process_symbol != NULL);
     }
 #endif // ICM_DEF
     
@@ -317,14 +291,11 @@ main(int32 argc, char** argv)
 #endif
 
   // Run threads.
-  scheduler->Schedule(*incoming_icm_message_queue,
-		      *predicates, *signals, *thread_options, *thread_table);
+  scheduler->Schedule();
 
 #ifdef DEBUG_SCHED
   cerr.form("%s After scheduler->Scheduler()\n", Program);
 #endif
-  
-  thread_cancel(*interrupt_handler_thread);
   
 #ifdef ICM_DEF
   if (process_symbol != NULL)
@@ -334,8 +305,6 @@ main(int32 argc, char** argv)
 #endif
       
       icm_environment->Unregister();
-      pthread_join(icm_incoming_message_handler_thread, NULL);
-      icmCloseComms(icm_conn);
       
 #ifdef DEBUG_ICM
       cerr.form("%s After shutting down ICM\n", Program);

@@ -285,7 +285,7 @@ end('$solve_query'/2):
 	switch_on_term(0, $25, $11, $11, $12, $11, $17)
 
 $12:
-	switch_on_structure(0, 8, ['default':$11, '$'/0:$13, 'spy'/1:$14, 'nospy'/1:$15, 'leash'/1:$16])
+	switch_on_structure(0, 8, ['$default':$11, '$'/0:$13, 'spy'/1:$14, 'nospy'/1:$15, 'leash'/1:$16])
 
 $13:
 	try(1, $7)
@@ -306,7 +306,7 @@ $16:
 	trust($11)
 
 $17:
-	switch_on_constant(0, 16, ['default':$11, 42:$18, 'debug':$19, 'nodebug':$20, 'debugging':$21, 'trace':$22, 'notrace':$23, 'nospyall':$24])
+	switch_on_constant(0, 16, ['$default':$11, 42:$18, 'debug':$19, 'nodebug':$20, 'debugging':$21, 'trace':$22, 'notrace':$23, 'nospyall':$24])
 
 $18:
 	try(1, $1)
@@ -410,6 +410,16 @@ end('$interpreter_call'/1):
 
 '$print_result/1$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -439,6 +449,16 @@ end('$print_result/1$0'/3):
 
 '$print_result/1$1'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -463,7 +483,7 @@ end('$print_result/1$1'/3):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, '[]':$4])
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
 
 $4:
 	try(1, $1)
@@ -655,6 +675,9 @@ end('$interpreter_vars'/3):
 
 '$interpreter_cont_section/1$0'/2:
 
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
 	try(2, $1)
 	trust($2)
 
@@ -699,7 +722,7 @@ end('$interpreter_cont_section'/1):
 	switch_on_term(0, $7, $3, $3, $3, $3, $4)
 
 $4:
-	switch_on_constant(0, 4, ['default':$3, 10:$5, 44:$6])
+	switch_on_constant(0, 4, ['$default':$3, 10:$5, 44:$6])
 
 $5:
 	try(2, $1)
@@ -786,7 +809,7 @@ end('break'/0):
 	switch_on_term(0, $8, $7, $7, $7, $7, $5)
 
 $5:
-	switch_on_constant(0, 4, ['default':$7, 0:$6])
+	switch_on_constant(0, 4, ['$default':$7, 0:$6])
 
 $6:
 	try(2, $1)

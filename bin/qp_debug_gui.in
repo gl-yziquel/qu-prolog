@@ -1,0 +1,179 @@
+#! /bin/sh
+# the next line restarts using wish \
+exec wish "$0" "$@"
+
+# load icm interface functions
+load @QPHOME@/bin/tkICM.so tkICM
+
+#
+# A "dumb terminal" interface to the QP interpreter
+#
+
+# Get the runtime arguments
+set thread_id [lindex $argv 0]
+set process_id [lindex $argv 1]
+set icm_addr [lindex $argv 2]
+set icm_port [lindex $argv 3]
+
+set gui_name ${thread_id}_${process_id}_debug_gui
+wm title . "${thread_id}  ${process_id}  DEBUG GUI"
+wm iconname . $gui_name
+
+# Initialises the ICM-Comms
+icmInitComms $icm_port $icm_addr
+
+# Register the ICM-agent giving it the runtime arg as the handle
+# and returning the channel handle for incoming messages
+set icm_channel [icmRegisterAgent $gui_name]
+
+# Set up the ICM channel event
+fconfigure $icm_channel -blocking 0 -buffering line
+fileevent  $icm_channel readable {eval [icm_msg_read]}
+
+# Build the QP thread handle
+set parent_handle ":${process_id}"
+
+###################################################################
+# The following function reads ICM messages from the ICM channel
+# and calls a user defined function process_icm_message that takes
+# the message and the sender address.
+# The special message $exit_gui causes the GUi to exit.
+
+# The function called for ICM channel read events.
+proc icm_msg_read {} {
+    while {[icmMsgAvail] == "yes"} {
+      icm_msg_read_one
+    }
+}
+
+proc icm_msg_read_one {} {
+    set icm_msg [icmGetMsg]
+    if { [lindex $icm_msg 0] == "\$exit_gui"} {
+        exit 0
+    } else {
+        process_icm_message [lindex $icm_msg 0] [lindex $icm_msg 1] [lindex $icm_msg 2]
+    }
+}
+
+############# end of ICM message processing ####################
+
+frame .appio -relief flat -bd 2
+frame .appio.t -relief flat -bd 2
+scrollbar .appio.t.s -relief flat -command ".appio.t.t yview"
+pack .appio.t.s -side right -fill y
+text .appio.t.t -relief raised -bd 2 -yscrollcommand ".appio.t.s set" -setgrid true -width 80 -height 40
+pack .appio.t.t -side left -fill both -expand 1
+frame .appio.buttons -relief flat -bd 2
+button .appio.buttons.creep -text Creap -command creep
+button .appio.buttons.skip -text Skip -command skip
+button .appio.buttons.leap -text Leap -command leap
+button .appio.buttons.nodebug -text "Exit Debugger" -command nodebug
+pack .appio.buttons.creep .appio.buttons.skip .appio.buttons.leap .appio.buttons.nodebug -side left -fill x
+pack .appio.t .appio.buttons 
+pack .appio
+
+.appio.t.t configure -font {Courier-Adobe 12}
+.appio.t.t configure -foreground blue
+.appio.t.t tag configure color1 -foreground black
+
+
+.appio.t.t mark set insert end
+.appio.t.t mark set startInput {insert}
+.appio.t.t mark gravity startInput left
+
+icmFmtSendMsg ${thread_id}$parent_handle "ready_to_go"
+
+
+bind .appio.t.t <Return> {
+	    set cmd [.appio.t.t get startInput end] 
+            .appio.t.t insert end "\n"
+	    .appio.t.t mark set insert end
+	    .appio.t.t mark set startInput {insert}
+            icmFmtSendMsg $parent_handle $cmd
+            break
+}
+
+bind .appio.t.t <BackSpace> {
+	if {[.appio.t.t compare insert <= startInput]} {
+            break
+        }
+}
+bind .appio.t.t <Control-h> {
+	if {[.appio.t.t compare insert <= startInput]} {
+            break
+        }
+}
+bind .appio.t.t <Delete> {
+	if {[.appio.t.t compare insert <= startInput]} {
+            break
+        }
+}
+bind .appio.t.t <Control-d>  {
+        icmFmtSendMsg $parent_handle ""
+	}
+
+focus .appio.t.t
+
+proc creep {} {
+    global parent_handle
+    set cmd [.appio.t.t get startInput end] 
+    .appio.t.t insert end "\n"
+    .appio.t.t mark set insert end
+    .appio.t.t mark set startInput {insert}
+    icmFmtSendMsg $parent_handle $cmd
+}
+proc skip {} {
+    global parent_handle
+    .appio.t.t insert end "s"
+    set cmd [.appio.t.t get startInput end] 
+    .appio.t.t insert end "\n"
+    .appio.t.t mark set insert end
+    .appio.t.t mark set startInput {insert}
+    icmFmtSendMsg $parent_handle $cmd
+}
+proc leap {} {
+    global parent_handle
+    .appio.t.t insert end "l"
+    set cmd [.appio.t.t get startInput end] 
+    .appio.t.t insert end "\n"
+    .appio.t.t mark set insert end
+    .appio.t.t mark set startInput {insert}
+    icmFmtSendMsg $parent_handle $cmd
+}
+        
+proc nodebug {} {
+    global parent_handle
+    .appio.t.t insert end "n"
+    set cmd [.appio.t.t get startInput end]
+    .appio.t.t insert end "\n"
+    .appio.t.t mark set insert end
+    .appio.t.t mark set startInput {insert}
+    icmFmtSendMsg $parent_handle $cmd
+}               
+
+
+# User defined ICM message function
+proc process_icm_message {msg addr reply} {
+        global parent_handle
+        global thread_id
+        global process_id
+        global gui_name
+
+# If the thread name changes then reset thread-name-specific info.
+        regexp {([^:]*)} $addr tid 
+        if {$tid != $thread_id} {
+          set thread_id $tid
+          set parent_handle "${thread_id}:${process_id}"
+          set gui_name ${thread_id}_${process_id}_debug_gui
+          wm title . "${thread_id}  ${process_id}  DEBUG GUI"
+          wm iconname . $gui_name
+        }
+	.appio.t.t insert end $msg color1
+	.appio.t.t mark set insert end 
+	.appio.t.t mark set startInput {insert}
+	.appio.t.t mark gravity startInput left
+	.appio.t.t yview -pickplace end
+}
+
+
+

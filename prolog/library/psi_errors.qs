@@ -3,7 +3,7 @@
 	switch_on_term(0, $13, 'fail', 'fail', 'fail', 'fail', $12)
 
 $12:
-	switch_on_constant(0, 32, ['default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11])
+	switch_on_constant(0, 32, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11])
 
 $13:
 	try(5, $1)
@@ -263,7 +263,7 @@ end('$psi5_general_exception_handler'/11):
 	switch_on_term(0, $13, 'fail', 'fail', 'fail', 'fail', $12)
 
 $12:
-	switch_on_constant(0, 32, ['default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11])
+	switch_on_constant(0, 32, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11])
 
 $13:
 	try(2, $1)
@@ -341,7 +341,7 @@ end('$psi_error_to_atom'/2):
 	switch_on_term(0, $10, $4, $4, $5, $4, $4)
 
 $5:
-	switch_on_structure(0, 8, ['default':$4, '$'/0:$6, '+'/1:$7, '@'/1:$8, '?'/1:$9])
+	switch_on_structure(0, 8, ['$default':$4, '$'/0:$6, '+'/1:$7, '@'/1:$8, '?'/1:$9])
 
 $6:
 	try(2, $1)
@@ -401,7 +401,7 @@ end('$template_to_type'/2):
 	switch_on_term(0, $76, $37, $37, $38, $37, $37)
 
 $38:
-	switch_on_structure(0, 128, ['default':$37, '$'/0:$39, '$set_input'/1:$40, '$set_output'/1:$41, '$thread_wait'/1:$42, '$thread_defaults'/1:$43, '$thread_set_defaults'/1:$44, '$reset_std_stream'/1:$45, '$get_char'/2:$46, '$get_code'/2:$47, '$psi_write_atom'/2:$48, '$psi_writeq_atom'/2:$49, '$write_integer'/2:$50, '$codes_atom'/2:$51, '$char_code'/2:$52, '$code_char'/2:$53, '$close'/2:$54, '$stream_to_chars'/2:$55, '$stream_to_atom'/2:$56, '$delay'/2:$57, '$not_free_in'/2:$58, '$increment'/2:$59, '$decrement'/2:$60, '$get_line'/2:$61, '$put_line'/2:$62, '$add'/3:$63, '$subtract'/3:$64, '$open'/3:$65, '$access'/3:$66, '$encoded_write'/3:$67, '$open_socket_stream'/3:$68, '$open_msgstream'/3:$69, '$sub_atom'/4:$70, '$load_foreign'/4:$71, '$open_string'/4:$72, '$encoded_read'/4:$73, '$ipc_send'/4:$74, '$thread_fork'/3:$75])
+	switch_on_structure(0, 128, ['$default':$37, '$'/0:$39, '$set_input'/1:$40, '$set_output'/1:$41, '$thread_wait'/1:$42, '$thread_defaults'/1:$43, '$thread_set_defaults'/1:$44, '$reset_std_stream'/1:$45, '$get_char'/2:$46, '$get_code'/2:$47, '$psi_write_atom'/2:$48, '$psi_writeq_atom'/2:$49, '$write_integer'/2:$50, '$codes_atom'/2:$51, '$char_code'/2:$52, '$code_char'/2:$53, '$close'/2:$54, '$stream_to_chars'/2:$55, '$stream_to_atom'/2:$56, '$delay'/2:$57, '$not_free_in'/2:$58, '$increment'/2:$59, '$decrement'/2:$60, '$get_line'/2:$61, '$put_line'/2:$62, '$add'/3:$63, '$subtract'/3:$64, '$open'/3:$65, '$access'/3:$66, '$encoded_write'/3:$67, '$open_socket_stream'/3:$68, '$open_msgstream'/3:$69, '$sub_atom'/4:$70, '$load_foreign'/4:$71, '$open_string'/4:$72, '$encoded_read'/4:$73, '$ipc_send'/4:$74, '$thread_fork'/3:$75])
 
 $39:
 	try(2, $1)
@@ -1011,11 +1011,11 @@ $36:
 	get_structure('$thread_fork', 3, 0)
 	unify_x_variable(0)
 	unify_x_variable(2)
-	unify_void(1)
+	unify_x_variable(3)
 	get_structure('thread_fork', 3, 1)
 	unify_x_value(0)
 	unify_x_value(2)
-	unify_void(1)
+	unify_x_value(3)
 	neck_cut
 	proceed
 
@@ -1026,7 +1026,7 @@ end('$psi_call_to_call'/2):
 
 
 
-'$query_psi_errors2002_9_26_11_21_2_395/0$0'/0:
+'$query_psi_errors2003_11_12_12_42_52_851/0$0'/0:
 
 
 $1:
@@ -1039,11 +1039,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2002_9_26_11_21_2_395/0$0'/0):
+end('$query_psi_errors2003_11_12_12_42_52_851/0$0'/0):
 
 
 
-'$query_psi_errors2002_9_26_11_21_2_395/0$1'/0:
+'$query_psi_errors2003_11_12_12_42_52_851/0$1'/0:
 
 
 $1:
@@ -1056,11 +1056,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2002_9_26_11_21_2_395/0$1'/0):
+end('$query_psi_errors2003_11_12_12_42_52_851/0$1'/0):
 
 
 
-'$query_psi_errors2002_9_26_11_21_2_395/0$2'/0:
+'$query_psi_errors2003_11_12_12_42_52_851/0$2'/0:
 
 
 $1:
@@ -1073,11 +1073,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2002_9_26_11_21_2_395/0$2'/0):
+end('$query_psi_errors2003_11_12_12_42_52_851/0$2'/0):
 
 
 
-'$query_psi_errors2002_9_26_11_21_2_395'/0:
+'$query_psi_errors2003_11_12_12_42_52_851'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1086,22 +1086,22 @@ end('$query_psi_errors2002_9_26_11_21_2_395/0$2'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_psi_errors2002_9_26_11_21_2_395/0$0', 0, 0)
+	call_predicate('$query_psi_errors2003_11_12_12_42_52_851/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_psi_errors2002_9_26_11_21_2_395/0$1', 0, 0)
+	call_predicate('$query_psi_errors2003_11_12_12_42_52_851/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_psi_errors2002_9_26_11_21_2_395/0$2', 0, 0)
+	call_predicate('$query_psi_errors2003_11_12_12_42_52_851/0$2', 0, 0)
 	fail
 
 $4:
 	proceed
-end('$query_psi_errors2002_9_26_11_21_2_395'/0):
+end('$query_psi_errors2003_11_12_12_42_52_851'/0):
 
 
 
@@ -1109,7 +1109,7 @@ end('$query_psi_errors2002_9_26_11_21_2_395'/0):
 
 
 $1:
-	execute_predicate('$query_psi_errors2002_9_26_11_21_2_395', 0)
+	execute_predicate('$query_psi_errors2003_11_12_12_42_52_851', 0)
 end('$query'/0):
 
 

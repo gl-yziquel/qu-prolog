@@ -3,7 +3,7 @@
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'integer':$1, 'atom':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
 
 $4:
 	try(1, $1)
@@ -27,7 +27,7 @@ end('$write_type'/1):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'integer':$1, 'atom':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
 
 $4:
 	try(1, $1)
@@ -51,7 +51,7 @@ end('$type_check'/1):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'integer':$1, 'atom':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
 
 $4:
 	try(2, $1)
@@ -86,7 +86,7 @@ end('$extract_value'/2):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'integer':$1, 'atom':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
 
 $4:
 	try(2, $1)
@@ -126,7 +126,7 @@ end('$make_term'/2):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 'c':$4])
+	switch_on_constant(0, 4, ['$default':$2, 'c':$4])
 
 $4:
 	try(1, $1)
@@ -490,20 +490,13 @@ end('$load_foreign_files'/2):
 
 '$foreign_functions'/4:
 
-	switch_on_term(0, $7, $3, $4, $3, $3, $5)
+	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
 
 $4:
 	try(4, $2)
 	trust($3)
 
 $5:
-	switch_on_constant(0, 4, ['default':$3, '[]':$6])
-
-$6:
-	try(4, $1)
-	trust($3)
-
-$7:
 	try(4, $1)
 	retry($2)
 	trust($3)
@@ -727,6 +720,16 @@ end('$interface_file'/3):
 
 '$gen_foreign_file/5$0/3$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -949,6 +952,16 @@ end('$gen_extern_declar'/5):
 
 '$partition_foreign_args/5$0'/1:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
 	try(1, $1)
 	trust($2)
 
@@ -1018,7 +1031,7 @@ end('$partition_foreign_args'/5):
 	switch_on_term(0, $6, 'fail', $3, $4, 'fail', 'fail')
 
 $4:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$5, '+'/1:$1, '-'/1:$2])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$5, '+'/1:$1, '-'/1:$2])
 
 $5:
 	try(5, $1)
@@ -1200,7 +1213,7 @@ end('$write_foreign_prototype'/2):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'out':$1, 'in':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'out':$1, 'in':$2])
 
 $4:
 	try(1, $1)
@@ -1408,7 +1421,7 @@ end('$write_output_args'/1):
 	switch_on_term(0, $6, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$4, 'arg'/3:$5])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$4, 'arg'/3:$5])
 
 $4:
 	try(1, $1)
@@ -1554,7 +1567,7 @@ end('$get_foreign_values'/1):
 	switch_on_term(0, $6, 'fail', 'fail', $3, 'fail', 'fail')
 
 $3:
-	switch_on_structure(0, 4, ['default':'fail', '$'/0:$4, 'arg'/3:$5])
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$4, 'arg'/3:$5])
 
 $4:
 	try(1, $1)
@@ -1769,7 +1782,7 @@ end('$write_foreign_call_arg'/1):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'out':$1, 'in':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'out':$1, 'in':$2])
 
 $4:
 	try(1, $1)
@@ -1817,7 +1830,7 @@ end('$make_output_values'/1):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, 'arg'/3:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, 'arg'/3:$5])
 
 $4:
 	try(1, $1)
@@ -2440,10 +2453,10 @@ end('$foreign_funcs'/4):
 
 '$c_name'/4:
 
-	switch_on_term(0, $9, $8, $8, $5, $8, $8)
+	switch_on_term(0, $10, $9, $9, $5, $9, $9)
 
 $5:
-	switch_on_structure(0, 4, ['default':$8, '$'/0:$6, '='/2:$7])
+	switch_on_structure(0, 8, ['$default':$9, '$'/0:$6, '='/2:$7, '/'/2:$8])
 
 $6:
 	try(4, $1)
@@ -2454,7 +2467,6 @@ $6:
 $7:
 	try(4, $1)
 	retry($2)
-	retry($3)
 	trust($4)
 
 $8:
@@ -2463,6 +2475,10 @@ $8:
 	trust($4)
 
 $9:
+	try(4, $1)
+	trust($4)
+
+$10:
 	try(4, $1)
 	retry($2)
 	retry($3)
@@ -2560,6 +2576,16 @@ end('$convert_foreign'/3):
 
 '$convert_foreign_call/5$0/3$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 

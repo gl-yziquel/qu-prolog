@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: delink.cc,v 1.3 2001/11/21 00:21:12 qp Exp $
+// $Id: delink.cc,v 1.5 2002/12/05 03:39:27 qp Exp $
 
 #include "atom_table.h"
 #include "code.h"

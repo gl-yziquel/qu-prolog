@@ -53,9 +53,11 @@
 // 
 // ##Copyright##
 //
-// $Id: objects.cc,v 1.2 2002/07/26 00:39:58 qp Exp $
+// $Id: objects.cc,v 1.3 2002/11/03 08:37:29 qp Exp $
 
 #include "objects.h"
+
+using namespace std;
 
 // The next best thing to generic dispatching
 

@@ -448,7 +448,8 @@ end('$portray_clause'/2):
 	retry($5)
 	retry($6)
 	retry($7)
-	trust($8)
+	retry($8)
+	trust($9)
 
 $1:
 	allocate(4)
@@ -552,67 +553,49 @@ $3:
 	proceed
 
 $4:
-	allocate(11)
+	allocate(9)
 	get_y_variable(3, 0)
 	get_structure(';', 2, 1)
 	unify_x_ref(0)
 	unify_y_variable(5)
 	get_structure('->', 2, 0)
-	unify_y_variable(10)
 	unify_y_variable(8)
+	unify_y_variable(6)
 	get_y_variable(2, 2)
 	get_y_variable(1, 3)
 	neck_cut
 	put_integer(2, 1)
 	pseudo_instr3(2, 22, 1, 0)
-	get_y_variable(7, 0)
-	put_y_value(3, 0)
-	put_y_variable(9, 1)
-	call_predicate('$streamnum', 2, 11)
-	put_y_value(9, 0)
-	put_y_value(2, 1)
-	call_predicate('$tab', 2, 11)
-	put_y_value(9, 0)
-	put_constant('( ', 1)
-	call_predicate('write_atom', 2, 11)
-	pseudo_instr1(53, 30)
-	put_y_value(9, 0)
-	put_y_value(10, 1)
-	put_constant('writeq', 2)
-	call_predicate('$write_t', 3, 10)
-	put_integer(10, 0)
-	pseudo_instr2(8, 29, 0)
-	put_y_value(9, 0)
-	put_y_value(7, 1)
-	call_predicate('$tab', 2, 10)
-	put_y_value(9, 0)
-	put_constant('->', 1)
-	call_predicate('write_atom', 2, 10)
-	put_integer(10, 0)
-	pseudo_instr2(8, 29, 0)
-	put_integer(2, 1)
-	pseudo_instr3(2, 27, 1, 0)
 	get_y_variable(4, 0)
 	put_y_value(3, 0)
+	put_y_variable(7, 1)
+	call_predicate('$streamnum', 2, 9)
+	put_y_value(7, 0)
+	put_y_value(2, 1)
+	call_predicate('$tab', 2, 9)
+	put_y_value(7, 0)
+	put_constant('( ', 1)
+	call_predicate('write_atom', 2, 9)
+	pseudo_instr1(53, 28)
+	put_y_value(7, 0)
 	put_y_value(8, 1)
-	put_y_value(4, 2)
-	put_constant(' ', 3)
-	call_predicate('$portray_clause_body', 4, 8)
-	put_y_value(3, 0)
-	put_y_variable(6, 1)
-	call_predicate('$streamnum', 2, 8)
-	put_y_value(6, 0)
-	put_y_value(7, 1)
-	call_predicate('$tab', 2, 7)
-	put_integer(59, 0)
-	pseudo_instr2(8, 26, 0)
+	put_constant('writeq', 2)
+	call_predicate('$write_t', 3, 8)
 	put_integer(10, 0)
-	pseudo_instr2(8, 26, 0)
+	pseudo_instr2(8, 27, 0)
+	put_y_value(7, 0)
+	put_y_value(4, 1)
+	call_predicate('$tab', 2, 8)
+	put_y_value(7, 0)
+	put_constant('->', 1)
+	call_predicate('write_atom', 2, 8)
+	put_integer(10, 0)
+	pseudo_instr2(8, 27, 0)
 	put_y_value(3, 0)
-	put_y_value(5, 1)
-	put_y_value(4, 2)
-	put_constant(' ', 3)
-	call_predicate('$portray_clause_body', 4, 4)
+	put_y_value(6, 1)
+	put_y_value(5, 2)
+	put_y_value(4, 3)
+	call_predicate('$portray_ite', 4, 4)
 	put_y_value(3, 0)
 	put_y_variable(0, 1)
 	call_predicate('$streamnum', 2, 3)
@@ -630,46 +613,32 @@ $4:
 	proceed
 
 $5:
-	allocate(9)
+	allocate(7)
 	get_y_variable(3, 0)
 	get_structure(';', 2, 1)
-	unify_y_variable(7)
 	unify_y_variable(5)
+	unify_y_variable(4)
 	get_y_variable(2, 2)
 	get_y_variable(1, 3)
 	neck_cut
-	put_y_variable(8, 1)
-	call_predicate('$streamnum', 2, 9)
-	put_y_value(8, 0)
-	put_y_value(2, 1)
-	call_predicate('$tab', 2, 9)
-	put_integer(40, 0)
-	pseudo_instr2(8, 28, 0)
-	put_integer(10, 0)
-	pseudo_instr2(8, 28, 0)
-	put_integer(2, 1)
-	pseudo_instr3(2, 22, 1, 0)
-	get_y_variable(4, 0)
-	put_y_value(3, 0)
-	put_y_value(7, 1)
-	put_y_value(4, 2)
-	put_constant(' ', 3)
-	call_predicate('$portray_clause_body', 4, 7)
-	put_y_value(3, 0)
 	put_y_variable(6, 1)
 	call_predicate('$streamnum', 2, 7)
 	put_y_value(6, 0)
 	put_y_value(2, 1)
 	call_predicate('$tab', 2, 7)
-	put_integer(59, 0)
+	put_integer(40, 0)
 	pseudo_instr2(8, 26, 0)
 	put_integer(10, 0)
 	pseudo_instr2(8, 26, 0)
+	put_integer(2, 1)
+	pseudo_instr3(2, 22, 1, 0)
+	get_x_variable(2, 0)
 	put_y_value(3, 0)
-	put_y_value(5, 1)
-	put_y_value(4, 2)
-	put_constant(' ', 3)
-	call_predicate('$portray_clause_body', 4, 4)
+	put_structure(2, 1)
+	set_constant(';')
+	set_y_value(5)
+	set_y_value(4)
+	call_predicate('$portray_disjunction', 3, 4)
 	put_y_value(3, 0)
 	put_y_variable(0, 1)
 	call_predicate('$streamnum', 2, 3)
@@ -709,6 +678,49 @@ $7:
 	execute_predicate('$portray_inner_goal', 5)
 
 $8:
+	allocate(5)
+	get_y_variable(3, 0)
+	get_structure('message_choice', 1, 1)
+	unify_y_variable(4)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
+	neck_cut
+	put_list(1)
+	set_constant('nl')
+	set_constant('[]')
+	put_list(2)
+	set_constant('message_choice (')
+	set_x_value(1)
+	put_structure(1, 3)
+	set_constant('tab')
+	set_y_value(2)
+	put_list(1)
+	set_x_value(3)
+	set_x_value(2)
+	call_predicate('write_term_list', 2, 5)
+	put_integer(2, 1)
+	pseudo_instr3(2, 22, 1, 0)
+	get_x_variable(2, 0)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	call_predicate('$portray_message_choice_block', 3, 4)
+	put_y_value(3, 0)
+	put_y_variable(0, 1)
+	call_predicate('$streamnum', 2, 3)
+	put_y_value(0, 0)
+	put_y_value(2, 1)
+	call_predicate('$tab', 2, 2)
+	put_integer(41, 0)
+	pseudo_instr2(8, 20, 0)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	call_predicate('write_atom', 2, 1)
+	put_integer(10, 0)
+	pseudo_instr2(8, 20, 0)
+	deallocate
+	proceed
+
+$9:
 	allocate(4)
 	get_y_variable(2, 1)
 	get_y_variable(3, 2)
@@ -908,8 +920,259 @@ end('$portray_inner_goal'/5):
 
 
 
+'$portray_message_choice_block'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(9)
+	get_y_variable(2, 0)
+	get_structure(';', 2, 1)
+	unify_x_ref(0)
+	unify_y_variable(1)
+	get_structure('->', 2, 0)
+	unify_y_variable(8)
+	unify_y_variable(6)
+	get_y_variable(0, 2)
+	neck_cut
+	put_integer(2, 1)
+	pseudo_instr3(2, 20, 1, 0)
+	get_y_variable(5, 0)
+	put_integer(2, 1)
+	pseudo_instr3(3, 20, 1, 0)
+	get_y_variable(4, 0)
+	put_y_value(2, 0)
+	put_y_variable(7, 1)
+	call_predicate('$streamnum', 2, 9)
+	put_y_value(7, 0)
+	put_y_value(0, 1)
+	call_predicate('$tab', 2, 9)
+	pseudo_instr1(53, 28)
+	put_y_value(7, 0)
+	put_y_value(8, 1)
+	put_constant('writeq', 2)
+	call_predicate('$write_t', 3, 8)
+	put_integer(32, 0)
+	pseudo_instr2(8, 27, 0)
+	put_integer(45, 0)
+	pseudo_instr2(8, 27, 0)
+	put_integer(62, 0)
+	pseudo_instr2(8, 27, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 27, 0)
+	put_y_value(2, 0)
+	put_y_value(6, 1)
+	put_y_value(5, 2)
+	put_constant(' ', 3)
+	call_predicate('$portray_clause_body', 4, 5)
+	put_y_value(2, 0)
+	put_y_variable(3, 1)
+	call_predicate('$streamnum', 2, 5)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	call_predicate('$tab', 2, 4)
+	put_integer(59, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 23, 0)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	deallocate
+	execute_predicate('$portray_message_choice_block', 3)
+
+$2:
+	allocate(6)
+	get_y_variable(2, 0)
+	get_structure('->', 2, 1)
+	unify_y_variable(4)
+	unify_y_variable(1)
+	get_y_variable(5, 2)
+	put_integer(2, 1)
+	pseudo_instr3(2, 25, 1, 0)
+	get_y_variable(0, 0)
+	put_y_value(2, 0)
+	put_y_variable(3, 1)
+	call_predicate('$streamnum', 2, 6)
+	put_y_value(3, 0)
+	put_y_value(5, 1)
+	call_predicate('$tab', 2, 5)
+	pseudo_instr1(53, 24)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	put_constant('writeq', 2)
+	call_predicate('$write_t', 3, 4)
+	put_integer(32, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(45, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(62, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 23, 0)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	put_constant(' ', 3)
+	deallocate
+	execute_predicate('$portray_clause_body', 4)
+end('$portray_message_choice_block'/3):
+
+
+
+'$portray_ite'/4:
+
+	try(4, $1)
+	trust($2)
+
+$1:
+	allocate(8)
+	get_y_variable(3, 0)
+	get_structure(';', 2, 2)
+	unify_x_ref(0)
+	unify_y_variable(1)
+	get_structure('->', 2, 0)
+	unify_y_variable(5)
+	unify_y_variable(2)
+	get_y_variable(0, 3)
+	neck_cut
+	put_integer(2, 2)
+	pseudo_instr3(2, 20, 2, 0)
+	get_x_variable(2, 0)
+	put_integer(2, 3)
+	pseudo_instr3(3, 20, 3, 0)
+	get_y_variable(7, 0)
+	put_y_value(3, 0)
+	put_constant(' ', 3)
+	call_predicate('$portray_clause_body', 4, 8)
+	put_y_value(3, 0)
+	put_y_variable(6, 1)
+	call_predicate('$streamnum', 2, 8)
+	put_y_value(6, 0)
+	put_y_value(7, 1)
+	call_predicate('$tab', 2, 7)
+	put_integer(59, 0)
+	pseudo_instr2(8, 26, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 26, 0)
+	put_y_value(3, 0)
+	put_y_variable(4, 1)
+	call_predicate('$streamnum', 2, 6)
+	put_y_value(4, 0)
+	put_y_value(0, 1)
+	call_predicate('$tab', 2, 6)
+	pseudo_instr1(53, 25)
+	put_y_value(4, 0)
+	put_y_value(5, 1)
+	put_constant('writeq', 2)
+	call_predicate('$write_t', 3, 5)
+	put_integer(10, 0)
+	pseudo_instr2(8, 24, 0)
+	put_y_value(4, 0)
+	put_y_value(0, 1)
+	call_predicate('$tab', 2, 5)
+	put_y_value(4, 0)
+	put_constant('->', 1)
+	call_predicate('write_atom', 2, 5)
+	put_integer(10, 0)
+	pseudo_instr2(8, 24, 0)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
+	deallocate
+	execute_predicate('$portray_ite', 4)
+
+$2:
+	allocate(5)
+	get_y_variable(2, 0)
+	get_y_variable(1, 2)
+	put_integer(2, 2)
+	pseudo_instr3(2, 3, 2, 0)
+	get_y_variable(0, 0)
+	put_integer(2, 2)
+	pseudo_instr3(3, 3, 2, 0)
+	get_y_variable(4, 0)
+	put_y_value(2, 0)
+	put_y_value(0, 2)
+	put_constant(' ', 3)
+	call_predicate('$portray_clause_body', 4, 5)
+	put_y_value(2, 0)
+	put_y_variable(3, 1)
+	call_predicate('$streamnum', 2, 5)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	call_predicate('$tab', 2, 4)
+	put_integer(59, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 23, 0)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	put_constant(' ', 3)
+	deallocate
+	execute_predicate('$portray_clause_body', 4)
+end('$portray_ite'/4):
+
+
+
+'$portray_disjunction'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(5)
+	get_y_variable(2, 0)
+	get_structure(';', 2, 1)
+	unify_x_variable(1)
+	unify_y_variable(1)
+	get_y_variable(0, 2)
+	neck_cut
+	put_integer(2, 2)
+	pseudo_instr3(3, 20, 2, 0)
+	get_y_variable(4, 0)
+	put_y_value(2, 0)
+	put_y_value(0, 2)
+	put_constant(' ', 3)
+	call_predicate('$portray_clause_body', 4, 5)
+	put_y_value(2, 0)
+	put_y_variable(3, 1)
+	call_predicate('$streamnum', 2, 5)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	call_predicate('$tab', 2, 4)
+	put_integer(59, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 23, 0)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	deallocate
+	execute_predicate('$portray_disjunction', 3)
+
+$2:
+	put_constant(' ', 3)
+	execute_predicate('$portray_clause_body', 4)
+end('$portray_disjunction'/3):
+
+
+
 '$legal_write_table/2$0'/4:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 2:$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
 	try(4, $1)
 	trust($2)
 
@@ -976,6 +1239,16 @@ end('$legal_write_table/2$0'/4):
 
 '$legal_write_table/2$1'/4:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 2:$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
 	try(4, $1)
 	trust($2)
 
@@ -1513,7 +1786,7 @@ end('$set_write_options'/9):
 	switch_on_term(0, $11, 'fail', 'fail', $9, 'fail', 'fail')
 
 $9:
-	switch_on_structure(0, 32, ['default':'fail', '$'/0:$10, 'quoted'/1:$1, 'ignore_ops'/1:$2, 'numbervars'/1:$3, 'remember_name'/1:$4, 'op_table'/1:$5, 'max_depth'/1:$6, 'obvar_prefix_table'/1:$7, '$simplify'/1:$8])
+	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$10, 'quoted'/1:$1, 'ignore_ops'/1:$2, 'numbervars'/1:$3, 'remember_name'/1:$4, 'op_table'/1:$5, 'max_depth'/1:$6, 'obvar_prefix_table'/1:$7, '$simplify'/1:$8])
 
 $10:
 	try(9, $1)
@@ -1613,7 +1886,7 @@ end('$process_option'/3):
 	switch_on_term(0, $13, 'fail', 'fail', $10, 'fail', $12)
 
 $10:
-	switch_on_structure(0, 16, ['default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeTq'/1:$7, 'writeRT'/1:$8, 'writeRTq'/1:$9])
+	switch_on_structure(0, 16, ['$default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeTq'/1:$7, 'writeRT'/1:$8, 'writeRTq'/1:$9])
 
 $11:
 	try(2, $1)
@@ -1623,7 +1896,7 @@ $11:
 	trust($9)
 
 $12:
-	switch_on_constant(0, 8, ['default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
+	switch_on_constant(0, 8, ['$default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
 
 $13:
 	try(2, $1)
@@ -1696,7 +1969,7 @@ end('$get_depth'/2):
 	switch_on_term(0, $13, 'fail', 'fail', $10, 'fail', $12)
 
 $10:
-	switch_on_structure(0, 16, ['default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeTq'/1:$7, 'writeRT'/1:$8, 'writeRTq'/1:$9])
+	switch_on_structure(0, 16, ['$default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeTq'/1:$7, 'writeRT'/1:$8, 'writeRTq'/1:$9])
 
 $11:
 	try(1, $1)
@@ -1706,7 +1979,7 @@ $11:
 	trust($9)
 
 $12:
-	switch_on_constant(0, 8, ['default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
+	switch_on_constant(0, 8, ['$default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
 
 $13:
 	try(1, $1)
@@ -1769,7 +2042,7 @@ end('$do_write_simplify'/1):
 	switch_on_term(0, $13, 'fail', 'fail', $10, 'fail', $12)
 
 $10:
-	switch_on_structure(0, 16, ['default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeRT'/1:$7, 'writeTq'/1:$8, 'writeRTq'/1:$9])
+	switch_on_structure(0, 16, ['$default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeRT'/1:$7, 'writeTq'/1:$8, 'writeRTq'/1:$9])
 
 $11:
 	try(2, $1)
@@ -1779,7 +2052,7 @@ $11:
 	trust($9)
 
 $12:
-	switch_on_constant(0, 8, ['default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
+	switch_on_constant(0, 8, ['$default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
 
 $13:
 	try(2, $1)
@@ -1860,7 +2133,7 @@ end('$get_optable'/2):
 	switch_on_term(0, $13, 'fail', 'fail', $10, 'fail', $12)
 
 $10:
-	switch_on_structure(0, 16, ['default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeRT'/1:$7, 'writeTq'/1:$8, 'writeRTq'/1:$9])
+	switch_on_structure(0, 16, ['$default':'fail', '$'/0:$11, 'wflags'/8:$1, 'writeT'/1:$6, 'writeRT'/1:$7, 'writeTq'/1:$8, 'writeRTq'/1:$9])
 
 $11:
 	try(2, $1)
@@ -1870,7 +2143,7 @@ $11:
 	trust($9)
 
 $12:
-	switch_on_constant(0, 8, ['default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
+	switch_on_constant(0, 8, ['$default':'fail', 'write':$2, 'writeq':$3, 'writeR':$4, 'writeRq':$5])
 
 $13:
 	try(2, $1)
@@ -1948,6 +2221,16 @@ end('$get_obprefix'/2):
 
 '$do_name_vars/1$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'true':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -1969,7 +2252,7 @@ end('$do_name_vars/1$0'/2):
 	switch_on_term(0, $9, 'fail', 'fail', $6, 'fail', $8)
 
 $6:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeRT'/1:$4, 'writeRTq'/1:$5])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeRT'/1:$4, 'writeRTq'/1:$5])
 
 $7:
 	try(1, $1)
@@ -1977,7 +2260,7 @@ $7:
 	trust($5)
 
 $8:
-	switch_on_constant(0, 4, ['default':'fail', 'writeR':$2, 'writeRq':$3])
+	switch_on_constant(0, 4, ['$default':'fail', 'writeR':$2, 'writeRq':$3])
 
 $9:
 	try(1, $1)
@@ -2020,7 +2303,7 @@ end('$do_name_vars'/1):
 	switch_on_term(0, $9, 'fail', 'fail', $6, 'fail', $8)
 
 $6:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeRTq'/1:$4, 'writeTq'/1:$5])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeRTq'/1:$4, 'writeTq'/1:$5])
 
 $7:
 	try(1, $1)
@@ -2028,7 +2311,7 @@ $7:
 	trust($5)
 
 $8:
-	switch_on_constant(0, 4, ['default':'fail', 'writeq':$2, 'writeRq':$3])
+	switch_on_constant(0, 4, ['$default':'fail', 'writeq':$2, 'writeRq':$3])
 
 $9:
 	try(1, $1)
@@ -2071,7 +2354,7 @@ end('$do_writeq_obvar'/1):
 	switch_on_term(0, $9, 'fail', 'fail', $6, 'fail', $8)
 
 $6:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeRT'/1:$4, 'writeRTq'/1:$5])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeRT'/1:$4, 'writeRTq'/1:$5])
 
 $7:
 	try(1, $1)
@@ -2079,7 +2362,7 @@ $7:
 	trust($5)
 
 $8:
-	switch_on_constant(0, 4, ['default':'fail', 'writeR':$2, 'writeRq':$3])
+	switch_on_constant(0, 4, ['$default':'fail', 'writeR':$2, 'writeRq':$3])
 
 $9:
 	try(1, $1)
@@ -2121,7 +2404,7 @@ end('$do_remember_name'/1):
 	switch_on_term(0, $9, 'fail', 'fail', $6, 'fail', $8)
 
 $6:
-	switch_on_structure(0, 8, ['default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeTq'/1:$4, 'writeRTq'/1:$5])
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$7, 'wflags'/8:$1, 'writeTq'/1:$4, 'writeRTq'/1:$5])
 
 $7:
 	try(1, $1)
@@ -2129,7 +2412,7 @@ $7:
 	trust($5)
 
 $8:
-	switch_on_constant(0, 4, ['default':'fail', 'writeq':$2, 'writeRq':$3])
+	switch_on_constant(0, 4, ['$default':'fail', 'writeq':$2, 'writeRq':$3])
 
 $9:
 	try(1, $1)
@@ -2780,6 +3063,16 @@ end('$write_sub'/4):
 
 '$write_subpair/5$0'/2:
 
+	switch_on_term(0, $5, $1, $1, $1, $1, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$1, 400:$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -4078,6 +4371,12 @@ end('$write_list_tail'/4):
 
 '$write_uniopNF/7$0/9$0'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 'fx':$1, 'fy':$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -4532,82 +4831,79 @@ end('$writepostop'/8):
 
 
 
-'$writeinop/9$0'/9:
+'$writeinop/9$0'/10:
 
-	try(9, $1)
+	try(10, $1)
 	trust($2)
 
 $1:
-	get_x_variable(9, 0)
-	get_x_variable(0, 1)
+	get_x_variable(10, 1)
 	allocate(6)
 	get_y_variable(4, 2)
-	get_y_variable(3, 3)
-	get_x_variable(1, 4)
-	get_y_variable(2, 5)
-	get_y_variable(1, 6)
+	get_x_variable(1, 3)
+	get_y_variable(3, 4)
+	get_x_variable(3, 5)
+	get_y_variable(2, 6)
 	get_y_variable(5, 7)
-	get_y_variable(0, 8)
-	pseudo_instr2(1, 9, 0)
-	pseudo_instr2(1, 24, 0)
+	get_y_variable(1, 8)
+	get_y_variable(0, 9)
+	pseudo_instr2(2, 0, 10)
 	neck_cut
-	put_y_value(3, 0)
-	put_y_value(2, 2)
-	put_x_value(9, 3)
-	put_y_value(1, 4)
+	put_y_value(4, 0)
+	put_y_value(3, 2)
+	put_y_value(2, 4)
 	call_predicate('$write_term', 5, 6)
 	put_integer(32, 0)
-	pseudo_instr2(8, 23, 0)
-	put_y_value(3, 0)
+	pseudo_instr2(8, 24, 0)
+	put_y_value(4, 0)
 	put_y_value(5, 1)
-	put_y_value(2, 2)
+	put_y_value(3, 2)
 	call_predicate('$write_atom', 3, 5)
 	put_integer(32, 0)
-	pseudo_instr2(8, 23, 0)
-	put_y_value(3, 0)
-	put_y_value(0, 1)
-	put_y_value(2, 2)
-	put_y_value(4, 3)
-	put_y_value(1, 4)
+	pseudo_instr2(8, 24, 0)
+	put_y_value(4, 0)
+	put_y_value(1, 1)
+	put_y_value(3, 2)
+	put_y_value(0, 3)
+	put_y_value(2, 4)
 	deallocate
 	execute_predicate('$write_term', 5)
 
 $2:
-	get_x_variable(9, 0)
 	allocate(6)
-	get_y_variable(4, 2)
-	get_y_variable(0, 3)
-	get_x_variable(1, 4)
-	get_y_variable(3, 5)
-	get_y_variable(2, 6)
+	get_y_variable(0, 2)
+	get_x_variable(1, 3)
+	get_y_variable(4, 4)
+	get_x_variable(3, 5)
+	get_y_variable(3, 6)
 	get_y_variable(5, 7)
-	get_y_variable(1, 8)
+	get_y_variable(2, 8)
+	get_y_variable(1, 9)
 	put_integer(40, 0)
 	pseudo_instr2(8, 20, 0)
 	put_y_value(0, 0)
-	put_y_value(3, 2)
-	put_x_value(9, 3)
-	put_y_value(2, 4)
+	put_y_value(4, 2)
+	put_y_value(3, 4)
 	call_predicate('$write_term', 5, 6)
 	put_integer(32, 0)
 	pseudo_instr2(8, 20, 0)
 	put_y_value(0, 0)
 	put_y_value(5, 1)
-	put_y_value(3, 2)
+	put_y_value(4, 2)
 	call_predicate('$write_atom', 3, 5)
 	put_integer(32, 0)
 	pseudo_instr2(8, 20, 0)
 	put_y_value(0, 0)
-	put_y_value(1, 1)
-	put_y_value(3, 2)
-	put_y_value(4, 3)
-	put_y_value(2, 4)
+	put_y_value(2, 1)
+	put_y_value(4, 2)
+	put_y_value(1, 3)
+	put_y_value(3, 4)
 	call_predicate('$write_term', 5, 1)
 	put_integer(41, 0)
 	pseudo_instr2(8, 20, 0)
 	deallocate
 	proceed
-end('$writeinop/9$0'/9):
+end('$writeinop/9$0'/10):
 
 
 
@@ -4615,25 +4911,26 @@ end('$writeinop/9$0'/9):
 
 
 $1:
-	get_x_variable(9, 0)
-	get_x_variable(10, 1)
-	get_x_variable(11, 2)
-	get_x_variable(12, 3)
+	get_x_variable(10, 0)
+	get_x_variable(11, 1)
+	get_x_variable(12, 2)
+	get_x_variable(13, 3)
 	get_x_variable(1, 4)
-	get_x_variable(0, 6)
-	get_x_variable(2, 7)
-	pseudo_instr2(69, 8, 3)
-	get_x_variable(6, 3)
-	put_integer(1, 4)
-	pseudo_instr3(1, 4, 10, 3)
-	get_x_variable(4, 3)
-	put_integer(2, 5)
-	pseudo_instr3(1, 5, 10, 3)
-	get_x_variable(8, 3)
-	put_x_value(9, 3)
-	put_x_value(11, 5)
-	put_x_value(12, 7)
-	execute_predicate('$writeinop/9$0', 9)
+	get_x_variable(0, 5)
+	get_x_variable(5, 6)
+	get_x_variable(9, 7)
+	pseudo_instr2(69, 8, 2)
+	get_x_variable(6, 2)
+	put_integer(1, 3)
+	pseudo_instr3(1, 3, 11, 2)
+	get_x_variable(3, 2)
+	put_integer(2, 4)
+	pseudo_instr3(1, 4, 11, 2)
+	get_x_variable(8, 2)
+	put_x_value(10, 2)
+	put_x_value(12, 4)
+	put_x_value(13, 7)
+	execute_predicate('$writeinop/9$0', 10)
 end('$writeinop'/9):
 
 
@@ -4764,7 +5061,7 @@ end('$write_term_list'/2):
 	switch_on_term(0, $29, $13, $13, $14, $13, $26)
 
 $14:
-	switch_on_structure(0, 32, ['default':$13, '$'/0:$15, 'tab'/1:$16, 'pc'/1:$17, 'wa'/1:$18, 'wqa'/1:$19, 'wi'/1:$20, 'q'/1:$21, 'w'/1:$22, 'wRq'/1:$23, 'wR'/1:$24, 'wl'/2:$25])
+	switch_on_structure(0, 32, ['$default':$13, '$'/0:$15, 'tab'/1:$16, 'pc'/1:$17, 'wa'/1:$18, 'wqa'/1:$19, 'wi'/1:$20, 'q'/1:$21, 'w'/1:$22, 'wRq'/1:$23, 'wR'/1:$24, 'wl'/2:$25])
 
 $15:
 	try(2, $2)
@@ -4820,7 +5117,7 @@ $25:
 	trust($13)
 
 $26:
-	switch_on_constant(0, 4, ['default':$13, 'nl':$27, 'sp':$28])
+	switch_on_constant(0, 4, ['$default':$13, 'nl':$27, 'sp':$28])
 
 $27:
 	try(2, $1)

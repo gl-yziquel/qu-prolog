@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: sub_escape.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: sub_escape.h,v 1.2 2003/06/26 00:10:40 qp Exp $
 
 #ifndef	SUB_ESCAPE_H
 #define	SUB_ESCAPE_H
@@ -95,12 +95,14 @@ ReturnValue psi_build_sub_term(Object *& , Object *& , Object *& );
 ReturnValue psi_empty_sub(Object *& );
 
 //
-// psi_new_sub(size, existing_sub, new_sub)
-// Create a new empty substitution of a given size and link it with existing
-// substitutions.
-// mode(in, in, out)
+// psi_new_sub(size, existing_sub, sublist, new_sub)
+// Create a new empty substitution block of a given size and link it with
+// existing substitutions.
+// mode(in, in, in, out)
 //
-ReturnValue psi_new_sub(Object *& , Object *& , Object *& );
+ReturnValue psi_new_sub(Object *&, Object *&, Object *&, Object *&);
+
+
 
 //
 // psi_next_sub(subptr0, subptr1)

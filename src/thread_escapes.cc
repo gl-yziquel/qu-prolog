@@ -53,13 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_escapes.cc,v 1.11 2002/07/09 02:00:51 qp Exp $
+// $Id: thread_escapes.cc,v 1.18 2003/09/28 07:53:37 qp Exp $
 
 #include <errno.h>
 
 #include "config.h"
 
-#include "cond_list.h"
 #include "global.h"
 #include "thread_qp.h"
 #include "thread_decode.h"
@@ -132,11 +131,18 @@ Thread::psi_thread_fork(Object *& name_arg,
 
   // Allocate storage.
   Thread *thread = new Thread(this,	// This thread is the parent
-			      *thread_options);
-  if (thread == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
+			      scratchpad_size,
+			      heap_size,
+			      binding_trail_size,
+			      object_trail_size,
+			      ip_trail_size,
+			      tag_trail_size,
+			      ref_trail_size,
+			      env_size,
+			      choice_size,
+			      name_table_size,
+			      ip_table_size);
+			      //*thread_options);
 
   const ThreadTableLoc loc = thread_table->AddID(thread);
   if (loc == (ThreadTableLoc) -1)
@@ -185,7 +191,7 @@ Thread::psi_thread_fork(Object *& name_arg,
   else
     {
       // The thread neads a name
-      const char *symbol = thread_table->MakeName(loc);
+      const char *symbol = thread_table->MakeName(loc).c_str();
       thread->TInfo().SetSymbol(symbol);
       if (!unify(argN, atoms->add(symbol)))
 	{
@@ -223,14 +229,7 @@ Thread::psi_thread_fork(Object *& name_arg,
   thread->Condition(RUNNABLE);
 
   // Add it to the run queue
-  SchedRec *sched_rec = new SchedRec(*thread);
-  if (sched_rec == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
-  scheduler->insertThread(this, sched_rec);
-
+  scheduler->insertThread(this, thread);
 
   return RV_SUCCESS;
 }
@@ -252,7 +251,7 @@ Thread::psi_thread_symbol(Object *& thread_arg, Object *& name_arg)
 
   if (nameT->isAtom())
     {
-      const String symbol(atoms->getAtomString(OBJECT_CAST(Atom*, nameT)));
+      const string symbol(atoms->getAtomString(OBJECT_CAST(Atom*, nameT)));
       ThreadTableLoc loc = thread_table->LookupName(symbol);
       if (loc == (ThreadTableLoc) -1)
 	{
@@ -273,7 +272,7 @@ Thread::psi_thread_symbol(Object *& thread_arg, Object *& name_arg)
 	  return RV_FAIL;
 	}
       
-      return BOOL_TO_RV(unify(nameT, atoms->add(thread->TInfo().Symbol())));
+      return BOOL_TO_RV(unify(nameT, atoms->add(thread->TInfo().Symbol().c_str())));
     }
 }
 
@@ -299,7 +298,7 @@ Thread::psi_thread_set_symbol(Object *& name_arg)
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
 
-  const String new_symbol(atoms->getAtomString(OBJECT_CAST(Atom*, argN)));
+  const string new_symbol(atoms->getAtomString(OBJECT_CAST(Atom*, argN)));
 
   // No change?
   if (TInfo().SymbolSet() && TInfo().Symbol() == new_symbol)
@@ -314,11 +313,11 @@ Thread::psi_thread_set_symbol(Object *& name_arg)
       //
 
       // If there was already a symbol for this thread...
-      if (TInfo().SymbolSet())
-	{
-	  // Remove previous entry from thread table.
-	  thread_table->RemoveName(TInfo().Symbol());
-	}
+      // if (TInfo().SymbolSet())
+// 	{
+// 	  // Remove previous entry from thread table.
+// 	  thread_table->RemoveName(TInfo().Symbol());
+// 	}
 
       // Add the new entry to the thread table
       const bool success =
@@ -433,13 +432,7 @@ Thread::psi_thread_set_goal(Object *& thread_arg,
       thread->Condition(RUNNABLE);
 
       // Add it to the run queue
-      SchedRec *sched_rec = new SchedRec(*thread);
-      if (sched_rec == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
-
-      scheduler->insertThread(this, sched_rec);
+      scheduler->insertThread(this, thread);
 
       // Away we go!
       return RV_SUCCESS;
@@ -589,11 +582,6 @@ Thread::psi_thread_suspend(Object *& thread_id_cell)
   DECODE_THREAD_ARG(heap, thread_id_arg, *thread_table, 1, thread);
   
   SchedRec *sched_rec = new SchedRec(*thread);
-  if (sched_rec == NULL)
-    {
-      // XXX Fatal or exception or fail?
-      Fatal(__FUNCTION__, "Couldn't allocate sched rec");
-    }
 
   switch (thread->Condition())
     {
@@ -667,11 +655,6 @@ Thread::psi_thread_resume(Object *& thread_id_cell)
   DECODE_THREAD_ARG(heap, thread_id_arg, *thread_table, 1, thread);
 
   SchedRec *sched_rec = new SchedRec(*thread);
-  if (sched_rec == NULL)
-    {
-      // XXX Exception or error or fail?
-      Fatal(__FUNCTION__, "Couldn't allocate sched rec\n");
-    }
 
   switch (thread->Condition())
     {
@@ -765,25 +748,22 @@ Thread::psi_thread_wait(Object *& conditions_arg)
 			       db_flag,
 			       record_db_flag,
 			       timeout);
-  if (block_status.IsTimedOut())
+  if (block_status.isRestarted())
     {
       return RV_SUCCESS;
     }
-  else if (block_status.testBlockWait())
+  else if (db_flag || record_db_flag)
     {
-      if (db_flag && block_status.DBStamp() < code->GetStamp() ||
-          record_db_flag && block_status.RecordDBStamp() < record_db->GetStamp())
-        {
-          return RV_SUCCESS;
-        }
-      else
-	{
-	  return RV_BLOCK;
-	}
+      BlockingWaitObject* bwo = new BlockingWaitObject(this, code, timeout);
+      scheduler->blockedQueue().push_back(bwo);
+      block_status.setBlocked();
+      return RV_BLOCK;
     }
-  else
+  else 
     {
-      block_status.setBlockWait(code->GetStamp(), record_db->GetStamp(), timeout);
+      BlockingTimeoutObject* bto = new BlockingTimeoutObject(this, timeout);
+      scheduler->blockedQueue().push_back(bto);
+      block_status.setBlocked();
       return RV_BLOCK;
     }
 }
@@ -971,6 +951,8 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
 
   DEBUG_ASSERT(thread->Condition() == RUNNABLE);
 
+  thread->refTrail.backtrackTo(0);
+  //
   // If the thread is the initial thread then exit the application.
   if (thread->TInfo().Initial())
     {

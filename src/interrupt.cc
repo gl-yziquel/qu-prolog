@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: interrupt.cc,v 1.3 2000/12/13 23:10:01 qp Exp $
+// $Id: interrupt.cc,v 1.4 2002/11/03 08:37:28 qp Exp $
 
-#include	<iostream.h>
+#include	<iostream>
 #include	<signal.h>
 
 #include "global.h"

@@ -1,0 +1,86 @@
+#! /bin/sh
+# the next line restarts using wish \
+exec wish "$0" "$@"
+
+# load icm interface functions
+load @QPHOME@/bin/tkICM.so tkICM
+
+#
+# A GUI template - add to this file to define a new GUI that
+# uses ICM communication.
+#
+# Get the runtime arguments (if required)
+set thread_name [lindex $argv 0]
+set process_id [lindex $argv 1]
+
+# The GUI needs a name so that it can register with the ICM.
+# The following example uses the runtime arguments above.
+# WARNING: gui_name needs to have some value that will be accepted as
+# a process name by the ICM.
+#
+set gui_name ${thread_name}_${process_id}_gui
+
+# Initialises the ICM-Comms
+# icmInitComms port ipaddress
+# if port is 0 then the default ICM port is used.
+# if ipaddress is "" then the ICM on the current machine is used.
+# NOTE : if non-defaults are needed to connect to the appropriate
+# ICM then the values could be passed in as runtime arguments.
+# See qp_gui for an example.
+icmInitComms 0 ""
+
+# Register the ICM-agent using gui_name as the name of this process
+# and returning the file handle for incoming messages
+set icm_channel [icmRegisterAgent $gui_name]
+
+# Set up the ICM file event
+fconfigure $icm_channel -blocking 0 -buffering line
+fileevent  $icm_channel readable {eval [icm_msg_read]}
+
+
+###################################################################
+# The following function reads ICM messages from ICM
+# and calls a user defined function process_icm_message that takes
+# the message and the sender address.
+# The special message $exit_gui causes the GUI to exit.
+#
+# Do not change any of the following message processing code.
+# 
+
+# The function called for ICM read events.
+proc icm_msg_read {} {
+    while {[icmMsgAvail] == "yes"} {
+      icm_msg_read_one
+    }
+}
+
+proc icm_msg_read_one {} {
+    set icm_msg [icmGetMsg]
+    if { [lindex $icm_msg 0] == "\$exit_gui"} {
+        exit 0
+    } else {
+        process_icm_message [lindex $icm_msg 0] [lindex $icm_msg 1] [lindex $icm_msg 2]
+    }
+}
+
+
+
+############# end of ICM message processing ####################
+
+# The GUI should deregister itself when it gets destroyed.
+
+bind .appio <Destroy> {
+        icmDeregisterAgent
+        }
+
+
+# Now you are ready to define your GUI below.
+
+# First you need to fill out the definition of the following function 
+# that is used in the ICM message processing.
+# msg is the received message, addr is the address of the sender
+# reply is the reply-to address - all as strings.
+
+proc process_icm_message {msg addr reply} {
+}
+

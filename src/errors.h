@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: errors.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: errors.h,v 1.4 2002/12/05 03:39:27 qp Exp $
 
 #ifndef	ERRORS_H
 #define	ERRORS_H
@@ -87,16 +87,22 @@ extern	const char	*ErrArea;
 //
 // Just print out the message and continue the execution.
 //
-extern	void	Warning(const char *where,
-			const char *message,
-			...);
 
+void Warning(const char *where, const char *message);
+void WarningS(const char *where, const char *message, 
+	      const char *extra_message);
 //
 // Print out the message and exit with an error code.
 //
-extern	void	Fatal(const char *where,
-		      const char *message,
-		      ...) NO_RETURN;
+//
+// Print out the message and exit with an error code.
+//
+extern  void    Fatal(const char *where,
+                      const char *message) NO_RETURN;
+
+extern  void    FatalS(const char *where,
+		       const char *message,
+		       const char *extra_message) NO_RETURN;
 
 //
 // Print out the usage message.
@@ -114,7 +120,6 @@ extern void Usage(const char *program,
 extern	void	SegmentTooLarge(const char *where,
 				const char *which
 				) NO_RETURN;
-extern	void	OutOfMemory(const char *where) NO_RETURN;
 extern	void	OutOfPage(const char *where,
 			  const char *which,
 			  const word32 size) NO_RETURN;
@@ -147,16 +152,13 @@ extern void OutOfHeapSpace(const char *where, char *which,
 // A system call that indicates failure by returning a non-0 value.
 // In this case, the error is indicated by the return value.
 //
-#define SYSTEM_CALL_NON_ZERO(f)				\
-do {							\
-  const int result = (f);				\
-  if (result != 0)					\
-    {							\
-      Fatal(__FUNCTION__, "(%ld) %s failed: %s",	\
-            pthread_self(),				\
-	    #f,						\
-	    strerror(result));				\
-    }							\
+#define SYSTEM_CALL_NON_ZERO(f)				               \
+do {							               \
+  const int result = (f);				               \
+  if (result != 0)					               \
+    {                                                                  \
+      FatalS(#f, " failed: ", strerror(result));  	       \
+    }							               \
 } while (0)
 
 //
@@ -168,7 +170,7 @@ do {									\
   if ((f) < 0)								\
     {									\
       perror(__FUNCTION__);						\
-      Fatal(__FUNCTION__, "(%ld) %s failed", pthread_self(), #f);	\
+      Fatal(#f, " failed");	                                \
     }									\
 } while (0)
 
@@ -194,8 +196,7 @@ do {									\
     }									\
   else									\
     {									\
-      Fatal(__FUNCTION__, "(%ld) %s failed: %ld %s", pthread_self(),	\
-	    #f, result, strerror(result));				\
+      FatalS(#f,  " failed: ", strerror(result)); \
       return false;							\
     }									\
 } while (0)

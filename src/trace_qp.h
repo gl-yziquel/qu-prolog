@@ -55,10 +55,12 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: trace_qp.h,v 1.2 2001/11/21 00:21:18 qp Exp $
+// $Id: trace_qp.h,v 1.3 2002/12/20 02:15:54 qp Exp $
 
 #ifndef TRACE_QP_H
 #define TRACE_QP_H
+
+#ifdef DEBUG
 
 #include <stdarg.h>
 
@@ -182,6 +184,7 @@ public:
   void TraceEnd(Thread& th);
 };
 
+#endif // DEBUG
 #endif	// TRACE_QP_H
 
 

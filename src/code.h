@@ -54,12 +54,12 @@
 // 
 // ##Copyright##
 //
-// $Id: code.h,v 1.4 2001/11/21 00:21:11 qp Exp $ 
+// $Id: code.h,v 1.5 2002/11/03 08:37:24 qp Exp $ 
 
 #ifndef	CODE_H
 #define	CODE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "config.h"
 

@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_table.cc,v 1.3 2001/02/22 21:47:00 qp Exp $
+// $Id: thread_table.cc,v 1.6 2003/10/03 01:19:40 qp Exp $
 
 #include <sys/types.h>
-#include <strstream.h>
+#include <sstream>
 
 #include "config.h"
 
@@ -67,47 +67,46 @@
 //
 // Hash table for mapping from thread names to thread ids.
 //
-char*
+string&
 ThreadTable::MakeName(const ThreadTableLoc loc)
 {
-  ostrstream strm(name_buff, ATOM_LENGTH);
+  ostringstream strm;
+  ThreadHashTableEntry entry;
+  entry.setSymbol(&symbol);
 
   while (true)
     {
-      strm.seekp(0);
-      if (strm.good() && strm.form("thread%d", next_id).fail())
-	{
-	  Fatal(__FUNCTION__, "problem generating thread ID");
-	}
-      strm << ends;
-      String symbol(name_buff);
-      HashTableKey key(symbol);
-
-      const ThreadTableLoc index = hash_table.Search(key);
-      HashTableEntry& entry = hash_table.GetEntry(index);
+      strm.str("");
+      strm << "thread" <<  next_id;
+      symbol = strm.str();
+      int index = hash_table.search(entry);
       next_id++;
-      if (entry.isEmpty())
+      if (index == -1)
 	{
-	  entry.Assign(loc, symbol);
-	  return (name_buff);
+          ThreadHashTableEntry* new_entry = new ThreadHashTableEntry;
+	  new_entry->Assign(loc, symbol);
+          hash_table.insert(*new_entry, index);
+          return (symbol);
 	}
     }
   DEBUG_ASSERT(false);
-  return (NULL);
+  return (symbol);
 }
 
 bool
-ThreadTable::AddName(const String& symbol,	// Name of the thread
+ThreadTable::AddName(const string& symbol,	// Name of the thread
 		     const ThreadTableLoc loc)	// Thread id
 {
-  HashTableKey key(symbol);
+  string sym(symbol);
+  ThreadHashTableEntry entry;
+  entry.setSymbol(&sym);
 
-  const ThreadTableLoc index = hash_table.Search(key);
-  HashTableEntry& entry = hash_table.GetEntry(index);
-
-  if (entry.isEmpty())
+  int index = hash_table.search(entry);
+  if (index == -1)
     {
-      entry.Assign(loc, symbol);
+      ThreadHashTableEntry* new_entry = new ThreadHashTableEntry;
+      new_entry->Assign(loc, symbol);
+      hash_table.insert(*new_entry, index);
 
       return true;
     }
@@ -118,31 +117,31 @@ ThreadTable::AddName(const String& symbol,	// Name of the thread
 }
 
 ThreadTableLoc
-ThreadTable::LookupName(const String& str) const
+ThreadTable::LookupName(const string& str) const
 {
-  HashTableKey key(str);
+  string sym(str);
+  ThreadHashTableEntry entry;
+  entry.setSymbol(&sym);
 
-  const ThreadTableLoc index = hash_table.Search(key);
-  const HashTableEntry& entry = hash_table.InspectEntry(index);
-  if (entry.isEmpty())
+  const int index = hash_table.search(entry);
+  if (index == -1)
     {
       return (ThreadTableLoc) -1;
     }
-
-  return entry.Loc();
+  return hash_table.getEntry(index).Loc();
 }
 
 void
-ThreadTable::RemoveName(const String& symbol)
-{
-  HashTableKey key(symbol);
+ThreadTable::RemoveName(const string& symbol)
+{ 
+  string sym(symbol);
+  ThreadHashTableEntry entry;
+  entry.setSymbol(&sym);
 
-  const ThreadTableLoc index = hash_table.Search(key);
-  HashTableEntry& entry = hash_table.GetEntry(index);
-
-  if (!entry.isEmpty())
+  const int index = hash_table.search(entry);
+  if (index != -1)
     {
-      entry.Clear();
+      hash_table.getEntry(index).makeRemoved();
     }
 }
 
@@ -197,8 +196,7 @@ ThreadTable::RemoveID(const ThreadTableLoc loc)
 ostream&
 operator<<(ostream& ostrm, ThreadTable& thread_table)
 {
-  ostrm.form("%6s %-9s %-20s %-40s\n",
-	     "QPID", "STATUS", "SYMBOL", "GOAL");
+  ostrm << "QPID\tSYMBOL\tGOAL" << endl;
 
   for (ThreadTableLoc loc = 0;
        loc < thread_table.Size();
@@ -208,7 +206,7 @@ operator<<(ostream& ostrm, ThreadTable& thread_table)
 	{
 	  Thread& thread = *(thread_table.LookupID(loc));
 
-	  ostrm.form("%6ld ", loc);
+	  ostrm << loc << "\t";
 	  ostrm << thread << endl;
 	}
     }

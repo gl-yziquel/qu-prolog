@@ -1,4 +1,4 @@
-Installing Qu-Prolog 6.0
+Installing Qu-Prolog 6.2
 
 Execute the following
 
@@ -34,7 +34,16 @@ This should also be the location of libtcl.so but if not try
 If configure can't find tk.h then try
 ./configure --with-tkinclude=PATH
 
-The high-level communication of Qu-Prolog 6.0 relies on the ICM package.
+On some machines the paths for the includes for the STL libraries are 
+not automatically set by gcc. If you get a compiler error saying that it 
+can't find sstream then try
+locate sstream
+to find the path to the STL include directory.
+Then try
+./configure --with-gcclib=PATH
+where PATH is the path to the STL library includes.
+
+The high-level communication of Qu-Prolog 6.2 relies on the ICM package.
 If this is not present on your system then Qu-Prolog will build without the
 communication.
 
@@ -47,3 +56,23 @@ find it and build a system with high-level communication.
 Qu-Prolog has been build on LINUX (Redhat 5.2 or greater).
 
 It has also been ported to SOLARIS using the gcc version 2.95.2 compiler.
+
+
+Installing on MacOSX
+--------------------
+This port is unfinished - the Tcl/Tk interpreter does not work.
+Before running configure you should do the following
+
+mv src/tkICM_OSX.c src/tkICM.c
+
+and you should install the dynamic library linker (dlcompat) from
+http://www.opendarwin.org/projects/dlcompat
+
+Although the Tcl/Tk interpreter does not work you will still need to have 
+Tcl/Tk installed.
+
+After this you can build the system as described above - i.e.
+
+./configure
+source PROFILE_CMDS
+make

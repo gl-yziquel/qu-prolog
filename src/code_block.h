@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: code_block.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: code_block.h,v 1.3 2002/11/08 00:44:14 qp Exp $
 
 #ifndef	CODE_BLOCK_H
 #define	CODE_BLOCK_H
 
-#include <stream.h>
+//#include <stream>
 
 #include "int.h"
 #include "code.h"
@@ -87,11 +87,6 @@ private:
       u_long new_size = size * 2;
       char *tmp = new char[new_size];
       
-      if (tmp == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}
-      
       memcpy(tmp, code, size);
       
       delete [] code;
@@ -111,10 +106,7 @@ public:
       size(INIT_CODE_SIZE),
       current(0)
   {
-    if (code == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
+
   }
 
   ~CodeBlock(void)

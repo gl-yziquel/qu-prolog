@@ -54,12 +54,14 @@
 // 
 // ##Copyright##
 //
-// $Id: atom_table.h,v 1.2 2000/12/13 23:10:00 qp Exp $
+// $Id: atom_table.h,v 1.5 2002/11/13 04:04:13 qp Exp $
 
 #ifndef ATOM_TABLE_H
 #define ATOM_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
+#include <string>
+
 
 #include "config.h"
 
@@ -68,7 +70,7 @@
 #include "hash_table.h"
 #include "magic.h"
 #include "qem_options.h"
-#include "string_qp.h"
+//#include "string_qp.h"
 #include "string_table.h"
 
 class Atom;
@@ -511,9 +513,10 @@ public:
   // Add a new entry to the atom table.
   //
   Atom *add(const char *string);
-  inline Atom *add(const String& string)
+
+  inline Atom *add(const string& s)
     {
-      return add(string.Str());
+      return add(s.c_str());
     }
 
   bool atomToBool(Object* c);
@@ -531,7 +534,7 @@ const StringTab& getStringTable(void) const { return(stringTable); }
   //
   // Save the atom table.
   //
-  void save(ostream& ostrm) const
+  void save(std::ostream& ostrm) const
     {
       saveTable(ostrm, ATOM_TABLE_MAGIC_NUMBER);
     }
@@ -539,7 +542,7 @@ const StringTab& getStringTable(void) const { return(stringTable); }
   //
   // Restore the atom table.
   //
-  void load(istream& istrm)
+  void load(std::istream& istrm)
     {
       loadTable(istrm);
     }
@@ -547,7 +550,7 @@ const StringTab& getStringTable(void) const { return(stringTable); }
   //
   // Save the string table.
   //
-  void saveStringTable(ostream& ostrm) const
+  void saveStringTable(std::ostream& ostrm) const
     {
       stringTable.save(ostrm);
     }
@@ -555,7 +558,7 @@ const StringTab& getStringTable(void) const { return(stringTable); }
   //
   // Restore the string table.
   //
-  void loadStringTable(istream& istrm)
+  void loadStringTable(std::istream& istrm)
     {
       stringTable.load(istrm);
     }

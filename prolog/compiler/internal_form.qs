@@ -3,7 +3,7 @@
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, ':-'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ':-'/2:$5])
 
 $4:
 	try(2, $1)
@@ -169,7 +169,7 @@ end('$correct_pred_arity'/4):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 1:$4])
+	switch_on_constant(0, 4, ['$default':$2, 1:$4])
 
 $4:
 	try(3, $1)
@@ -207,10 +207,10 @@ end('$shorten_args'/3):
 
 '$internal_form'/7:
 
-	switch_on_term(0, $17, $16, $16, $11, $16, $14)
+	switch_on_term(0, $19, $18, $18, $11, $18, $16)
 
 $11:
-	switch_on_structure(0, 4, ['default':$16, '$'/0:$12, ','/2:$13])
+	switch_on_structure(0, 8, ['$default':$18, '$'/0:$12, ','/2:$13, '$$get_level_ancestor$$'/1:$14, '='/2:$15])
 
 $12:
 	try(7, $1)
@@ -224,35 +224,43 @@ $12:
 $13:
 	try(7, $1)
 	retry($5)
-	retry($6)
 	retry($7)
-	retry($8)
 	retry($9)
 	trust($10)
 
 $14:
-	switch_on_constant(0, 4, ['default':$16, '!':$15])
+	try(7, $5)
+	retry($6)
+	retry($7)
+	retry($9)
+	trust($10)
 
 $15:
-	try(7, $2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
+	try(7, $5)
 	retry($7)
 	retry($8)
 	retry($9)
 	trust($10)
 
 $16:
-	try(7, $5)
-	retry($6)
+	switch_on_constant(0, 4, ['$default':$18, '!':$17])
+
+$17:
+	try(7, $2)
+	retry($3)
+	retry($4)
+	retry($5)
 	retry($7)
-	retry($8)
 	retry($9)
 	trust($10)
 
-$17:
+$18:
+	try(7, $5)
+	retry($7)
+	retry($9)
+	trust($10)
+
+$19:
 	try(7, $1)
 	retry($2)
 	retry($3)
@@ -675,7 +683,7 @@ end('$psi_uniq_var/4$0'/5):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(4, $1)

@@ -61,6 +61,7 @@
 #include "global.h"                                                             
 #include <sys/time.h>
 #include <sys/types.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/file.h>
 #ifdef HAVE_SYS_FILIO_H
@@ -85,8 +86,8 @@
 #include <netdb.h>
 #include <time.h>
 #include <errno.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 #include <string.h>
 #include <ctype.h>
 #include <signal.h>
@@ -264,14 +265,14 @@ decode_ip_address(Heap& heap, AtomTable& atoms,
 
   if (ip_address_cell->isNumber() || ip_address_cell->isAtom())
     {
+      if (ip_address_cell == AtomTable::inaddr_any)
+        {
+          ip_address = INADDR_ANY;
+          return EV_NO_ERROR;
+        }
       ip_address = machine_ip_address(heap, atoms, ip_address_cell);
       if (ip_address)
         {
-          return EV_NO_ERROR;
-        }
-      else if (ip_address_cell == AtomTable::inaddr_any)
-        {
-          ip_address = INADDR_ANY;
           return EV_NO_ERROR;
         }
       else
@@ -325,24 +326,7 @@ Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg,
     {
     case AM_READ:
       {
-//	ifstream *istrm = new ifstream(socket->getFD(), NULL, 0);
-	ifstream *istrm = new ifstream(socket->getFD());
-        if (istrm == NULL)
-          {
-            OutOfMemory(__FUNCTION__);
-          }
-	
-        if (istrm->bad())
-          {
-            delete istrm;
-            PSI_ERROR_RETURN(EV_VALUE, 0);
-          }
-	
-        Stream *stream = new Stream(istrm);
-        if (stream == NULL)
-          {
-            OutOfMemory(__FUNCTION__);
-          }
+        QPifdstream *stream = new QPifdstream(socket->getFD());
 	
         //
         // Return index of the stream.
@@ -355,23 +339,8 @@ Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg,
       break;
     case AM_WRITE:
       {
-        ofstream *ostrm = new ofstream(socket->getFD());
-        if (ostrm == NULL)
-          {
-            OutOfMemory(__FUNCTION__);
-          }
-	
-        if (ostrm->bad())
-          {
-            delete ostrm;
-            PSI_ERROR_RETURN(EV_VALUE, 0);
-          }
-	
-        Stream *stream = new Stream(ostrm);
-        if (stream == NULL)
-          {
-            OutOfMemory(__FUNCTION__);
-          }
+       QPofdstream *stream = new QPofdstream(socket->getFD());
+       //stream->set_autoflush();
 	
         //
         // Return index of the stream.
@@ -469,13 +438,8 @@ Thread::psi_tcp_socket(
     }
 
   Socket *socket = new Socket(type, protocol, fd);
-  if (socket == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   socket->setSocket();
-
 
   socket_arg = heap.newNumber(sockm->OpenSocket(socket));
 
@@ -846,7 +810,8 @@ Thread::psi_tcp_accept(Object *& socket_arg,
     {
       PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
     }
-  IS_READY_IO(socket, -1);
+  
+  IS_READY_SOCKET(socket);
   struct sockaddr_in add;
   unsigned int length = sizeof(struct sockaddr_in);
   
@@ -859,11 +824,6 @@ Thread::psi_tcp_accept(Object *& socket_arg,
     }
   
   Socket *newsocket = new Socket(0, 0, newsockfd);
-  if (newsocket == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  
   socket->setAccepted(newsocket, newsockfd);
   new_socket_arg = heap.newNumber(sockm->OpenSocket(newsocket));
   port_arg = heap.newNumber(ntohs(add.sin_port));
@@ -905,13 +865,13 @@ Thread::psi_tcp_connect1(
     {
       PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
     }
-  
-  struct sockaddr_in add;
-  
-  add.sin_family = AF_INET;
-  add.sin_addr.s_addr = ip_address;
-  add.sin_port = port;
 
+  struct sockaddr_in add;
+  memset((char *)&add, 0, sizeof(add));
+  add.sin_family = AF_INET;
+  add.sin_port = port;
+  add.sin_addr.s_addr = ip_address;
+    
   const int ret = connect(socket->getFD(),
 			  (struct sockaddr *)&add, sizeof(add));
 
@@ -1005,15 +965,11 @@ Thread::psi_tcp_close(
 
   if (socket->getIStream() != -1)
     {
-      Stream* stream = iom->GetStream(socket->getIStream());
-      stream->close();
       iom->CloseStream(socket->getIStream());
       socket->setIStream(-1);
     }
   if (socket->getOStream() != -1)
     {
-      Stream* stream = iom->GetStream(socket->getOStream());
-      stream->close();
       iom->CloseStream(socket->getOStream());
       socket->setOStream(-1);
     }

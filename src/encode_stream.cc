@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: encode_stream.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: encode_stream.cc,v 1.5 2002/11/13 04:04:15 qp Exp $
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 #include "config.h"
@@ -82,7 +82,7 @@ Thread::psi_encoded_write(Object *& stream_arg,
   Object* argT = term_arg;
   Object* argRN = heap.dereference(remember_names_arg);
 
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, argS, 1, stream);
 
   if (argRN->isVariable())
@@ -119,7 +119,7 @@ Thread::psi_encoded_read(Object *& stream_arg, Object *& term_arg,
   Object* argS = heap.dereference(stream_arg);
   Object* argRN = heap.dereference(remember_names_arg);
  
-  Stream *stream;
+  QPStream *stream;
   DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
 
   if (argRN->isVariable())
@@ -131,7 +131,7 @@ Thread::psi_encoded_read(Object *& stream_arg, Object *& term_arg,
       PSI_ERROR_RETURN(EV_TYPE, 3);
     }
 
-  IS_READY_STREAM(stream, -1);
+  IS_READY_STREAM(stream);
 
   EncodeRead er(*this,
 		heap,

@@ -53,12 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: trace_escapes.cc,v 1.3 2000/12/13 23:10:02 qp Exp $
+// $Id: trace_escapes.cc,v 1.4 2002/12/20 02:15:54 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
 #include "trace_qp.h"
 
+#ifdef DEBUG
 //
 // A wrapper for decode_trace_flag() calls.
 //
@@ -132,53 +133,62 @@ decode_trace_flag(Object *& flag_cell,
     }
 }
 
+#endif // DEBUG
+
 Thread::ReturnValue
 Thread::psi_set_trace_level(Object *& object1)
 {
+#ifdef DEBUG
   Object* val1 = heap.dereference(object1);
   
   DEBUG_ASSERT(val1->isNumber());
 	
   trace.TraceLevel() = (word32)(val1->getNumber());
-  
+#endif // DEBUG
   return(RV_SUCCESS);
 }
 
 Thread::ReturnValue
 Thread::psi_set_trace_flag(Object *& flag_arg)
 {
+#ifdef DEBUG
   Object* argF = heap.dereference(flag_arg);
 
   word32 flag;
   DECODE_TRACE_FLAG_ARG(argF, 1, flag);
 
   trace.SetTraceFlag(flag);
-
+#endif // DEBUG
   return RV_SUCCESS;
 }
 
 Thread::ReturnValue
 Thread::psi_clear_trace_flag(Object *& flag_arg)
 {
+#ifdef DEBUG
   Object* argF = heap.dereference(flag_arg);
 
   word32 flag;
   DECODE_TRACE_FLAG_ARG(argF, 1, flag);
 
   trace.ClearTraceFlag(flag);
-
+#endif // DEBUG
   return RV_SUCCESS;
 }
 
 Thread::ReturnValue
 Thread::psi_test_trace_flag(Object *& flag_arg)
 {
+#ifdef DEBUG
   Object* argF = heap.dereference(flag_arg);
 
   word32 flag;
   DECODE_TRACE_FLAG_ARG(argF, 1, flag);
 
   return BOOL_TO_RV(trace.TestTraceFlag(flag));
+#else
+  return RV_SUCCESS;
+#endif //DEBUG
 }
 
 

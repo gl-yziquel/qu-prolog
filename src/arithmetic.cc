@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: arithmetic.cc,v 1.2 2000/12/13 23:10:00 qp Exp $
+// $Id: arithmetic.cc,v 1.3 2003/09/28 07:53:35 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -67,7 +67,6 @@ extern AtomTable *atoms;
 int32
 Thread::arithEvaluate(PrologValue& val)
 {
-
   if (val.getTerm()->isNumber())
     {
       return (val.getTerm()->getNumber());

@@ -53,11 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: copy_term.h,v 1.2 2001/11/21 00:21:11 qp Exp $
+// $Id: copy_term.h,v 1.3 2002/11/13 04:04:14 qp Exp $
 
 #ifndef	COPY_TERM_H
 #define	COPY_TERM_H
-
 
 
 private:

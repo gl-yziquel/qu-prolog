@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: is_ready.h,v 1.6 2002/04/28 04:59:32 qp Exp $
+// $Id: is_ready.h,v 1.14 2003/04/21 06:11:14 qp Exp $
 
 #ifndef	IS_READY_H
 #define	IS_READY_H
@@ -64,47 +64,33 @@
 // This macro is used to simplify the coding required when we're checking
 // whether an IO operation on a socket or stream is about to be attempted,
 // and we're worried that the operation might cause blocking.
-#define IS_READY_IO(s, timeout)				\
+#define IS_READY_IO(s)				                        \
 do {									\
- /* Timed out? */					\
- if (block_status.IsTimedOut() /* || (s)->isEnded()*/ )			\
-   {									\
-     return RV_FAIL;							\
-   }									\
  /* Ready for action? */						\
- else if ((s)->isReady() || (s)->isEnded())				\
+ if ((s)->isReady())				                        \
    {									\
      /* Do nothing - we're ready to rock! */				\
-   }									\
- /* A poll? */								\
- else if ((timeout) == 0)						\
+   }                                                                    \
+ else /* Block */							\
    {									\
-     return RV_FAIL;							\
-   }									\
- /* Previously blocked? */						\
- else if (restart_status.IsRestart())					\
-   {									\
-     return RV_BLOCK;							\
-   }									\
- else /* Block for the first time. */					\
-   {									\
-     block_status.setBlockIO((s)->getFD(), (s)->Type(), (timeout));	\
+     BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (s)->getFD(), (s)->Type(), iom);							\
+     scheduler->blockedQueue().push_back(blockobj); 	        	\
+     block_status.setBlocked();                                         \
      return RV_BLOCK;							\
    }									\
 } while (0)
 
-// IS_READY_ICM(Heap& heap,
-//              CondList<ICMMessage *> queue,
-//	        CondList<ICMMessage *>::iterator iter,
-//	        const size_t timeout)
+// IS_READY_MESSAGE(Heap& heap,
+//              listist<Message *> queue,
+//	        listist<Message *>::iterator iter, int timeout)
 //
 // This macro is used to simplify the coding required when we're checking
-// whether an ICM operation is about to be attempted,
+// whether a message operation is about to be attempted,
 // and we're worried that the operation might cause blocking.
-#define IS_READY_ICM(heap, queue, iter, timeout)			\
+#define IS_READY_MESSAGE(heap, queue, iter, timeout)			\
 do {									\
   /* Timed out? */							\
-  if (block_status.IsTimedOut())					\
+  if (block_status.isRestartTime())					\
     {									\
       delete &(iter);                                                   \
       return RV_FAIL;							\
@@ -125,133 +111,88 @@ do {									\
 	}								\
       else /* Block the thread. */					\
 	{								\
-          /* Wind back the iterator to the element before the end(). */	\
-	  /* (N.B. If the queue is empty, this has no real effect.) */	\
-          (iter)--;							\
-          block_status.setBlockICM((iter), (queue).size(), (timeout));  \
+          BlockingMessageObject* blockobj = new BlockingMessageObject(this, (timeout), &iter);							\
+          scheduler->blockedQueue().push_back(blockobj); 	       	\
+          block_status.setBlocked();                                    \
           return RV_BLOCK;						\
 	}								\
     }									\
   else /* There's a message to read. Yippee! */				\
     {									\
-      /* Previously blocked on empty queue? */				\
-      if (block_status.testBlockICM() &&				\
-	  block_status.QueueSize() == 0)				\
-	{								\
-	  /* Set the iterator to start of the queue. */			\
-	  (iter) = (queue).begin();					\
-	}								\
     }									\
 } while (0)
 
 
-// IS_READY_IMSTREAM(CondList<ICMMessage *> queue,
+// IS_READY_IMSTREAM(listist<ICMMessage *> queue,
 //                   icmHandle sender_handle,
-//	             CondList<ICMMessage *>::iterator iter,
-//	             const size_t timeout)
+//	             list<ICMMessage *>::iterator iter)
 //
 // This macro is used to simplify the coding required when we're checking
 // whether an IMSTREAM operation is about to be attempted,
 // and we're worried that the operation might cause blocking.
-#define IS_READY_IMSTREAM(queue, strm, timeout)	        \
+#define IS_READY_IMSTREAM(s)	                                \
 do {									\
-  /* Timed out? */							\
-  if (block_status.IsTimedOut() && scheduler->Status().testEnableTimeslice()) \
-    {									\
-      return RV_FAIL;							\
-    }									\
-  /* Skip commited messages.*/						\
-      list<ICMMessage *>::iterator *iter = (strm)->getIter();               \
-      if (!(strm)->isFound())                           	    \
-        {                                             \
-          *(iter) = (queue).begin();                  \
-        }                                             \
-      bool found = false;                                                   \
-      for (;								\
-           *(iter) != (queue).end();                   		\
-           (*(iter))++)                                              \
-        {                                                                   \
-          if ( (**(iter))->Committed() )                                     \
-           {                                                                \
-  	     continue;					                \
-           }                                                                \
-          ICMMessage& icm_message = ***iter;                                \
-          icmHandle from_handle = icm_message.Sender();                     \
-          if (icmSameHandle(from_handle, (strm)->getSenderHandle()) == icmOk) \
-            {                                                               \
-              found = true;                                                 \
-              break;                                                        \
-             }                                                              \
-        }                                                                   \
-      /* End of queue? */					\
-      if (*(iter) == (queue).end())				\
-        {							\
-	  if (scheduler->Status().testEnableTimeslice())          \
-	    {                                                   \
-              DEBUG_ASSERT(!found);                                 \
-              /* Just a poll? */					\
-              if ((timeout) == 0)					\
-	        {							\
-	          return RV_FAIL;					\
-	        }							\
-              else /* Block the thread. */				\
-	        {							\
-              /* Wind back the iterator to the element before the end(). */ \
-	      /* (N.B. If the queue is empty, this has no real effect.) */  \
-                  (*(iter))--;						\
-                  block_status.setBlockICM(*(iter), (queue).size(),(timeout)); \
-                  return RV_BLOCK;					\
-	        }						\
-	    }                                                   \
-	  else                                                   \
-	    {                                                   \
-              (*(iter))--;						\
-	    }                                                   \
-        }								\
-      else /* There's a message to read. Yippee! */			\
-        {								\
-          (strm)->setFound();                                                 \
-          DEBUG_ASSERT(found);                                              \
-        }								\
+ /* Ready for action? */						\
+ if ((s)->isReady())				        \
+   {									\
+     /* Do nothing - we're ready to rock! */				\
+   }                                                                    \
+ else /* Block */					\
+   {									\
+     BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (s)->getFD(), (s)->Type(), iom);							\
+     scheduler->blockedQueue().push_back(blockobj); 	        	\
+     block_status.setBlocked();                                    \
+     return RV_BLOCK;							\
+   }									\
 } while (0)
 
 
 #ifdef ICM_DEF
-#define IS_READY_STREAM(s, timeout)                                     \
-do {                                                                    \
-     if ((s)->Type() == IMSTREAM)                                         \
-       {                                                                \
-         if ((s)->is_at_eof())                                     \
-	   {                                                            \
-             IS_READY_IMSTREAM((s)->getThread()->ICMQueue(), (s),  timeout);  \
-           }                                                            \
-       }                                                                \
-     else                                                               \
-       {                                                                \
-         if (scheduler->Status().testEnableTimeslice())       \
-	   {                                                   \
-             IS_READY_IO((s), timeout);                                       \
-	   }                                                   \
-       }                                                                \
+#define IS_READY_STREAM(s)                                                  \
+do {                                                                        \
+     if ((s)->Type() == IMSTREAM)                                           \
+       {                                                                    \
+         IS_READY_IMSTREAM((s));              \
+       }                                                                    \
+     else                                                                   \
+       {                                                                    \
+         IS_READY_IO((s));                                                  \
+       }                                                                    \
 } while (0)
 
 #else // ICM_DEF
 
-#define IS_READY_STREAM(s, timeout)                                     \
-do {                                                                    \
-     if ((s)->Type() == IMSTREAM)                                         \
-       {                                                                \
-         return RV_FAIL;           \
-       }                                                                \
-     else                                                               \
-       {                                                                \
-         if (scheduler->Status().testEnableTimeslice())       \
-	   {                                                   \
-             IS_READY_IO((s), timeout);                                       \
-	   }                                                   \
-       }                                                                \
+#define IS_READY_STREAM(s)                                                  \
+do {                                                                        \
+     if ((s)->Type() == IMSTREAM)                                           \
+       {                                                                    \
+         return RV_FAIL;                                                    \
+       }                                                                    \
+     else                                                                   \
+       {                                                                    \
+         IS_READY_IO((s));                                                  \
+       }                                                                    \
 } while (0)
 #endif // ICM_DEF
+
+#define IS_READY_SOCKET(socket)                                             \
+do {                                                                        \
+      if (scheduler->Status().testEnableTimeslice())                        \
+        {                                                                   \
+           if (is_ready((socket)->getFD(), SOCKET))                         \
+             {                                                              \
+             }                                                              \
+           else /* Block */						\
+             {								\
+               BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (socket)->getFD(), SOCKET, iom);							\
+               scheduler->blockedQueue().push_back(blockobj); 	       	\
+               block_status.setBlocked();                                    \
+               return RV_BLOCK;                                             \
+              }                                                             \
+        }                                                                   \
+} while (0)
+               
+
 
 #endif	// IS_READY_H
 

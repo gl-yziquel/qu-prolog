@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: objects.h,v 1.5 2002/03/24 05:58:30 qp Exp $
+// $Id: objects.h,v 1.7 2003/07/03 04:45:45 qp Exp $
 
 #ifndef OBJECTS_H
 #define OBJECTS_H
@@ -1229,11 +1229,11 @@ inline bool Object::hasLegalSub(void)
    
 // The next best thing to generic dispatching
 
-inline void Object::printMe_dispatch(AtomTable& atoms, bool all = true)
+inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
 {
   if (this == NULL)
     {
-      cerr << "(undefined)";
+	    std::cerr << "(undefined)";
       return;
     }
   
@@ -1267,8 +1267,8 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all = true)
 #endif
       else
 	{
-      cerr << "Bogus const type" << endl;
-      cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << endl;
+		std::cerr << "Bogus const type" << std::endl;
+		std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
 	  DEBUG_ASSERT(false);
 	  return;
 	}
@@ -1281,8 +1281,8 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all = true)
       break;
     default:
       // Not all uTags considered!
-      cerr << "Bogus type" << endl;
-      cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << endl;
+      std::cerr << "Bogus type" << std::endl;
+      std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
       DEBUG_ASSERT(false);
     }
 }
@@ -1393,19 +1393,19 @@ inline size_t Atom::size(void)
 #ifdef DEBUG
 inline void Atom::printMe(AtomTable& atoms, bool)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Atom: \""
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Atom: \""
        << atoms.getAtomString(this) << "\" ";
   
   switch (hasAssociatedItem())
     {
     case AssociatedNone:
-      cerr << "(no info)";
+	    std::cerr << "(no info)";
       break;
     case AssociatedInteger:
-      cerr << "int: " << getAssociatedInteger();
+      std::cerr << "int: " << getAssociatedInteger();
       break;
     case AssociatedAtom:
-      cerr << "atom: [" << hex << (word32) getAssociatedAtom() << dec << "]";
+      std::cerr << "atom: [" << std::hex << (word32) getAssociatedAtom() << std::dec << "]";
       break;
     }
 }
@@ -1429,7 +1429,7 @@ inline size_t Short::size(void)
 #ifdef DEBUG
 inline void Short::printMe(AtomTable& atoms, bool)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Short[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Short[" 
        << (word32)(tag & GC_Mask) << "]: \""
        << getValue() << "\" ";
 }
@@ -1446,7 +1446,7 @@ inline double Float::getValue(void) const
 #ifdef DEBUG
 inline void Float::printMe(AtomTable& atoms, bool)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Float: \""
+	std::cerr << "[" << hex << (word32) this << dec << "] Float: \""
        << getValue() << "\" ";
 }
 #endif
@@ -1475,7 +1475,7 @@ inline size_t Long::size(void)
 #ifdef DEBUG
 inline void Long::printMe(AtomTable& atoms, bool)
 {
-  cerr << "[" << hex << (int32) this << dec << "] Long:[" 
+	std::cerr << "[" << std::hex << (int32) this << std::dec << "] Long:[" 
        << (word32)(tag & GC_Mask) << "] \""
        << getValue() << "\" ";
 }
@@ -1540,15 +1540,15 @@ inline size_t Structure::size(size_t arity)
 #ifdef DEBUG
 inline void Structure::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Structure:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Structure:[" 
        << (word32)(tag & GC_Mask) << "] functor: [ ";
   getFunctor()->printMe_dispatch(atoms, all);
-  cerr << " ] ";
+  std::cerr << " ] ";
   for (size_t i = 1; i <= getArity(); i++)
     {
-      cerr << i << ": [ ";
+	    std::cerr << i << ": [ ";
       getArgument(i)->printMe_dispatch(atoms, all);
-      cerr << " ] ";
+      std::cerr << " ] ";
     }
 }
 #endif
@@ -1663,18 +1663,18 @@ Cons::getTailAddress(void)
 #ifdef DEBUG
 inline void Cons::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Cons:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Cons:[" 
        << (word32)(tag & GC_Mask) << "] ";
   if (isSubstitutionBlockList()) 
     {
-      cerr << "(Sub) ";
-      if (isInvertible()) cerr << "(Invertible) ";
+	    std::cerr << "(Sub) ";
+      if (isInvertible()) std::cerr << "(Invertible) ";
     }
-  cerr << " head: [ ";
+  std::cerr << " head: [ ";
   getHead()->printMe_dispatch(atoms, all);
-  cerr << " ] tail: [ ";
+  std::cerr << " ] tail: [ ";
   getTail()->printMe_dispatch(atoms, all);
-  cerr << " ]";
+  std::cerr << " ]";
 }
 #endif
 
@@ -1732,14 +1732,14 @@ inline void QuantifiedTerm::setBody(Object *o)
 #ifdef DEBUG
 inline void QuantifiedTerm::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] QuantifiedTerm: quantifier:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] QuantifiedTerm: quantifier:[" 
        << (word32)(tag & GC_Mask) << "] [ ";
   getQuantifier()->printMe_dispatch(atoms, all);
-  cerr << " ] boundvars: [ ";
+  std::cerr << " ] boundvars: [ ";
   getBoundVars()->printMe_dispatch(atoms, all);
-  cerr << " ] body: [ ";
+  std::cerr << " ] body: [ ";
   getBody()->printMe_dispatch(atoms, all);
-  cerr << " ]";
+  std::cerr << " ]";
 }
 #endif
 
@@ -1785,12 +1785,12 @@ inline void Substitution::setTerm(Object *o)
 #ifdef DEBUG
 inline void Substitution::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Substitution: subst:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Substitution: subst:[" 
        << (word32)(tag & GC_Mask) << "] [ ";
   getSubstitutionBlockList()->printMe_dispatch(atoms, all);
-  cerr << " ] term: [ ";
+  std::cerr << " ] term: [ ";
   getTerm()->printMe_dispatch(atoms, all);
-  cerr << " ]";
+  std::cerr << " ]";
 }
 #endif
 
@@ -1902,17 +1902,17 @@ inline bool SubstitutionBlock::containsLocal(void) const
 #ifdef DEBUG
 inline void SubstitutionBlock::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] SubstitutionBlock:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] SubstitutionBlock:[" 
        << (word32)(tag & GC_Mask) << "] ";
-  if (isInvertible()) { cerr << "(invertible) "; }
+  if (isInvertible()) { std::cerr << "(invertible) "; }
   for (size_t i = 1; i <= getSize(); i++)
     {
-      cerr << "dom: [ ";
+	    std::cerr << "dom: [ ";
       getDomain(i)->printMe_dispatch(atoms, all);
-      cerr << " ] ";
-      cerr << "ran: [ ";
+      std::cerr << " ] ";
+      std::cerr << "ran: [ ";
       getRange(i)->printMe_dispatch(atoms, all);
-      cerr << " ] ";
+      std::cerr << " ] ";
     }
 }
 #endif
@@ -2105,29 +2105,29 @@ inline void Variable::copyTag(Object* other)
 #ifdef DEBUG
 inline void Variable::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] Variable:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Variable:[" 
        << (word32)(tag & GC_Mask) << "] ";
-  if (isFrozen()) { cerr << "(frozen) "; }
-  if (isOccursChecked()) { cerr << "(occurs checked) "; }
+  if (isFrozen()) { std::cerr << "(frozen) "; }
+  if (isOccursChecked()) { std::cerr << "(occurs checked) "; }
   if (getReference() != (Object *) this)
     {
-      cerr << "ref: [ ";
+	    std::cerr << "<" <<std::hex << (word32)(getReference()) << std::dec << ">ref: [ ";
       getReference()->printMe_dispatch(atoms, all);
-      cerr << " ] ";
+      std::cerr << " ] ";
     }
   else
     {
-      cerr << "(unbound)";
+	    std::cerr << "(unbound)";
       if (hasExtraInfo())
 	{
-	  cerr << "Name {";
+		std::cerr << "Name {";
 	  getName()->printMe_dispatch(atoms, all);
 	  if (all)
 	    {
-	      cerr << "} Delays {";
+		    std::cerr << "} Delays {";
 	      getDelays()->printMe_dispatch(atoms, false);
 	    }
-	  cerr << "}";
+	  std::cerr << "}";
 	}
     }
 }
@@ -2202,30 +2202,30 @@ inline int Object::getNumber(void)
 #ifdef DEBUG
 inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 {
-  cerr << "[" << hex << (word32) this << dec << "] ObjVar:[" 
+	std::cerr << "[" << std::hex << (word32) this << std::dec << "] ObjVar:[" 
        << (word32)(tag & GC_Mask) << "] ";
-  if (isFrozen()) { cerr << "(frozen) "; }
+  if (isFrozen()) { std::cerr << "(frozen) "; }
   if (getReference() != OBJECT_CAST(const Object*, this))
     {
-      cerr << "ref: [ ";
+	    std::cerr << "ref: [ ";
       getReference()->printMe_dispatch(atoms, all);
-      cerr << " ] ";
+      std::cerr << " ] ";
     }
   else
     {
-      cerr << "(unbound)";
+	    std::cerr << "(unbound)";
       if (hasExtraInfo())
 	{
-	  cerr << "Name {";
+		std::cerr << "Name {";
 	  getName()->printMe_dispatch(atoms, all);
-	  cerr << "} Delays {";
+	  std::cerr << "} Delays {";
 	  if (all)
 	    {
 	      getDelays()->printMe_dispatch(atoms, false);
-	      cerr << "} Distinctness {";
+	      std::cerr << "} Distinctness {";
 	      getDistinctness()->printMe_dispatch(atoms, false);
 	    }
-	  cerr << "}";
+	  std::cerr << "}";
 	}
     }
 }

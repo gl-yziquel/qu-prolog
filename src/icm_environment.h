@@ -53,36 +53,41 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: icm_environment.h,v 1.7 2003/06/18 04:33:35 qp Exp $
 
 #ifndef	ICM_ENVIRONMENT_H
 #define	ICM_ENVIRONMENT_H
 
-#include "cond_list.h"
+#include <list>
 #include "icm.h"
 #include "icm_message.h"
+#include "messages.h"
+#include "signals.h"
+
+class IOManager;
 
 class ICMEnvironment
 {
-private:
+ private:
   icmConn conn;
   icmHandle handle;
-  CondList<ICMMessage *>& icm_message_queue;
+  long int message_no;
   char *process_symbol;
-
-public:  
-  ICMEnvironment(icmConn ic,
-		 CondList<ICMMessage *>& imq)
+  int comm_fd;
+  
+ public:  
+  ICMEnvironment(icmConn ic)
     : conn(ic),
-      handle(NULL),
-      icm_message_queue(imq),
-      process_symbol(NULL)
-    { }
+    handle(NULL),
+    message_no(-LONG_MAX),
+    process_symbol(NULL)
+    { comm_fd = icmCommSocket(conn); }
 
   icmConn Conn(void) { return conn; }
   icmHandle Handle(void) { return handle; }
-
-  CondList<ICMMessage *>& Queue(void) { return icm_message_queue; }
+  long int & messageNo(void) { return message_no; }
+  long int * messageNoRef(void) { return &message_no; }
+  int getCommFD(void) { return comm_fd; }
 
   // Register the process symbol with the ICM comms server.
   bool Register(char *ps);
@@ -90,6 +95,55 @@ public:
   // Unregister the process symbol with the ICM comms server.
   bool Unregister(void);
 };
+
+// The ICMMessage class - derived from the Message class
+class ICMMessage : public Message
+{
+private:
+  icmHandle sender;
+  icmHandle reply_to;
+  icmHandle recipient;
+  icmMsg message;
+
+public:
+  ICMMessage(icmHandle s, icmHandle rt, icmHandle r, icmMsg m)
+    : Message(), sender(s), reply_to(rt), recipient(r), message(m) {}
+
+  ~ICMMessage() { icmReleaseMsg(message); }
+
+  icmHandle getSender(void) { return sender; }
+  icmHandle getRecipient(void) { return recipient; }
+  icmMsg getMessage(void) { return message; }
+
+  Object* constructSenderTerm(Thread&, AtomTable&);
+  Object* constructReplyToTerm(Thread&, AtomTable&);
+  Object* constructMessageTerm(Thread&, AtomTable&,
+			       bool remember_names = false);
+};
+
+
+class ICMMessageChannel : public MessageChannel
+{
+ private:
+  ICMEnvironment& icm_env;
+  list<ICMMessage*> msg_buff;
+  IOManager& iom;
+  Signals& signals;
+
+public:
+  ICMMessageChannel(ICMEnvironment& e, ThreadTable& t, 
+		    IOManager& i, Signals& s) 
+    : MessageChannel(t), icm_env(e), iom(i), signals(s) {}
+
+  bool msgToThread(ICMMessage*);
+
+  bool  ShuffleMessages(void);
+
+  void pushMessageToBuff(ICMMessage* m) { msg_buff.push_back(m); }
+
+  void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
+};
+
 
 #endif	// ICM_ENVIRONMENT_H
 

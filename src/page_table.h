@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: page_table.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: page_table.h,v 1.3 2002/11/08 00:44:18 qp Exp $
 
 #ifndef PAGE_TABLE_H
 #define PAGE_TABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "defs.h"
@@ -76,7 +76,6 @@ private:
   //
   // Allocate a new page to the index table if it is required.
   // OutOfPage is reported if the index table is run out; or
-  // OutOfMemory is reported if new page cannot be allocated.
   //
   void		allocateEntries(const word32 EndLoc)
     {
@@ -111,7 +110,6 @@ protected:
   //
   // Allocate 'n' items of StoredType starting at the specified location.
   // OutOfPage is reported if the index table is run out; or
-  // OutOfMemory is reported if new page cannot be allocated.
   //
   void		allocateItems(const PageLoc loc, const word32 n)
     {
@@ -123,7 +121,6 @@ protected:
   // return a pointer to this space.  The segment may start at the given
   // location or the beginning of next page.
   // OutOfPage is reported if the index table is run out; or
-  // OutOfMemory is reported if new page cannot be allocated.
   //
   PageLoc		allocateSegment(const PageLoc loc, const word32 n)
     {
@@ -140,28 +137,24 @@ protected:
   //
   // Write the area bounded by "begin" and "end" to a stream.
   //
-  void		saveArea(ostream& ostrm, const u_long magic,
+  void		saveArea(std::ostream& ostrm, const u_long magic,
 			 const PageLoc begin, const PageLoc end) const;
   
   //
   // Read the "ReadSize" entries of data from a stream into the memory
   // starting at "start".
   //
-  void		readData(istream& istrm, const char *file,
+  void		readData(std::istream& istrm, const char *file,
 			 const word32 ReadSize, const PageLoc start);
   
   //
   // Load the area from a stream.  "start" marks the start of the area
   // in memory.
   //
-  void		loadArea(istream& istrm, const PageLoc start);
+  void		loadArea(std::istream& istrm, const PageLoc start);
   
 public:
   
-  //
-  // OutOfMemory is reported if there is insufficient space for the
-  // index table.
-  //
   PageTable(word32 size);
   virtual	~PageTable(void);
 };

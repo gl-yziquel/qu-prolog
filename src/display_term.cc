@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: display_term.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: display_term.cc,v 1.4 2002/11/08 00:44:15 qp Exp $
 
 #include <ostream.h>
 
@@ -77,15 +77,14 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
 	     ref != OBJECT_CAST(Reference*, ref)->getReference() &&
 	     reinterpret_cast<heapobject*>(ref) < getTop())
 	{
-	  ostrm.form("%#lx->", reinterpret_cast<word32>(ref));
+	  ostrm << hex << reinterpret_cast<word32>(ref) << "->" << dec;
 	  ref = OBJECT_CAST(Reference*, ref)->getReference();
 	}
 
       if (ref->isVariable() &&
 	  reinterpret_cast<heapobject*>(ref) >= getTop())
 	{
-	  ostrm.form("<< Invalid reference: %#lx>>\n", 
-		     reinterpret_cast<word32>(ref));
+	  ostrm << "<< Invalid reference: " << hex << reinterpret_cast<word32>(ref) << dec << ">>" << endl;
 	}
       else if (ref->isVariable() && 
 	       ref == OBJECT_CAST(Reference*, ref)->getReference())
@@ -127,11 +126,11 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
 	  display_term(ostrm, atoms, ref, depth);
 	}
     }
-
+  
   else if (term->isObjectVariable())
     {
       Object* ref = term;
-
+      
       ostrm << "OBJECT_VARIABLE";
 
       ostrm << " ";
@@ -140,14 +139,13 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
 	     ref != OBJECT_CAST(Reference*, ref)->getReference() &&
 	     reinterpret_cast<heapobject*>(ref) < getTop())
 	{
-	  ostrm.form("%#lx->", reinterpret_cast<word32>(ref));
+	  ostrm << hex << reinterpret_cast<word32>(ref) << "->" << dec;
 	  ref = OBJECT_CAST(Reference*, ref)->getReference();
 	}
       if (ref->isObjectVariable() &&
 	  reinterpret_cast<heapobject*>(ref) >= getTop())
 	{
-	  ostrm.form("<< Invalid reference: %#lx>>\n", 
-		     reinterpret_cast<word32>(ref));
+	  ostrm << "<< Invalid reference: " << hex << reinterpret_cast<word32>(ref) << dec << ">>" << endl;
 	}
       else if (ref->isObjectVariable() && 
 	       ref == OBJECT_CAST(Reference*, ref)->getReference())
@@ -187,14 +185,14 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     }
   else if (term->isCons())
     {
-      ostrm.form("LIST [%#lx]\n", reinterpret_cast<word32>(term));
+      ostrm << "LIST [" << hex << reinterpret_cast<word32>(term) << "]" << dec << endl;
 
       display_term(ostrm, atoms, OBJECT_CAST(Cons*, term)->getHead(), depth+1);
       display_term(ostrm, atoms, OBJECT_CAST(Cons*, term)->getTail(), depth+1);
     }
   else if (term->isStructure())
     {
-      ostrm.form("STRUCTURE [%#lx]", reinterpret_cast<word32>(term));
+      ostrm << "STRUCTURE [" << hex << reinterpret_cast<word32>(term) << "]" << dec << endl;
 
       ostrm << " " << OBJECT_CAST(Structure*, term)->getArity() << endl;
 
@@ -209,7 +207,7 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     }
   else if (term->isQuantifiedTerm())
     {
-      ostrm.form("QUANTIFIER [%#lx]\n", reinterpret_cast<word32>(term));
+      ostrm << "QUANTIFIER [" << hex << reinterpret_cast<word32>(term) << "]" << dec << endl;
 
       display_term(ostrm, atoms, 
 		   OBJECT_CAST(QuantifiedTerm*, term)->getQuantifier(), 
@@ -222,14 +220,11 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     }
   else if (term->isAtom())
     {
-      ostrm.form("ATOM:%#lx:%s\n", 
-                 reinterpret_cast<word32>(term),
-		 atoms.getAtomString(OBJECT_CAST(Atom*, term)));
+      ostrm << "ATOM:" << hex << reinterpret_cast<word32>(term) << ":" << dec <<atoms.getAtomString(OBJECT_CAST(Atom*, term)) <<  endl;
     }
   else if (term->isNumber())
     {
-      ostrm.form("INTEGER:%#lx:%ld\n", reinterpret_cast<word32>(term),
-		 term->getNumber());
+      ostrm << "INTEGER:" << hex << reinterpret_cast<word32>(term) << ":" << dec << term->getNumber() <<  endl;
     }
   else if (term->isSubstitution())
     {
@@ -237,7 +232,7 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     }
   else
     {
-      ostrm.form("*** Bad Value = %#lx\n", reinterpret_cast<word32>(term));
+      ostrm << "*** Bad Value = " << hex << reinterpret_cast<word32>(term) << ":" << dec <<  endl;
     }
 }      
 
@@ -320,7 +315,7 @@ Heap::quick_display_term(ostream& ostrm, AtomTable& atoms, Object* term)
     }
   else
     {
-      ostrm.form("*** Bad Value = %ld\n", reinterpret_cast<word32>(term));
+      ostrm << "*** Bad Value = " << hex << reinterpret_cast<word32>(term) << dec << endl;
     }
 }      
 

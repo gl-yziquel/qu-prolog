@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compiler_support.cc,v 1.3 2001/12/06 02:56:05 qp Exp $
+// $Id: compiler_support.cc,v 1.6 2002/12/05 03:39:26 qp Exp $
 
 #include "code.h"
 #include "compiler_support.h"
@@ -593,7 +593,7 @@ int psi_reg(Object* arg)
 //
 // Write an atom with escapes added as necessary.
 //
-void writeCAtom(char* atom, Stream* stream)
+void writeCAtom(char* atom, QPStream* stream)
 {
   for (; *atom != '\0'; atom++)
     {
@@ -608,7 +608,7 @@ void writeCAtom(char* atom, Stream* stream)
 //
 // Translate instruction data structures and write them to the stream.
 //
-void writeInstructions(WordArray& instrs, Stream* stream)
+void writeInstructions(WordArray& instrs, QPStream* stream)
 {
   for (int i = 0; i < instrs.lastEntry(); i++)
     {

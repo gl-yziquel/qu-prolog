@@ -53,14 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: string_qp.h,v 1.1 2000/12/13 23:10:02 qp Exp $
+// $Id: string_qp.h,v 1.3 2002/11/08 00:44:21 qp Exp $
 
 #ifndef	STRING_QP_H
 #define	STRING_QP_H
 
 #include <string.h>
 
-#include <iostream.h>
+#include <iostream>
 
 #include "defs.h"
 #include "errors.h"
@@ -78,10 +78,6 @@ public:
     : length(strlen(str)),
       string(new char[length + 1])
   {
-    if (string == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
     strcpy(string, str);
     string[length] = '\0';
   }
@@ -91,10 +87,6 @@ public:
     : length(len),
       string(new char[length + 1])
   {
-    if (string == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
     strncpy(string, str, length);
     string[length] = '\0'; 
   }
@@ -103,15 +95,11 @@ public:
     : length(str.Length()),
       string(new char[length + 1])
   {
-    if (string == NULL)
-      {
-	OutOfMemory(__FUNCTION__);
-      }
     strncpy(string, str.Str(), length);
     string[length] = '\0';
   }
 
-  String(istream& istrm);
+//  String(std::istream& istrm);
 
   ~String(void)
   {
@@ -143,11 +131,11 @@ public:
 
   // Write a string to the stream in a form that allows it to be read
   // back readily.
-  ostream& Save(ostream&) const;
+ // std::ostream& Save(std::ostream&) const;
 };
 
 // Print out a String in a form that can be read by a person.
-extern ostream& operator<<(ostream&, const String&);
+extern std::ostream& operator<<(std::ostream&, const String&);
 
 #endif	// STRING_QP_H
 

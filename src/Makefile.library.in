@@ -21,8 +21,7 @@ export SOURCES.library	= \
 	string.cc \
 	string_map.cc \
 	string_table.cc \
-	tcp.cc \
-	unix_thread.cc
+	tcp.cc
 
 export BASES.library	= $(basename $(SOURCES.library))
 export OBJECTS.library = $(addsuffix .o,$(BASES.library))

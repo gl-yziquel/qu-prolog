@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: page_table.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: page_table.cc,v 1.6 2002/12/23 00:22:10 qp Exp $
 
 #ifndef PAGE_TABLE_CC
 #define PAGE_TABLE_CC
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "defs.h"
@@ -76,17 +76,11 @@ PageTable<StoredType>::PageTable(word32 size)
   word32	FullSize;
   
   FullSize = size * K;
-  if ((index = new StoredType [FullSize]) == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  else
-    {
-      //
-      // Initialise the page table.
-      //
-      allocatedSize = FullSize;
-    }
+  index = new StoredType [FullSize];
+  //
+  // Initialise the page table.
+  //
+  allocatedSize = FullSize;
 }
 
 //
@@ -129,7 +123,7 @@ PageTable<StoredType>::saveArea(ostream& ostrm, const u_long magic,
   //
   // Write out the page.
   //
-  ostrm.write(offsetToAddress(begin), size * sizeof(StoredType));
+  ostrm.write((char*)(offsetToAddress(begin)), size * sizeof(StoredType));
   if (ostrm.fail())
     {
       SaveFailure(__FUNCTION__, "data segment", getAreaName());
@@ -149,11 +143,15 @@ PageTable<StoredType>::readData(istream& istrm, const char *AreaName,
   // Read in a segment into the page.
   //
   allocateEntries(start + ReadSize);
+#if defined(MACOSX)
+    istrm.read((char*)offsetToAddress(start), ReadSize * sizeof(StoredType));
+#else
   if (istrm.good() &&
-      istrm.read(offsetToAddress(start), ReadSize * sizeof(StoredType)).fail())
+      istrm.read((char*)offsetToAddress(start), ReadSize * sizeof(StoredType)).fail())
     {
       ReadFailure(__FUNCTION__, "data segment", AreaName);
     }
+#endif //defined(MACOSX)
 }
 
 //
@@ -169,7 +167,7 @@ PageTable<StoredType>::loadArea(istream& istrm, const PageLoc start)
       //
       // Wrong size.
       //
-      Fatal(__FUNCTION__, "wrong size for %s", getAreaName());
+      FatalS(__FUNCTION__, "wrong size for ", getAreaName());
     }
 
   readData(istrm, getAreaName(), ReadSize, start);

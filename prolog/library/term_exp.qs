@@ -980,7 +980,7 @@ end('$multi_expand_term'/3):
 	switch_on_term(0, $8, $7, $7, $7, $7, $5)
 
 $5:
-	switch_on_constant(0, 4, ['default':$7, 0:$6])
+	switch_on_constant(0, 4, ['$default':$7, 0:$6])
 
 $6:
 	try(5, $1)
@@ -1358,7 +1358,7 @@ end('$expand_subterms/6$2'/7):
 	switch_on_term(0, $13, $12, $12, $12, $12, $10)
 
 $10:
-	switch_on_constant(0, 4, ['default':$12, 0:$11])
+	switch_on_constant(0, 4, ['$default':$12, 0:$11])
 
 $11:
 	try(6, $1)
@@ -1708,7 +1708,7 @@ end('$expand_subterms_subs'/6):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':$2, 0:$4])
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
 
 $4:
 	try(7, $1)
@@ -1764,7 +1764,7 @@ $5:
 	trust($4)
 
 $6:
-	switch_on_constant(0, 4, ['default':$1, '[]':$7])
+	switch_on_constant(0, 4, ['$default':$1, '[]':$7])
 
 $7:
 	try(6, $1)
@@ -2226,6 +2226,23 @@ end('del_subterm_expansion_vars'/1):
 
 '$update_multi_sub_expansion/2$0'/1:
 
+	switch_on_term(0, $8, $7, $7, $7, $7, $5)
+
+$5:
+	switch_on_constant(0, 4, ['$default':$7, 'no':$6])
+
+$6:
+	try(1, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$7:
+	try(1, $1)
+	retry($2)
+	trust($3)
+
+$8:
 	try(1, $1)
 	retry($2)
 	retry($3)
@@ -2274,6 +2291,23 @@ end('$update_multi_sub_expansion/2$0'/1):
 
 '$update_multi_sub_expansion/2$1'/1:
 
+	switch_on_term(0, $8, $7, $7, $7, $7, $5)
+
+$5:
+	switch_on_constant(0, 4, ['$default':$7, 'no':$6])
+
+$6:
+	try(1, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$7:
+	try(1, $1)
+	retry($2)
+	trust($3)
+
+$8:
 	try(1, $1)
 	retry($2)
 	retry($3)
@@ -2326,6 +2360,20 @@ end('$update_multi_sub_expansion/2$1'/1):
 
 '$update_multi_sub_expansion/2$2'/2:
 
+	switch_on_term(0, $8, 'fail', 'fail', 'fail', 'fail', $5)
+
+$5:
+	switch_on_constant(0, 4, ['$default':'fail', 'yes':$6, 'no':$7])
+
+$6:
+	try(2, $1)
+	trust($2)
+
+$7:
+	try(2, $3)
+	trust($4)
+
+$8:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -2542,6 +2590,30 @@ end('list_expansions'/0):
 
 '$list_expansions/0$0'/4:
 
+	switch_on_term(0, $10, $4, $4, $5, $4, $4)
+
+$5:
+	switch_on_structure(0, 8, ['$default':$4, '$'/0:$6, '$multi_expand_term'/3:$7, '$expand_subterms'/3:$8, '$multi_sub_expand_term'/3:$9])
+
+$6:
+	try(4, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$7:
+	try(4, $1)
+	trust($4)
+
+$8:
+	try(4, $2)
+	trust($4)
+
+$9:
+	try(4, $3)
+	trust($4)
+
+$10:
 	try(4, $1)
 	retry($2)
 	retry($3)

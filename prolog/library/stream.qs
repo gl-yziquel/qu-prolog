@@ -43,11 +43,6 @@ $1:
 	set_integer(2)
 	set_constant('user_error')
 	call_predicate('assert', 1, 0)
-	put_structure(2, 0)
-	set_constant('/')
-	set_constant('$msgstream_handle')
-	set_integer(1)
-	call_predicate('dynamic', 1, 0)
 	put_integer(0, 0)
 	put_x_variable(1, 2)
 	get_structure('$prop', 7, 2)
@@ -136,7 +131,7 @@ end('$streamnum'/2):
 	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
-	switch_on_constant(0, 8, ['default':'fail', 0:$1, 1:$2, 2:$3])
+	switch_on_constant(0, 8, ['$default':'fail', 0:$1, 1:$2, 2:$3])
 
 $5:
 	try(1, $1)
@@ -223,6 +218,16 @@ end('open/4$0'/6):
 
 'open/4$1/5$0'/4:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
 	try(4, $1)
 	trust($2)
 
@@ -565,6 +570,16 @@ end('open_string'/2):
 
 'open_string/3$0/3$0'/2:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
 	try(2, $1)
 	trust($2)
 
@@ -697,6 +712,16 @@ end('open_string/3$1'/4):
 
 'open_string/3$2/5$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -776,7 +801,7 @@ end('open_string/3$2'/5):
 	switch_on_term(0, $12, $11, $11, $6, $11, $9)
 
 $6:
-	switch_on_structure(0, 4, ['default':$11, '$'/0:$7, 'read'/1:$8])
+	switch_on_structure(0, 4, ['$default':$11, '$'/0:$7, 'read'/1:$8])
 
 $7:
 	try(3, $1)
@@ -791,7 +816,7 @@ $8:
 	trust($5)
 
 $9:
-	switch_on_constant(0, 4, ['default':$11, 'write':$10])
+	switch_on_constant(0, 4, ['$default':$11, 'write':$10])
 
 $10:
 	try(3, $1)
@@ -1031,6 +1056,20 @@ end('open_msgstream/3$0'/5):
 
 'open_msgstream/3$1'/2:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$icm_handle'/4:$5])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
+	trust($2)
+
+$6:
 	try(2, $1)
 	trust($2)
 
@@ -1043,19 +1082,8 @@ $1:
 	proceed
 
 $2:
-	allocate(6)
-	get_y_variable(0, 1)
-	put_y_variable(5, 1)
-	call_predicate('same_handle', 2, 6)
-	put_y_variable(4, 0)
-	put_y_variable(3, 1)
-	put_y_variable(2, 2)
-	put_y_variable(1, 3)
-	put_y_value(5, 4)
-	call_predicate('icm_handle_to_components', 5, 5)
-	pseudo_instr5(2, 24, 23, 22, 21, 0)
-	get_y_value(0, 0)
-	deallocate
+	pseudo_instr2(114, 0, 2)
+	get_x_value(1, 2)
 	proceed
 end('open_msgstream/3$1'/2):
 
@@ -1063,6 +1091,16 @@ end('open_msgstream/3$1'/2):
 
 'open_msgstream/3$2/5$0'/3:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, -1:$4])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
 	try(3, $1)
 	trust($2)
 
@@ -1131,26 +1169,6 @@ end('open_msgstream/3$2'/5):
 
 
 
-'open_msgstream/3$3'/2:
-
-	try(2, $1)
-	trust($2)
-
-$1:
-	put_constant('read', 2)
-	get_x_value(0, 2)
-	neck_cut
-	put_structure(1, 0)
-	set_constant('$msgstream_handle')
-	set_x_value(1)
-	execute_predicate('assert', 1)
-
-$2:
-	proceed
-end('open_msgstream/3$3'/2):
-
-
-
 'open_msgstream'/3:
 
 	try(3, $1)
@@ -1188,11 +1206,11 @@ $1:
 $2:
 	allocate(8)
 	get_y_variable(5, 0)
-	get_y_variable(3, 1)
+	get_y_variable(4, 1)
 	get_y_variable(1, 2)
 	get_y_level(7)
-	put_y_value(3, 0)
-	put_y_variable(4, 1)
+	put_y_value(4, 0)
+	put_y_variable(3, 1)
 	put_y_variable(6, 2)
 	put_y_value(5, 3)
 	put_y_value(1, 4)
@@ -1200,7 +1218,7 @@ $2:
 	cut(7)
 	put_y_variable(0, 0)
 	get_structure('$prop', 7, 0)
-	unify_y_value(3)
+	unify_y_value(4)
 	unify_y_value(6)
 	unify_constant('msg')
 	unify_constant('none')
@@ -1211,14 +1229,11 @@ $2:
 	put_y_variable(2, 1)
 	call_predicate('open_msgstream/3$1', 2, 6)
 	put_y_value(2, 0)
-	put_y_value(4, 1)
+	put_y_value(3, 1)
 	put_y_value(1, 2)
-	put_y_value(3, 3)
+	put_y_value(4, 3)
 	put_y_value(5, 4)
-	call_predicate('open_msgstream/3$2', 5, 4)
-	put_y_value(3, 0)
-	put_y_value(2, 1)
-	call_predicate('open_msgstream/3$3', 2, 2)
+	call_predicate('open_msgstream/3$2', 5, 2)
 	pseudo_instr2(100, 21, 20)
 	deallocate
 	proceed
@@ -1312,7 +1327,7 @@ end('$add_open_options'/4):
 	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
-	switch_on_constant(0, 8, ['default':'fail', 'read':$1, 'write':$2, 'append':$3])
+	switch_on_constant(0, 8, ['$default':'fail', 'read':$1, 'write':$2, 'append':$3])
 
 $5:
 	try(3, $1)
@@ -1352,6 +1367,20 @@ end('close'/1):
 
 'close/2$0/4$0'/2:
 
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$prop'/7:$5])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
+	trust($2)
+
+$6:
 	try(2, $1)
 	trust($2)
 
@@ -1414,19 +1443,15 @@ $1:
 	proceed
 
 $2:
-	allocate(4)
-	get_y_variable(3, 1)
+	allocate(3)
+	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	get_y_variable(0, 3)
 	pseudo_instr2(101, 0, 1)
-	get_y_variable(2, 1)
-	cut(3)
-	put_y_value(2, 0)
+	get_x_variable(0, 1)
+	cut(2)
 	put_y_value(1, 1)
-	call_predicate('close/2$0/4$0', 2, 3)
-	put_y_value(1, 0)
-	put_y_value(2, 1)
-	call_predicate('$retract_msgstream', 2, 2)
+	call_predicate('close/2$0/4$0', 2, 2)
 	put_y_value(1, 0)
 	call_predicate('close/2$0/4$1', 1, 2)
 	put_y_value(1, 0)
@@ -1589,30 +1614,6 @@ end('close'/2):
 
 
 
-'$retract_msgstream'/2:
-
-	try(2, $1)
-	trust($2)
-
-$1:
-	get_structure('$prop', 7, 1)
-	unify_void(1)
-	unify_constant('input')
-	unify_constant('msg')
-	unify_void(4)
-	neck_cut
-	pseudo_instr2(81, 0, 1)
-	put_structure(1, 0)
-	set_constant('$msgstream_handle')
-	set_x_value(1)
-	execute_predicate('retract', 1)
-
-$2:
-	proceed
-end('$retract_msgstream'/2):
-
-
-
 '$close1'/2:
 
 	try(2, $1)
@@ -1696,7 +1697,7 @@ end('$close_options'/2):
 	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
 
 $3:
-	switch_on_constant(0, 4, ['default':'fail', 'false':$1, 'true':$2])
+	switch_on_constant(0, 4, ['$default':'fail', 'false':$1, 'true':$2])
 
 $4:
 	try(2, $1)
@@ -1832,7 +1833,7 @@ end('$stream_property1/3$0'/1):
 	switch_on_term(0, $14, $13, $13, $8, $13, $13)
 
 $8:
-	switch_on_structure(0, 8, ['default':$13, '$'/0:$9, 'end_of_stream'/1:$10, 'position'/1:$11, 'line_number'/1:$12])
+	switch_on_structure(0, 8, ['$default':$13, '$'/0:$9, 'end_of_stream'/1:$10, 'position'/1:$11, 'line_number'/1:$12])
 
 $9:
 	try(3, $1)
@@ -1950,7 +1951,7 @@ end('$stream_property1'/3):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, 'file_name'/1:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, 'file_name'/1:$5])
 
 $4:
 	try(1, $1)
@@ -1981,7 +1982,7 @@ end('$check_property'/1):
 	switch_on_term(0, $12, 'fail', 'fail', $9, 'fail', $11)
 
 $9:
-	switch_on_structure(0, 16, ['default':'fail', '$'/0:$10, 'mode'/1:$1, 'file_name'/1:$5, 'eof_action'/1:$6, 'reposition'/1:$7, 'type'/1:$8])
+	switch_on_structure(0, 16, ['$default':'fail', '$'/0:$10, 'mode'/1:$1, 'file_name'/1:$5, 'eof_action'/1:$6, 'reposition'/1:$7, 'type'/1:$8])
 
 $10:
 	try(3, $1)
@@ -1991,7 +1992,7 @@ $10:
 	trust($8)
 
 $11:
-	switch_on_constant(0, 8, ['default':'fail', 'input':$2, 'output':$3, 'string':$4])
+	switch_on_constant(0, 8, ['$default':'fail', 'input':$2, 'output':$3, 'string':$4])
 
 $12:
 	try(3, $1)
@@ -2114,7 +2115,7 @@ end('past_end_of_stream'/0):
 	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
-	switch_on_constant(0, 8, ['default':'fail', 'error':$1, 'eof_code':$2, 'reset':$3])
+	switch_on_constant(0, 8, ['$default':'fail', 'error':$1, 'eof_code':$2, 'reset':$3])
 
 $5:
 	try(2, $1)

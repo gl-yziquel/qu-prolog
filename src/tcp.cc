@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: tcp.cc,v 1.3 2000/12/13 23:10:02 qp Exp $
+// $Id: tcp.cc,v 1.6 2002/12/05 03:39:34 qp Exp $
 
 #include <stdio.h>
 #include <string.h>
@@ -67,8 +67,11 @@
 
 #include <sys/utsname.h>
 
+#include <string>
+
 #include "netinet_in.h"
 #include "tcp_qp.h"
+#include "errors.h"
 
 extern const char *Program;
 
@@ -159,9 +162,9 @@ close_socket(const int s)
 // (Result is in network byte order.)
 //
 u_long
-LookupMachineIPAddress(const String& name)
+LookupMachineIPAddress(const std::string& name)
 {
-  return LookupMachineIPAddress(name.Str());
+  return LookupMachineIPAddress(name.c_str());
 }
 
 u_long

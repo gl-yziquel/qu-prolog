@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: signals.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: signals.h,v 1.2 2002/11/26 23:51:53 qp Exp $
 
 #ifndef	SIGNALS_H
 #define	SIGNALS_H
@@ -62,10 +62,7 @@
 
 #include "debug.h"
 #include "defs.h"
-#include "mutex.h"
 #include "status.h"
-
-typedef void (*sighandler_t)(int);
 
 class SignalStatus : public Status <word8>
 {
@@ -95,7 +92,7 @@ public:
 class Signals
 {
 private:
-  class Signal: private Mutex
+  class Signal
   {
   private:
     int signal;
@@ -104,17 +101,15 @@ private:
     //
     // Set and clear the signal.
     //
-    void Increment(void) { Lock(); signal++; Unlock(); }
-    void Decrement(void) { Lock(); signal--; Unlock(); }
+    void Increment(void) { signal++; }
+    void Decrement(void) { signal--; }
     
-    void Clear(void) { Lock(); signal = 0; Unlock(); }
+    void Clear(void) { signal = 0; }
 
     bool IsSet(void)
       {
 	bool is_set;
-	Lock();
 	is_set = signal != 0;
-	Unlock();
 	return is_set;
       }
     

@@ -102,7 +102,7 @@ end('@>='/2):
 	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
-	switch_on_constant(0, 8, ['default':'fail', '=':$1, '<':$2, '>':$3])
+	switch_on_constant(0, 8, ['$default':'fail', '=':$1, '<':$2, '>':$3])
 
 $5:
 	try(3, $1)
@@ -307,6 +307,16 @@ end('$fine_compare/4$1'/7):
 
 '$fine_compare/4$2/9$0/7$0'/4:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
 	try(4, $1)
 	trust($2)
 
@@ -329,6 +339,16 @@ end('$fine_compare/4$2/9$0/7$0'/4):
 
 '$fine_compare/4$2/9$0'/7:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(7, $1)
+	trust($2)
+
+$5:
 	try(7, $1)
 	trust($2)
 
@@ -404,6 +424,16 @@ end('$fine_compare/4$2'/9):
 
 '$fine_compare/4$3/8$0/6$0'/4:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
 	try(4, $1)
 	trust($2)
 
@@ -426,6 +456,16 @@ end('$fine_compare/4$3/8$0/6$0'/4):
 
 '$fine_compare/4$3/8$0'/6:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(6, $1)
+	trust($2)
+
+$5:
 	try(6, $1)
 	trust($2)
 
@@ -458,6 +498,16 @@ end('$fine_compare/4$3/8$0'/6):
 
 '$fine_compare/4$3'/8:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(8, $1)
+	trust($2)
+
+$5:
 	try(8, $1)
 	trust($2)
 
@@ -497,7 +547,7 @@ end('$fine_compare/4$3'/8):
 	switch_on_term(0, $13, 'fail', 'fail', 'fail', 'fail', $10)
 
 $10:
-	switch_on_constant(0, 16, ['default':'fail', 1:$1, 2:$2, 3:$11, 4:$12, 5:$8, 6:$9])
+	switch_on_constant(0, 16, ['$default':'fail', 1:$1, 2:$2, 3:$11, 4:$12, 5:$8, 6:$9])
 
 $11:
 	try(4, $3)
@@ -666,6 +716,16 @@ end('$fine_compare'/4):
 
 '$compare_args/5$0'/6:
 
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(6, $1)
+	trust($2)
+
+$5:
 	try(6, $1)
 	trust($2)
 

@@ -53,17 +53,21 @@
 // 
 // ##Copyright##
 //
-// $Id: compiler_support.h,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: compiler_support.h,v 1.7 2002/12/15 08:23:49 qp Exp $
 
 #ifndef	COMPILER_SUPPORT_H
 #define	COMPILER_SUPPORT_H
 
 #include "defs.h"
 #include "errors.h"
-#include "io_qp.h"
+// #include "io_qp.h"
 
 #define WARRAYSIZE 8000
 #define REGISTERSIZE 800
+
+extern const char *Program;
+
+class QPStream;
 
 //
 // This class is used for storing the results of phases of the compiler.
@@ -79,10 +83,7 @@ private:
 public:
   WordArray(int s)
     { 
-      if ((base = new word32[s]) == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}      
+      base = new word32[s];
       size = s; 
       last = 0;
     }
@@ -145,10 +146,8 @@ private:
 public:
   xreglife(int s) 
     {      
-      if ((reginfo = new (llist*)[s]) == NULL)
-	{
-	  OutOfMemory(__FUNCTION__);
-	}      
+      reginfo = new (llist*)[s];
+
       for (int i = 0; i < s; i++)
 	{
 	  reginfo[i] = NULL;
@@ -268,9 +267,9 @@ bool alloc_needed(Object*);
 
 int psi_reg(Object*);
 
-void writeCAtom(char*, Stream*);
+void writeCAtom(char*, QPStream*);
 
-void writeInstructions(WordArray&, Stream*);
+void writeInstructions(WordArray&, QPStream*);
 
 word8* dumpInstructions(WordArray&);
 

@@ -56,7 +56,7 @@ end('$write_instr_nice'/2):
 	switch_on_term(0, $8, $3, $3, $4, $3, $3)
 
 $4:
-	switch_on_structure(0, 8, ['default':$3, '$'/0:$5, 'label'/1:$6, 'comment'/1:$7])
+	switch_on_structure(0, 8, ['$default':$3, '$'/0:$5, 'label'/1:$6, 'comment'/1:$7])
 
 $5:
 	try(2, $1)
@@ -152,7 +152,7 @@ end('$make_anonymous'/1):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, ':-'/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ':-'/2:$5])
 
 $4:
 	try(1, $1)
@@ -213,7 +213,7 @@ end('$write_clause'/1):
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
 $3:
-	switch_on_structure(0, 4, ['default':$2, '$'/0:$4, ','/2:$5])
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ','/2:$5])
 
 $4:
 	try(1, $1)
@@ -292,6 +292,12 @@ end('$wname'/2):
 
 '$wname_list/2$0/2$0'/1:
 
+	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':'fail', 39:$1, 92:$2])
+
+$4:
 	try(1, $1)
 	trust($2)
 
@@ -479,57 +485,55 @@ end('$warg'/4):
 
 '$warg'/2:
 
-	switch_on_term(0, $17, $16, $16, $9, $16, $16)
+	switch_on_term(0, $18, $17, $9, $10, $17, $17)
 
 $9:
-	switch_on_structure(0, 16, ['default':$16, '$'/0:$10, 'label'/1:$11, 'default'/1:$12, '/'/2:$13, '$xreg'/1:$14, '$yreg'/1:$15])
+	try(2, $6)
+	retry($7)
+	trust($8)
 
 $10:
+	switch_on_structure(0, 16, ['$default':$17, '$'/0:$11, 'label'/1:$12, '$default'/1:$13, '/'/2:$14, '$xreg'/1:$15, '$yreg'/1:$16])
+
+$11:
 	try(2, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
 	retry($6)
-	retry($7)
-	trust($8)
-
-$11:
-	try(2, $1)
-	retry($6)
-	retry($7)
-	trust($8)
+	trust($7)
 
 $12:
-	try(2, $2)
+	try(2, $1)
 	retry($6)
-	retry($7)
-	trust($8)
+	trust($7)
 
 $13:
-	try(2, $3)
+	try(2, $2)
 	retry($6)
-	retry($7)
-	trust($8)
+	trust($7)
 
 $14:
-	try(2, $4)
+	try(2, $3)
 	retry($6)
-	retry($7)
-	trust($8)
+	trust($7)
 
 $15:
-	try(2, $5)
+	try(2, $4)
 	retry($6)
-	retry($7)
-	trust($8)
+	trust($7)
 
 $16:
-	try(2, $6)
-	retry($7)
-	trust($8)
+	try(2, $5)
+	retry($6)
+	trust($7)
 
 $17:
+	try(2, $6)
+	trust($7)
+
+$18:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -546,12 +550,12 @@ $1:
 	execute_predicate('$wlabel', 2)
 
 $2:
-	get_structure('default', 1, 0)
+	get_structure('$default', 1, 0)
 	allocate(2)
 	unify_y_variable(1)
 	get_y_variable(0, 1)
 	neck_cut
-	put_constant('default', 0)
+	put_constant('$default', 0)
 	call_predicate('$wname', 2, 2)
 	put_y_value(0, 0)
 	put_integer(40, 1)

@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: env_var.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: env_var.cc,v 1.3 2002/11/08 00:44:15 qp Exp $
 
 #include <stdlib.h>
 
@@ -129,10 +129,6 @@ Thread::psi_env_putenv(
   const size_t total_len = name_string_len + value_string_len + 2;
 
   char *env_entry_string = new char[total_len];
-  if (env_entry_string == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
 
   (void) strcpy(env_entry_string, name_string);
   (void) strcat(env_entry_string, "=");

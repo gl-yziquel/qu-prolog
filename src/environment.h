@@ -55,12 +55,12 @@
 // 
 // ##Copyright##
 //
-// $Id: environment.h,v 1.2 2001/12/06 02:56:06 qp Exp $
+// $Id: environment.h,v 1.3 2002/11/03 08:37:27 qp Exp $
 
 #ifndef	ENVIRONMENT_H
 #define	ENVIRONMENT_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "code.h"

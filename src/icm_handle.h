@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_handle.h,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: icm_handle.h,v 1.5 2002/11/10 07:54:52 qp Exp $
 
 #ifndef	ICM_HANDLE_H
 #define	ICM_HANDLE_H
 
-#include <strstream>
+#include <sstream>
 #include <ctype.h>
 
 #include "atom_table.h"
@@ -72,52 +72,27 @@
 class ICMOutgoingTarget
 {
 private:
-  char *target;
+  string target;
 public:
   // Thread number
   ICMOutgoingTarget(const ThreadTableLoc id)
     {
-      char buf[20];
-      sprintf(buf, "%u", id);
-      const size_t length = strlen(buf) + 1;
-      target = new char[length];
-      if (target == NULL)
-        {
-	  OutOfMemory(__FUNCTION__);
-	}
-      strcpy(target, buf);
+      ostringstream buff;
+      buff << (u_int)id;
+      target = buff.str();
     }
 
   // Thread symbol
-  ICMOutgoingTarget(const char *symbol)
+  ICMOutgoingTarget(const string& symbol)
     {
-      const size_t length = strlen(symbol) + 1;
-      if (length == 1)
-	{
-	  // empty atom - no target
-	  target = new char[1];
-	  target[0] = '\0';
-	}
-      else
-	{
-	  target = new char[length];
-	  if (target == NULL)
-	    {
-	      OutOfMemory(__FUNCTION__);
-	    }
-	  strcpy(target, symbol);
-	}
+      target = symbol;
     }
   
   ~ICMOutgoingTarget(void)
     {
-#if 0
-      // TO DO: Fix this memory leak.
-      delete [] target;
-#endif
     }
 
-  char *Target(void) { return target; }
+  string& Target(void) { return target; }
 };
 
 class ICMIncomingTarget
@@ -145,7 +120,7 @@ public:
       if (is_num)
 	{
 	  type = TARGET_ID;
-	  istrstream target_stream(t, sizeof(ThreadTableLoc));
+	  istringstream target_stream(t);
 	  target_stream >> desc.id;
 	}
       else
@@ -153,11 +128,6 @@ public:
 	  type = TARGET_SYMBOL;
 	  const size_t length = strlen(t) + 1;
 	  desc.symbol = new char[length];
-	  if (desc.symbol == NULL)
-	    {
-	      OutOfMemory(__FUNCTION__);
-	    }
-	  
 	  // Copy the target - carefully null terminating the stream
 	  strcpy(desc.symbol, t);
 	}

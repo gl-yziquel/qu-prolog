@@ -53,10 +53,10 @@
 // 
 // ##Copyright##
 //
-// $Id: thread.cc,v 1.5 2001/12/17 04:27:34 qp Exp $
+// $Id: thread.cc,v 1.10 2003/07/03 04:45:45 qp Exp $
 
-#include <iostream.h>
-#include <strstream.h>
+#include <iostream>
+#include <sstream>
 
 #include "thread_qp.h"
 #include "trace_qp.h"
@@ -94,6 +94,11 @@ Thread::InitThread(void)
   ForeignFile = NULL;
   error_value = EV_NO_ERROR;
 
+  for (u_int i = 0; i < NUMBER_X_REGISTERS; i++) 
+    {
+      //X[i] = NULL;
+     X[i] = AtomTable::nil;
+    }
   EscapeInit();
 }
 
@@ -147,14 +152,11 @@ Thread::Thread(Thread *pt,
     tagTrail(*(new UpdatableTagTrail(TagTrailSize, 0))),
     refTrail(*(new RefTrail(RefTrailSize, 0))),
     envStack(EnvSize),
-    choiceStack(ChoiceSize),
-    trace(0)
+    choiceStack(ChoiceSize)
+#ifdef DEBUG
+    , trace(0)
+#endif //DEBUG
 {
-  if (&names == NULL || &heap == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-  
   InitThread();
 };
 
@@ -173,14 +175,11 @@ Thread::Thread(Thread *pt,
     tagTrail(*(new UpdatableTagTrail(thread_options.TagTrailSize(),0))),
     refTrail(*(new RefTrail(thread_options.RefTrailSize(), 0))),
     envStack(thread_options.EnvironmentStackSize()),
-    choiceStack(thread_options.ChoiceStackSize()),
-    trace(0)
+    choiceStack(thread_options.ChoiceStackSize())
+#ifdef DEBUG
+    , trace(0)
+#endif // DEBUG
 {
-  if (&names == NULL || &heap == NULL)
-    {
-      OutOfMemory(__FUNCTION__);
-    }
-
   InitThread();
 };
 
@@ -210,8 +209,10 @@ Thread::Thread(Thread *pt,
     tagTrail(SharedTagTrail),
     refTrail(SharedRefTrail),
     envStack(EnvSize),
-    choiceStack(ChoiceSize),
-    trace(0)
+    choiceStack(ChoiceSize)
+#ifdef DEBUG
+    , trace(0)
+#endif
 {
   InitThread();
 }

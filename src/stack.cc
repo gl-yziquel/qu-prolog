@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: stack.cc,v 1.3 2001/06/07 05:18:12 qp Exp $
+// $Id: stack.cc,v 1.4 2002/11/03 08:37:32 qp Exp $
 
 #ifndef STACK_CC
 #define STACK_CC
 
-#include <iostream.h>
+#include <iostream>
 
 #include "area_offsets.h"
 #include "defs.h"
