@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.46 2004/07/25 04:15:14 qp Exp $
+// $Id: pseudo_instr_arrays.cc,v 1.49 2004/12/08 22:43:41 qp Exp $
 
 #include "thread_qp.h"
 
@@ -190,7 +190,8 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_elvin_subscriptions,	1,	"psi_elvin_subscriptions"}, 
 	{&Thread::psi_elvin_makeID,	1,	"psi_elvin_makeID"}, 
 	{&Thread::psi_elvin_add_notification,	0,	"psi_elvin_add_notification"}, 
-	{&Thread::psi_chdir,	0,	"psi_chdir"}
+	{&Thread::psi_chdir,	0,	"psi_chdir"}, 
+	{&Thread::psi_getcwd,	1,	"psi_getcwd"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {

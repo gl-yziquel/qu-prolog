@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: foreign.cc,v 1.14 2002/12/24 00:03:54 qp Exp $
+// $Id: foreign.cc,v 1.15 2004/11/24 00:12:34 qp Exp $
 
 #include "global.h"
 #include "thread_qp.h"
@@ -64,7 +64,7 @@
 extern AtomTable *atoms;
 extern PredTab *predicates;
 
-#if defined(SOLARIS) || defined(LINUX) || defined(NETBSD) || defined(MACOSX)
+#if defined(SOLARIS) || defined(LINUX) || defined(FREEBSD) || defined(MACOSX)
 
 #include <dlfcn.h>
 #include <sstream>
@@ -118,10 +118,10 @@ bool
 Thread::LinkLoad(Object* objects, Object* libraries)
 {
   ostringstream strm;
-  char output[] = "/tmp/symXXXXXX";
+  char output[16];
   Object* file;
   void *handle;
-
+  strcpy(output, "/tmp/symXXXXXX");
   //
   // Generate the linking command.
   //

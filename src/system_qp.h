@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system_qp.h,v 1.3 2004/02/16 04:20:30 qp Exp $
+// $Id: system_qp.h,v 1.4 2004/11/24 00:12:35 qp Exp $
 
 #ifndef SYSTEM_QP_H
 #define SYSTEM_QP_H
@@ -81,6 +81,13 @@ ReturnValue	psi_access(Object *& , Object *& , Object *& );
 // mode(in)
 //
 ReturnValue	psi_chdir(Object *&);
+
+//
+// psi_getcwd(atom)
+// Get the current working directory
+// mode(out)
+//
+ReturnValue	psi_getcwd(Object *&);
 
 //
 // psi_mktemp(atom, var)

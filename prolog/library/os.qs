@@ -367,6 +367,57 @@ end('access'/3):
 
 
 
+'working_directory'/1:
+
+	try(1, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	pseudo_instr1(1, 0)
+	neck_cut
+	pseudo_instr1(112, 1)
+	get_x_value(0, 1)
+	proceed
+
+$2:
+	pseudo_instr1(2, 0)
+	neck_cut
+	pseudo_instr1(111, 0)
+	proceed
+
+$3:
+	get_x_variable(1, 0)
+	put_structure(1, 0)
+	set_constant('working_directory')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('?')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('working_directory')
+	set_x_value(1)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('type_exception', 3)
+end('working_directory'/1):
+
+
+
+'working_directory'/2:
+
+
+$1:
+	pseudo_instr1(112, 2)
+	get_x_value(0, 2)
+	pseudo_instr1(111, 1)
+	proceed
+end('working_directory'/2):
+
+
+
 'halt'/0:
 
 

@@ -1,7 +1,7 @@
 
 // elvin_env.cc - Elvin support.
 //
-// $Id: elvin_env.cc,v 1.3 2004/03/17 21:55:05 qp Exp $
+// $Id: elvin_env.cc,v 1.4 2004/12/01 04:23:48 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -228,6 +228,7 @@ static int subscribe_cb(elvin_handle_t /*handle*/, int /*result*/,
 
   ((SubscriptionData*)rock)->setSubscription(subscription); 
   elvin_channel_ptr->pushSubData((SubscriptionData*)rock);
+  elvin_channel_ptr->setSubscribed(true);
   return 1;
 }
 
@@ -913,34 +914,40 @@ ElvinMessageChannel::elvinInit(Object* where)
         exit(1);
       }
 
-    fd_set rfds,wfds;
 
     // Keep processing Elvin sockets until connected.
     while (!connected)
       {
-	int max_fd = 0;
-	
-	FD_ZERO(&rfds);
-	FD_ZERO(&wfds);
-	
-	updateFDSETS(&rfds, &wfds, max_fd);
-	struct timeval tout = { 0 , 0 };
-	processTimeouts(tout);
-	timeval* wait_val;
-	if (tout.tv_sec == 0 && tout.tv_usec == 0) 
-	  {
-	    wait_val = NULL; 
-	  }
-	else 
-	  {
-	    wait_val = &tout;
-	  }
-	if (select(max_fd + 1, &rfds, &wfds, (fd_set *) NULL, wait_val) > 0)
-	  {
-	    processFDs(&rfds, &wfds);
-	  }
+        readElvin();
       }
 }
+void
+ElvinMessageChannel::readElvin(void)
+{
+  fd_set rfds,wfds;
+  int max_fd = 0;
+  
+  FD_ZERO(&rfds);
+  FD_ZERO(&wfds);
+  
+  updateFDSETS(&rfds, &wfds, max_fd);
+  struct timeval tout = { 0 , 0 };
+  processTimeouts(tout);
+  timeval* wait_val;
+  if (tout.tv_sec == 0 && tout.tv_usec == 0) 
+    {
+      wait_val = NULL; 
+    }
+  else 
+    {
+      wait_val = &tout;
+    }
+  if (select(max_fd + 1, &rfds, &wfds, (fd_set *) NULL, wait_val) > 0)
+    {
+      processFDs(&rfds, &wfds);
+    }
+}
+
 
 //
 // Disconnect from Elvin
@@ -1029,6 +1036,11 @@ ElvinMessageChannel::addSubscription(ThreadTableLoc threadid, Atom* form)
     {
       elvin_error_fprintf(stderr, error);
       return false;
+    }
+  setSubscribed(false);
+  while (!subscribed)
+    {
+      readElvin();
     }
   return true;
 } 

@@ -12,6 +12,19 @@ end('repeat'/0):
 
 
 
+'between/3$0/3$0'/3:
+
+
+$1:
+	pseudo_instr1(3, 0)
+	neck_cut
+	pseudo_instr2(2, 1, 0)
+	pseudo_instr2(2, 0, 2)
+	proceed
+end('between/3$0/3$0'/3):
+
+
+
 'between/3$0'/3:
 
 	try(3, $1)
@@ -28,11 +41,7 @@ $1:
 	execute_predicate('$between', 3)
 
 $2:
-	pseudo_instr1(3, 0)
-	neck_cut
-	pseudo_instr2(2, 1, 0)
-	pseudo_instr2(2, 0, 2)
-	proceed
+	execute_predicate('between/3$0/3$0', 3)
 end('between/3$0'/3):
 
 

@@ -36,66 +36,74 @@ end('call'/1):
 
 '$call_2'/2:
 
-	switch_on_term(0, $20, $19, $11, $12, $19, $16)
-
-$11:
-	try(2, $1)
-	retry($2)
-	retry($7)
-	retry($9)
-	trust($10)
+	switch_on_term(0, $22, $21, $12, $13, $21, $18)
 
 $12:
-	switch_on_structure(0, 8, ['$default':$19, '$'/0:$13, ','/2:$14, ';'/2:$15])
+	try(2, $1)
+	retry($2)
+	retry($8)
+	retry($10)
+	trust($11)
 
 $13:
-	try(2, $1)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($7)
-	retry($9)
-	trust($10)
+	switch_on_structure(0, 8, ['$default':$21, '$'/0:$14, ','/2:$15, ';'/2:$16, '->'/2:$17])
 
 $14:
 	try(2, $1)
 	retry($3)
-	retry($7)
-	retry($9)
-	trust($10)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($8)
+	retry($10)
+	trust($11)
 
 $15:
 	try(2, $1)
-	retry($4)
-	retry($5)
-	retry($7)
-	retry($9)
-	trust($10)
+	retry($3)
+	retry($8)
+	retry($10)
+	trust($11)
 
 $16:
-	switch_on_constant(0, 4, ['$default':$19, '!':$17, 'trace':$18])
+	try(2, $1)
+	retry($4)
+	retry($5)
+	retry($8)
+	retry($10)
+	trust($11)
 
 $17:
 	try(2, $1)
 	retry($6)
-	retry($7)
-	retry($9)
-	trust($10)
+	retry($8)
+	retry($10)
+	trust($11)
 
 $18:
-	try(2, $1)
-	retry($7)
-	retry($8)
-	retry($9)
-	trust($10)
+	switch_on_constant(0, 4, ['$default':$21, '!':$19, 'trace':$20])
 
 $19:
 	try(2, $1)
 	retry($7)
-	retry($9)
-	trust($10)
+	retry($8)
+	retry($10)
+	trust($11)
 
 $20:
+	try(2, $1)
+	retry($8)
+	retry($9)
+	retry($10)
+	trust($11)
+
+$21:
+	try(2, $1)
+	retry($8)
+	retry($10)
+	trust($11)
+
+$22:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -105,7 +113,8 @@ $20:
 	retry($7)
 	retry($8)
 	retry($9)
-	trust($10)
+	retry($10)
+	trust($11)
 
 $1:
 	get_x_variable(2, 0)
@@ -172,12 +181,20 @@ $5:
 	execute_predicate('$or_call', 3)
 
 $6:
+	get_structure('->', 2, 0)
+	unify_x_variable(0)
+	unify_x_variable(3)
+	get_x_variable(2, 1)
+	put_x_value(3, 1)
+	execute_predicate('$it_call', 3)
+
+$7:
 	get_constant('!', 0)
 	neck_cut
 	pseudo_instr1(9, 1)
 	proceed
 
-$7:
+$8:
 	put_constant('$debugger_status', 2)
 	pseudo_instr2(73, 2, 1)
 	put_constant('off', 2)
@@ -185,13 +202,13 @@ $7:
 	neck_cut
 	execute_predicate('call_predicate', 1)
 
-$8:
+$9:
 	get_constant('trace', 0)
 	neck_cut
 	put_constant('trace', 0)
 	execute_predicate('call_predicate', 1)
 
-$9:
+$10:
 	allocate(2)
 	get_y_variable(0, 0)
 	pseudo_instr1(68, 0)
@@ -204,7 +221,7 @@ $9:
 	deallocate
 	execute_predicate('$debug_call', 1)
 
-$10:
+$11:
 	execute_predicate('call_predicate', 1)
 end('$call_2'/2):
 
@@ -233,6 +250,25 @@ $2:
 	get_x_variable(1, 3)
 	execute_predicate('$call_2', 2)
 end('$ite_call'/4):
+
+
+
+'$it_call'/3:
+
+
+$1:
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
+	get_y_level(2)
+	put_y_value(0, 1)
+	call_predicate('$call_2', 2, 3)
+	cut(2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('$call_2', 2)
+end('$it_call'/3):
 
 
 

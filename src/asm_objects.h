@@ -51,7 +51,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_objects.h,v 1.6 2002/11/10 07:54:50 qp Exp $
+// $Id: asm_objects.h,v 1.7 2004/12/23 22:40:34 qp Exp $
 
 #ifndef	ASM_OBJECTS_H
 #define	ASM_OBJECTS_H
@@ -169,6 +169,7 @@ public:
     }
 };
 
+#if 0
 template <class Item>
 class SwitchTable
 {
@@ -176,7 +177,7 @@ private:
   u_int jump_offset_base;
   ASMInt<Code::TableSizeSizedType> *num_table_entries;
   string *default_label;
-  vector<Item *> *list;
+  vector<Item *> *ilist;
 public:
   SwitchTable(const u_int job,
 	      ASMInt<Code::TableSizeSizedType> *num,
@@ -184,7 +185,7 @@ public:
     : jump_offset_base(job),
       num_table_entries(num),
       default_label(dl),
-      list(l)
+      ilist(l)
       { }
   
   ~SwitchTable(void) { }
@@ -201,8 +202,108 @@ public:
       count++;					// ``One wonderful entry!!!''
       
       // Output all the list entries
-      for (vector<Item *>::iterator iter = list->begin();
-	   iter != list->end();
+      for (vector<Item *>::iterator iter = ilist->begin();
+	   iter != ilist->end();
+	   iter++)
+	{
+	  (*iter)->Put(code, labels, jump_offset_base);
+	  count++;
+	}
+      
+      // Fill up extra places with default entries
+      
+      for (;
+	   count < num_table_entries->Value();
+	   count++)
+	{
+	  default_entry.Put(code, labels, jump_offset_base);
+	}
+    }
+};
+#endif
+class AtomSwitchTable
+{
+private:
+  u_int jump_offset_base;
+  ASMInt<Code::TableSizeSizedType> *num_table_entries;
+  string *default_label;
+  vector<AtomArityLabel *> *ilist;
+public:
+  AtomSwitchTable(const u_int job,
+	      ASMInt<Code::TableSizeSizedType> *num,
+	      string *dl, vector<AtomArityLabel *> *l)
+    : jump_offset_base(job),
+      num_table_entries(num),
+      default_label(dl),
+      ilist(l)
+      { }
+  
+  ~AtomSwitchTable(void) { }
+  
+  void Put(CodeBlock& code,
+	   LabelTable& labels)
+    {
+      u_int count = 0;			// Count of entries output
+      
+      AtomArityLabel default_entry(default_label);
+      
+      default_entry.Put(code, labels, jump_offset_base);
+      
+      count++;					// ``One wonderful entry!!!''
+      
+      // Output all the list entries
+      for (vector<AtomArityLabel *>::iterator iter = ilist->begin();
+	   iter != ilist->end();
+	   iter++)
+	{
+	  (*iter)->Put(code, labels, jump_offset_base);
+	  count++;
+	}
+      
+      // Fill up extra places with default entries
+      
+      for (;
+	   count < num_table_entries->Value();
+	   count++)
+	{
+	  default_entry.Put(code, labels, jump_offset_base);
+	}
+    }
+};
+
+class ConstantSwitchTable
+{
+private:
+  u_int jump_offset_base;
+  ASMInt<Code::TableSizeSizedType> *num_table_entries;
+  string *default_label;
+  vector<ConstantLabel *> *ilist;
+public:
+  ConstantSwitchTable(const u_int job,
+	      ASMInt<Code::TableSizeSizedType> *num,
+	      string *dl, vector<ConstantLabel *> *l)
+    : jump_offset_base(job),
+      num_table_entries(num),
+      default_label(dl),
+      ilist(l)
+      { }
+  
+  ~ConstantSwitchTable(void) { }
+  
+  void Put(CodeBlock& code,
+	   LabelTable& labels)
+    {
+      u_int count = 0;			// Count of entries output
+      
+      ConstantLabel default_entry(default_label);
+      
+      default_entry.Put(code, labels, jump_offset_base);
+      
+      count++;					// ``One wonderful entry!!!''
+      
+      // Output all the list entries
+      for (vector<ConstantLabel *>::iterator iter = ilist->begin();
+	   iter != ilist->end();
 	   iter++)
 	{
 	  (*iter)->Put(code, labels, jump_offset_base);

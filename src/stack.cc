@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stack.cc,v 1.4 2002/11/03 08:37:32 qp Exp $
+// $Id: stack.cc,v 1.5 2004/12/23 22:40:37 qp Exp $
 
 #ifndef STACK_CC
 #define STACK_CC
@@ -79,7 +79,7 @@ template <class StoredType>
 void
 PrologStack<StoredType>::saveStack(ostream& ostrm, const unsigned long magic) const
 {
-  saveArea(ostrm, magic, 0, top);
+  this->saveArea(ostrm, magic, 0, top);
   //
   // Write the top of stack.
   //
@@ -93,7 +93,7 @@ template <class StoredType>
 void
 PrologStack<StoredType>::loadStack(istream& istrm)
 {
-  loadArea(istrm, 0);
+  this->loadArea(istrm, 0);
   //
   // Read the top of stack.
   //

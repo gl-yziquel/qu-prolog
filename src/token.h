@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: token.h,v 1.2 2002/11/10 07:54:55 qp Exp $
+// $Id: token.h,v 1.3 2004/11/24 00:12:36 qp Exp $
 
 #ifndef TOKEN_H
 #define TOKEN_H
@@ -62,17 +62,17 @@ private:
 //
 // Look up the classification of a character.
 //
-inline int8 InType(const char c);
+inline int8 InType(const signed char c);
 
 //
 // Look up the digital value of a character.
 //
-inline int32 DigVal(const char c);
+inline int32 DigVal(const signed char c);
 
 //
 // true if it is a space.
 // 
-inline bool IsLayout(const char c);
+inline bool IsLayout(const signed char c);
  
 // 
 // Output messages for detected syntax errors. 
@@ -89,7 +89,7 @@ inline int Peek(QPStream *InStrm, const word32);
 //
 // Retained for historical reasons.
 //
-inline void ReadPrompt(const QPStream *, const char);
+inline void ReadPrompt(const QPStream *, const signed char);
 
 //
 // Recover from a numeric error.
@@ -128,7 +128,7 @@ inline void Putback(QPStream *InStrm, const int c);
 //      has to be continued over \c
 //      several lines.\n".
 //
-int32 ReadCharacter(QPStream *InStrm, const char q, int32& Integer);
+int32 ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer);
 
 //
 // GetToken() reads a single token from the input stream and returns the

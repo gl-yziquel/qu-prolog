@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stack_qp.h,v 1.8 2003/09/28 07:53:36 qp Exp $
+// $Id: stack_qp.h,v 1.9 2004/12/23 22:40:37 qp Exp $
 
 #ifndef	STACK_QP_H
 #define	STACK_QP_H
@@ -106,6 +106,7 @@ virtual	word32		maxUsage(void) const		{ return(0); }
 // Error messages that can be reported:
 //	OutOfPage, BadReset, BadReference, EmptyStack.
 //
+
 template <class StoredType>
 class	PrologStack : private PageTable <StoredType>,
 		      public FixedSizeStack
@@ -163,7 +164,7 @@ protected:
 		    }
 		    );
       
-      return(getItem(s));
+      return(this->getItem(s));
     }
 
   //
@@ -204,7 +205,7 @@ protected:
 				   loc);
 		    }
 		    );
-      return(offsetToAddress(loc));
+      return(this->offsetToAddress(loc));
     }
   
   //
@@ -213,8 +214,8 @@ protected:
   //
   void	pushElement(const StoredType word)
     {
-	allocateItems(top, 1);
-	getItem(top) = word;
+	this->allocateItems(top, 1);
+	this->getItem(top) = word;
 	top++;
 	overflowCheck(top - 1, top);
     }
@@ -237,7 +238,7 @@ protected:
       // decrement the pointer and return the popped
       // value.
       //
-      return(getItem(--top));
+      return(this->getItem(--top));
     }
   
   //
@@ -248,7 +249,7 @@ protected:
     {
 	StackLoc	block = top;
 
-	allocateItems(top, n);
+	this->allocateItems(top, n);
 	top += n;
 	overflowCheck(block, top);
 	return(block);
@@ -274,7 +275,7 @@ protected:
 	// Round up to the nearest whole StoredType.
 	//
         elements = roundBasicUnit(size, sizeof(StoredType));
-	block = allocateSegment(top, elements);
+	block = this->allocateSegment(top, elements);
 	top = block + elements;
 	overflowCheck(OldTop, top);
 	return(block);
@@ -324,14 +325,14 @@ public:
 	BadReference(__FUNCTION__, getAreaName(), loc);
       }
       );
-      return(offsetToAddress(loc));
+      return(this->offsetToAddress(loc));
     }
 
   //
   // Return the size allocated to the stack.  The size is defined as the
   // number of StoredType in the stack.
   //
-  virtual word32 allocatedSize(void) const	{ return(areaSize()); }
+  virtual word32 allocatedSize(void) const	{ return(this->areaSize()); }
 
   //
   // Get an element.
@@ -345,7 +346,7 @@ public:
 		    }
 		    );
       
-      return(getItem(s));
+      return(this->getItem(s));
     }
 
   PrologStack(word32 size, word32 boundary = 0) :
@@ -353,7 +354,7 @@ public:
     {
       top = 0;
       highWaterMark = 0;
-      overflow = areaSize() - boundary * K;
+      overflow =this-> areaSize() - boundary * K;
     }
   virtual	~PrologStack(void);
 };

@@ -58,6 +58,9 @@ case "$host" in
 *-*-darwin*) AC_DEFINE(MACOSX)
 	OS=MACOSX
 	;;
+*) AC_DEFINE(FREEBSD)
+	OS=FREEBSD
+	;;
 esac
 
 dnl Checks for programs.

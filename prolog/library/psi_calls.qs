@@ -1294,6 +1294,17 @@ end('chdir'/1):
 
 
 
+'getcwd'/1:
+
+
+$1:
+	pseudo_instr1(112, 1)
+	get_x_value(0, 1)
+	proceed
+end('getcwd'/1):
+
+
+
 'is'/2:
 
 

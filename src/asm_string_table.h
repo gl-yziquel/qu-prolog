@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.h,v 1.6 2002/11/10 07:54:50 qp Exp $
+// $Id: asm_string_table.h,v 1.7 2004/12/23 22:40:35 qp Exp $
 
 #ifndef	ASM_STRING_TABLE_H
 #define	ASM_STRING_TABLE_H
@@ -82,7 +82,7 @@ private:
   {
     ASMLoc new_size = 2 * table_size;
     
-    EntryType *tmp = new (EntryType)[new_size];
+    EntryType *tmp = new EntryType[new_size];
 
     for (u_int i = 0; i < table_size; i++)
       {

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_hash_table.cc,v 1.4 2001/11/21 00:21:13 qp Exp $    
+// $Id: dynamic_hash_table.cc,v 1.5 2004/12/23 22:40:35 qp Exp $    
 //
 
 #include "dynamic_hash_table.h"
@@ -138,7 +138,7 @@ DynamicHashTable<HashType>::insert(const HashType item, int &hashValue)
 	}
       else if (increment  == tableSize)
 	{
-	  cerr << "Table cycled through" << endl;
+	  // cerr << "Table cycled through" << endl;
 	  abort();
 	}
       hashValue = (hashValue + increment++) & tableSizeMask;

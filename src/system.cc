@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system.cc,v 1.15 2004/03/19 04:54:19 qp Exp $
+// $Id: system.cc,v 1.16 2004/11/24 00:12:35 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -165,6 +165,19 @@ Thread::psi_chdir(Object *& object1)
 }
 
 //
+// psi_getcwd(atom)
+// Get the current working directory
+// mode(out)
+//
+Thread::ReturnValue	
+Thread::psi_getcwd(Object *& object1)
+{
+  if (getcwd(atom_buf1, 255) == NULL) return RV_FAIL;
+  object1 = atoms->add(atom_buf1);
+  return RV_SUCCESS;
+}
+
+//
 // psi_mktemp(atom, var)
 // Return a temporary file name.
 // mode(in,out)
@@ -201,7 +214,7 @@ Thread::psi_realtime(Object *& time_arg)
 // psi_gmtime(Time, TimeStruct) succeeds if
 // Time is the Unix Epoch time corresponding to the time given in
 // TimeStruct which is of the form 
-// gmt_time(Year, Mth, Day, Hours, Mins, Secs)
+// time(Year, Mth, Day, Hours, Mins, Secs)
 Thread::ReturnValue
 Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
 {
@@ -212,7 +225,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
       time_t etime = (time_t)time_arg->getNumber();
       struct tm *tmtime = gmtime(&etime);
       Structure* t_struct = heap.newStructure(6);
-      t_struct->setFunctor(atoms->add("gmt_time"));
+      t_struct->setFunctor(atoms->add("time"));
       t_struct->setArgument(1, heap.newNumber(tmtime->tm_year));
       t_struct->setArgument(2, heap.newNumber(tmtime->tm_mon));
       t_struct->setArgument(3, heap.newNumber(tmtime->tm_mday));
@@ -235,7 +248,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
       Structure* t_struct = OBJECT_CAST(Structure*, time_struct_arg);
       if ((t_struct->getArity() != 6) || 
 	  (t_struct->getFunctor()->variableDereference() 
-	   != atoms->add("gmt_time")))
+	   != atoms->add("time")))
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
@@ -306,7 +319,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
 // psi_localtime(Time, TimeStruct) succeeds if
 // Time is the Unix Epoch time corresponding to the time given in
 // TimeStruct which is of the form 
-// local_time(Year, Mth, Day, Hours, Mins, Secs, isdst)
+// time(Year, Mth, Day, Hours, Mins, Secs, isdst)
 Thread::ReturnValue
 Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 {
@@ -325,7 +338,7 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
       time_t etime = (time_t)time_arg->getNumber();
       struct tm *tmtime = localtime(&etime);
       Structure* t_struct = heap.newStructure(7);
-      t_struct->setFunctor(atoms->add("local_time"));
+      t_struct->setFunctor(atoms->add("time"));
       t_struct->setArgument(1, heap.newNumber(tmtime->tm_year));
       t_struct->setArgument(2, heap.newNumber(tmtime->tm_mon));
       t_struct->setArgument(3, heap.newNumber(tmtime->tm_mday));
@@ -349,7 +362,7 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
       Structure* t_struct = OBJECT_CAST(Structure*, time_struct_arg);
       if ((t_struct->getArity() != 7) || 
 	  (t_struct->getFunctor()->variableDereference() 
-	   != atoms->add("local_time")))
+	   != atoms->add("time")))
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}

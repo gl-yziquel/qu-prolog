@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: io.cc,v 1.25 2002/12/22 04:12:29 qp Exp $
+// $Id: io.cc,v 1.26 2004/11/24 00:12:35 qp Exp $
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -172,7 +172,7 @@ bool
 Socket::isBroadcast(void) const
 {
   int val;
-  unsigned int len = sizeof(val);
+  socklen_t len = sizeof(val);
 
   if (getsockopt(getFD(),
 		 SOL_SOCKET, SO_BROADCAST, (char *)&val, &len))

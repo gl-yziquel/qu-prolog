@@ -217,95 +217,100 @@ end('$flatten_body/8$0'/10):
 
 '$flatten_body'/8:
 
-	switch_on_term(0, $36, $17, $17, $18, $17, $17)
-
-$18:
-	switch_on_structure(0, 64, ['$default':$17, '$'/0:$19, ','/2:$20, 'build_structure'/4:$21, 'map'/2:$22, 'filter'/3:$23, 'fold'/4:$24, 'fold_right'/4:$25, 'fold_left'/4:$26, 'front_with'/3:$27, 'after_with'/3:$28, '$pretrans_block'/1:$29, 'write_term_list'/1:$30, 'write_term_list'/2:$31, 'once'/1:$32, '\\+'/1:$33, '$if_then_else'/3:$34, ';'/2:$35])
+	switch_on_term(0, $38, $18, $18, $19, $18, $18)
 
 $19:
-	try(8, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($7)
-	retry($8)
-	retry($9)
-	retry($10)
-	retry($11)
-	retry($12)
-	retry($13)
-	retry($14)
-	retry($15)
-	retry($16)
-	trust($17)
+	switch_on_structure(0, 64, ['$default':$18, '$'/0:$20, ','/2:$21, 'build_structure'/4:$22, 'map'/2:$23, 'filter'/3:$24, 'fold'/4:$25, 'fold_right'/4:$26, 'fold_left'/4:$27, 'front_with'/3:$28, 'after_with'/3:$29, '$pretrans_block'/1:$30, 'write_term_list'/1:$31, 'write_term_list'/2:$32, 'once'/1:$33, '\\+'/1:$34, '$if_then_else'/3:$35, '$if_then'/2:$36, ';'/2:$37])
 
 $20:
 	try(8, $1)
-	trust($17)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	retry($9)
+	retry($10)
+	retry($11)
+	retry($12)
+	retry($13)
+	retry($14)
+	retry($15)
+	retry($16)
+	retry($17)
+	trust($18)
 
 $21:
-	try(8, $2)
-	trust($17)
+	try(8, $1)
+	trust($18)
 
 $22:
-	try(8, $3)
-	trust($17)
+	try(8, $2)
+	trust($18)
 
 $23:
-	try(8, $4)
-	trust($17)
+	try(8, $3)
+	trust($18)
 
 $24:
-	try(8, $5)
-	trust($17)
+	try(8, $4)
+	trust($18)
 
 $25:
-	try(8, $6)
-	trust($17)
+	try(8, $5)
+	trust($18)
 
 $26:
-	try(8, $7)
-	trust($17)
+	try(8, $6)
+	trust($18)
 
 $27:
-	try(8, $8)
-	trust($17)
+	try(8, $7)
+	trust($18)
 
 $28:
-	try(8, $9)
-	trust($17)
+	try(8, $8)
+	trust($18)
 
 $29:
-	try(8, $10)
-	trust($17)
+	try(8, $9)
+	trust($18)
 
 $30:
-	try(8, $11)
-	trust($17)
+	try(8, $10)
+	trust($18)
 
 $31:
-	try(8, $12)
-	trust($17)
+	try(8, $11)
+	trust($18)
 
 $32:
-	try(8, $13)
-	trust($17)
+	try(8, $12)
+	trust($18)
 
 $33:
-	try(8, $14)
-	trust($17)
+	try(8, $13)
+	trust($18)
 
 $34:
-	try(8, $15)
-	trust($17)
+	try(8, $14)
+	trust($18)
 
 $35:
-	try(8, $16)
-	trust($17)
+	try(8, $15)
+	trust($18)
 
 $36:
+	try(8, $16)
+	trust($18)
+
+$37:
+	try(8, $17)
+	trust($18)
+
+$38:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -322,7 +327,8 @@ $36:
 	retry($14)
 	retry($15)
 	retry($16)
-	trust($17)
+	retry($17)
+	trust($18)
 
 $1:
 	get_structure(',', 2, 0)
@@ -1588,6 +1594,48 @@ $15:
 	execute_predicate('$flatten_else', 4)
 
 $16:
+	allocate(8)
+	get_y_variable(7, 0)
+	get_y_variable(3, 1)
+	get_x_variable(0, 2)
+	get_y_variable(6, 3)
+	get_x_variable(2, 4)
+	get_x_variable(3, 5)
+	get_list(6)
+	unify_y_variable(2)
+	unify_x_variable(1)
+	get_x_value(1, 7)
+	put_y_value(7, 1)
+	get_structure('$if_then', 2, 1)
+	unify_y_variable(1)
+	unify_y_variable(0)
+	neck_cut
+	put_y_variable(4, 19)
+	put_y_variable(5, 1)
+	call_predicate('$new_predicate_name', 4, 8)
+	put_y_value(7, 0)
+	put_y_value(6, 1)
+	put_y_value(4, 2)
+	call_predicate('$predicate_args', 3, 6)
+	put_y_value(3, 0)
+	put_list(1)
+	set_y_value(5)
+	set_y_value(4)
+	call_predicate('=..', 2, 4)
+	put_y_value(2, 0)
+	get_structure(':-', 2, 0)
+	unify_y_value(3)
+	unify_x_ref(0)
+	get_structure(',', 2, 0)
+	unify_y_value(1)
+	unify_x_ref(0)
+	get_structure(',', 2, 0)
+	unify_constant('!')
+	unify_y_value(0)
+	deallocate
+	proceed
+
+$17:
 	allocate(7)
 	get_y_variable(3, 0)
 	get_y_variable(2, 1)
@@ -1620,7 +1668,7 @@ $16:
 	deallocate
 	execute_predicate('$flatten_disj', 4)
 
-$17:
+$18:
 	get_x_value(0, 1)
 	get_x_value(4, 5)
 	get_x_value(6, 7)

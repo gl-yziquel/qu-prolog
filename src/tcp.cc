@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: tcp.cc,v 1.6 2002/12/05 03:39:34 qp Exp $
+// $Id: tcp.cc,v 1.7 2004/11/24 00:12:35 qp Exp $
 
 #include <stdio.h>
 #include <string.h>
@@ -104,7 +104,7 @@ open_socket_any_port(u_short& port)	// Network byte order.
 
   // Find out the port number we were given
   memset(&addr, 0, sizeof(addr));
-  unsigned int addr_len = sizeof(addr);
+  socklen_t addr_len = sizeof(addr);
   
   // Extract the port we were assigned from socket information
   SYSTEM_CALL_LESS_ZERO(getsockname(s, (sockaddr *)&addr, &addr_len));

@@ -1470,6 +1470,12 @@ _ACEOF
 
 	OS=MACOSX
 	;;
+*) cat >>confdefs.h <<\_ACEOF
+#define FREEBSD 1
+_ACEOF
+
+	OS=FREEBSD
+	;;
 esac
 
 ac_ext=c

@@ -677,7 +677,7 @@ Thread::psi_tcp_getsockopt(
     }
   
   int val;
-  unsigned int len = sizeof(val);
+  socklen_t len = sizeof(val);
 
   if (getsockopt(socket->getFD(), SOL_SOCKET, opt,
 		 (char *)&val, &len))
@@ -813,7 +813,7 @@ Thread::psi_tcp_accept(Object *& socket_arg,
   
   IS_READY_SOCKET(socket);
   struct sockaddr_in add;
-  unsigned int length = sizeof(struct sockaddr_in);
+  socklen_t length = sizeof(struct sockaddr_in);
   
   const int newsockfd = accept(socket->getFD(),
 			       (struct sockaddr *) &add,
@@ -1004,7 +1004,7 @@ Thread::psi_tcp_getsockname(
   DECODE_SOCKET_ARG(heap, argS, 1, socket);
 
   sockaddr_in addr;
-  unsigned int length = sizeof(struct sockaddr_in);
+  socklen_t length = sizeof(struct sockaddr_in);
 
   if (getsockname(socket->getFD(),(struct sockaddr *)&addr,&length) < 0)
     {
@@ -1050,7 +1050,7 @@ Thread::psi_tcp_getpeername(
   DECODE_SOCKET_ARG(heap, argS, 1, socket);
 
   struct sockaddr_in addr;
-  unsigned int length = sizeof(struct sockaddr_in);
+  socklen_t length = sizeof(struct sockaddr_in);
 
   if (getpeername(socket->getFD(),(struct sockaddr *)&addr,&length) < 0)
     {

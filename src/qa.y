@@ -811,7 +811,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 			    "invalid default atom in switch_on_structure");
 		    }
 
-		  SwitchTable<ConstantLabel> switch_table(jump_offset_base,
+		 ConstantSwitchTable switch_table(jump_offset_base,
 							  $5, $10, $11);
 
 		  switch_table.Put(*code_block, *labels);
@@ -839,7 +839,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 			    "invalid default atom in switch_on_structure");
 		    }
 
-		  SwitchTable<AtomArityLabel> switch_table(jump_offset_base,
+		  AtomSwitchTable switch_table(jump_offset_base,
 							   $5, $10, $11);
 
 		  switch_table.Put(*code_block, *labels);
@@ -867,7 +867,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 			    "invalid default atom in switch_on_quantifier");
 		    }
 
-		  SwitchTable<AtomArityLabel> switch_table(jump_offset_base,
+		  AtomSwitchTable switch_table(jump_offset_base,
 							   $5, $10, $11);
 
 		  switch_table.Put(*code_block, *labels);

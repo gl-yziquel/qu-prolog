@@ -53,13 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_hash_table.h,v 1.2 2001/11/21 00:21:13 qp Exp $    
+// $Id: dynamic_hash_table.h,v 1.3 2004/12/23 22:40:35 qp Exp $    
 //
 
 #ifndef DYNAMIC_HASH_TABLE_H
 #define DYNAMIC_HASH_TABLE_H
 
-
+#include <iostream>
 //
 // HashType is the data type stored in the hash table.
 // The size of the table must be a power of 2.
@@ -134,7 +134,7 @@ public:
                         { 
 			   if ((loc < 0) || (loc >= tableSize))
 			   {
-			       cerr << "Out of bounds " << loc << endl;
+			     // cerr << "Out of bounds " << loc << endl;
 			       abort();
 			   }
 			   return(table[loc]); 

@@ -52,24 +52,24 @@ usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
 #
 # location of Qu-Prolog project
 #
-PATH=/home/pjr/qp_dev/rel/qp6.5/bin:$PATH
+PATH=/home/pjr/qp_dev/rel/qp6.7/bin:$PATH
 
 #
 # names of Qu-Prolog binaries
 #
-preprocess=/home/pjr/qp_dev/rel/qp6.5/bin/qppp
+preprocess=/home/pjr/qp_dev/rel/qp6.7/bin/qppp
 expand=qg
 compile=qc1
 compversion=qup
 assemble=qa
 link=ql
-execute=/home/pjr/qp_dev/rel/qp6.5/bin/qem
+execute=/home/pjr/qp_dev/rel/qp6.7/bin/qem
 
 #
 # Use the line below when dynamic search for libraries is implemented.
 #
 # libqofiles=""
-libqofiles="/home/pjr/qp_dev/rel/qp6.5/prolog/compiler/*.qo /home/pjr/qp_dev/rel/qp6.5/prolog/library/*.qo"
+libqofiles="/home/pjr/qp_dev/rel/qp6.7/prolog/compiler/*.qo /home/pjr/qp_dev/rel/qp6.7/prolog/library/*.qo"
 
 qlfiles=""
 qlefiles=""

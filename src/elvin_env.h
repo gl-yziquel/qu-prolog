@@ -1,6 +1,6 @@
 // elvin_env.h - Elvin support.
 //
-// $Id: elvin_env.h,v 1.3 2004/03/17 21:55:05 qp Exp $
+// $Id: elvin_env.h,v 1.4 2004/12/01 04:23:48 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -235,6 +235,8 @@ class ElvinMessageChannel : public MessageChannel
   // Are we connect to Elvin?
   bool connected;
   // Elvin error
+  // Has the subscription been done?
+  bool subscribed;
   elvin_error_t error;
   // Elvin handle
   elvin_handle_t handle;
@@ -259,6 +261,10 @@ class ElvinMessageChannel : public MessageChannel
   elvin_handle_t getHandle(void) { return handle; }
   elvin_error_t getError(void) { return error; }
   
+  void setSubscribed(bool b) { subscribed = b; }
+  
+  void readElvin(void);
+
   // Add an Elvin handler to the current handlers
   void addHandler(ElvinHandler* h)
     {

@@ -1312,7 +1312,7 @@ extern "C" bool
 	call_predicate('$foreign_write', 1, 3)
 	put_constant('(Thread& th)
 {
-	bool result = true;
+ bool result = true;
 ', 0)
 	call_predicate('$foreign_write', 1, 3)
 	put_y_value(1, 0)
@@ -1343,7 +1343,7 @@ extern "C" bool
 	put_y_value(0, 0)
 	call_predicate('$make_output_values', 1, 0)
 	put_constant('
-	return(result);
+ return(result);
 }
 ', 0)
 	deallocate
@@ -1612,7 +1612,7 @@ $1:
 	put_y_value(0, 0)
 	call_predicate('$write_foreign_reg', 1, 2)
 	put_constant('->variableDereference();
-	if (!', 0)
+ if (!', 0)
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 2)
@@ -1621,10 +1621,10 @@ $1:
 	put_y_value(1, 0)
 	call_predicate('$type_check', 1, 2)
 	put_constant(')
-	{
-		return(false);
-	}
-	', 0)
+ {
+  return(false);
+ }
+ ', 0)
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
@@ -1872,7 +1872,7 @@ $1:
 	put_y_value(0, 1)
 	call_predicate('$make_term', 2, 1)
 	put_constant(');
-	result = result && th.unify(', 0)
+ result = result && th.unify(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 1)
@@ -2702,7 +2702,7 @@ $1:
 	call_predicate('$convert_foreign_call/5$0', 3, 6)
 	put_y_value(1, 0)
 	put_constant('?- load_foreign(
-	[
+ [
 ', 1)
 	call_predicate('write_atom', 2, 6)
 	put_y_value(1, 0)
@@ -2710,8 +2710,8 @@ $1:
 	call_predicate('$write_foreign_list', 2, 5)
 	put_y_value(1, 0)
 	put_constant('
-	],
-	[
+ ],
+ [
 ', 1)
 	call_predicate('write_atom', 2, 5)
 	put_y_value(1, 0)
@@ -2720,8 +2720,8 @@ $1:
 	call_predicate('$write_foreign_decl', 3, 3)
 	put_y_value(1, 0)
 	put_constant('
-	],
-	[
+ ],
+ [
 ', 1)
 	call_predicate('write_atom', 2, 3)
 	put_y_value(1, 0)

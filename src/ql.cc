@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ql.cc,v 1.6 2002/11/10 07:54:53 qp Exp $
+// $Id: ql.cc,v 1.7 2004/12/23 22:40:36 qp Exp $
 
 #include <stdlib.h>
 
@@ -123,8 +123,9 @@ main(int32 argc, char** argv)
   //
   // Step 1 - load all the files in.
   // 
+  typedef ObjectIndex* ObjectIndexPtr;
   ObjectIndex **ObjectIndices =
-    new (ObjectIndex *)[ql_options.NumObjectFiles()];
+    new ObjectIndexPtr[ql_options.NumObjectFiles()];
 
   word32 NumQuery = 0;
   for (int i = 0; i < ql_options.NumObjectFiles(); i++)

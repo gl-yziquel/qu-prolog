@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made by GNU Bison 1.875c.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -316,7 +316,7 @@ typedef union YYSTYPE {
   AtomArityLabel *aal;
 } YYSTYPE;
 /* Line 191 of yacc.c.  */
-#line 319 "qa.cc"
+#line 320 "qa.cc"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -328,22 +328,29 @@ typedef union YYSTYPE {
 
 
 /* Line 214 of yacc.c.  */
-#line 331 "qa.cc"
+#line 332 "qa.cc"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
+# ifndef YYFREE
+#  define YYFREE free
+# endif
+# ifndef YYMALLOC
+#  define YYMALLOC malloc
+# endif
+
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
-# if YYSTACK_USE_ALLOCA
-#  define YYSTACK_ALLOC alloca
+# ifdef YYSTACK_USE_ALLOCA
+#  if YYSTACK_USE_ALLOCA
+#   define YYSTACK_ALLOC alloca
+#  endif
 # else
-#  ifndef YYSTACK_USE_ALLOCA
-#   if defined (alloca) || defined (_ALLOCA_H)
-#    define YYSTACK_ALLOC alloca
-#   else
-#    ifdef __GNUC__
-#     define YYSTACK_ALLOC __builtin_alloca
-#    endif
+#  if defined (alloca) || defined (_ALLOCA_H)
+#   define YYSTACK_ALLOC alloca
+#  else
+#   ifdef __GNUC__
+#    define YYSTACK_ALLOC __builtin_alloca
 #   endif
 #  endif
 # endif
@@ -356,15 +363,15 @@ typedef union YYSTYPE {
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
 #   define YYSIZE_T size_t
 #  endif
-#  define YYSTACK_ALLOC malloc
-#  define YYSTACK_FREE free
+#  define YYSTACK_ALLOC YYMALLOC
+#  define YYSTACK_FREE YYFREE
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
 
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
-	 || (YYSTYPE_IS_TRIVIAL)))
+	 || (defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -385,7 +392,7 @@ union yyalloc
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if 1 < __GNUC__
+#  if defined (__GNUC__) && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
@@ -599,37 +606,37 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "put_x_variable", "put_y_variable", 
-  "put_x_value", "put_y_value", "put_constant", "put_integer", "put_list", 
-  "put_structure", "put_x_object_variable", "put_y_object_variable", 
-  "put_x_object_value", "put_y_object_value", "put_quantifier", 
-  "check_binder", "put_substitution", "put_x_term_substitution", 
-  "put_y_term_substitution", "put_initial_empty_substitution", 
-  "get_x_variable", "get_y_variable", "get_x_value", "get_y_value", 
-  "get_constant", "get_integer", "get_list", "get_structure", 
-  "get_structure_frame", "get_x_object_variable", "get_y_object_variable", 
-  "get_x_object_value", "get_y_object_value", "unify_x_variable", 
-  "unify_y_variable", "unify_x_value", "unify_y_value", "unify_void", 
-  "unify_constant", "unify_integer", "unify_x_ref", "unify_y_ref", 
-  "set_x_variable", "set_y_variable", "set_x_value", "set_y_value", 
-  "set_x_object_variable", "set_y_object_variable", "set_x_object_value", 
-  "set_y_object_value", "set_constant", "set_integer", "set_void", 
-  "set_object_void", "wam_allocate", "wam_deallocate", "call_predicate", 
-  "call_address", "call_escape", "execute_predicate", "execute_address", 
-  "execute_escape", "noop", "jump", "proceed", "wam_fail", "halt", 
-  "wam_exit", "try_me_else", "retry_me_else", "trust_me_else_fail", 
-  "wam_try", "retry", "trust", "neck_cut", "get_x_level", "get_y_level", 
-  "cut", "switch_on_term", "switch_on_constant", "switch_on_structure", 
-  "switch_on_quantifier", "pseudo_instr0", "pseudo_instr1", 
-  "pseudo_instr2", "pseudo_instr3", "pseudo_instr4", "pseudo_instr5", 
-  "NUMBER_TOKEN", "ATOM_TOKEN", "LABEL_TOKEN", "END_TOKEN", "'/'", "':'", 
-  "'('", "')'", "','", "'['", "']'", "'+'", "'-'", "$accept", 
-  "assembler_file", "predicate_list", "predicate", "predicate_start", 
-  "predicate_end", "source_line_list", "source_line", "label_instance", 
-  "instr", "constant_labels", "constant_label_list", "constant_label", 
-  "atom_arity_labels", "atom_arity_label_list", "atom_arity_label", 
-  "quantifier_labels", "quantifier_label_list", "quantifier_label", 
-  "switch_label", "constant", "number", "reg", "address", "atom", 
+  "$end", "error", "$undefined", "put_x_variable", "put_y_variable",
+  "put_x_value", "put_y_value", "put_constant", "put_integer", "put_list",
+  "put_structure", "put_x_object_variable", "put_y_object_variable",
+  "put_x_object_value", "put_y_object_value", "put_quantifier",
+  "check_binder", "put_substitution", "put_x_term_substitution",
+  "put_y_term_substitution", "put_initial_empty_substitution",
+  "get_x_variable", "get_y_variable", "get_x_value", "get_y_value",
+  "get_constant", "get_integer", "get_list", "get_structure",
+  "get_structure_frame", "get_x_object_variable", "get_y_object_variable",
+  "get_x_object_value", "get_y_object_value", "unify_x_variable",
+  "unify_y_variable", "unify_x_value", "unify_y_value", "unify_void",
+  "unify_constant", "unify_integer", "unify_x_ref", "unify_y_ref",
+  "set_x_variable", "set_y_variable", "set_x_value", "set_y_value",
+  "set_x_object_variable", "set_y_object_variable", "set_x_object_value",
+  "set_y_object_value", "set_constant", "set_integer", "set_void",
+  "set_object_void", "wam_allocate", "wam_deallocate", "call_predicate",
+  "call_address", "call_escape", "execute_predicate", "execute_address",
+  "execute_escape", "noop", "jump", "proceed", "wam_fail", "halt",
+  "wam_exit", "try_me_else", "retry_me_else", "trust_me_else_fail",
+  "wam_try", "retry", "trust", "neck_cut", "get_x_level", "get_y_level",
+  "cut", "switch_on_term", "switch_on_constant", "switch_on_structure",
+  "switch_on_quantifier", "pseudo_instr0", "pseudo_instr1",
+  "pseudo_instr2", "pseudo_instr3", "pseudo_instr4", "pseudo_instr5",
+  "NUMBER_TOKEN", "ATOM_TOKEN", "LABEL_TOKEN", "END_TOKEN", "'/'", "':'",
+  "'('", "')'", "','", "'['", "']'", "'+'", "'-'", "$accept",
+  "assembler_file", "predicate_list", "predicate", "predicate_start",
+  "predicate_end", "source_line_list", "source_line", "label_instance",
+  "instr", "constant_labels", "constant_label_list", "constant_label",
+  "atom_arity_labels", "atom_arity_label_list", "atom_arity_label",
+  "quantifier_labels", "quantifier_label_list", "quantifier_label",
+  "switch_label", "constant", "number", "reg", "address", "atom",
   "table_size", 0
 };
 #endif
@@ -1032,7 +1039,7 @@ static const unsigned char yystos[] =
 
 #define YYACCEPT	goto yyacceptlab
 #define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrlab1
+#define YYERROR		goto yyerrorlab
 
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
@@ -1067,11 +1074,11 @@ while (0)
    are run).  */
 
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)         \
-  Current.first_line   = Rhs[1].first_line;      \
-  Current.first_column = Rhs[1].first_column;    \
-  Current.last_line    = Rhs[N].last_line;       \
-  Current.last_column  = Rhs[N].last_column;
+# define YYLLOC_DEFAULT(Current, Rhs, N)		\
+   ((Current).first_line   = (Rhs)[1].first_line,	\
+    (Current).first_column = (Rhs)[1].first_column,	\
+    (Current).last_line    = (Rhs)[N].last_line,	\
+    (Current).last_column  = (Rhs)[N].last_column)
 #endif
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
@@ -1115,7 +1122,7 @@ do {								\
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
-| TOP (cinluded).                                                   |
+| TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
 #if defined (__STDC__) || defined (__cplusplus)
@@ -1155,9 +1162,9 @@ yy_reduce_print (yyrule)
 #endif
 {
   int yyi;
-  unsigned int yylineno = yyrline[yyrule];
+  unsigned int yylno = yyrline[yyrule];
   YYFPRINTF (stderr, "Reducing stack by rule %d (line %u), ",
-             yyrule - 1, yylineno);
+             yyrule - 1, yylno);
   /* Print the symbols being reduced, and their result.  */
   for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
     YYFPRINTF (stderr, "%s ", yytname [yyrhs[yyi]]);
@@ -1194,7 +1201,7 @@ int yydebug;
    SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
 
-#if YYMAXDEPTH == 0
+#if defined (YYMAXDEPTH) && YYMAXDEPTH == 0
 # undef YYMAXDEPTH
 #endif
 
@@ -2376,7 +2383,7 @@ yyreduce:
 			    "invalid default atom in switch_on_structure");
 		    }
 
-		  SwitchTable<ConstantLabel> switch_table(jump_offset_base,
+		 ConstantSwitchTable switch_table(jump_offset_base,
 							  yyvsp[-8].table_size, yyvsp[-3].label_name, yyvsp[-2].cl_list);
 
 		  switch_table.Put(*code_block, *labels);
@@ -2405,7 +2412,7 @@ yyreduce:
 			    "invalid default atom in switch_on_structure");
 		    }
 
-		  SwitchTable<AtomArityLabel> switch_table(jump_offset_base,
+		  AtomSwitchTable switch_table(jump_offset_base,
 							   yyvsp[-8].table_size, yyvsp[-3].label_name, yyvsp[-2].aal_list);
 
 		  switch_table.Put(*code_block, *labels);
@@ -2434,7 +2441,7 @@ yyreduce:
 			    "invalid default atom in switch_on_quantifier");
 		    }
 
-		  SwitchTable<AtomArityLabel> switch_table(jump_offset_base,
+		  AtomSwitchTable switch_table(jump_offset_base,
 							   yyvsp[-8].table_size, yyvsp[-3].label_name, yyvsp[-2].aal_list);
 
 		  switch_table.Put(*code_block, *labels);
@@ -2734,8 +2741,8 @@ yyreduce:
 
     }
 
-/* Line 999 of yacc.c.  */
-#line 2738 "qa.cc"
+/* Line 1000 of yacc.c.  */
+#line 2746 "qa.cc"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2776,18 +2783,33 @@ yyerrlab:
 	{
 	  YYSIZE_T yysize = 0;
 	  int yytype = YYTRANSLATE (yychar);
+	  const char* yyprefix;
 	  char *yymsg;
-	  int yyx, yycount;
+	  int yyx;
 
-	  yycount = 0;
 	  /* Start YYX at -YYN if negative to avoid negative indexes in
 	     YYCHECK.  */
-	  for (yyx = yyn < 0 ? -yyn : 0;
-	       yyx < (int) (sizeof (yytname) / sizeof (char *)); yyx++)
+	  int yyxbegin = yyn < 0 ? -yyn : 0;
+
+	  /* Stay within bounds of both yycheck and yytname.  */
+	  int yychecklim = YYLAST - yyn;
+	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+	  int yycount = 0;
+
+	  yyprefix = ", expecting ";
+	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	      yysize += yystrlen (yytname[yyx]) + 15, yycount++;
-	  yysize += yystrlen ("syntax error, unexpected ") + 1;
-	  yysize += yystrlen (yytname[yytype]);
+	      {
+		yysize += yystrlen (yyprefix) + yystrlen (yytname [yyx]);
+		yycount += 1;
+		if (yycount == 5)
+		  {
+		    yysize = 0;
+		    break;
+		  }
+	      }
+	  yysize += (sizeof ("syntax error, unexpected ")
+		     + yystrlen (yytname[yytype]));
 	  yymsg = (char *) YYSTACK_ALLOC (yysize);
 	  if (yymsg != 0)
 	    {
@@ -2796,16 +2818,13 @@ yyerrlab:
 
 	      if (yycount < 5)
 		{
-		  yycount = 0;
-		  for (yyx = yyn < 0 ? -yyn : 0;
-		       yyx < (int) (sizeof (yytname) / sizeof (char *));
-		       yyx++)
+		  yyprefix = ", expecting ";
+		  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 		    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
 		      {
-			const char *yyq = ! yycount ? ", expecting " : " or ";
-			yyp = yystpcpy (yyp, yyq);
+			yyp = yystpcpy (yyp, yyprefix);
 			yyp = yystpcpy (yyp, yytname[yyx]);
-			yycount++;
+			yyprefix = " or ";
 		      }
 		}
 	      yyerror (yymsg);
@@ -2826,25 +2845,27 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
-      /* Return failure if at end of input.  */
-      if (yychar == YYEOF)
+      if (yychar <= YYEOF)
         {
-	  /* Pop the error token.  */
-          YYPOPSTACK;
-	  /* Pop the rest of the stack.  */
-	  while (yyss < yyssp)
-	    {
-	      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-	      yydestruct (yystos[*yyssp], yyvsp);
-	      YYPOPSTACK;
-	    }
-	  YYABORT;
+          /* If at end of input, pop the error token,
+	     then the rest of the stack, then return failure.  */
+	  if (yychar == YYEOF)
+	     for (;;)
+	       {
+		 YYPOPSTACK;
+		 if (yyssp == yyss)
+		   YYABORT;
+		 YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
+		 yydestruct (yystos[*yyssp], yyvsp);
+	       }
         }
+      else
+	{
+	  YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
+	  yydestruct (yytoken, &yylval);
+	  yychar = YYEMPTY;
 
-      YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
-      yydestruct (yytoken, &yylval);
-      yychar = YYEMPTY;
-
+	}
     }
 
   /* Else will try to reuse lookahead token after shifting the error
@@ -2852,9 +2873,27 @@ yyerrlab:
   goto yyerrlab1;
 
 
-/*----------------------------------------------------.
-| yyerrlab1 -- error raised explicitly by an action.  |
-`----------------------------------------------------*/
+/*---------------------------------------------------.
+| yyerrorlab -- error raised explicitly by YYERROR.  |
+`---------------------------------------------------*/
+yyerrorlab:
+
+#ifdef __GNUC__
+  /* Pacify GCC when the user code never invokes YYERROR and the label
+     yyerrorlab therefore never appears in user code.  */
+  if (0)
+     goto yyerrorlab;
+#endif
+
+  yyvsp -= yylen;
+  yyssp -= yylen;
+  yystate = *yyssp;
+  goto yyerrlab1;
+
+
+/*-------------------------------------------------------------.
+| yyerrlab1 -- common code for both syntax error and YYERROR.  |
+`-------------------------------------------------------------*/
 yyerrlab1:
   yyerrstatus = 3;	/* Each real token shifted decrements this.  */
 
@@ -2878,9 +2917,8 @@ yyerrlab1:
 
       YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
       yydestruct (yystos[yystate], yyvsp);
-      yyvsp--;
-      yystate = *--yyssp;
-
+      YYPOPSTACK;
+      yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
 

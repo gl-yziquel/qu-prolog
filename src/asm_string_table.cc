@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.cc,v 1.4 2002/11/08 00:44:13 qp Exp $
+// $Id: asm_string_table.cc,v 1.5 2004/12/23 22:40:34 qp Exp $
 
 #include "asm_string_table.h"
 #include "code.h"
@@ -63,7 +63,7 @@ ASMTable<EntryType>::ASMTable(int size)
 {
   table_size = size;
   
-  table = new (EntryType)[table_size];
+  table = new EntryType[table_size];
   
   table_num_entries = 0;
 }

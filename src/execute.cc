@@ -55,7 +55,7 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: execute.cc,v 1.13 2004/02/25 21:25:31 qp Exp $
+// $Id: execute.cc,v 1.14 2004/12/01 04:23:48 qp Exp $
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -1555,14 +1555,14 @@ Thread::Execute(void)
 	    const PredLoc start = predicates->lookUp(predicate, arity, 
 						     atoms, code); 
 
-	    if (scheduler->Status().testEnableTimeslice() &&
+	    if (signals->Status().testSignals())
+	      {
+		HANDLE_SIGNAL(SIZE_OF_CALL_PREDICATE_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
 		scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_CALL_PREDICATE_INSTR);
-	      }
-	    else if (signals->Status().testSignals())
-	      {
-		HANDLE_SIGNAL(SIZE_OF_CALL_PREDICATE_INSTR);
 	      }
 	    else if (status.testFastRetry() &&
 		     !status.testDoingRetry())
@@ -1659,14 +1659,14 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (scheduler->Status().testEnableTimeslice() &&
+	    if (signals->Status().testSignals())
+	      {
+		HANDLE_SIGNAL(SIZE_OF_CALL_ADDRESS_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
 		scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_CALL_ADDRESS_INSTR);
-	      }
-	    else if (signals->Status().testSignals())
-	      {
-		HANDLE_SIGNAL(SIZE_OF_CALL_ADDRESS_INSTR);
 	      }
 	    else if (status.testFastRetry() &&
 		     !status.testDoingRetry())
@@ -1724,14 +1724,14 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (scheduler->Status().testEnableTimeslice() &&
+	    if (signals->Status().testSignals())
+	      {
+		HANDLE_SIGNAL(SIZE_OF_CALL_ESCAPE_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
 		scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_CALL_ESCAPE_INSTR);
-	      }
-	    else if (signals->Status().testSignals())
-	      {
-		HANDLE_SIGNAL(SIZE_OF_CALL_ESCAPE_INSTR);
 	      }
 	    else if (status.testFastRetry() && !status.testDoingRetry())
 	      {
@@ -1775,14 +1775,14 @@ Thread::Execute(void)
 	    const PredLoc start = predicates->lookUp(predicate, arity,
 						     atoms, code);
 
-	    if (scheduler->Status().testEnableTimeslice() &&
+	    if (signals->Status().testSignals())
+	      {
+		HANDLE_SIGNAL(SIZE_OF_EXECUTE_PREDICATE_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
 		scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_EXECUTE_PREDICATE_INSTR);
-	      }
-	    else if (signals->Status().testSignals())
-	      {
-		HANDLE_SIGNAL(SIZE_OF_EXECUTE_PREDICATE_INSTR);
 	      }
 	    else if (status.testFastRetry() && !status.testDoingRetry())
 	      {
@@ -1866,14 +1866,14 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (scheduler->Status().testEnableTimeslice() &&
+	    if (signals->Status().testSignals())
+	      {
+		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ADDRESS_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
 		scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_EXECUTE_ADDRESS_INSTR);
-	      }
-	    else if (signals->Status().testSignals())
-	      {
-		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ADDRESS_INSTR);
 	      }
 	    else if (status.testFastRetry() && !status.testDoingRetry())
 	      {
@@ -1921,14 +1921,14 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (scheduler->Status().testEnableTimeslice() &&
+	    if (signals->Status().testSignals())
+	      {
+		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ESCAPE_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
 		scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_EXECUTE_ESCAPE_INSTR);
-	      }
-	    else if (signals->Status().testSignals())
-	      {
-		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ESCAPE_INSTR);
 	      }
 	    else if (status.testFastRetry() &&
 		     !status.testDoingRetry())

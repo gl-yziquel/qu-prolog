@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: check.cc,v 1.10 2003/04/21 06:11:12 qp Exp $
+// $Id: check.cc,v 1.11 2004/12/23 22:40:35 qp Exp $
 
 // #include "atom_table.h"
 //#include "dereference.h"
@@ -428,7 +428,8 @@ Heap::decode_icm_handle(AtomTable& atoms,
   const char *name = atoms.getAtomString(OBJECT_CAST(Atom*, name_object));
   const char *home = atoms.getAtomString(OBJECT_CAST(Atom*, home_object));
 
-  char **locations = new (char *)[length + 1];
+  typedef char* charptr;
+  char **locations = new charptr[length + 1];
   
   for (size_t i = 0;
        i < length;

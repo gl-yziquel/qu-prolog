@@ -12,13 +12,10 @@ $1:
 
 $2:
 	get_list(0)
-	allocate(3)
-	unify_y_variable(2)
+	unify_x_variable(0)
+	allocate(2)
 	unify_y_variable(0)
-	put_y_variable(1, 19)
-	call_predicate('enable_signals', 0, 3)
-	put_y_value(2, 0)
-	put_y_value(1, 2)
+	put_y_variable(1, 2)
 	put_constant('read', 1)
 	call_predicate('open', 3, 2)
 	put_y_value(1, 0)

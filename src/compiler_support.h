@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compiler_support.h,v 1.7 2002/12/15 08:23:49 qp Exp $
+// $Id: compiler_support.h,v 1.8 2004/12/23 22:40:35 qp Exp $
 
 #ifndef	COMPILER_SUPPORT_H
 #define	COMPILER_SUPPORT_H
@@ -144,9 +144,10 @@ private:
   int size;
 
 public:
+  typedef llist* llistptr;
   xreglife(int s) 
     {      
-      reginfo = new (llist*)[s];
+      reginfo = new llistptr[s];
 
       for (int i = 0; i < s; i++)
 	{

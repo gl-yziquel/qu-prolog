@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_table.h,v 1.7 2003/10/03 01:19:40 qp Exp $
+// $Id: thread_table.h,v 1.8 2004/12/23 22:40:37 qp Exp $
 
 #ifndef	THREAD_TABLE_H
 #define	THREAD_TABLE_H
@@ -212,13 +212,14 @@ private:
   string symbol;
 
  public:
+  typedef Thread* threadptr;
   ThreadTable(const word32 TableSize = THREAD_TABLE_SIZE)
     : hash_table(TableSize),
       live(0),
       next_id(0),
       size(TableSize)
     {
-      array = new (Thread *)[size];
+      array = new threadptr[size];
       
       for (size_t i = 0; i < size; i++)
 	{

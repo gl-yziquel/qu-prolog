@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: token.cc,v 1.7 2003/05/07 00:52:50 qp Exp $
+// $Id: token.cc,v 1.8 2004/11/24 00:12:36 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -82,16 +82,16 @@ static const	word32	MAX_DIGIT_LIMIT	= MAX_INT32 % 10;
 //
 // Special characters:
 //
-static const	char	EOLCOM		= '%';	// end-of-line comment
-static const	char	BEGCOM		= '/';	// comment start
-static const	char	ASTCOM		= '*';	// comment
-static const	char	ENDCOM		= BEGCOM;// comment end
-static const	char	QUOTE		= '\'';	// quote
-static const	char	DOUBLE_QUOTE	= '"';	// double quote
-static const	char	ESCAPE		= '\\';	// string escape character
-static const	char	TERMIN		= '.';	// clause terminator
-static const	char	U_SCORE		= '_';	// underscore
-static const	char	BANG		= '!';	// quotes object_variables and quants
+static const	signed char	EOLCOM		= '%';	// end-of-line comment
+static const	signed char	BEGCOM		= '/';	// comment start
+static const	signed char	ASTCOM		= '*';	// comment
+static const	signed char	ENDCOM		= BEGCOM;// comment end
+static const	signed char	QUOTE		= '\'';	// quote
+static const	signed char	DOUBLE_QUOTE	= '"';	// double quote
+static const	signed char	ESCAPE		= '\\';	// string escape character
+static const	signed char	TERMIN		= '.';	// clause terminator
+static const	signed char	U_SCORE		= '_';	// underscore
+static const	signed char	BANG		= '!';	// quotes object_variables and quants
 
 //
 // Token types:
@@ -292,7 +292,7 @@ static const int32 DigitVal[ASCII_SIZE + 1] =
 // Look up the classification of a character.
 //
 inline int8
-Thread::InType(const char c)
+Thread::InType(const signed char c)
 {
   if (c+1 < 0)
     return((ChType + 257)[c]);
@@ -304,7 +304,7 @@ Thread::InType(const char c)
 // Look up the digital value of a character.
 //
 inline int32 
-Thread::DigVal(const char c)  
+Thread::DigVal(const signed char c)  
 {
   if (c+1 < 0)
     return((DigitVal + 257)[c]);
@@ -316,7 +316,7 @@ Thread::DigVal(const char c)
 // true if it is a space.
 // 
 inline bool
-Thread::IsLayout(const char c)
+Thread::IsLayout(const signed char c)
 {
   return(InType(c) == SPACE);
 }
@@ -432,7 +432,7 @@ Thread::RecoverQuotedName(QPStream *InStrm, const bool put)
 //      several lines.\n".
 //
 int32
-Thread::ReadCharacter(QPStream *InStrm, const char q, int32& Integer)
+Thread::ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer)
 {
   int c = Get(InStrm);
 

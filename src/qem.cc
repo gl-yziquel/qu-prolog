@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.26 2004/03/29 02:42:12 qp Exp $
+// $Id: qem.cc,v 1.27 2004/12/01 04:23:49 qp Exp $
 
 #include <typeinfo>
 
@@ -143,7 +143,7 @@ handle_sigint(int)
   if (signals != NULL)
     {
       char buff[128];
-      read(sigint_pipe[0], buff, 120);
+//      read(sigint_pipe[0], buff, 120);
       buff[0] = 'a';
       write(sigint_pipe[1], buff, 1);
       signals->Increment(SIGINT);

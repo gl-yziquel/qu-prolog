@@ -249,7 +249,7 @@ $2:
 	put_constant(' * ', 0)
 	put_constant('[]', 1)
 	call_predicate('write_term', 2, 1)
-	put_integer(9, 0)
+	put_integer(32, 0)
 	call_predicate('put', 1, 1)
 	put_y_value(0, 0)
 	deallocate

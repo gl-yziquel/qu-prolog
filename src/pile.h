@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pile.h,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: pile.h,v 1.3 2004/12/23 22:40:36 qp Exp $
 
 #ifndef	PILE_H
 #define	PILE_H
@@ -83,27 +83,27 @@ public:
 	//
 	// Pop a StoredType off the pile.
 	//
-	StoredType	pop(void)	{ return(popElement()); }
+	StoredType	pop(void)	{ return(this->popElement()); }
 
 	//
 	// Pop n entries of StoredType off the pile.
 	//
-	void	popNEntries(word32 n)	{ setTopOfStack(getTopOfStack() - n); }
+	void	popNEntries(word32 n)	{ setTopOfStack(this->getTopOfStack() - n); }
 
 	//
 	// Check whether the pile is empty or not.
 	//
-	bool	isEmpty(void)	const	{ return(getTopOfStack() == 0); }
+	bool	isEmpty(void)	const	{ return(this->getTopOfStack() == 0); }
 
 	//
 	// Return the size of the pile in use.
 	//
-	word32	size(void)	const	{ return(sizeOfStack()); }
+	word32	size(void)	const	{ return(this->sizeOfStack()); }
 
 	//
 	// Empty the pile.
 	//
-	void	clear(void)		{ clearStack(); }
+	void	clear(void)		{ this->clearStack(); }
 
 	Pile(word32 size = PILE_SIZE) :
 			PrologStack <StoredType> (size, PILE_SIZE / 10)

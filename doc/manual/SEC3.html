@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 6.5 Reference Manual - Built-in Predicates
+Qu-Prolog 6.7 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -8163,8 +8163,8 @@ An Elvin notification (in Qu-Prolog) is a list of <KBD>Attribute = Value </KBD>t
 The attributes (field names) are Qu-Prolog atoms and the values are 
 Qu-Prolog terms corresponding to Elvin values of a given Elvin type.
  Below is a table that gives the mapping between Elvin types and Qu-Prolog 
-types. There is no direct equivalent of strings in Qu-Prolog - strings can 
-be represented as atoms (up to 256 characters long) or as Qu-Prolog lists of
+types. There is no direct equivalent of strings in Qu-Prolog - strings are 
+represented by Qu-Prolog lists of
 ASCII values. 
 <P>
  
@@ -8233,7 +8233,7 @@ Internally Qu-Prolog term encoding is used and the encoded term is sent as an op
 and 
 when the message is received it is decoded back to a Qu-Prolog term.
 <P>
-<B>WARNING: </B> Because different Qu-Prolog terms in different fileds of a notification are
+<B>WARNING: </B> Because different Qu-Prolog terms in different fields of a notification are
 separately encoded then there is no connection between variables occurring in the 
 different fields.
 <P>
@@ -8261,7 +8261,10 @@ is used to specify notifications of interest.
 (i.e. the string of characters making up its name) must follow the syntax
 for Elvin subscription expresssions exactly (including spaces).
 <P>
-As an example, the following code adds a subscription for notifications 
+It is also possible to use Qu-Prolog terms to represent (some) subscriptions. Prolog negation
+(<KBD>\+</KBD>) is used instead of Elvin negation and <KBD>\=</KBD> is used instead of <KBD>!=</KBD>. 
+<P>
+As an example of the use of Qu-Prolog atoms for subscriptions, the following code adds a subscription for notifications 
 whose <KBD>sex</KBD> attribute is <KBD>Sex</KBD> and whose <KBD>name</KBD>
  attribute is not <KBD>Name</KBD>.
 <KBD>
@@ -8277,6 +8280,12 @@ whose <KBD>sex</KBD> attribute is <KBD>Sex</KBD> and whose <KBD>name</KBD>
 </BLOCKQUOTE>
 </KBD>
 
+<P> Using the Qu-Prolog term subscription this can be done more directly as
+<KBD>
+<BLOCKQUOTE>
+elvin_add_subscription(sex == Sex && name \= Name)
+</BLOCKQUOTE>
+</KBD>
 Note that if a thread dies and there are still subscriptions attached to 
 that thread, 
 then Elvin will continue to deliver matching notifications but Qu-Prolog will 
@@ -8316,7 +8325,8 @@ the call.
  <a name="elvin_add_subscription"></a><KBD>elvin_add_subscription(Expression)</KBD>
 <BLOCKQUOTE>
 Add an Elvin subscription using <KBD>Expression</KBD> as the subscription
-expression for this thread . Fails if the attempted subscription fails.
+expression for this thread . <KBD>Expression</KBD> can be either an atom or a Qu-Prolog term 
+representing an Elvin subscription. The call fails if the attempted subscription fails.
 </BLOCKQUOTE>
  <a name="elvin_subscriptions"></a><KBD>elvin_subscriptions(Subs)</KBD>
  
@@ -8324,6 +8334,13 @@ expression for this thread . Fails if the attempted subscription fails.
 Unifies <KBD>Subs</KBD> with a list of&nbsp;subscription expression
 s of the current subscriptions for this thread.
 </BLOCKQUOTE>
+<a name="elvin_sub_to_term"></a><KBD>elvin_sub_to_term(Sub, Term)</KBD>
+
+<BLOCKQUOTE>
+Converts then Elvin subscription <KBD>Sub</KBD> (an atom) to the corresponding Qu-Prolog
+term <KBD>Term</KBD>.
+</BLOCKQUOTE>
+
  <a name="elvin_delete_subscription"></a><KBD>elvin_delete_subscription(Expression)</KBD>
  
 <BLOCKQUOTE>
@@ -8656,6 +8673,34 @@ Change directory to that given by the atom <KBD>Dir</KBD>.
 <P> changes to the parent directory.
 </BLOCKQUOTE>
 
+<P><KBD><a name="getcwd"></a>getcwd(Dir)</KBD>
+
+<BLOCKQUOTE>
+Get the current working directory. 
+
+<BR><KBD>mode getcwd(-atom)</KBD>
+
+</BLOCKQUOTE>
+
+<P><KBD><a name="working_directory"></a>working_directory(Dir)</KBD>
+<BR><KBD>working_directory(OldDir, NewDir)</KBD>
+
+<BLOCKQUOTE>
+Get/set the current working directory with <KBD>working_directory(Dir)</KBD>. If <KBD>Dir</KBD> is a variable then it is set to the working
+directory. Otherwise it should be an atom representing a directory, in which case the working directory is set to <KBD>Dir</KBD>.
+<BR><KBD>working_directory(OldDir, NewDir)</KBD> sets the working directory.
+<KBD>NewDir</KBD> is the new 
+working directory
+and <KBD>OldDir</KBD> is previous working directory.  
+<BR>These are interfaces to <KBD>chdir</KBD> and <KBD>getcwd</KBD>.  
+
+<BR><KBD>mode working_directory(?atom)</KBD>
+<BR><KBD>mode working_directory(-atom, @atom)</KBD>
+
+</BLOCKQUOTE>
+
+
+
 <P><KBD><a name="prompt"></a>prompt(Variable, Atom)</KBD>
 
 <BLOCKQUOTE>
@@ -8685,7 +8730,7 @@ has the same semantics as the Unix C function <KBD>time(2)</KBD>.
  
 <BLOCKQUOTE>
 <KBD>gmtime(Time, GMTime)</KBD> is true if and only if <KBD>GMTime</KBD> is a compound term of the form
-<BR><KBD>gmt_time(Year, Month, Day, Hour, Min, Sec)</KBD>
+<BR><KBD>time(Year, Month, Day, Hour, Min, Sec)</KBD>
 <BR>that corresponds to the GMT time for <KBD>Time</KBD> as the number of seconds since the Unix epoch.
 When <KBD>Time</KBD> is given, it has the same semantics as the Unix C function <KBD>gmtime</KBD>.
 <BR><KBD>mode gmtime(@integer, ?compound)</KBD>
@@ -8694,13 +8739,13 @@ When <KBD>Time</KBD> is given, it has the same semantics as the Unix C function 
 <P>Example:
  
 <KBD>
-<P>| ?- gmtime(ET, gmt_time(100, 5, 6, 10, 5, 20)).
+<P>| ?- gmtime(ET, time(100, 5, 6, 10, 5, 20)).
 <BR>
 <BR>ET = 960285920
 <BR>
 <BR>| ?- gmtime(960285920,GT).
 <BR> 
-<BR>GT = gmt_time(100, 5, 6, 10, 5, 20)
+<BR>GT = time(100, 5, 6, 10, 5, 20)
 </KBD>
 </BLOCKQUOTE>
 
@@ -8708,7 +8753,7 @@ When <KBD>Time</KBD> is given, it has the same semantics as the Unix C function 
  
 <BLOCKQUOTE>
 <KBD>localtime(Time, LTime)</KBD> is true if and only if <KBD>LTime</KBD> is a compound term of the form
-<BR><KBD>local_time(Year, Month, Day, Hour, Min, Sec, IsDS)</KBD>
+<BR><KBD>time(Year, Month, Day, Hour, Min, Sec, IsDS)</KBD>
 <BR>that corresponds to the local time for <KBD>Time</KBD> as the number of seconds since the Unix epoch.
 When <KBD>Time</KBD> is given, it has the same semantics as the Unix C function <KBD>localtime</KBD>.
 <BR><KBD>mode localtime(@integer, ?compound)</KBD>

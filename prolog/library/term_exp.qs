@@ -2382,16 +2382,31 @@ end('$update_multi_sub_expansion/2$1'/1):
 
 
 
+'$update_multi_sub_expansion/2$2/2$0'/2:
+
+
+$1:
+	put_constant('no', 2)
+	get_x_value(0, 2)
+	put_constant('no', 0)
+	get_x_value(1, 0)
+	neck_cut
+	execute_predicate('$update_multi_sub_expansion', 0)
+end('$update_multi_sub_expansion/2$2/2$0'/2):
+
+
+
 '$update_multi_sub_expansion/2$2'/2:
 
-	switch_on_term(0, $8, 'fail', 'fail', 'fail', 'fail', $5)
+	switch_on_term(0, $8, $4, $4, $4, $4, $5)
 
 $5:
-	switch_on_constant(0, 4, ['$default':'fail', 'yes':$6, 'no':$7])
+	switch_on_constant(0, 4, ['$default':$4, 'yes':$6, 'no':$7])
 
 $6:
 	try(2, $1)
-	trust($2)
+	retry($2)
+	trust($4)
 
 $7:
 	try(2, $3)
@@ -2431,12 +2446,7 @@ $3:
 	execute_predicate('$update_multi_sub_expansion', 1)
 
 $4:
-	put_constant('no', 2)
-	get_x_value(0, 2)
-	put_constant('no', 0)
-	get_x_value(1, 0)
-	neck_cut
-	execute_predicate('$update_multi_sub_expansion', 0)
+	execute_predicate('$update_multi_sub_expansion/2$2/2$0', 2)
 end('$update_multi_sub_expansion/2$2'/2):
 
 

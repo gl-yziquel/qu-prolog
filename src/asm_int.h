@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_int.h,v 1.3 2001/11/21 00:21:10 qp Exp $
+// $Id: asm_int.h,v 1.4 2004/12/23 22:40:34 qp Exp $
 
 #ifndef	ASM_INT_H
 #define	ASM_INT_H
@@ -70,7 +70,7 @@ public:
 
   void Put(CodeBlock& code_block) const
   {
-    const IntType v = value;
+    const IntType v = this->value;
     
     switch (sizeof(IntType))
       {
@@ -96,7 +96,7 @@ public:
   
   void Put(CodeBlockLoc loc, CodeBlock& code_block) const
   {
-    const IntType v = value;
+    const IntType v = this->value;
     
     switch (sizeof(IntType))
       {
