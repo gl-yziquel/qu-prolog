@@ -29,7 +29,6 @@ AC_ARG_ENABLE(multiple-threads, [ --disable-multiple-threads     Single Prolog t
 
 if test "$enable_multiple_threads" != no; then
 	# Multiple threads is the default.
-	AC_MSG_WARN(Configuring for multiple Prolog threads per process)
 	AC_DEFINE(MULTIPLE_THREADS)
 else
 	AC_MSG_WARN(Configuring for single Prolog thread per process)
@@ -60,7 +59,6 @@ case "$host" in
 	OS=MACOSX
 	;;
 esac
-
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -120,7 +118,7 @@ fi
 AC_PATH_PROG(ICM, icm, NO_ICM,\
 	$PATH:/opt/icm/bin:/opt/local/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/perl/bin)
 if test "$ICM" = NO_ICM; then
-	AC_MSG_WARN(high-level communication not supported)
+	AC_MSG_WARN(ICM communication not supported)
         TK_ICM=
         ICM_LIB=
         AC_SUBST(TK_ICM)
@@ -146,12 +144,15 @@ if test "$ELVINCONFIG" = NO_ELVINCONFIG; then
         AC_SUBST(ELVIN_CFLAGS)
 else
 	AC_DEFINE(ELVIN_DEF)
-        ELVIN_LIB="`elvin-config --libs` -lm -lcrypt"
+        if test "$ICM" = NO_ICM; then
+          ELVIN_LIB="-lpthread `elvin-config --libs` -lm -lcrypt"
+        else
+          ELVIN_LIB="`elvin-config --libs` -lm -lcrypt"
+        fi
         ELVIN_CFLAGS=`elvin-config --cflags`
         AC_SUBST(ELVIN_LIB)
         AC_SUBST(ELVIN_CFLAGS)
 fi
-
 
 GCCINCLUDES=
 AC_ARG_WITH(gcclib,
@@ -160,125 +161,175 @@ AC_ARG_WITH(gcclib,
 [GCCINCLUDES= ])
 AC_SUBST(GCCINCLUDES)
 
+
+if test "$OS" = MACOSX; then
+XQP=$QPHOME/src/xqp/xqp.app/Contents/MacOS/xqp
+XQPDEBUG=$QPHOME/src/xqpdebug/xqpdebug.app/Contents/MacOS/xqpdebug
+else
+XQP=$QPHOME/src/xqp/xqp
+XQPDEBUG=$QPHOME/src/xqpdebug/xqpdebug
+fi
+AC_SUBST(XQP)
+AC_SUBST(XQPDEBUG)
+
 if test "$ICM" != NO_ICM; then
 ###### FIND Tcl/Tk ##########
+
+## First find wish ##
+echo "Looking for wish"
+WISH=NO_WISH
+AC_ARG_WITH(wish,
+[--with-wish   Indicate location of wish],
+[WISH=${withval}],
+[WISH=NO_WISH])
+if test "$WISH" == NO_WISH; then
+AC_PATH_PROG(WISH, wish, NO_WISH,\
+	$PATH:/opt/icm/bin:/opt/local/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/perl/bin)
+fi
+
+if test "$WISH" != NO_WISH; then
+AC_SUBST(WISH)
+echo "wish found"
+else
+WISH=
+AC_SUBST(WISH)
+fi
+
+
+## Now find tcl/tk
+##############################################################
 if test "$OS" = MACOSX; then
-FRAME="-dynamiclib -framework tcl"
-AC_SUBST(FRAME)
+  FRAME="-dynamiclib -framework tcl"
+  AC_SUBST(FRAME)
 
-echo "Looking for tk/tcl"
+  echo "Looking for tk/tcl"
 dnl Figure out where to get libtk
-AC_ARG_WITH(libtk,
-[--with-libtk   Indicate location of libtk dir],
-[libtkdir=${withval}],
-[libtkdir=/Library/Frameworks/Tk.framework])
+  AC_ARG_WITH(libtk,
+  [--with-libtk   Indicate location of libtk dir],
+  [libtkdir=${withval}],
+  [libtkdir=/Library/Frameworks/Tk.framework])
 
-libtkfile=tkXXXXXX
-libtktmp=tmpXXXXXX
-for i in `echo $libtkdir | sed -e "s/:/ /g"`;
-do if test -d $i
- then
-   for j in `ls $i`; do echo $i/$j >> $libtkfile; done;
- fi
-done
+  libtkfile=tkXXXXXX
+  libtktmp=tmpXXXXXX
+  for i in `echo $libtkdir | sed -e "s/:/ /g"`;
+  do if test -d $i
+     then
+     for j in `ls $i`; do echo $i/$j >> $libtkfile; done;
+     fi
+  done
 
-egrep "libtkstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtkfile > $libtktmp
-if test `grep -c libtkstub\.a $libtktmp` = 0
-  then
+  egrep "libtkstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtkfile > $libtktmp
+  if test `grep -c libtkstub\.a $libtktmp` = 0
+    then 
     if test `egrep -c "libtkstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtktmp` = 0
       then
-        rm $libtktmp
-        rm $libtkfile
-        AC_MSG_ERROR(Cannot find libtk)
+	    TKDIR=NONE
       else
         tkfile=`cat $libtktmp | head -1`
-        TKDIR=`dirname $tkfile`
+        TKDIR=`dirname $tkfile` 
         TKL=`basename $tkfile .a | sed -e "s/lib//"`
     fi
-  else
-     tkfile=`grep libtk\.a $libtktmp | head -1`
-     TKDIR=`dirname $tkfile`
-     TKL=`basename $tkfile .a | sed -e "s/lib//"`
-fi
-rm $libtktmp
-rm $libtkfile
-AC_SUBST(TKDIR)
-AC_SUBST(TKL)
+  else 
+   tkfile=`grep libtk\.a $libtktmp | head -1`
+   TKDIR=`dirname $tkfile`
+   TKL=`basename $tkfile .a | sed -e "s/lib//"`
+  fi
+  rm $libtktmp
+  rm $libtkfile
+
+  if test "$TKDIR" != NONE
+    then
 
 dnl Figure out where to get libtcl
-AC_ARG_WITH(libtcl,
-[--with-libtcl   Indicate location of libtcl dir],
-[libtcldir=${withval}],
-[libtcldir=/Library/Frameworks/Tcl.framework])
+    AC_ARG_WITH(libtcl,
+    [--with-libtcl   Indicate location of libtcl dir],
+    [libtcldir=${withval}],
+    [libtcldir=/Library/Frameworks/Tcl.framework])
 
-libtclfile=tclXXXXXX
-libtcltmp=tmpXXXXXX
-for i in `echo $libtcldir | sed -e "s/:/ /g"`;
-do if test -d $i
- then
-   for j in `ls $i`; do echo $i/$j >> $libtclfile; done;
-  fi
-done
+    libtclfile=tclXXXXXX
+    libtcltmp=tmpXXXXXX
+    for i in `echo $libtcldir | sed -e "s/:/ /g"`;
+      do if test -d $i
+       then
+       for j in `ls $i`; do echo $i/$j >> $libtclfile; done;
+      fi
+    done
 
-egrep "libtclstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtclfile > $libtcltmp
-if test `grep -c libtclstub\.a $libtcltmp` = 0
-  then
-    if test `egrep -c "libtclstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtcltmp` = 0
-      then
-        rm $libtcltmp
-        rm $libtclfile
-        AC_MSG_ERROR(Cannot find libtcl)
-      else
-        tclfile=`cat $libtcltmp | head -1`
-        TCLDIR=`dirname $tclfile`
-        TCLL=`basename $tclfile .a | sed -e "s/lib//"`
-    fi
-  else
+    egrep "libtclstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtclfile > $libtcltmp
+    if test `grep -c libtclstub\.a $libtcltmp` = 0
+      then 
+        if test `egrep -c "libtclstub(\.|0|1|2|3|4|5|6|7|8|9)*\.a" $libtcltmp` = 0
+          then
+	      TKDIR=NONE
+        else
+          tclfile=`cat $libtcltmp | head -1`
+          TCLDIR=`dirname $tclfile`
+          TCLL=`basename $tclfile .a | sed -e "s/lib//"`
+        fi
+    else 
      tclfile=`grep libtclstub\.a $libtcltmp | head -1`
      TCLDIR=`dirname $tclfile`
      TCLL=`basename $tclfile .a | sed -e "s/lib//"`
-fi
-rm $libtcltmp
-rm $libtclfile
-AC_SUBST(TCLDIR)
-AC_SUBST(TCLL)
+    fi
+  rm $libtcltmp
+  rm $libtclfile
+  fi
 
-
+  if test "$TKDIR" != NONE
+    then
 dnl Figure out where to get tk.h
-AC_ARG_WITH(tkinclude,
-[--with-tkinclude   Indicate location of tk.h],
-[tkincludedir=${withval}],
-[tkincludedir=/Library/Frameworks/Tk.framework/Headers])
+    AC_ARG_WITH(tkinclude,
+    [--with-tkinclude   Indicate location of tk.h],
+    [tkincludedir=${withval}],
+    [tkincludedir=/Library/Frameworks/Tk.framework/Headers])
 
-tkfile=tkXXXXXX
-tktmp=tmpXXXXXX
-for i in `echo $tkincludedir | sed -e "s/:/ /g"`;
-do if test -d $i
- then
-   for j in `ls $i`; do echo $i/$j >> $tkfile; done;
- fi
-done
+    tkfile=tkXXXXXX
+    tktmp=tmpXXXXXX
+    for i in `echo $tkincludedir | sed -e "s/:/ /g"`;
+    do if test -d $i
+       then
+       for j in `ls $i`; do echo $i/$j >> $tkfile; done;
+       fi
+    done
 
-egrep "tk\.h" $tkfile > $tktmp
-if test `grep -c tk\.h $tktmp` = 0
-  then
-     rm $tktmp
-     rm $tkfile
-     AC_MSG_ERROR(Cannot find tk.h)
-  else
+    egrep "tk\.h" $tkfile > $tktmp
+    if test `grep -c tk\.h $tktmp` = 0
+      then 
+	  TKDIR=NONE
+    else 
      tkf=`cat $tktmp | head -1`
      TKHDIR=`dirname $tkf`
-fi
-rm $tktmp
-rm $tkfile
-AC_SUBST(TKHDIR)
+    fi
+    rm $tktmp
+    rm $tkfile
+  fi
+  if test "$TKDIR" != NONE
+    then
+    echo "tk/tcl found"
+    AC_SUBST(TKHDIR)
+    AC_SUBST(TCLDIR)
+    AC_SUBST(TCLL)
+    AC_SUBST(TKDIR)
+    AC_SUBST(TKL)
+  else
+    TKHDIR=
+    TCLDIR=
+    TCLL=
+    TKDIR=
+    TKL=
+    AC_SUBST(TKHDIR)
+    AC_SUBST(TCLDIR)
+    AC_SUBST(TCLL)
+    AC_SUBST(TKDIR)
+    AC_SUBST(TKL)
+    echo "tk/tcl not found"
+  fi
 
-echo "tk/tcl found"
-
+####################################################################
 else
+
 FRAME=
 AC_SUBST(FRAME)
-
 echo "Looking for tk/tcl"
 dnl Figure out where to get libtk
 AC_ARG_WITH(libtk,
@@ -300,12 +351,10 @@ if test `grep -c libtk\.so $libtktmp` = 0
   then 
     if test `egrep -c "libtk(\.|0|1|2|3|4|5|6|7|8|9)*\.so" $libtktmp` = 0
       then
-        rm $libtktmp
-        rm $libtkfile
-        AC_MSG_ERROR(Cannot find libtk)
+		TKDIR=NONE
       else
         tkfile=`cat $libtktmp | head -1`
-        TKDIR=`dirname $tkfile`
+        TKDIR=`dirname $tkfile` 
         TKL=`basename $tkfile .so | sed -e "s/lib//"`
     fi
   else 
@@ -315,8 +364,9 @@ if test `grep -c libtk\.so $libtktmp` = 0
 fi
 rm $libtktmp
 rm $libtkfile
-AC_SUBST(TKDIR)
-AC_SUBST(TKL)
+
+if test "$TKDIR" != NONE
+then
 
 dnl Figure out where to get libtcl
 AC_ARG_WITH(libtcl,
@@ -338,9 +388,7 @@ if test `grep -c libtcl\.so $libtcltmp` = 0
   then 
     if test `egrep -c "libtcl(\.|0|1|2|3|4|5|6|7|8|9)*\.so" $libtcltmp` = 0
       then
-        rm $libtcltmp
-        rm $libtclfile
-        AC_MSG_ERROR(Cannot find libtcl)
+		TKDIR=NONE
       else
         tclfile=`cat $libtcltmp | head -1`
         TCLDIR=`dirname $tclfile`
@@ -353,10 +401,10 @@ if test `grep -c libtcl\.so $libtcltmp` = 0
 fi
 rm $libtcltmp
 rm $libtclfile
-AC_SUBST(TCLDIR)
-AC_SUBST(TCLL)
+fi
 
-
+if test "$TKDIR" != NONE
+then
 dnl Figure out where to get tk.h
 AC_ARG_WITH(tkinclude,
 [--with-tkinclude   Indicate location of tk.h],
@@ -375,22 +423,41 @@ done
 egrep "tk\.h" $tkfile > $tktmp
 if test `grep -c tk\.h $tktmp` = 0
   then 
-     rm $tktmp
-     rm $tkfile
-     AC_MSG_ERROR(Cannot find tk.h)
+	TKDIR=NONE
   else 
      tkf=`cat $tktmp | head -1`
      TKHDIR=`dirname $tkf`
 fi
 rm $tktmp
 rm $tkfile
-AC_SUBST(TKHDIR)
 
+fi
+fi
+if test "$TKDIR" != NONE
+then
 echo "tk/tcl found"
+AC_SUBST(TKHDIR)
+AC_SUBST(TCLDIR)
+AC_SUBST(TCLL)
+AC_SUBST(TKDIR)
+AC_SUBST(TKL)
+else
+TKHDIR=
+TCLDIR=
+TCLL=
+TKDIR=
+TKL=
+AC_SUBST(TKHDIR)
+AC_SUBST(TCLDIR)
+AC_SUBST(TCLL)
+AC_SUBST(TKDIR)
+AC_SUBST(TKL)
+echo "tk/tcl not found"
 fi
 
-###### END FIND Tcl/Tk ##########
+######END FIND Tcl/Tk ##########
 fi
+
 
 AC_PATH_PROG(PRINTF, printf, NO_PRINTF,\
 	$PATH:/bin:/usr/bin:/usr/local/bin:$HOME/bin)
@@ -451,6 +518,37 @@ AC_CHECK_FUNCS( \
 		strstr \
 		uname \
 		)
+
+#----------------------------------------------------------------------------
+dnl Check for CPP version
+AC_MSG_CHECKING([for GCC version])
+qp_cpp_ver=[`gcc --version 2>/dev/null | head -1 | sed -e 's/^[^[:digit:]]*\([[:digit:]][^[:space:]]*\).*$/\1/'`]
+if test -n "$qp_cpp_ver"; then
+    AC_MSG_RESULT($qp_cpp_ver)
+    case "$qp_cpp_ver" in
+      2.*)
+        AC_DEFINE(GCC_VERSION_2, 1, [Whether or not the GCC is gcc 2])
+        ;;
+    esac
+else
+    AC_MSG_RESULT(not found)
+    AC_MSG_ERROR(Could not determine GCC version)
+fi
+
+#-----------------------------------------------------------------------------
+dnl Check for -fno-strict-aliasing
+AC_MSG_CHECKING([for -fno-strict-aliasing])
+echo "int i;" > aliasing_test.cc
+qp_alias=[`gcc -fno-strict-aliasing -c aliasing_test.cc`]
+rm aliasing_test.*
+if test -n "$qp_alias"; then
+    AC_MSG_RESULT(not found)
+    GCC_ALIAS_FLAG=
+else
+    AC_MSG_RESULT(found)
+    GCC_ALIAS_FLAG="-fno-strict-aliasing"
+fi
+AC_SUBST(GCC_ALIAS_FLAG)
 
 #-----------------------------------------------------------------------------
 AC_MSG_CHECKING(for an integer type with at least 16 bits)
@@ -681,9 +779,12 @@ AC_OUTPUT(LOGIN_CMDS \
 	  bin/qcc \
 	  bin/qppp \
 	  bin/qp_gui \
+	  bin/xqp \
+	  bin/xqpdebug \
 	  bin/qp_debug_gui \
 	  examples/monitor_gui \
 	  examples/template_gui \
+	  examples/tcp_gui \
 	  prolog/Makefile \
 	  prolog/compiler/Makefile \
 	  prolog/library/Makefile \
@@ -704,12 +805,15 @@ AC_OUTPUT(LOGIN_CMDS \
 	  src/Makefile.template \
 	  src/Makefile.thread \
 	  src/Makefile.tkICM \
+	  src/xqpdebug/xqpdebug.pro \
           )
 chmod -f a+x bin/kq \
 	  bin/qc \
 	  bin/qc1.boot \
 	  bin/qcc \
 	  bin/qppp \
+	  bin/xqp \
+	  bin/xqpdebug \
 	  examples/monitor_gui \
 	  examples/template_gui \
 	  bin/qp_gui \

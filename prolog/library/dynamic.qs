@@ -1,3 +1,19 @@
+'multifile'/1:
+
+
+$1:
+	get_structure('/', 2, 0)
+	unify_x_variable(1)
+	unify_x_variable(2)
+	put_structure(2, 0)
+	set_constant('/')
+	set_x_value(1)
+	set_x_value(2)
+	execute_predicate('dynamic', 1)
+end('multifile'/1):
+
+
+
 'dynamic'/1:
 
 

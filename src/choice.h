@@ -2,18 +2,18 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000, 20001
-// Software Verification Research Centre
+// Copyright (C) 2000-2004
+// School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
 // 
-// email: svrc@it.uq.edu.au
+// email: pjr@itee.uq.edu.au
 // 
-// The Qu-Prolog 6.0 System and Documentation  
+// The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
 // 
-// Copyright 2000,2001 by The University of Queensland, 
+// Copyright 2000-2004 by The University of Queensland, 
 // Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
@@ -34,7 +34,7 @@
 // 
 // 4. 	that no changes to the system or documentation are subsequently 
 // 	made available to third parties or redistributed without prior 
-// 	written consent from the SVRC; and
+// 	written consent from the ITEE; and
 // 
 // The University of Queensland disclaims all warranties with regard to this
 // software, including all implied warranties of merchantability and fitness
@@ -49,11 +49,11 @@
 // WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
 // 
 // 
-// For information on commercial use of this software contact the SVRC.
+// For information on commercial use of this software contact ITEE.
 // 
 // ##Copyright##
 //
-// $Id: choice.h,v 1.6 2003/09/28 07:53:35 qp Exp $
+// $Id: choice.h,v 1.7 2004/07/23 00:52:34 qp Exp $
 
 #ifndef	CHOICE_H
 #define	CHOICE_H
@@ -172,7 +172,7 @@ public:
   // Restore the heap and name table back to the previous state
   // recorded in a choice point.
   //
-  inline void restoreHeapNameTable(Thread& th) const;
+ void restoreHeapNameTable(Thread& th) const;
   
   //
   // Restore the thread back to the previous state recorded in a

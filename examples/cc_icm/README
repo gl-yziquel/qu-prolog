@@ -1,0 +1,15 @@
+ccicm is a simple example of the use of the ICMEnvironment class and
+the Qu-Prolog term encoder/decoder classes.
+
+Readers should also look at src/xqpdebug/xqpdebug.cc for another example
+of using the ICMEnvironment class.
+
+If you wish to use this to construct your own GUI, for example, then you should
+copy all the .h files (including icm.h) to your working directory as well as
+icm_env.cc and encode.cc.
+
+You should look at Makefile and in particular note INCPATH and LIBS.
+You may need to change the paths for icm to suit your environment. 
+
+
+

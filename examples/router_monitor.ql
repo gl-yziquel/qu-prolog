@@ -1,3 +1,13 @@
+%
+% router_monitor.ql
+%
+% A simple message monitor.
+%
+% Other processes can send messages to this process setting the reply-to
+% address to the address of the real recipient.
+% The monitor displays the message information and forwards the message on
+% to the recipient.
+%
 main(_) :-
     router_monitor.
 

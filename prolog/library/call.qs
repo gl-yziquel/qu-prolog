@@ -7,6 +7,23 @@ end('initialization'/1):
 
 
 
+'callable'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(2, 0)
+	neck_cut
+	proceed
+
+$2:
+	pseudo_instr1(0, 0)
+	proceed
+end('callable'/1):
+
+
+
 'call'/1:
 
 

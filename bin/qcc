@@ -3,4 +3,4 @@
 # This shell script is for compiling foreign functions.
 #
 
-g++ -Wall -D_GNU_SOURCE=1 -D_THREAD_SAFE=1 -D_REENTRANT=1 -O3 -Wno-uninitialized -c -g -O2 -I/home/pjr/qp_dev/rel/qp6.4/src -I-  $*
+g++ -Wall -D_GNU_SOURCE=1 -D_THREAD_SAFE=1 -D_REENTRANT=1 -O3 -Wno-uninitialized -c -g -O2 -I/home/pjr/qp_dev/rel/qp6.5/src -I-  $*

@@ -1,0 +1,3 @@
+#!/bin/sh
+# The xqpdebug interface
+/home/pjr/qp_dev/rel/qp6.5/src/xqpdebug/xqpdebug $@

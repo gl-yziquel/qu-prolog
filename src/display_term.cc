@@ -2,18 +2,18 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000, 20001
-// Software Verification Research Centre
+// Copyright (C) 2000-2004
+// School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
 // 
-// email: svrc@it.uq.edu.au
+// email: pjr@itee.uq.edu.au
 // 
-// The Qu-Prolog 6.0 System and Documentation  
+// The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
 // 
-// Copyright 2000,2001 by The University of Queensland, 
+// Copyright 2000-2004 by The University of Queensland, 
 // Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
@@ -34,7 +34,7 @@
 // 
 // 4. 	that no changes to the system or documentation are subsequently 
 // 	made available to third parties or redistributed without prior 
-// 	written consent from the SVRC; and
+// 	written consent from the ITEE; and
 // 
 // The University of Queensland disclaims all warranties with regard to this
 // software, including all implied warranties of merchantability and fitness
@@ -49,13 +49,18 @@
 // WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
 // 
 // 
-// For information on commercial use of this software contact the SVRC.
+// For information on commercial use of this software contact ITEE.
 // 
 // ##Copyright##
 //
-// $Id: display_term.cc,v 1.4 2002/11/08 00:44:15 qp Exp $
+// $Id: display_term.cc,v 1.6 2004/05/26 22:59:44 qp Exp $
 
+#include "config.h"
+#ifdef GCC_VERSION_2
 #include <ostream.h>
+#else
+#include <ostream>
+#endif
 
 //#include "atom_table.h"
 #include "heap_qp.h"

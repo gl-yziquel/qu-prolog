@@ -138,3 +138,7 @@
 
 /* Define if you have the socket library (-lsocket).  */
 #undef HAVE_LIBSOCKET
+
+/* Define if GCC is version 2 */
+#undef GCC_VERSION_2
+

@@ -54,12 +54,17 @@
 // 
 // ##Copyright##
 //
-// $Id: int.h,v 1.7 2002/11/26 23:51:51 qp Exp $
+// $Id: int.h,v 1.9 2004/05/26 22:59:44 qp Exp $
 
 #ifndef	INT_H
 #define	INT_H
 
+#include "int.h"
+#ifdef GCC_VERSION_2
 #include <istream.h>
+#else
+#include <istream>
+#endif
 #include <limits.h>
 //#include <netinet/in.h>
 

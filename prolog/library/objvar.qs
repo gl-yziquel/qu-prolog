@@ -239,15 +239,21 @@ end('$obvar_prefix_decl/2$0'/2):
 '$obvar_prefix_decl'/2:
 
 	try(2, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
+	pseudo_instr1(4, 1)
+	neck_cut
+	proceed
+
+$2:
 	pseudo_instr1(2, 1)
 	pseudo_instr1(37, 1)
 	neck_cut
 	execute_predicate('$obvar_prefix_decl/2$0', 2)
 
-$2:
+$3:
 	get_x_variable(2, 0)
 	put_structure(2, 0)
 	set_constant('obvar_prefix')

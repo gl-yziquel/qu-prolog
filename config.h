@@ -72,10 +72,10 @@
 #define HAVE_POLL 1
 
 /* Define if you have the putenv function.  */
-/* #undef HAVE_PUTENV */
+#define HAVE_PUTENV 1
 
 /* Define if you have the select function.  */
-/* #undef HAVE_SELECT */
+#define HAVE_SELECT 1
 
 /* Define if you have the sigtimedwait function.  */
 #define HAVE_SIGTIMEDWAIT 1
@@ -139,3 +139,7 @@
 
 /* Define if you have the socket library (-lsocket).  */
 /* #undef HAVE_LIBSOCKET */
+
+/* Define if GCC is version 2 */
+/* #undef GCC_VERSION_2 */
+

@@ -3,18 +3,18 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000, 20001
-// Software Verification Research Centre
+// Copyright (C) 2000-2004
+// School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
 // 
-// email: svrc@it.uq.edu.au
+// email: pjr@itee.uq.edu.au
 // 
-// The Qu-Prolog 6.0 System and Documentation  
+// The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
 // 
-// Copyright 2000,2001 by The University of Queensland, 
+// Copyright 2000-2004 by The University of Queensland, 
 // Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
@@ -35,7 +35,7 @@
 // 
 // 4. 	that no changes to the system or documentation are subsequently 
 // 	made available to third parties or redistributed without prior 
-// 	written consent from the SVRC; and
+// 	written consent from the ITEE; and
 // 
 // The University of Queensland disclaims all warranties with regard to this
 // software, including all implied warranties of merchantability and fitness
@@ -50,11 +50,11 @@
 // WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
 // 
 // 
-// For information on commercial use of this software contact the SVRC.
+// For information on commercial use of this software contact ITEE.
 // 
 // ##Copyright##
 //
-// $Id: hash_table.cc,v 1.6 2002/12/23 00:22:10 qp Exp $
+// $Id: hash_table.cc,v 1.7 2004/07/25 04:15:13 qp Exp $
 
 #include <iostream>
 #include <time.h>
@@ -94,13 +94,13 @@ template <class HashType, class HashKey>
 HashLoc
 HashTable<HashType, HashKey>::hashString(const char *string) const
 {
-  word32	value = 0;
-  
-  while (*string != '\0')
+  word32 value = 5381;
+  int c;
+  while (c = *string++)
     {
-      value = (value << 5) + value + *string++;
+      value = ((value << 5) + value) + c; /* hash * 33 + c */
     }
-  return(value);
+  return value;
 }
 
 //

@@ -14,8 +14,7 @@ export QP_COMMANDS = \
 	qa \
 	qdeal \
 	qem \
-	ql \
-	@TK_ICM@
+	ql 
 
 export ALL_COMMANDS=$(addprefix all.,$(QP_COMMANDS))
 
@@ -42,7 +41,7 @@ export OPTIMISATION=-O3
 
 export DEBUGGING=
 
-export CXXFLAGS = -Wall -D_GNU_SOURCE=1 $(OPTIMISATION) $(DEBUGGING) -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
+export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 $(OPTIMISATION) $(DEBUGGING) -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
 export QACXXFLAGS = -Wall -D_GNU_SOURCE=1 $(DEBUGGING) -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
 
 .PHONY: all
@@ -95,5 +94,11 @@ $(BIG_LIBRARY): $(LIBRARY_OBJECTS)
 
 .PHONY: install
 install: $(INSTALL)
+
+
+.PHONY: tkICM
+tkICM:
+	@$(MAKE) all.tkICM
+	@$(MAKE) install.tkICM
 
 

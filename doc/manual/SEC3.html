@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 6.4 Reference Manual - Built-in Predicates
+Qu-Prolog 6.5 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -304,6 +304,12 @@ Execute <KBD>Goal</KBD>. If <KBD>Goal</KBD> has an inline declaration then it wi
 <BR>
 <BR>no
 </KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="callable"></a>callable(Goal)</KBD>
+
+<BLOCKQUOTE>
+The same as <KBD>once((atom(Goal);compound(Goal)))</KBD>.
 </BLOCKQUOTE>
 
 <P><KBD><a name="initialization"></a>initialization(Goal)</KBD>
@@ -4645,6 +4651,13 @@ predicate.
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="multifile"></a>multifile(PredicateName/Arity)</KBD>
+
+<BLOCKQUOTE>
+The same as <KBD>dynamic(PredicateName/Arity)</KBD> and is to provide an
+approximation to multifile as used in other Prologs.
+</BLOCKQUOTE>
+
 <P><KBD><a name="assert"></a>assert(Clause)</KBD>
 
 <BLOCKQUOTE>
@@ -8340,6 +8353,10 @@ to ktickertape or other Elvin applications that require a unique message ID.
 <A NAME="Section3.21">3.21 Graphical User Interfaces</A>
 </H2>
 
+
+<H3>
+<A NAME="Section3.21.1" >3.21.1 The Tcl/Tk GUI</A>
+</H3>
 <P> The Qu-Prolog system comes with an extension of the Tk 
 interpreter (<KBD>tkICM</KBD>)
 that includes the ICM API. 
@@ -8413,6 +8430,17 @@ Start the <KBD>qp</KBD> GUI for the current thread.
 <BLOCKQUOTE>
 Terminate the <KBD>qp</KBD> GUI for the current thread.
 </BLOCKQUOTE>
+
+<H3>
+<A NAME="Section3.21.2" >3.21.2 The QT GUI</A>
+</H3>
+<P>
+Qu-Prolog also comes with a GUI built on the QT libraries. The program 
+<KBD>xqp</KBD> is a GUI interface to <KBD>qp</KBD> built on these libraries.
+The program <KBD>xqpdebug</KBD> is a GUI interface to the debugger also using QT.
+If a <KBD>qp</KBD> process is registered with ICM then starting the debugger 
+will cause the <KBD>xqpdebug</KBD> interface to start (unless the Tcl/Tk GUI
+is being used).
 
 
 <!-- Section 3.22 -->

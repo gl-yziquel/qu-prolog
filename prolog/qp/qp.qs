@@ -1,33 +1,15 @@
-'main/1$0/1$0'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	get_x_variable(1, 0)
-	allocate(1)
-	get_y_level(0)
-	put_constant('dumb', 0)
-	call_predicate('member', 2, 1)
-	cut(0)
-	fail
-
-$2:
-	proceed
-end('main/1$0/1$0'/1):
-
-
-
 'main/1$0'/1:
 
 	try(1, $1)
 	trust($2)
 
 $1:
-	pseudo_instr1(88, 1)
+	get_x_variable(1, 0)
+	pseudo_instr1(88, 0)
 	allocate(1)
 	get_y_level(0)
-	call_predicate('main/1$0/1$0', 1, 1)
+	put_constant('gui', 0)
+	call_predicate('member', 2, 1)
 	cut(0)
 	put_constant('$gui_state', 0)
 	put_constant('gui', 1)

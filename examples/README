@@ -1,0 +1,48 @@
+This directory contains several examples that exercise different features of
+Qu-Prolog.
+
+Examples featuring the extended data structures:
+
+lambda.ql, lambda2.ql, lambda_type.ql - 
+     lambda term processors.
+natural_deduction.ql -  
+     a simple interactive prover.
+incomplete_unify.ql -
+     a heuristic unifier for finding unifiers of delayed unification problems.
+
+Examples featuring communication and threads:
+
+http_connect.ql -
+	An example using TCP/IP
+tcp_server.ql, tcp_client.ql - 
+	A simple TCP/IP server/client example
+linda_server.ql, linda_client.ql -
+    A multi-threaded implementaion of the Linda model 
+db.ql -
+	a simple database server
+producer.ql, consumer.ql -
+	A simple producer-consumer example using Elvin communication
+router_monitor.ql -
+	A simple monitor for ICM messages
+
+Examples of using the ICM extensions to Tcl/Tk
+monitor_gui -
+	A GUI version of router_monitor.ql
+template_gui -
+	A template GUI to aid in the construction of a Tcl/Tk GUI that uses
+	ICM communication.
+cc_icm -
+	A directory containing definitions of an ICM communications class, a class
+	for encoding and decoding compressed Qu-Prolog terms, and a simple example
+	using both.
+
+Examples of using QT
+../src/xqp -
+	A directory containing the source code for the xqp interface. It uses pipes
+	to connect stdio of a process (typically a Qu-Prolog process) to a QP 
+	widget.
+../src/xqpdebug -
+	A directory containing the source code for the xqpdebug interface.
+	It uses ICM communication to connect a thread of a Qu-Prolog process to
+	a QP widget.
+

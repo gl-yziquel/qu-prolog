@@ -1,0 +1,43 @@
+#!/bin/sh
+# the next line restarts using wisk (TCLTK)\
+exec @WISH@ "$0" "$@"
+
+#
+# An example tcl/tk interface when tkICM has not
+# been built or for compatibility with MACOSX.
+#
+# This example is based on a tcl/tk script written
+# by Silvana Zappacosta Amboldi of Imperial College.
+#
+# A Qu-Prolog process can be connected to this script
+# by running the following code in the Qu-Prolog process
+#
+# tcp_host_to_ip_address(localhost, IP),
+# tcp_client(44204, IP, Socket),
+# open_socket_stream(Socket, write, OutStream),
+# open_socket_stream(Socket, read, InStream)
+#
+# Terms can then be read and written on this socket using
+# the streams InStream and OutStream
+#
+set gui_name "TCP SERVER"
+
+set ei_pipe [socket -server Accept 44204]
+
+# Set up the input socket file event
+proc Accept { ei_pipe addr port } {
+    fconfigure $ei_pipe -blocking 0 -buffering line
+    fileevent  $ei_pipe readable [list socket_msg_read $ei_pipe]
+}
+
+# The function called for input socket read events.
+proc socket_msg_read { ei_pipe } {
+    set term [gets $ei_pipe]
+	# echo the term on the socket
+    puts $ei_pipe "echo - $term"
+    if [eof $ei_pipe] {
+        fileevent  $ei_pipe ""
+        close $ei_pipe
+    }
+}
+

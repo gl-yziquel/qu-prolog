@@ -52,6 +52,7 @@ c_icmInitComms(ClientData clientData, Tcl_Interp *interp,
       return TCL_ERROR;
     }
     sscanf(argv[1], "%d", &port);
+    initICMIo();
     if (*argv[2] == '\0')
     {
       if(icmInitComms(port,NULL,&conn)!=icmOk)

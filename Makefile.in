@@ -38,3 +38,14 @@ objects:
 	@$(MAKE) -C @QPHOME@/prolog	$(PARALLEL) all
 
 
+
+.PHONY: tkICM
+tkICM:
+	@$(MAKE) -C @QPHOME@/src tkICM
+
+.PHONY: xqp
+xqp:
+	cd @QPHOME@/src/xqp;qmake;cd -
+	cd @QPHOME@/src/xqpdebug;qmake;cd -
+	@$(MAKE) -C @QPHOME@/src/xqp
+	@$(MAKE) -C @QPHOME@/src/xqpdebug

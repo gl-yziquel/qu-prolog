@@ -1,4 +1,4 @@
-Installing Qu-Prolog 6.4
+Installing Qu-Prolog 6.5
 
 Execute the following
 
@@ -14,14 +14,12 @@ different versions of LINUX or UNIX.
 
 If you have any problems please let us know.
 
-
 Look in PROFILE_CMDS or LOGIN_CMDS to see how to set up your environment.
 
 NOTES
-
+-----
 If configure does not find some files then paths may need to be changed.
-Changing PATH or LD_LIBRARY_PATH may be enough. If not then change configure.in
-and run autoconf and try again.
+Changing PATH or LD_LIBRARY_PATH may be enough. 
 
 configure looks for tcl/tk libraries and includes but you may need to help
 configure. If the tk library is not found then try
@@ -48,7 +46,7 @@ Then try
 ./configure --with-gcclib=PATH
 where PATH is the path to the STL library includes.
 
-The high-level communication of Qu-Prolog 6.4 relies on the ICM package.
+The high-level communication of Qu-Prolog 6.5 relies on the ICM package.
 If this is not present on your system then Qu-Prolog will build without the
 communication.
 
@@ -58,7 +56,7 @@ http://sourceforge.net/projects/networkagent/
 If this package is installed before running configure then configure should 
 find it and build a system with high-level communication.
 
-Qu-Prolog 6.4 now also uses Elvin communication.
+Qu-Prolog 6.5 now also uses Elvin communication.
 
 The Elvin libraries and daemon can be dowloaded from
 http://elvin.dstc.edu.au/
@@ -67,26 +65,39 @@ Again, if Elvin is not installed then Qu-Prolog will be built without
 Elvin communication.
 
 
-Qu-Prolog has been build on LINUX (Redhat 5.2 or greater).
+Qu-Prolog has been build on LINUX (Redhat 6.0 or greater).
 
 It has also been ported to SOLARIS using the gcc version 2.95.2 compiler.
 
 
+TCL/TK GUI
+----------
+If configure found tcl/tk support then you can build a library that adds
+ICM support to tcl/tk.
+
+To do that execute the following
+
+make tkICM
+
+QT GUI
+------
+If you have the QT libraries and qmake then you can build a qt interface to
+the qp interpreter (xqp) and for the debugger (xqpdebug) by executing the
+following
+
+make xqp
+
+Before doing this you should check that the environment variable QTDIR is
+set to the QT home - e.g. /usr/lib/qt-3.1.
+You may also need to change the paths to icm in src/xqpdebug/xqpdebug.pro 
+before doing the make.
+
 Installing on MacOSX
 --------------------
-This port is unfinished - the Tcl/Tk interpreter does not work.
-Before running configure you should do the following
+The system should install on MacOSX without problems.
 
-mv src/tkICM_OSX.c src/tkICM.c
+However, the ICM support for Tck/Tk does not work for MacOSX and so
+there is no point in executing "make tkICM"
 
-and you should install the dynamic library linker (dlcompat) from
-http://www.opendarwin.org/projects/dlcompat
+The QT GUI does work (if you have installed QT).
 
-Although the Tcl/Tk interpreter does not work you will still need to have 
-Tcl/Tk installed.
-
-After this you can build the system as described above - i.e.
-
-./configure
-source PROFILE_CMDS
-make

@@ -3,18 +3,18 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000, 20001
-// Software Verification Research Centre
+// Copyright (C) 2000-2004
+// School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
 // 
-// email: svrc@it.uq.edu.au
+// email: pjr@itee.uq.edu.au
 // 
-// The Qu-Prolog 6.0 System and Documentation  
+// The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
 // 
-// Copyright 2000,2001 by The University of Queensland, 
+// Copyright 2000-2004 by The University of Queensland, 
 // Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
@@ -35,7 +35,7 @@
 // 
 // 4. 	that no changes to the system or documentation are subsequently 
 // 	made available to third parties or redistributed without prior 
-// 	written consent from the SVRC; and
+// 	written consent from the ITEE; and
 // 
 // The University of Queensland disclaims all warranties with regard to this
 // software, including all implied warranties of merchantability and fitness
@@ -50,11 +50,11 @@
 // WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
 // 
 // 
-// For information on commercial use of this software contact the SVRC.
+// For information on commercial use of this software contact ITEE.
 // 
 // ##Copyright##
 //
-// $Id: write.cc,v 1.8 2002/11/13 04:04:17 qp Exp $
+// $Id: write.cc,v 1.9 2004/04/28 00:49:30 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -601,7 +601,5 @@ Thread::psi_debug_write(Object *& object1)
   #endif
   return(RV_SUCCESS);
 }
-
-
 
 

@@ -2,18 +2,18 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000, 20001
-// Software Verification Research Centre
+// Copyright (C) 2000-2004
+// School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
 // 
-// email: svrc@it.uq.edu.au
+// email: pjr@itee.uq.edu.au
 // 
-// The Qu-Prolog 6.0 System and Documentation  
+// The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
 // 
-// Copyright 2000,2001 by The University of Queensland, 
+// Copyright 2000-2004 by The University of Queensland, 
 // Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
@@ -34,7 +34,7 @@
 // 
 // 4. 	that no changes to the system or documentation are subsequently 
 // 	made available to third parties or redistributed without prior 
-// 	written consent from the SVRC; and
+// 	written consent from the ITEE; and
 // 
 // The University of Queensland disclaims all warranties with regard to this
 // software, including all implied warranties of merchantability and fitness
@@ -49,11 +49,11 @@
 // WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
 // 
 // 
-// For information on commercial use of this software contact the SVRC.
+// For information on commercial use of this software contact ITEE.
 // 
 // ##Copyright##
 //
-// $Id: hash.cc,v 1.3 2002/11/03 08:37:27 qp Exp $
+// $Id: hash.cc,v 1.4 2004/07/25 04:15:13 qp Exp $
 
 #include <sys/types.h>
 
@@ -65,31 +65,25 @@
 
 using namespace std;
 
-//
-// No idea of this algorithm.  It is from Ross.
-//
 word32
 Hash(const char *s)
 {
-  word32 value = 0;
-
-  while (*s != '\0')
+  word32 value = 5381;
+  int c;
+  while (c = *s++)
     {
-      value *= 167;
-      value ^= *s++;
+      value = ((value << 5) + value) + c; /* hash * 33 + c */
     }
-
   return value;
 }
 
 word32
 Hash(const char *s, const size_t len)
 {
-  word32 value = 0;
+  word32 value = 5381;
   for (size_t i = 0; i < len; i++)
     {
-      value *= 167;
-      value ^= *s++;
+      value = ((value << 5) + value) + *s++; /* hash * 33 + c */
     }
 
   return value;
