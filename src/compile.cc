@@ -1,0 +1,299 @@
+// compile.cc - A C++ version of the QP compiler
+//
+// ##Copyright##
+// 
+// Copyright (C) 2000, 20001
+// Software Verification Research Centre
+// The University of Queensland
+// Australia 4072
+// 
+// email: svrc@it.uq.edu.au
+// 
+// The Qu-Prolog 6.0 System and Documentation  
+// 
+// COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
+// 
+// Copyright 2000,2001 by The University of Queensland, 
+// Queensland 4072 Australia
+// 
+// Permission to use, copy and distribute this software and associated
+// documentation for any non-commercial purpose and without fee is hereby 
+// granted, subject to the following conditions:
+// 
+// 1. 	that the above copyright notice and this permission notice and 
+// 	warranty disclaimer appear in all copies and in supporting 
+// 	documentation; 
+// 
+// 2.	that the name of the University of Queensland not be used in 
+// 	advertising or publicity pertaining to distribution of the software 
+// 	without specific, written prior permission; 
+// 
+// 3.	that users of this software should be responsible for determining the 
+// 	fitness of the software for the purposes for which the software is 
+// 	employed by them; 
+// 
+// 4. 	that no changes to the system or documentation are subsequently 
+// 	made available to third parties or redistributed without prior 
+// 	written consent from the SVRC; and
+// 
+// The University of Queensland disclaims all warranties with regard to this
+// software, including all implied warranties of merchantability and fitness
+// to the extent permitted by law. In no event shall the University of 
+// Queensland be liable for any special, indirect or consequential damages or 
+// any damages whatsoever resulting from loss of use, data or profits, whether 
+// in an action of contract, negligence or other tortious action, arising out 
+// of or in connection with the use or performance of this software.
+// 
+// THE UNIVERSITY OF QUEENSLAND MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR
+// SUITABILITY OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
+// WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
+// 
+// 
+// For information on commercial use of this software contact the SVRC.
+// 
+// ##Copyright##
+//
+// $Id: compile.cc,v 1.5 2001/11/21 00:21:11 qp Exp $
+
+#include "thread_qp.h"
+#include "io_qp.h"
+#include "check.h"
+extern IOManager *iom;  
+extern AtomTable *atoms;
+
+//
+// Add the vars in the tmp list to the word array containing perms
+// and update the number of perms.
+//
+void addPerms(Object* tmp, WordArray& perms, int& numys)
+{
+  for (; tmp->isCons(); tmp = OBJECT_CAST(Cons*, tmp)->getTail())
+    {
+      Reference* arg = 
+	OBJECT_CAST(Reference*, OBJECT_CAST(Cons*, tmp)->getHead());
+      if (!arg->isPerm())
+	{
+	  numys++;
+	  perms.addEntry(reinterpret_cast<word32>(arg));
+	  arg->setPermFlag();
+	}
+      else
+	{
+	  for (int i = 0; i < perms.lastEntry(); i++)
+	    {
+	      if (reinterpret_cast<word32>(arg) == perms.Entries()[i])
+		{
+		  perms.Entries()[i] = 0;
+		  break;
+		}
+	    }
+	  perms.addEntry(reinterpret_cast<word32>(arg));
+	}
+    }
+}
+
+//
+// Calculate the perm vars - a C++ version of permvars.ql
+//
+void
+Thread::permvars(Object* clause, WordArray& perms, int& numys)
+{
+  Object* half = AtomTable::nil;
+  Object* vars = AtomTable::nil;
+
+  numys = 0;
+  DEBUG_ASSERT(clause->isCons());
+  Object* head = OBJECT_CAST(Cons*, clause)->getHead()->variableDereference();
+  clause = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference();
+  heap.collect_term_vars(head, vars);
+  for (; clause->isCons(); 
+       clause = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference())
+    {
+      Object* a = OBJECT_CAST(Cons*, clause)->getHead()->variableDereference();
+      if (a->isStructure() && 
+	  (OBJECT_CAST(Structure*, a)->getFunctor() == AtomTable::get_level_ancestor ||
+	  OBJECT_CAST(Structure*, a)->getFunctor() == AtomTable::cut_ancestor))
+	{
+	  DEBUG_ASSERT(OBJECT_CAST(Structure*, a)->getArgument(1)->variableDereference()->isAnyVariable());
+	  Reference* arg = 
+	    OBJECT_CAST(Reference*, OBJECT_CAST(Structure*, a)->getArgument(1)->variableDereference());
+
+	  heap.collect_term_vars(a, vars);
+	  if (!arg->isPerm())
+	    {
+	      numys++;
+	      perms.addEntry(reinterpret_cast<word32>(arg));
+	      arg->setPermFlag();
+	    }
+	  else
+	    {
+	      for (int i = 0; i < perms.lastEntry(); i++)
+		{
+		  if (reinterpret_cast<word32>(arg) == perms.Entries()[i])
+		    {
+		      perms.Entries()[i] = 0;
+		      break;
+		    }
+		}
+	      perms.addEntry(reinterpret_cast<word32>(arg));
+	    }
+	}
+      else
+	{
+	  Object* tmp = AtomTable::nil;
+	  freeze_thaw_term(a, tmp, true, false);
+	  tmp = AtomTable::nil;
+	  freeze_thaw_term(half, tmp, false, true);
+	  addPerms(tmp, perms, numys);
+
+	  tmp = AtomTable::nil;
+	  freeze_thaw_term(a, tmp, false, false);
+	  heap.collect_term_vars(a, vars);
+	  
+	  if (a->isStructure())
+	    {
+	      Object* functor = OBJECT_CAST(Structure*, a)->getFunctor();
+	      if (functor == AtomTable::get_level ||
+		  functor == AtomTable::get_level_ancestor ||
+		  functor == AtomTable::checkBinder ||
+		  functor == AtomTable::psi_life ||
+		  functor == AtomTable::ccut ||
+		  functor == AtomTable::cut_ancestor ||
+		  functor == AtomTable::cpseudo_instr0 ||
+		  functor == AtomTable::cpseudo_instr1 ||
+		  functor == AtomTable::cpseudo_instr2 ||
+		  functor == AtomTable::cpseudo_instr3 ||
+		  functor == AtomTable::cpseudo_instr4 ||
+		  functor == AtomTable::cpseudo_instr5 ||
+		  functor == AtomTable::pieq ||
+		  functor == AtomTable::piarg ||
+		  functor == AtomTable::equal)
+		{
+		  continue;
+		}
+	    }
+	  if (a == AtomTable::success || a == AtomTable::failure)
+	    {
+	      continue;
+	    }
+	  half = vars;
+	}
+    }
+  heap.resetCollectedVarList(vars);
+}
+
+#if 0
+Object*
+Thread::build_list(WordArray& warray)
+{
+  Object* tail = AtomTable::nil;
+
+  for (int i = warray.lastEntry()-1; i >= 0; i--)
+    {
+      tail = heap.newCons(reinterpret_cast<Object*>(warray.Entries()[i]), tail);
+    }
+  return tail;
+}
+void
+dump_list(WordArray& warray)
+{
+
+  for (int i = 0; i < warray.lastEntry(); i++)
+    {
+      reinterpret_cast<Object*>(warray.Entries()[i])->printMe_dispatch(*atoms);
+      cerr << endl << endl;
+    }
+}
+#endif // 0
+
+//
+// The pseudo instruction for compiling.
+// If the type is 'compile' then str contains a stream ID
+// in which to write the WAM code (A .qs file).
+// Otherwise the code is assembled into a code block and
+// a pointer to that block is returned.
+//
+Thread::ReturnValue
+Thread::psi_ccompile(Object*& clause, Object*& type, 
+		Object*& str, Object*& codeptr)
+{
+  Stream *stream;
+  bool ctype = (type->variableDereference() == atoms->add("compile"));
+  if (ctype)
+    {
+      Object* val1 = heap.dereference(str);
+      DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream); 
+    }
+
+  // Word arrays for processing - these arrays are reused for the different
+  // compiler phases.
+  WordArray array1(WARRAYSIZE);
+  WordArray array2(WARRAYSIZE);
+  WordArray array3(WARRAYSIZE);
+  WordArray perms(REGISTERSIZE);
+  // Information about lifetimes of x registers.
+  xreglife xregisters(REGISTERSIZE);
+
+  clause = clause->variableDereference();
+  int numys;
+  permvars(clause, array3, numys);
+  
+  int body;
+  //
+  // C++ version of unravel.ql + partobj.ql
+  //
+  heap.unravel(clause, array1, array2, body);
+  heap.setyregs(array3, numys);
+  
+  array3.resetLast(0);
+
+  // Equiv to lifetime.ql
+  build_lifetime(array2, xregisters, array3);
+
+  // Equiv to prefer.ql
+  prefer_registers(array1, xregisters, array3, body);
+  bool excess = false;
+  // Equiv to tempalloc.ql
+  heap.alloc_registers(array2, xregisters, array3, excess);
+
+  if (excess)
+    {
+      // Equiv. to excess.ql
+      heap.excess_registers(array1);
+    }
+  int esize;
+  // Equiv. to envsize.ql
+  heap.envsize(array1, esize);
+
+  array2.resetLast(0);
+  // Equiv. to voidalloc.ql
+  heap.voidalloc(array1, esize, array2);
+
+  array1.resetLast(0);
+
+  // Equiv. to assn_elim.ql
+  heap.assn_elim(array2, array1);
+
+  array2.resetLast(0);
+  // Equiv. to peephole.ql
+  heap.peephole(array1, array2, esize, ctype);
+
+  if (ctype)
+    {
+      writeInstructions(array2, stream);
+      codeptr = heap.newNumber(0);
+    }
+  else
+    {
+      codeptr = heap.newNumber((word32)(dumpInstructions(array2)));
+    }
+  return RV_SUCCESS;
+}
+
+
+
+
+
+
+
+

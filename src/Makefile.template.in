@@ -1,0 +1,24 @@
+export LIBRARY.template = template.a
+
+export SOURCES.template = \
+	code_hash_table_templates.cc \
+	dynamic_hash_table.cc \
+	hash_table_templates.cc \
+	page_table_templates.cc \
+	stack_templates.cc \
+	trail_templates.cc 
+
+export BASES.template	= $(basename $(SOURCES.template))
+export OBJECTS.template = $(addsuffix .o,$(BASES.template))
+
+.PHONY: all.template
+all.template: $(LIBRARY.template)
+
+$(LIBRARY.template): $(OBJECTS.template)
+	$(AR) $(ARFLAGS) $@ $(OBJECTS.template)
+	@RANLIB@ $@
+
+.PHONY: install.template
+install.template: all.template
+
+

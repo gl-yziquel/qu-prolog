@@ -1,0 +1,119 @@
+#! /bin/sh
+# the next line restarts using tkICM \
+exec tkICM "$0" "$@"
+
+#
+# A GUI template - add to this file to define a new GUI that
+# uses ICM communication.
+#
+# Get the runtime arguments (if required)
+set thread_name [lindex $argv 0]
+set process_id [lindex $argv 1]
+
+# The GUI needs a name so that it can register with the ICM.
+# The following example uses the runtime arguments above.
+# WARNING: gui_name needs to have some value that will be accepted as
+# a process name by the ICM.
+#
+set gui_name ${thread_name}_${process_id}_gui
+
+# Initialises the ICM-Comms
+# icmInitComms port ipaddress
+# if port is 0 then the default ICM port is used.
+# if ipaddress is "" then the ICM on the current machine is used.
+# NOTE : if non-defaults are needed to connect to the appropriate
+# ICM then the values could be passed in as runtime arguments.
+# See qp_gui for an example.
+icmInitComms 0 ""
+
+# Register the ICM-agent using gui_name as the name of this process
+# and returning the pipe file handle for incoming messages
+set icm_pipe [icmRegisterAgent $gui_name]
+
+# Set up the ICM pipe file event
+fconfigure $icm_pipe -blocking 0 -buffering line
+fileevent  $icm_pipe readable {eval [icm_msg_read]}
+
+
+###################################################################
+# The following function reads ICM messages from the ICM pipe
+# and calls a user defined function process_icm_message that takes
+# the message and the sender address.
+# The special message $exit_gui causes the GUI to exit.
+#
+# Do not change any of the following message processing code.
+# 
+
+# Initialise the message buffer
+set icm_msg_buffer ""
+
+# Set up the message delimiters
+set end_of_message "\$\$EICMM\$\$"
+set start_of_address "\$\$SICMA\$\$"
+set address_separator "\$\$ICMAS\$\$"
+set len_end_of_message [string length $end_of_message]
+set len_start_of_address [string length $start_of_address]
+set len_address_separator [string length $address_separator]
+
+# The function called for ICM pipe read events.
+proc icm_msg_read {} {
+    global icm_msg_buffer
+    global end_of_message
+    global start_of_address
+    global address_separator
+    global len_end_of_message
+    global len_start_of_address
+    global len_address_separator
+    global icm_pipe
+
+    set term [read $icm_pipe]
+    if [eof $icm_pipe] {
+        fileevent  $icm_pipe ""
+        close $icm_pipe
+        exit 0
+    }
+    set icm_msg_buffer $icm_msg_buffer$term
+    set end_msg [string first $end_of_message $icm_msg_buffer]
+
+# Process all complete messages
+    while {$end_msg != -1} {
+        # Extract the message and sender address
+        set icm_msg [string range $icm_msg_buffer 0 [expr $end_msg - 1]]
+        set icm_msg_buffer [string range $icm_msg_buffer \
+                       [expr $end_msg + $len_end_of_message] end]
+        set end_msg [string first $end_of_message $icm_msg_buffer]
+        set end_command [string first $start_of_address $icm_msg]
+        set icm_addr [string range $icm_msg \
+                   [expr $end_command + $len_start_of_address] end]
+        set end_from [string first $address_separator $icm_addr]
+        set reply_to [string range $icm_addr \
+                   [expr $end_from + $len_address_separator] end]
+        set from [string range $icm_addr 0 [expr $end_from - 1]]
+        set icm_msg [string range $icm_msg 0 [expr $end_command -1]]
+        if { $icm_msg == "\$exit_gui"} {
+            exit 0
+        } else {
+            process_icm_message $icm_msg $from $reply_to
+        }
+    }
+}
+
+############# end of ICM message processing ####################
+
+# The GUI should deregister itself when it gets destroyed.
+
+bind .appio <Destroy> {
+        icmDeregisterAgent
+        }
+
+
+# Now you are ready to define your GUI below.
+
+# First you need to fill out the definition of the following function 
+# that is used in the ICM message processing.
+# msg is the received message, addr is the address of the sender
+# reply is the reply-to address - all as strings.
+
+proc process_icm_message {msg addr reply} {
+}
+

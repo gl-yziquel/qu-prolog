@@ -1,0 +1,135 @@
+// process.cc - Pseudo-instructions for handling the process attributes 
+// associated with a QuProlog invocation.
+//
+// ##Copyright##
+// 
+// Copyright (C) 2000, 20001
+// Software Verification Research Centre
+// The University of Queensland
+// Australia 4072
+// 
+// email: svrc@it.uq.edu.au
+// 
+// The Qu-Prolog 6.0 System and Documentation  
+// 
+// COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
+// 
+// Copyright 2000,2001 by The University of Queensland, 
+// Queensland 4072 Australia
+// 
+// Permission to use, copy and distribute this software and associated
+// documentation for any non-commercial purpose and without fee is hereby 
+// granted, subject to the following conditions:
+// 
+// 1. 	that the above copyright notice and this permission notice and 
+// 	warranty disclaimer appear in all copies and in supporting 
+// 	documentation; 
+// 
+// 2.	that the name of the University of Queensland not be used in 
+// 	advertising or publicity pertaining to distribution of the software 
+// 	without specific, written prior permission; 
+// 
+// 3.	that users of this software should be responsible for determining the 
+// 	fitness of the software for the purposes for which the software is 
+// 	employed by them; 
+// 
+// 4. 	that no changes to the system or documentation are subsequently 
+// 	made available to third parties or redistributed without prior 
+// 	written consent from the SVRC; and
+// 
+// The University of Queensland disclaims all warranties with regard to this
+// software, including all implied warranties of merchantability and fitness
+// to the extent permitted by law. In no event shall the University of 
+// Queensland be liable for any special, indirect or consequential damages or 
+// any damages whatsoever resulting from loss of use, data or profits, whether 
+// in an action of contract, negligence or other tortious action, arising out 
+// of or in connection with the use or performance of this software.
+// 
+// THE UNIVERSITY OF QUEENSLAND MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR
+// SUITABILITY OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
+// WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
+// 
+// 
+// For information on commercial use of this software contact the SVRC.
+// 
+// ##Copyright##
+//
+// $Id: process.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+
+#include "atom_table.h"
+#include "icm_environment.h"
+#include "thread_qp.h"
+
+extern AtomTable *atoms;
+extern ICMEnvironment *icm_environment;
+extern char *process_symbol;
+
+// @doc
+// @pred process_pid(ProcessID)
+// @mode process_pid(-) is det
+// @type process_pid(process_id)
+// @description
+// Return the process-id of the current process.
+// @end pred
+// @end doc
+Thread::ReturnValue
+Thread::psi_process_pid(Object *& pid_arg)
+{
+  pid_arg = heap.newNumber(getpid());
+
+  return RV_SUCCESS;
+}
+
+// @doc
+// @pred process_symbol(Name)
+// @mode process_symbol(-) is det
+// @type process_symbol(atom)
+// @description
+// Return the symbolic name of this process.
+// @end pred
+// @end doc
+Thread::ReturnValue
+Thread::psi_process_symbol(Object *& name_cell)
+{
+  if (process_symbol == NULL)
+    {
+      return RV_FAIL;
+    }
+  else
+    {
+      name_cell = atoms->add(process_symbol);
+      return RV_SUCCESS;
+    }
+}
+
+// @doc
+// @pred process_set_symbol(Name)
+// @mode process_set_symbol(+) is det
+// @type process_set_symbol(atom)
+// @description
+// Set the processes symbolic name to Name.
+// @end pred
+// @end doc
+Thread::ReturnValue
+Thread::psi_process_set_symbol(Object *& name_cell)
+{
+#if 0
+  // TO DO: Fix this when the ICM control message mechanism is fixed.
+  Object* name_arg = heap.dereference(name_cell);
+
+  CHECK_ATOM_ARG(name_arg, 1);
+
+  cerr << __FUNCTION__ << endl;
+
+  if (icm_environment->Register(atoms->getAtomString(OBJECT_CAST(Atom*, name_arg))))
+    {
+      return RV_SUCCESS;
+    }
+  else 
+    {
+      PSI_ERROR_RETURN(EV_VALUE, 1);
+    }
+#else
+  PSI_ERROR_RETURN(EV_UNIMPLEMENTED, 0);
+#endif
+}

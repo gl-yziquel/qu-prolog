@@ -1,0 +1,298 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:609: checking host system type
+configure:666: checking for gcc
+configure:779: checking whether the C compiler (gcc  ) works
+configure:795: gcc -o conftest    conftest.c  1>&5
+configure:821: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:826: checking whether we are using GNU C
+configure:835: gcc -E conftest.c
+configure:854: checking whether gcc accepts -g
+configure:890: checking for c++
+configure:922: checking whether the C++ compiler (c++  ) works
+configure:938: c++ -o conftest    conftest.C  1>&5
+configure:964: checking whether the C++ compiler (c++  ) is a cross-compiler
+configure:969: checking whether we are using GNU C++
+configure:978: c++ -E conftest.C
+configure:997: checking whether c++ accepts -g
+configure:1046: c++ -c -g -O2  conftest.C 1>&5
+configure:1063: c++ -c -g -O2  conftest.C 1>&5
+configure: In function `int main ()':
+configure:1059: `exit' undeclared (first use this function)
+configure:1059: (Each undeclared identifier is reported only once for 
+each function it appears in.)
+configure: failed program was:
+#line 1056 "configure"
+#include "confdefs.h"
+
+int main() {
+exit (42);
+; return 0; }
+configure:1046: c++ -c -g -O2  conftest.C 1>&5
+configure:1063: c++ -c -g -O2  conftest.C 1>&5
+configure:1091: checking for a BSD compatible install
+configure:1146: checking for flex
+configure:1180: checking for yywrap in -lfl
+configure:1202: c++ -o conftest -g -O2   conftest.C -lfl   1>&5
+configure:1225: checking whether ln -s works
+configure:1248: checking for ranlib
+configure:1280: checking for bison
+configure:1314: checking for cmp
+configure:1351: checking for cpp
+configure:1396: checking whether cpp needs -traditional flag for QP chars
+/usr/bin/cpp conftest.ql
+conftest.ql:1:2: missing terminating ' character
+# 1 "conftest.ql"
+0'x'
+/usr/bin/cpp -traditional
+# 1 "conftest.ql"
+0'x
+configure:1424: checking for perl
+configure:1466: checking for icm
+configure:1641: checking for pl
+configure:1683: checking for printf
+configure:1723: checking for dlopen in -ldl
+configure:1745: c++ -o conftest -g -O2   conftest.C -ldl   1>&5
+configure:1773: checking for main in -lnsl
+configure:1788: c++ -o conftest -g -O2   conftest.C -lnsl  -ldl  1>&5
+configure:1816: checking for main in -lposix4
+configure:1831: c++ -o conftest -g -O2   conftest.C -lposix4  -lnsl -ldl  1>&5
+/usr/bin/ld: cannot find -lposix4
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1824 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+configure:1859: checking for socket in -lsocket
+configure:1881: c++ -o conftest -g -O2   conftest.C -lsocket  -lnsl -ldl  1>&5
+/usr/bin/ld: cannot find -lsocket
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1867 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char socket();
+
+int main() {
+socket()
+; return 0; }
+configure:1910: checking how to run the C++ preprocessor
+configure:1928: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:1953: checking for ANSI C header files
+configure:1966: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2033: c++ -o conftest -g -O2   conftest.C -lnsl -ldl  1>&5
+configure:2072: checking for arpa/inet.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for fcntl.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for limits.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for malloc.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for netinet/in.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for sys/file.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for sys/ioctl.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for sys/time.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2072: checking for sys/filio.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2078:23: sys/filio.h: No such file or directory
+configure: failed program was:
+#line 2077 "configure"
+#include "confdefs.h"
+#include <sys/filio.h>
+configure:2072: checking for sys/sockio.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2078:24: sys/sockio.h: No such file or directory
+configure: failed program was:
+#line 2077 "configure"
+#include "confdefs.h"
+#include <sys/sockio.h>
+configure:2072: checking for unistd.h
+configure:2082: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2113: checking for pthread.h
+configure:2123: c++ -E  conftest.C >/dev/null 2>conftest.out
+configure:2150: checking for pthread_create in -lpthread
+configure:2172: c++ -o conftest -g -O2   conftest.C -lpthread  -lnsl -ldl  1>&5
+configure:2208: checking for mode_t
+configure:2241: checking for pid_t
+configure:2274: checking for size_t
+configure:2307: checking whether time.h and sys/time.h may both be included
+configure:2321: c++ -c -g -O2  conftest.C 1>&5
+configure:2345: checking for working alloca.h
+configure:2357: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure: In function `int main ()':
+configure:2353: cannot convert `void *' to `char *' in initialization
+configure: failed program was:
+#line 2350 "configure"
+#include "confdefs.h"
+#include <alloca.h>
+int main() {
+char *p = alloca(2 * sizeof(int));
+; return 0; }
+configure:2378: checking for alloca
+configure:2411: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2580: checking for 8-bit clean memcmp
+configure:2598: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure: In function `int main ()':
+configure:2593: `memcmp' undeclared (first use this function)
+configure:2593: (Each undeclared identifier is reported only once for 
+each function it appears in.)
+configure: failed program was:
+#line 2588 "configure"
+#include "confdefs.h"
+
+main()
+{
+  char c0 = 0x40, c1 = 0x80, c2 = 0x81;
+  exit(memcmp(&c0, &c2, 1) < 0 && memcmp(&c1, &c2, 1) < 0 ? 0 : 1);
+}
+
+configure:2616: checking return type of signal handlers
+configure:2638: c++ -c -g -O2  conftest.C 1>&5
+configure:2671: checking for gethostname
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for gethostbyname
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for poll
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for putenv
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2686: declaration of C function `char putenv ()' conflicts 
+with
+/usr/include/stdlib.h:597: previous declaration `int putenv (char *)' 
+here
+configure: failed program was:
+#line 2676 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char putenv(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char putenv();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_putenv) || defined (__stub___putenv)
+choke me
+#else
+putenv();
+#endif
+
+; return 0; }
+configure:2671: checking for select
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2686: declaration of C function `char select ()' conflicts 
+with
+/usr/include/sys/select.h:105: previous declaration `int select (int, 
+fd_set *, fd_set *, fd_set *, timeval *)' here
+configure: failed program was:
+#line 2676 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char select(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char select();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_select) || defined (__stub___select)
+choke me
+#else
+select();
+#endif
+
+; return 0; }
+configure:2671: checking for sigwait
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for sigtimedwait
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for socket
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for strerror
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for strstr
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2671: checking for uname
+configure:2702: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2729: checking for an integer type with at least 16 bits
+configure:2770: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2833: checking for an integer type with at least 32 bits
+configure:2874: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2937: checking the number of bytes per word
+configure:2961: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:2985: checking the number of bits per word
+configure:3010: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:3035: checking whether we can use gcc labels
+configure:3076: c++ -o conftest -g -O2   conftest.C -lpthread -lnsl -ldl  1>&5
+configure:3049: ISO C++ forbids declaration of `foo' with no type
+configure: In function `int foo ()':
+configure:3051: return-statement with no value, in function declared 
+with a non-void return type
+configure: At top level:
+configure:3056: ISO C++ forbids declaration of `bar' with no type
+configure: In function `int bar ()':
+configure:3058: return-statement with no value, in function declared 
+with a non-void return type
+configure: failed program was:
+#line 3043 "configure"
+#include "confdefs.h"
+
+	void *entry_foo_1;
+	void *entry_bar_1;
+	void *succip;
+	int global;
+	foo() {
+		entry_foo_1 = && foo_1;
+		return;
+	foo_1:
+		if (global != 42) exit(1);
+		goto *entry_bar_1;
+	}
+	bar() {
+		entry_bar_1 = && bar_1;
+		return;
+	bar_1:
+		if (global != 42) exit(1);
+		goto *succip;
+	}
+	main() {
+		global = 42;
+		foo();
+		bar();
+		succip = &&last;
+		goto *entry_foo_1;
+		exit(1);
+	last:
+		if (global != 42) exit(1);
+		exit(0);
+	}

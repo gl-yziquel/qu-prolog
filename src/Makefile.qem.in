@@ -1,0 +1,24 @@
+export COMMAND.qem = qem
+
+export SOURCES.qem = \
+	interrupt_handler.cc \
+	qem.cc \
+	qem_options.cc \
+	scheduler.cc
+
+export BASES.qem	= $(basename $(SOURCES.qem))
+export OBJECTS.qem	= $(addsuffix .o,$(BASES.qem))
+
+.PHONY:	all.qem
+all.qem: $(COMMAND.qem)
+
+$(COMMAND.qem): $(OBJECTS.qem) $(BIG_LIBRARY)
+	$(CXX) $(LDFLAGS) -o $(COMMAND.qem) $(OBJECTS.qem) -rdynamic @LIBS@ -L@ICMHOME@/lib @ICM_LIB@ $(BIG_LIBRARY)
+
+.PHONY: install.qem
+install.qem: @QPHOME@/bin/$(COMMAND.qem)
+
+@QPHOME@/bin/$(COMMAND.qem): $(COMMAND.qem)
+	@INSTALL@ $(COMMAND.qem) @QPHOME@/bin
+
+

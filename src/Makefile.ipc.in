@@ -1,0 +1,22 @@
+export LIBRARY.ipc = ipc.a
+
+export SOURCES.ipc = \
+	icm_environment.cc \
+	icm_handle.cc \
+	icm_message_handler.cc \
+	thread_table.cc
+
+export BASES.ipc= $(basename $(SOURCES.ipc))
+export OBJECTS.ipc= $(addsuffix .o,$(BASES.ipc))
+
+.PHONY:	all.ipc
+all.ipc: $(LIBRARY.ipc)
+
+$(LIBRARY.ipc): $(OBJECTS.ipc)
+	$(AR) $(ARFLAGS) $@ $(OBJECTS.ipc)
+	@RANLIB@ $@
+
+.PHONY: install.ipc
+install.ipc: all.ipc
+
+

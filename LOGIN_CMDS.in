@@ -1,0 +1,11 @@
+# Add this file to your ~/.login
+setenv ICMHOME @ICMHOME@
+setenv QPHOME @QPHOME@
+setenv QPPATH $QPHOME/bin
+setenv QPLIBPATH "."
+setenv PATH $QPPATH:$PATH
+setenv TEXINPUTS "$QPHOME/doc/include:$TEXINPUTS"
+setenv MANPATH $QPHOME/doc/man:$MANPATH
+setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:$ICMHOME/lib
+setenv PATH $PATH:$ICMHOME/bin
+setenv LD_RUN_PATH $ICMHOME/lib

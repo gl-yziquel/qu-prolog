@@ -1,0 +1,4798 @@
+diff -c -r pjr-5.0/prolog/library/bios.ql pjr/qp_src/library/bios.ql
+*** pjr-5.0/prolog/library/bios.ql	Tue Apr 14 14:51:01 1998
+--- pjr/qp_src/library/bios.ql	Wed Jun 18 12:56:57 1997
+***************
+*** 15,27 ****
+   * mode get_char(@gcomp, ?atomic).
+   */
+  get_char(Char) :-
+! 	current_input(Stream),
+! 	(   '$get_char1'(Stream, Char1)
+  	    ->
+  		Char = Char1
+  	    ;
+  		exception(stream_error(unrecoverable, get_char(Char),
+! 				       default, Stream))
+  	).
+  
+  get_char(Stream, Char) :-
+--- 15,27 ----
+   * mode get_char(@gcomp, ?atomic).
+   */
+  get_char(Char) :-
+! 	'$current_input'(N),
+! 	(   '$get_char1'(N, Char1)
+  	    ->
+  		Char = Char1
+  	    ;
+  		exception(stream_error(unrecoverable, get_char(Char),
+! 				       default, '$stream'(N)))
+  	).
+  
+  get_char(Stream, Char) :-
+***************
+*** 31,39 ****
+  				[get_char(@atom, ?atomic),
+  				 get_char(@gcomp, ?atomic)]).
+  get_char(Stream, Char) :-
+! 	stream_property(Stream, input),
+  	!,
+! 	(   '$get_char1'(Stream, Char1)
+  	    ->
+  		Char = Char1
+  	    ;
+--- 31,40 ----
+  				[get_char(@atom, ?atomic),
+  				 get_char(@gcomp, ?atomic)]).
+  get_char(Stream, Char) :-
+! 	'$internal_stream_property'(Stream, input),
+! 	'$stream_num'(Stream, N),
+  	!,
+! 	(   '$get_char1'(N, Char1)
+  	    ->
+  		Char = Char1
+  	    ;
+***************
+*** 48,81 ****
+  /*
+   * Get the next character from the input stream.
+   *
+!  * mode '$get_char1'(@stream, ?atom).
+!  * mode '$get_char2'(@stream, -atom).
+   * mode '$get_char3'(@atom, @integer, ?atom).
+   */
+! '$get_char1'(Stream, Char) :-
+  	repeat,
+! 	'$get_char2'(Stream, Char0),
+  	\+(Char0 = ''),
+  	!,
+! 	'$get_char3'(Char0, Stream, Char).
+  
+! '$get_char2'(Stream, past) :-
+! 	past_end_of_stream(Stream),
+  	!.
+! '$get_char2'(Stream, 'end_of_file') :-
+! 	at_end_of_stream(Stream),
+  	!.
+! '$get_char2'(Stream, Char) :-
+! 	'$get_char'(Stream, Char).
+  
+! '$get_char3'(end_of_file, Stream, end_of_file) :-
+! 	stream_property(Stream, eof_action(Type)),
+  	!,
+! 	'$eof_action'(Type, Stream).
+! '$get_char3'(past, Stream, _) :-
+! 	stream_property(Stream, eof_action(Type)),
+  	!,
+! 	'$eof_action'(Type, Stream).
+  '$get_char3'(Char, _, Char).
+  
+  /*
+--- 49,82 ----
+  /*
+   * Get the next character from the input stream.
+   *
+!  * mode '$get_char1'(@integer, ?atom).
+!  * mode '$get_char2'(@integer, -atom).
+   * mode '$get_char3'(@atom, @integer, ?atom).
+   */
+! '$get_char1'(N, Char) :-
+  	repeat,
+! 	'$get_char2'(N, Char0),
+  	\+(Char0 = ''),
+  	!,
+! 	'$get_char3'(Char0, N, Char).
+  
+! '$get_char2'(N, past) :-
+! 	'$past_end_of_stream'(N),
+  	!.
+! '$get_char2'(N, 'end_of_file') :-
+! 	'$at_end_of_stream'(N),
+  	!.
+! '$get_char2'(N, Char) :-
+! 	'$get_char'(N, Char).
+  
+! '$get_char3'(end_of_file, N, end_of_file) :-
+  	!,
+! 	stream_property('$stream'(N), eof_action(Type)),
+! 	'$eof_action'(Type, N).
+! '$get_char3'(past, N, _) :-
+  	!,
+! 	stream_property('$stream'(N), eof_action(Type)),
+! 	'$eof_action'(Type, N).
+  '$get_char3'(Char, _, Char).
+  
+  /*
+***************
+*** 86,94 ****
+   * mode put_char(@gcomp, @atom).
+   */
+  put_char(Char) :-
+! 	current_output(Stream),
+! 	put_char(Stream, Char).
+  
+  /* 							
+   * Put the tab of N space at the current position.
+   *
+--- 87,146 ----
+   * mode put_char(@gcomp, @atom).
+   */
+  put_char(Char) :-
+! 	atom(Char),
+! 	!,
+! 	'$current_output'(N),
+! 	(	'$put_char'(N, Char)
+! 	    ;
+! 		exception(stream_error(unrecoverable, put_char(Char),
+! 				       default, '$stream'(N)))
+! 	),
+! 	!.
+! put_char(Char) :-
+! 	var(Char),
+! 	!,
+! 	instantiation_exception(put_char(Char), 1, [put_char(@atom)]).
+! put_char(Char) :-
+! 	type_exception(put_char(Char), 1, [put_char(@atom)], atom).
+  
++ put_char(Stream, Char) :-
++ 	var(Stream),
++ 	!,
++ 	instantiation_exception(put_char(Stream, Char), 1,
++ 				[put_char(@atom, @atom),
++ 				 put_char(@gcomp, @atom)]).
++ put_char(Stream, Char) :-
++ 	atom(Char),
++ 	'$internal_stream_property'(Stream, output),
++ 	'$stream_num'(Stream, N),
++ 	!,
++ 	(	'$put_char'(N, Char)
++ 	    ;
++ 		exception(stream_error(unrecoverable, put_char(Stream, Char),
++ 				       default, Stream))
++ 	),
++ 	!.
++ put_char(Stream, Char) :-
++ 	var(Char),
++ 	!,
++ 	instantiation_exception(put_char(Stream, Char), 2,
++ 				[put_char(@atom, @atom),
++ 				 put_char(@gcomp, @atom)]).
++ put_char(Stream, Char) :-
++ 	\+(atom(Char)),
++ 	!,
++ 	type_exception(put_char(Stream, Char), 2,
++ 		       [put_char(@atom, @atom), put_char(@gcomp, @atom)], atom).
++ put_char(Stream, Char) :-
++ 	type_exception(put_char(Stream, Char), 1,
++ 		       [put_char(@atom, @atom), put_char(@gcomp, @atom)],
++ 		       stream).
++ 
++ 
++ put_code(C) :-
++ 	'$current_output'(N),
++ 	put_code(N,C).
++ 	
+  /* 							
+   * Put the tab of N space at the current position.
+   *
+***************
+*** 98,104 ****
+   * mode '$tab'(@integer, @integer).
+   */						
+  tab(Expr) :-
+! 	current_output(Stream),
+  	N is Expr,
+  	'$tab'(Stream, N).
+  
+--- 150,156 ----
+   * mode '$tab'(@integer, @integer).
+   */						
+  tab(Expr) :-
+! 	'$current_output'(Stream),
+  	N is Expr,
+  	'$tab'(Stream, N).
+  
+***************
+*** 108,117 ****
+  	instantiation_exception(tab(Stream, Expr), 1,
+  				[tab(@atom, @ground), tab(@gcomp, @ground)]).
+  tab(Stream, Expr) :-
+! 	stream_property(Stream, output),
+  	!,
+! 	T is Expr,
+! 	'$tab'(Stream, T).
+  tab(Stream, Expr) :-
+  	type_exception(tab(Stream, Expr), 1,
+  		       [tab(@atom, @ground), tab(@gcomp, @ground)], stream).
+--- 160,170 ----
+  	instantiation_exception(tab(Stream, Expr), 1,
+  				[tab(@atom, @ground), tab(@gcomp, @ground)]).
+  tab(Stream, Expr) :-
+! 	'$internal_stream_property'(Stream, output),
+! 	'$stream_num'(Stream, StreamNum),
+  	!,
+! 	N is Expr,
+! 	'$tab'(StreamNum, N).
+  tab(Stream, Expr) :-
+  	type_exception(tab(Stream, Expr), 1,
+  		       [tab(@atom, @ground), tab(@gcomp, @ground)], stream).
+***************
+*** 130,142 ****
+   * mode get_code(@gcomp, ?integer).
+   */
+  get_code(Byte) :-
+! 	current_input(Stream),
+! 	(   '$get_code1'(Stream, Byte1)
+  	    ->
+  		Byte = Byte1
+  	    ;
+  		exception(stream_error(unrecoverable, get_code(Byte),
+! 				       default, Stream))
+  	).
+  
+  get_code(Stream, Byte) :-
+--- 183,195 ----
+   * mode get_code(@gcomp, ?integer).
+   */
+  get_code(Byte) :-
+! 	'$current_input'(N),
+! 	(   '$get_code1'(N, Byte1)
+  	    ->
+  		Byte = Byte1
+  	    ;
+  		exception(stream_error(unrecoverable, get_code(Byte),
+! 				       default, '$stream'(N)))
+  	).
+  
+  get_code(Stream, Byte) :-
+***************
+*** 146,154 ****
+  				[get_code(@atom, ?integer),
+  				 get_code(@gcomp, ?integer)]).
+  get_code(Stream, Byte) :-
+! 	stream_property(Stream, input),
+  	!,
+! 	(   '$get_code1'(Stream, Byte1)
+  	    ->
+  		Byte = Byte1
+  	    ;
+--- 199,208 ----
+  				[get_code(@atom, ?integer),
+  				 get_code(@gcomp, ?integer)]).
+  get_code(Stream, Byte) :-
+! 	'$internal_stream_property'(Stream, input),
+! 	'$stream_num'(Stream, N),
+  	!,
+! 	(   '$get_code1'(N, Byte1)
+  	    ->
+  		Byte = Byte1
+  	    ;
+***************
+*** 167,208 ****
+   * mode '$get_code2'(@integer, -integer).
+   * mode '$get_code3'(@integer, @integer, ?integer).
+   */
+! '$get_code1'(Stream, Byte) :-
+  	repeat,
+! 	'$get_code2'(Stream, Byte0),
+! 	\+ (Byte0 = -2),
+  	!,
+! 	'$get_code3'(Byte0, Stream, Byte).
+  
+! '$get_code2'(Stream, past) :-
+! 	past_end_of_stream(Stream),
+  	!.
+! '$get_code2'(Stream, -1) :-
+! 	at_end_of_stream(Stream),
+  	!.
+! '$get_code2'(Stream, Byte) :-
+! 	'$get_code'(Stream, Byte).
+  
+! '$get_code3'(-1, Stream, -1) :-
+! 	stream_property(Stream, eof_action(Type)),
+  	!,
+! 	'$eof_action'(Type, Stream).
+! '$get_code3'(past, Stream, _) :-
+! 	stream_property(Stream, eof_action(Type)),
+  	!,
+! 	'$eof_action'(Type, Stream).
+  '$get_code3'(Byte, _, Byte).
+  
+  /*
+!  * Put the byte into the output stream.
+   *
+!  * mode put_code(@integer).
+!  * mode put_code(@atom, @integer).
+!  * mode put_code(@gcomp, @integer).
+   */
+! put_code(Byte) :-
+! 	current_output(Stream),
+! 	put_code(Stream, Byte).
+  
+  /*							
+   *  Put the new line character to start a new line.
+--- 221,262 ----
+   * mode '$get_code2'(@integer, -integer).
+   * mode '$get_code3'(@integer, @integer, ?integer).
+   */
+! '$get_code1'(N, Byte) :-
+  	repeat,
+! 	'$get_code2'(N, Byte0),
+! 	\+(Byte0 = -2),
+  	!,
+! 	'$get_code3'(Byte0, N, Byte).
+  
+! '$get_code2'(N, past) :-
+! 	'$past_end_of_stream'(N),
+  	!.
+! '$get_code2'(N, -1) :-
+! 	'$at_end_of_stream'(N),
+  	!.
+! '$get_code2'(N, Byte) :-
+! 	'$get_code'(N, Byte).
+  
+! '$get_code3'(-1, N, -1) :-
+  	!,
+! 	stream_property('$stream'(N), eof_action(Type)),
+! 	'$eof_action'(Type, N).
+! '$get_code3'(past, N, _) :-
+  	!,
+! 	stream_property('$stream'(N), eof_action(Type)),
+! 	'$eof_action'(Type, N).
+  '$get_code3'(Byte, _, Byte).
+  
++ 
+  /*
+!  * Succeed if it is a byte.
+   *
+!  * mode '$byte'(@integer).
+   */
+! '$byte'(Byte) :-
+! 	integer(Byte),
+! 	0 =< Byte,
+! 	Byte < 256.
+  
+  /*							
+   *  Put the new line character to start a new line.
+***************
+*** 212,219 ****
+   * mode nl(@gcomp).
+   */
+  nl :-
+! 	current_output(Stream),
+! 	put_code(Stream, 0'
+  	).		% A newline.
+  
+  nl(Stream) :-
+--- 266,273 ----
+   * mode nl(@gcomp).
+   */
+  nl :-
+! 	'$current_output'(N),
+! 	put_code(N, 0'
+  	).		% A newline.
+  
+  nl(Stream) :-
+***************
+*** 230,238 ****
+   * mode '$skip'(@integer, @integer, @gcomp, @integer).
+   */
+  skip(Byte) :-
+! 	current_input(Stream),
+! 	'$get_code1'(Stream, ReadByte),
+! 	'$skip'(ReadByte, Stream, Byte).
+  
+  skip(Stream, Byte) :-
+  	var(Stream),
+--- 284,292 ----
+   * mode '$skip'(@integer, @integer, @gcomp, @integer).
+   */
+  skip(Byte) :-
+! 	'$current_input'(N),
+! 	'$get_code1'(N, ReadByte),
+! 	'$skip'(ReadByte, N, '$stream'(N), Byte).
+  
+  skip(Stream, Byte) :-
+  	var(Stream),
+***************
+*** 240,249 ****
+  	instantiation_exception(skip(Stream, Byte), 1, [skip(@atom, @integer)]).
+  skip(Stream, Byte) :-
+  	integer(Byte),
+! 	stream_property(Stream, input),
+  	!,
+! 	'$get_code1'(Stream, ReadByte),
+! 	'$skip'(ReadByte, Stream, Byte).
+  skip(Stream, Byte) :-
+  	var(Byte),
+  	!,
+--- 294,304 ----
+  	instantiation_exception(skip(Stream, Byte), 1, [skip(@atom, @integer)]).
+  skip(Stream, Byte) :-
+  	integer(Byte),
+! 	'$internal_stream_property'(Stream, input),
+! 	'$stream_num'(Stream, N),
+  	!,
+! 	'$get_code1'(N, ReadByte),
+! 	'$skip'(ReadByte, N, Stream, Byte).
+  skip(Stream, Byte) :-
+  	var(Byte),
+  	!,
+***************
+*** 255,265 ****
+  skip(Stream, Byte) :-
+  	type_exception(skip(Stream, Byte), 1, [skip(@atom, @integer)], stream).
+  
+! '$skip'(-1, Stream, Byte) :-
+  	!,
+  	exception(stream_error(unrecoverable, skip(Stream, Byte),
+  			       default, Stream)).
+! '$skip'(Byte, _, Byte) :- !.
+! '$skip'(_, Stream, Byte) :-
+! 	'$get_code1'(Stream, ReadByte),
+! 	'$skip'(ReadByte, Stream, Byte).
+--- 310,320 ----
+  skip(Stream, Byte) :-
+  	type_exception(skip(Stream, Byte), 1, [skip(@atom, @integer)], stream).
+  
+! '$skip'(-1, _, Stream, Byte) :-
+  	!,
+  	exception(stream_error(unrecoverable, skip(Stream, Byte),
+  			       default, Stream)).
+! '$skip'(Byte, _, _, Byte) :- !.
+! '$skip'(_, N, Stream, Byte) :-
+! 	'$get_code1'(N, ReadByte),
+! 	'$skip'(ReadByte, N, Stream, Byte).
+diff -c -r pjr-5.0/prolog/library/consult.ql pjr/qp_src/library/consult.ql
+*** pjr-5.0/prolog/library/consult.ql	Wed Apr  8 13:17:23 1998
+--- pjr/qp_src/library/consult.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 97,123 ****
+   * mode '$consult_a_file'(@atom, @atom).
+   */
+  '$consult_a_file'(ReadType, File) :-
+!     '$consult_open'(File, Stream),
+!     '$read_assert_clauses'(ReadType, Stream, []),
+!     '$consult_close'(Stream).
+  
+  /*
+!  * If File is 'user', read from stream 0.  Otherwise, open the file.
+   *
+   * mode '$consult_open'(@atom, -integer).
+   */
+! '$consult_open'(user, 0) :- !.
+  '$consult_open'(File, Stream) :-
+!     open(File, read, Stream).
+  
+  /*
+!  * If File is stream 0, do nothing.  Otherwise, close the stream.
+   *
+   * mode '$consult_close'(@integer).
+   */
+! '$consult_close'(0) :- !.
+  '$consult_close'(Stream) :-
+!     close(Stream).
+  
+  /*
+   * Read a clause and assert it.
+--- 97,123 ----
+   * mode '$consult_a_file'(@atom, @atom).
+   */
+  '$consult_a_file'(ReadType, File) :-
+! 	'$consult_open'(File, Stream),
+! 	'$read_assert_clauses'(ReadType, Stream, []),
+! 	'$consult_close'(Stream).
+  
+  /*
+!  * If File is 'user', read from ''$stream'(0)'.  Otherwise, open the file.
+   *
+   * mode '$consult_open'(@atom, -integer).
+   */
+! '$consult_open'(user, '$stream'(0)) :- !.
+  '$consult_open'(File, Stream) :-
+! 	 open(File, read, Stream).
+  
+  /*
+!  * If File is ''$stream'(0)', do nothing.  Otherwise, close the stream.
+   *
+   * mode '$consult_close'(@integer).
+   */
+! '$consult_close'('$stream'(0)) :- !.
+  '$consult_close'(Stream) :-
+! 	 close(Stream).
+  
+  /*
+   * Read a clause and assert it.
+diff -c -r pjr-5.0/prolog/library/debug.ql pjr/qp_src/library/debug.ql
+*** pjr-5.0/prolog/library/debug.ql	Wed Apr  8 13:17:25 1998
+--- pjr/qp_src/library/debug.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 150,162 ****
+          '$stdout_atom'(' (conditional): '),
+          '$stdout_nl',
+          '$stdout_atom'('          Goal: '),
+!         write(stdout, Goal),
+          '$stdout_nl',
+          '$stdout_atom'('          Port: '),
+!         write(stdout, Port),
+          '$stdout_nl',
+          '$stdout_atom'('          Cond: '),
+!         write(stdout, Cond),
+          fail.
+  '$print_spy_conds'(_, _).
+  
+--- 150,162 ----
+          '$stdout_atom'(' (conditional): '),
+          '$stdout_nl',
+          '$stdout_atom'('          Goal: '),
+!         write(user_output, Goal),
+          '$stdout_nl',
+          '$stdout_atom'('          Port: '),
+!         write(user_output, Port),
+          '$stdout_nl',
+          '$stdout_atom'('          Cond: '),
+!         write(user_output, Cond),
+          fail.
+  '$print_spy_conds'(_, _).
+  
+***************
+*** 328,338 ****
+   */
+  '$read_spy_cond' :-
+          '$stdout_atom'('Goal? '),
+!         read(stdin, Goal),
+          '$stdout_atom'('Port? '),
+!         read(stdin, Port),
+          '$stdout_atom'('Condition? '),
+!         read(stdin, Cond),
+          spy_cond(Goal, Port, Cond).
+  
+  /*
+--- 328,338 ----
+   */
+  '$read_spy_cond' :-
+          '$stdout_atom'('Goal? '),
+!         read(user_input, Goal),
+          '$stdout_atom'('Port? '),
+!         read(user_input, Port),
+          '$stdout_atom'('Condition? '),
+!         read(user_input, Cond),
+          spy_cond(Goal, Port, Cond).
+  
+  /*
+***************
+*** 659,668 ****
+  	'$stdout_atom'(': '),
+  	(   member(max_depth(_), PrintOptions)
+  	    ->
+! 		write_term(stdout, Goal, PrintOptions)
+  	    ;
+  		global_state_lookup('$debug_print',PrintDepth),
+! 		write_term(stdout, Goal,
+  			   [max_depth(PrintDepth)|PrintOptions])
+  	).
+  
+--- 659,668 ----
+  	'$stdout_atom'(': '),
+  	(   member(max_depth(_), PrintOptions)
+  	    ->
+! 		write_term(user_output, Goal, PrintOptions)
+  	    ;
+  		global_state_lookup('$debug_print',PrintDepth),
+! 		write_term(user_output, Goal,
+  			   [max_depth(PrintDepth)|PrintOptions])
+  	).
+  
+***************
+*** 719,731 ****
+   * mode '$get_debug_command'(-atom, -atomic).
+   */
+  '$get_debug_command'(Command, Argument) :-
+! 	get_char(stdin, Command),
+  	(   Command = '
+  '				/* newline */
+  	    ->
+  		true
+  	    ;
+! 		get_code(stdin, Char),
+  		'$skip_space'(Char, NonSpaceChar),
+  		'$get_argument'(NonSpaceChar, CharList),
+  		name(Argument, CharList)
+--- 719,731 ----
+   * mode '$get_debug_command'(-atom, -atomic).
+   */
+  '$get_debug_command'(Command, Argument) :-
+! 	get_char(user_input, Command),
+  	(   Command = '
+  '				/* newline */
+  	    ->
+  		true
+  	    ;
+! 		get_code(user_input, Char),
+  		'$skip_space'(Char, NonSpaceChar),
+  		'$get_argument'(NonSpaceChar, CharList),
+  		name(Argument, CharList)
+***************
+*** 742,748 ****
+  		Char = 0'	% Tab.
+  	),
+  	!,
+! 	get_code(stdin, NextChar),
+  	'$skip_space'(NextChar, NonSpaceChar).
+  '$skip_space'(NonSpaceChar, NonSpaceChar).
+  
+--- 742,748 ----
+  		Char = 0'	% Tab.
+  	),
+  	!,
+! 	get_code(user_input, NextChar),
+  	'$skip_space'(NextChar, NonSpaceChar).
+  '$skip_space'(NonSpaceChar, NonSpaceChar).
+  
+***************
+*** 759,768 ****
+  		Char = 0'	% Tab.
+  	),
+  	!,
+! 	skip(stdin, 0'
+  	    ).
+  '$get_argument'(Char, [Char|CharList]) :-
+! 	get_code(stdin, NextChar),
+  	'$get_argument'(NextChar, CharList).
+  
+  /*
+--- 759,768 ----
+  		Char = 0'	% Tab.
+  	),
+  	!,
+! 	skip(user_input, 0'
+  	    ).
+  '$get_argument'(Char, [Char|CharList]) :-
+! 	get_code(user_input, NextChar),
+  	'$get_argument'(NextChar, CharList).
+  
+  /*
+***************
+*** 804,810 ****
+  	'$get_basic_debugger_state'(Id, Path, Invoc),
+  	'$set_basic_debugger_state'(0, [], 0),
+  	'$stdout_atom'('| :- '),
+! 	read(stdin, Query),
+  	(   call_predicate(Query)
+              ->
+                  true
+--- 804,810 ----
+  	'$get_basic_debugger_state'(Id, Path, Invoc),
+  	'$set_basic_debugger_state'(0, [], 0),
+  	'$stdout_atom'('| :- '),
+! 	read(user_input, Query),
+  	(   call_predicate(Query)
+              ->
+                  true
+***************
+*** 926,934 ****
+  	!,
+  	'$trace_interact'(Goal, Port, [], yes).
+  '$execute_debug_command'(Command, Argument, Goal, Port) :-
+! 	write_term(stdout, Command, []),
+  	'$stdout_atom'(' '),
+! 	write_term(stdout, Argument, []),
+  	'$stdout_atom'(' is an illegal command sequence'),
+  	'$stdout_nl',
+  	'$trace_interact'(Goal, Port, [], yes).
+--- 926,934 ----
+  	!,
+  	'$trace_interact'(Goal, Port, [], yes).
+  '$execute_debug_command'(Command, Argument, Goal, Port) :-
+! 	write_term(user_output, Command, []),
+  	'$stdout_atom'(' '),
+! 	write_term(user_output, Argument, []),
+  	'$stdout_atom'(' is an illegal command sequence'),
+  	'$stdout_nl',
+  	'$trace_interact'(Goal, Port, [], yes).
+***************
+*** 987,993 ****
+  	'$stdout_int'(Depth),
+  	'$stdout_atom'('	'),
+  	global_state_lookup('$debug_print',PrintDepth),
+! 	write_term(stdout, Goal, [max_depth(PrintDepth)]),
+  	'$stdout_nl'.
+  
+  '$print_spy_indicator'(Pred, Arity, Spied) :-
+--- 987,993 ----
+  	'$stdout_int'(Depth),
+  	'$stdout_atom'('	'),
+  	global_state_lookup('$debug_print',PrintDepth),
+! 	write_term(user_output, Goal, [max_depth(PrintDepth)]),
+  	'$stdout_nl'.
+  
+  '$print_spy_indicator'(Pred, Arity, Spied) :-
+diff -c -r pjr-5.0/prolog/library/encode.ql pjr/qp_src/library/encode.ql
+*** pjr-5.0/prolog/library/encode.ql	Wed Apr  8 13:17:25 1998
+--- pjr/qp_src/library/encode.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 26,36 ****
+  				 encoded_write_term(@gcomp, @term,
+  				 		   @list(gcomp))]).
+  encoded_write_term(Stream, T, OptList) :- 
+! 	stream_property(Stream, output),
+  	closed_list(OptList),
+  	!,
+  	'$set_encoded_write_options'(OptList, RName),
+! 	'$encoded_write'(Stream, T, RName).
+  encoded_write_term(Stream, T, OptList) :- 
+  	type_exception(encoded_write_term(Stream, T, OptList), 1,
+  		       [encoded_write_term(@atom, @term, @list(gcomp)),
+--- 26,37 ----
+  				 encoded_write_term(@gcomp, @term,
+  				 		   @list(gcomp))]).
+  encoded_write_term(Stream, T, OptList) :- 
+! 	'$internal_stream_property'(Stream, output),
+! 	'$stream_num'(Stream, StreamNum),
+  	closed_list(OptList),
+  	!,
+  	'$set_encoded_write_options'(OptList, RName),
+! 	'$encoded_write'(StreamNum, T, RName).
+  encoded_write_term(Stream, T, OptList) :- 
+  	type_exception(encoded_write_term(Stream, T, OptList), 1,
+  		       [encoded_write_term(@atom, @term, @list(gcomp)),
+***************
+*** 64,74 ****
+  				 encoded_read_term(@gcomp, ?term,
+  				 		  @list(gcomp))]).
+  encoded_read_term(Stream, T, OptList) :- 
+! 	stream_property(Stream, input),
+  	closed_list(OptList),
+  	!,
+  	'$set_encoded_read_options'(OptList, RName, ObTable),
+! 	'$encoded_read'(Stream, T0, ObNames, RName),
+  	T = T0.
+  %	'$add_encoded_obvar_prefix'(ObNames, ObTable).
+  encoded_read_term(Stream, T, OptList) :- 
+--- 65,76 ----
+  				 encoded_read_term(@gcomp, ?term,
+  				 		  @list(gcomp))]).
+  encoded_read_term(Stream, T, OptList) :- 
+! 	'$internal_stream_property'(Stream, input),
+! 	'$stream_num'(Stream, StreamNum),
+  	closed_list(OptList),
+  	!,
+  	'$set_encoded_read_options'(OptList, RName, ObTable),
+! 	'$encoded_read'(StreamNum, T0, ObNames, RName),
+  	T = T0.
+  %	'$add_encoded_obvar_prefix'(ObNames, ObTable).
+  encoded_read_term(Stream, T, OptList) :- 
+diff -c -r pjr-5.0/prolog/library/errors.ql pjr/qp_src/library/errors.ql
+*** pjr-5.0/prolog/library/errors.ql	Wed Apr 15 10:11:51 1998
+--- pjr/qp_src/library/errors.ql	Wed Jun 18 12:57:00 1997
+***************
+*** 13,19 ****
+   * mode error(@term).
+   */
+  error(Term) :-
+! 	'$write_term'(stderr, Term, write, 1200, 1).
+  
+  /*
+   * Write the term to standard error and terminates with a new line.
+--- 13,19 ----
+   * mode error(@term).
+   */
+  error(Term) :-
+! 	'$write_term'(2, Term, write, 1200, 1).
+  
+  /*
+   * Write the term to standard error and terminates with a new line.
+***************
+*** 22,33 ****
+   * mode errornl(@term).
+   */
+  errornl :-
+! 	put_code(stderr, 0'
+  	).
+  
+  errornl(T) :-
+! 	'$write_term'(stderr, T, write, 1200, 1),
+! 	put_code(stderr, 0'
+  	).
+  
+  /*
+--- 22,33 ----
+   * mode errornl(@term).
+   */
+  errornl :-
+! 	put_code(2, 0'
+  	).
+  
+  errornl(T) :-
+! 	'$write_term'(2, T, write, 1200, 1),
+! 	put_code(2, 0'
+  	).
+  
+  /*
+***************
+*** 36,40 ****
+   * mode '$debug_write'(@term).
+   */
+  '$debug_write'(T) :-
+! 	'$occurs_check_off'(write_term(stderr, T, ['$simplify'(false)])),
+! 	nl(stderr).
+--- 36,40 ----
+   * mode '$debug_write'(@term).
+   */
+  '$debug_write'(T) :-
+! 	'$occurs_check_off'(write_term(user_error, T, ['$simplify'(false)])),
+! 	nl(user_error).
+diff -c -r pjr-5.0/prolog/library/exception.ql pjr/qp_src/library/exception.ql
+*** pjr-5.0/prolog/library/exception.ql	Wed Apr 15 11:42:46 1998
+--- pjr/qp_src/library/exception.ql	Wed Jun 18 12:57:01 1997
+***************
+*** 195,201 ****
+  	call_predicate(Goal).
+  '$default_exception_handler'(Type, Data, Sev, Goal, Msg0) :-
+          '$get_exception_message'(Data, Type, Sev, Goal, Msg0, Msg),
+!         write_term_list(stderr, Msg),
+          '$exception_severity'(Sev, DefaultAction, _, _),
+          call_predicate(DefaultAction).
+  
+--- 200,206 ----
+  	call_predicate(Goal).
+  '$default_exception_handler'(Type, Data, Sev, Goal, Msg0) :-
+          '$get_exception_message'(Data, Type, Sev, Goal, Msg0, Msg),
+!         write_term_list(user_error, Msg),
+          '$exception_severity'(Sev, DefaultAction, _, _),
+          call_predicate(DefaultAction).
+  
+diff -c -r pjr-5.0/prolog/library/foreign.ql pjr/qp_src/library/foreign.ql
+*** pjr-5.0/prolog/library/foreign.ql	Wed Apr  8 13:17:27 1998
+--- pjr/qp_src/library/foreign.ql	Wed Jun 18 12:57:02 1997
+***************
+*** 288,296 ****
+   */
+  '$gen_foreign_file'(Interface, SpecList, FnList, PredList, CList) :-
+  	'$iomode'(write, IOModeNum, _),
+! 	(   '$open'(Interface, IOModeNum, Stream)
+  	    ->
+! 		(   Stream = -1
+  		    ->
+  			Goal = open(Interface, write, _),
+  			exception(stream_error(unrecoverable, Goal,
+--- 288,296 ----
+   */
+  '$gen_foreign_file'(Interface, SpecList, FnList, PredList, CList) :-
+  	'$iomode'(write, IOModeNum, _),
+! 	(   '$open'(Interface, IOModeNum, N)
+  	    ->
+! 		(   N = -1
+  		    ->
+  			Goal = open(Interface, write, _),
+  			exception(stream_error(unrecoverable, Goal,
+***************
+*** 303,309 ****
+  		exception(permission_error(unrecoverable,
+  					   open(Interface, write, _), default))
+  	),
+! 	global_state_set('$foreign_stream', Stream),
+  	'$foreign_write'('#include "QuProlog.h"
+  
+  '),
+--- 303,309 ----
+  		exception(permission_error(unrecoverable,
+  					   open(Interface, write, _), default))
+  	),
+! 	global_state_set('$foreign_stream', N),
+  	'$foreign_write'('#include "QuProlog.h"
+  
+  '),
+***************
+*** 310,316 ****
+  	'$gen_extern_declaration'(SpecList, FnList, PredList, ArgList, RetList),
+  	'$gen_foreign_functions'(ArgList, RetList, FnList, CList),
+  	'$boolnum'(true, BoolNum),
+! 	'$close'(Stream, BoolNum).
+  
+  /*
+   * Write the term to a file.
+--- 310,316 ----
+  	'$gen_extern_declaration'(SpecList, FnList, PredList, ArgList, RetList),
+  	'$gen_foreign_functions'(ArgList, RetList, FnList, CList),
+  	'$boolnum'(true, BoolNum),
+! 	'$close'(N, BoolNum).
+  
+  /*
+   * Write the term to a file.
+***************
+*** 320,334 ****
+  '$foreign_write'(Term) :-
+  	atom(Term),
+  	!,
+! 	global_state_lookup('$foreign_stream', Stream),
+! 	write_atom(Stream, Term).
+  '$foreign_write'(Term) :-
+  	integer(Term),
+  	!,
+! 	global_state_lookup('$foreign_stream', Stream),
+! 	'$write_integer'(Stream, Term).
+  '$foreign_write'(Term) :-
+! 	write(stderr, 'fail to write out':Term),
+  	fail.
+  
+  /*
+--- 320,334 ----
+  '$foreign_write'(Term) :-
+  	atom(Term),
+  	!,
+! 	global_state_lookup('$foreign_stream', N),
+! 	write_atom(N, Term).
+  '$foreign_write'(Term) :-
+  	integer(Term),
+  	!,
+! 	global_state_lookup('$foreign_stream', N),
+! 	write_integer(N, Term).
+  '$foreign_write'(Term) :-
+! 	write(user_error, 'fail to write out':Term),
+  	fail.
+  
+  /*
+***************
+*** 822,830 ****
+  '$convert_foreign_call'(Interface, Objs, SpecList, FnList, Libs) :-
+  	concat_atom([Interface, '.ql'], InterfaceLoad),
+  	'$iomode'(write, IOModeNum, _),
+! 	(   '$open'(InterfaceLoad, IOModeNum, Stream)
+  	    ->
+! 		(   Stream = -1
+  		    ->
+  			Goal = open(InterfaceLoad, write, _),
+  			exception(stream_error(unrecoverable, Goal,
+--- 822,830 ----
+  '$convert_foreign_call'(Interface, Objs, SpecList, FnList, Libs) :-
+  	concat_atom([Interface, '.ql'], InterfaceLoad),
+  	'$iomode'(write, IOModeNum, _),
+! 	(   '$open'(InterfaceLoad, IOModeNum, N)
+  	    ->
+! 		(   N = -1
+  		    ->
+  			Goal = open(InterfaceLoad, write, _),
+  			exception(stream_error(unrecoverable, Goal,
+***************
+*** 838,860 ****
+  					   open(InterfaceLoad, write, _),
+  					   default))
+  	),
+! 	write_atom(Stream, '?- load_foreign(
+  	[
+  '),
+! 	'$write_foreign_list'(Stream, Objs),
+! 	write_atom(Stream, '
+  	],
+  	[
+  '),
+! 	'$write_foreign_decl'(Stream, SpecList, FnList),
+! 	write_atom(Stream, '
+  	],
+  	[
+  '),
+! 	'$write_foreign_list'(Stream, Libs),
+! 	write_atom(Stream, ']).'),
+  	'$boolnum'(true, BoolNum),
+! 	'$close'(Stream, BoolNum).
+  
+  /*
+   * Write out the list.
+--- 838,860 ----
+  					   open(InterfaceLoad, write, _),
+  					   default))
+  	),
+! 	write_atom(N, '?- load_foreign(
+  	[
+  '),
+! 	'$write_foreign_list'(N, Objs),
+! 	write_atom(N, '
+  	],
+  	[
+  '),
+! 	'$write_foreign_decl'(N, SpecList, FnList),
+! 	write_atom(N, '
+  	],
+  	[
+  '),
+! 	'$write_foreign_list'(N, Libs),
+! 	write_atom(N, ']).'),
+  	'$boolnum'(true, BoolNum),
+! 	'$close'(N, BoolNum).
+  
+  /*
+   * Write out the list.
+***************
+*** 864,898 ****
+   */
+  '$write_foreign_list'(_, []) :-
+  	!.
+! '$write_foreign_list'(Stream, [Atom]) :-
+  	!,
+! 	write_atom(Stream, '	'),
+! 	writeq_atom(Stream, Atom).
+! '$write_foreign_list'(Stream, [Atom|List]) :-
+! 	write_atom(Stream, '	'),
+! 	writeq_atom(Stream, Atom),
+! 	write_atom(Stream, ',
+  '),
+! 	'$write_foreign_list'(Stream, List).
+  
+! '$write_foreign_decl'(Stream, [Spec:_], [Fn]) :-
+  	!,
+  	functor(Spec, Pred, Arity),
+! 	write_atom(Stream, '	'),
+! 	write_atom(Stream, Pred),
+! 	write_atom(Stream, '/'),
+! 	'$write_integer'(Stream, Arity),
+! 	write_atom(Stream, ' = '),
+! 	write_atom(Stream, Fn),
+! 	write_atom(Stream, '_interface').
+! '$write_foreign_decl'(Stream, [Spec:_|SpecList], [Fn|FnList]) :-
+  	functor(Spec, Pred, Arity),
+! 	write_atom(Stream, '	'),
+! 	write_atom(Stream, Pred),
+! 	write_atom(Stream, '/'),
+! 	'$write_integer'(Stream, Arity),
+! 	write_atom(Stream, ' = '),
+! 	write_atom(Stream, Fn),
+! 	write_atom(Stream, '_interface,
+  '),
+! 	'$write_foreign_decl'(Stream, SpecList, FnList).
+--- 864,898 ----
+   */
+  '$write_foreign_list'(_, []) :-
+  	!.
+! '$write_foreign_list'(N, [Atom]) :-
+  	!,
+! 	write_atom(N, '	'),
+! 	writeq_atom(N, Atom).
+! '$write_foreign_list'(N, [Atom|List]) :-
+! 	write_atom(N, '	'),
+! 	writeq_atom(N, Atom),
+! 	write_atom(N, ',
+  '),
+! 	'$write_foreign_list'(N, List).
+  
+! '$write_foreign_decl'(N, [Spec:_], [Fn]) :-
+  	!,
+  	functor(Spec, Pred, Arity),
+! 	write_atom(N, '	'),
+! 	write_atom(N, Pred),
+! 	write_atom(N, '/'),
+! 	write_integer(N, Arity),
+! 	write_atom(N, ' = '),
+! 	write_atom(N, Fn),
+! 	write_atom(N, '_interface').
+! '$write_foreign_decl'(N, [Spec:_|SpecList], [Fn|FnList]) :-
+  	functor(Spec, Pred, Arity),
+! 	write_atom(N, '	'),
+! 	write_atom(N, Pred),
+! 	write_atom(N, '/'),
+! 	write_integer(N, Arity),
+! 	write_atom(N, ' = '),
+! 	write_atom(N, Fn),
+! 	write_atom(N, '_interface,
+  '),
+! 	'$write_foreign_decl'(N, SpecList, FnList).
+diff -c -r pjr-5.0/prolog/library/handlers.ql pjr/qp_src/library/handlers.ql
+*** pjr-5.0/prolog/library/handlers.ql	Wed Apr  8 13:17:28 1998
+--- pjr/qp_src/library/handlers.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 20,26 ****
+  	default_signal_handler(Signal).
+  
+  /*
+!  * Read a lower case letter from stdin.
+   *
+   * mode '$read_option'(-integer).
+   */
+--- 20,26 ----
+  	default_signal_handler(Signal).
+  
+  /*
+!  * Read a lower case letter from user_input.
+   *
+   * mode '$read_option'(-integer).
+   */
+***************
+*** 30,36 ****
+  	'$stdout_atom'('SIGINT interrupt [abceh?] ? '),
+  	'$get_code1'(0, Option),
+  	0'  < Option,
+! 	skip(stdin, 0'
+  	).
+  
+  /*
+--- 30,36 ----
+  	'$stdout_atom'('SIGINT interrupt [abceh?] ? '),
+  	'$get_code1'(0, Option),
+  	0'  < Option,
+! 	skip(user_input, 0'
+  	).
+  
+  /*
+diff -c -r pjr-5.0/prolog/library/interpreter.ql pjr/qp_src/library/interpreter.ql
+*** pjr-5.0/prolog/library/interpreter.ql	Tue Apr 14 15:12:13 1998
+--- pjr/qp_src/library/interpreter.ql	Mon Feb 16 13:35:39 1998
+***************
+*** 55,64 ****
+  '$fetch_execute'(OldVars) :-
+  	global_state_lookup('$prompt',Prompt),
+  	repeat,
+! 	write_atom(stderr, '
+  '),
+! 	write_atom(stderr, Prompt),
+! 	readR_1_term(stdin, Query, Vars),
+  	(	'$exit_interpreter'(Query)
+  	    ;
+  		union_list(Vars, OldVars, NewVars),
+--- 55,64 ----
+  '$fetch_execute'(OldVars) :-
+  	global_state_lookup('$prompt',Prompt),
+  	repeat,
+! 	write_atom(2, '
+  '),
+! 	write_atom(2, Prompt),
+! 	readR_1_term(user_input, Query, Vars),
+  	(	'$exit_interpreter'(Query)
+  	    ;
+  		union_list(Vars, OldVars, NewVars),
+***************
+*** 74,85 ****
+  	nonvar(Ball),
+  	Ball = '$exception'(abort(_, _, [Msg])),
+  	!,
+! 	write_atom(stderr, Msg),
+! 	write_atom(stderr, '
+  ').
+  '$interpreter_catch_msg'(Ball) :-
+! 	write_atom(stderr, caught),
+! 	write_atom(stderr, ':'),
+  	errornl(Ball).
+  
+  /*
+--- 74,85 ----
+  	nonvar(Ball),
+  	Ball = '$exception'(abort(_, _, [Msg])),
+  	!,
+! 	write_atom(2, Msg),
+! 	write_atom(2, '
+  ').
+  '$interpreter_catch_msg'(Ball) :-
+! 	write_atom(2, caught),
+! 	write_atom(2, ':'),
+  	errornl(Ball).
+  
+  /*
+***************
+*** 101,109 ****
+  	!,
+  	fail.
+  '$solve_query'(_, _) :-
+! 	write_atom(stderr, '
+  '),
+! 	write_atom(stderr, 'no
+  '),
+  	fail.
+  
+--- 101,109 ----
+  	!,
+  	fail.
+  '$solve_query'(_, _) :-
+! 	write_atom(2, '
+  '),
+! 	write_atom(2, 'no
+  '),
+  	fail.
+  
+***************
+*** 153,161 ****
+   */
+  '$print_result'([]) :-
+  	!,
+! 	write_atom(stderr, '
+  '),
+! 	write_atom(stderr, 'yes')
+  
+  #ifdef	QuAM
+  
+--- 153,161 ----
+   */
+  '$print_result'([]) :-
+  	!,
+! 	write_atom(2, '
+  '),
+! 	write_atom(2, 'yes')
+  
+  #ifdef	QuAM
+  
+***************
+*** 165,171 ****
+  	    NFI = [],
+  	    Delays = []
+  	    ->
+! 		write_atom(stderr, '
+  ')
+  	    ;
+  		'$print_constraints_section'(Distincts, NFI, Delays),
+--- 165,171 ----
+  	    NFI = [],
+  	    Delays = []
+  	    ->
+! 		write_atom(2, '
+  ')
+  	    ;
+  		'$print_constraints_section'(Distincts, NFI, Delays),
+***************
+*** 199,218 ****
+  
+  '$print_bindings_section'([]).
+  '$print_bindings_section'([=(Value, Var)|Tail]) :-
+! 	write_atom(stderr, '
+  '),
+! 	write_atom(stderr, Var),
+! 	write_atom(stderr, ' = '),
+! 	writeR(stderr, Value),
+  	'$print_bindings_section'(Tail).
+  
+  #ifdef	QuAM
+  
+  '$print_constraints_section'(Distincts, NFI, Delays) :-
+! 	write_atom(stderr, '
+  
+  '),
+! 	write_atom(stderr, 'provided:
+  '),
+  	'$print_constraints'(Delays),
+  	'$print_constraints'(NFI),
+--- 199,218 ----
+  
+  '$print_bindings_section'([]).
+  '$print_bindings_section'([=(Value, Var)|Tail]) :-
+! 	write_atom(2, '
+  '),
+! 	write_atom(2, Var),
+! 	write_atom(2, ' = '),
+! 	writeR(user_error, Value),
+  	'$print_bindings_section'(Tail).
+  
+  #ifdef	QuAM
+  
+  '$print_constraints_section'(Distincts, NFI, Delays) :-
+! 	write_atom(2, '
+  
+  '),
+! 	write_atom(2, 'provided:
+  '),
+  	'$print_constraints'(Delays),
+  	'$print_constraints'(NFI),
+***************
+*** 220,228 ****
+  
+  '$print_constraints'([]).
+  '$print_constraints'([Constraint|Tail]) :-
+! 	write_atom(stderr, '
+  '),
+! 	writeR(stderr, Constraint),
+  	'$print_constraints'(Tail).
+  
+  /*
+--- 220,228 ----
+  
+  '$print_constraints'([]).
+  '$print_constraints'([Constraint|Tail]) :-
+! 	write_atom(2, '
+  '),
+! 	writeR(user_error, Constraint),
+  	'$print_constraints'(Tail).
+  
+  /*
+***************
+*** 245,252 ****
+   * mode '$interpreter_next_layer'(@list(compound)).
+   */
+  '$interpreter_cont_section'(Vars) :-
+!     '$get_code1'(0, Char),
+!     '$interpreter_cont'(Char, Vars).
+  
+  '$interpreter_cont'(0'
+  , _) :-
+--- 245,252 ----
+   * mode '$interpreter_next_layer'(@list(compound)).
+   */
+  '$interpreter_cont_section'(Vars) :-
+! 	'$get_code1'(0, Char),
+! 	'$interpreter_cont'(Char, Vars).
+  
+  '$interpreter_cont'(0'
+  , _) :-
+***************
+*** 253,263 ****
+  	!.
+  '$interpreter_cont'(0', , Vars) :-
+  	!,
+! 	skip(stdin, 0'
+  ),
+  	'$interpreter_next_layer'(Vars).
+  '$interpreter_cont'(_, _) :-
+! 	skip(stdin, 0'
+  ),
+  	fail.
+  
+--- 253,263 ----
+  	!.
+  '$interpreter_cont'(0', , Vars) :-
+  	!,
+! 	skip(user_input, 0'
+  ),
+  	'$interpreter_next_layer'(Vars).
+  '$interpreter_cont'(_, _) :-
+! 	skip(user_input, 0'
+  ),
+  	fail.
+  
+diff -c -r pjr-5.0/prolog/library/io.ql pjr/qp_src/library/io.ql
+*** pjr-5.0/prolog/library/io.ql	Wed Apr  8 13:17:29 1998
+--- pjr/qp_src/library/io.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 19,25 ****
+  see(StdIO) :-
+  	'$stdio'(StdIO),
+  	!,
+! 	set_input(0).
+  see(File) :-
+  	atom(File),
+  	!,
+--- 19,25 ----
+  see(StdIO) :-
+  	'$stdio'(StdIO),
+  	!,
+! 	'$set_input'(0).
+  see(File) :-
+  	atom(File),
+  	!,
+***************
+*** 44,52 ****
+   * mode seen.
+   */
+  seen :-
+! 	current_input(Stream),
+  	'$close2'(Stream, []),
+! 	set_input(stdin).
+  
+  /*
+   * Open a file for writing and set it to be the output stream.
+--- 44,52 ----
+   * mode seen.
+   */
+  seen :-
+! 	'$current_input'(Stream),
+  	'$close2'(Stream, []),
+! 	set_input(user_input).
+  
+  /*
+   * Open a file for writing and set it to be the output stream.
+***************
+*** 60,73 ****
+  tell(StdIO) :-
+  	'$stdio'(StdIO),
+  	!,
+! 	(   (		StdIO = stdout
+  		;
+! 			stream_property(stdout, alias(StdIO))
+  	    )
+  	    ->
+! 		set_output(stdout)
+  	    ;
+! 		set_output(stderr)
+  	).
+  tell(File) :-
+  	atom(File),
+--- 60,73 ----
+  tell(StdIO) :-
+  	'$stdio'(StdIO),
+  	!,
+! 	(   (		StdIO = '$stream'(1)
+  		;
+! 			stream_property('$stream'(1), alias(StdIO))
+  	    )
+  	    ->
+! 		'$set_output'(1)
+  	    ;
+! 		'$set_output'(2)
+  	).
+  tell(File) :-
+  	atom(File),
+***************
+*** 93,101 ****
+   * mode told.
+   */
+  told :-
+! 	current_output(Stream),
+  	'$close2'(Stream, []),
+! 	set_output(stdout).
+  
+  /*
+   * Use existing stream if it is opened, or open the file.
+--- 93,101 ----
+   * mode told.
+   */
+  told :-
+! 	'$current_output'(Stream),
+  	'$close2'(Stream, []),
+! 	set_output(user_output).
+  
+  /*
+   * Use existing stream if it is opened, or open the file.
+diff -c -r pjr-5.0/prolog/library/load.ql pjr/qp_src/library/load.ql
+*** pjr-5.0/prolog/library/load.ql	Wed Apr  8 13:17:30 1998
+--- pjr/qp_src/library/load.ql	Wed Jun 18 12:57:03 1997
+***************
+*** 136,146 ****
+  	atom(Pred),
+  	integer(Arity),
+  	!,
+! 	write_atom(stderr, 'no definition for '),
+! 	write_atom(stderr, Pred),
+! 	write_atom(stderr, '/'),
+! 	'$write_integer'(stderr, Arity),
+! 	write_atom(stderr, '
+  '),
+  	fail.
+  
+--- 136,146 ----
+  	atom(Pred),
+  	integer(Arity),
+  	!,
+! 	write_atom(2, 'no definition for '),
+! 	write_atom(2, Pred),
+! 	write_atom(2, '/'),
+! 	write_integer(2, Arity),
+! 	write_atom(2, '
+  '),
+  	fail.
+  
+diff -c -r pjr-5.0/prolog/library/read.ql pjr/qp_src/library/read.ql
+*** pjr-5.0/prolog/library/read.ql	Thu Apr 16 13:02:54 1998
+--- pjr/qp_src/library/read.ql	Tue Oct 14 09:47:20 1997
+***************
+*** 85,91 ****
+  				[read_term(@atom, ?term, @list(gcomp)), 
+  	read_term(@gcomp, ?term, @list(gcomp))]).  
+  read_term(Stream, Term, OptList) :- 
+! 	stream_property(Stream, input), 
+  	closed_list(OptList), 
+  	!, 
+  	Options = rflags(Var, VarName, Single, RName, ObVar, OpTab), 
+--- 85,92 ----
+  				[read_term(@atom, ?term, @list(gcomp)), 
+  	read_term(@gcomp, ?term, @list(gcomp))]).  
+  read_term(Stream, Term, OptList) :- 
+! 	'$internal_stream_property'(Stream, input), 
+! 	'$stream_num'(Stream, StreamNum), 
+  	closed_list(OptList), 
+  	!, 
+  	Options = rflags(Var, VarName, Single, RName, ObVar, OpTab), 
+***************
+*** 99,105 ****
+  	'$io_try_eq'(ObVar, ObPrefix),
+  	global_state_lookup('$current_op_table',OpTable),
+  	'$io_try_eq'(OpTab, OpTable),
+! 	'$read_term'(Stream, Term, Options).
+  read_term(Stream, Term, OptList) :-
+  	type_exception(read_term(Stream, Term, OptList), 1,
+  		       [read_term(@atom, ?term, @list(gcomp)),
+--- 100,106 ----
+  	'$io_try_eq'(ObVar, ObPrefix),
+  	global_state_lookup('$current_op_table',OpTable),
+  	'$io_try_eq'(OpTab, OpTable),
+! 	'$read_term'(StreamNum, Term, Options).
+  read_term(Stream, Term, OptList) :-
+  	type_exception(read_term(Stream, Term, OptList), 1,
+  		       [read_term(@atom, ?term, @list(gcomp)),
+***************
+*** 132,151 ****
+  
+  
+  /* 
+!  * '$read_term'(Stream, T, Options)
+   * reads the term T according to the Options.
+   *
+   * mode '$read_term'(@integer, ?term, @gcomp).
+   */
+  
+! '$read_term'(Stream, Term, Options) :-
+! 	'$line_number'(Stream, StartLine),
+! 	'$read_tokens'(Stream, Tokens, Options, StartLine),
+  	( Tokens = [Result],
+  	  Result = end_of_file
+  	; '$parse_term'(Tokens, 1200, Options, Result, LeftOver),
+  	  '$check_left_over'(LeftOver)
+! 	; '$line_number'(Stream, EndLine),
+   	  '$report_syntax_error'(Tokens, StartLine, EndLine)
+  	),
+  	Term = Result,
+--- 133,152 ----
+  
+  
+  /* 
+!  * '$read_term'(StreamNum, T, Options)
+   * reads the term T according to the Options.
+   *
+   * mode '$read_term'(@integer, ?term, @gcomp).
+   */
+  
+! '$read_term'(StreamNum, Term, Options) :-
+! 	'$line_number'(StreamNum, StartLine),
+! 	'$read_tokens'(StreamNum, Tokens, Options, StartLine),
+  	( Tokens = [Result],
+  	  Result = end_of_file
+  	; '$parse_term'(Tokens, 1200, Options, Result, LeftOver),
+  	  '$check_left_over'(LeftOver)
+! 	; '$line_number'(StreamNum, EndLine),
+   	  '$report_syntax_error'(Tokens, StartLine, EndLine)
+  	),
+  	Term = Result,
+***************
+*** 163,169 ****
+  	'$log_message_and_fail'(7, LeftOver).
+  
+  /* 
+!  * '$read_tokens'(Stream, Tokens, Options, StartLine)
+   * reads the input tokens until the end of clause or file, and collects
+   * them in the list Tokens.
+   *
+--- 164,170 ----
+  	'$log_message_and_fail'(7, LeftOver).
+  
+  /* 
+!  * '$read_tokens'(StreamNum, Tokens, Options, StartLine)
+   * reads the input tokens until the end of clause or file, and collects
+   * them in the list Tokens.
+   *
+***************
+*** 170,189 ****
+   * mode '$read_tokens'(@integer, -list(compound), @gcomp, @integer).
+   */
+  
+! '$read_tokens'(Stream, Tokens, Options, StartLine) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, Tokens, VarList, Stream, Options, Error),
+  	(var(Error) ->
+  		arg(1, Options, Variables),
+  		arg(2, Options, VarNames),
+  		arg(3, Options, Singles),
+  		'$collect_var_tables'(VarList, Variables, VarNames, Singles)
+! 	;	'$line_number'(Stream, EndLine),
+  		'$report_syntax_error'(Tokens, StartLine, EndLine)
+  	).
+  
+  /* 
+!  * '$collect_tokens'(Type, Value, ListOfTokens, VarList, Stream, Options,
+   *		     Err)
+   * inserts the token with Type and Value in ListOfTokens.
+   *
+--- 171,190 ----
+   * mode '$read_tokens'(@integer, -list(compound), @gcomp, @integer).
+   */
+  
+! '$read_tokens'(StreamNum, Tokens, Options, StartLine) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, Tokens, VarList, StreamNum, Options, Error),
+  	(var(Error) ->
+  		arg(1, Options, Variables),
+  		arg(2, Options, VarNames),
+  		arg(3, Options, Singles),
+  		'$collect_var_tables'(VarList, Variables, VarNames, Singles)
+! 	;	'$line_number'(StreamNum, EndLine),
+  		'$report_syntax_error'(Tokens, StartLine, EndLine)
+  	).
+  
+  /* 
+!  * '$collect_tokens'(Type, Value, ListOfTokens, VarList, StreamNum, Options,
+   *		     Err)
+   * inserts the token with Type and Value in ListOfTokens.
+   *
+***************
+*** 195,203 ****
+  	!,
+  	fail.
+  
+! '$collect_tokens'(0, Value, [], [], Stream, Options, true) :-
+  	repeat,
+! 	'$read_next_token'(Stream, T, V),
+  	( T = 5		/* end of clause */
+  	; T = 8		/* end of file */
+  	; T = 0,
+--- 196,204 ----
+  	!,
+  	fail.
+  
+! '$collect_tokens'(0, Value, [], [], StreamNum, Options, true) :-
+  	repeat,
+! 	'$read_next_token'(StreamNum, T, V),
+  	( T = 5		/* end of clause */
+  	; T = 8		/* end of file */
+  	; T = 0,
+***************
+*** 211,228 ****
+  %
+  % Punctuation
+  %
+! '$collect_tokens'(1, Value, [Value|RestTokens], VarList, Stream,
+  		  Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  
+  %
+  % Number
+  %
+! '$collect_tokens'(3, Value, [number(Value)|RestTokens], VarList, Stream,
+  		  Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  
+  #ifdef  QuAM
+  %
+--- 212,229 ----
+  %
+  % Punctuation
+  %
+! '$collect_tokens'(1, Value, [Value|RestTokens], VarList, StreamNum,
+  		  Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  
+  %
+  % Number
+  %
+! '$collect_tokens'(3, Value, [number(Value)|RestTokens], VarList, StreamNum,
+  		  Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  
+  #ifdef  QuAM
+  %
+***************
+*** 229,237 ****
+  % Variable
+  %
+  '$collect_tokens'(2, Value, [Variable|RestTokens], [Variable|VarList],
+! 		  Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err),
+  	(arg(5, Options, ObPrefix),
+  	 '$check_obvar_syntax'(Value, ObPrefix) ->
+  		'$read_obvar'(Var, Value, Options),
+--- 230,238 ----
+  % Variable
+  %
+  '$collect_tokens'(2, Value, [Variable|RestTokens], [Variable|VarList],
+! 		  StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err),
+  	(arg(5, Options, ObPrefix),
+  	 '$check_obvar_syntax'(Value, ObPrefix) ->
+  		'$read_obvar'(Var, Value, Options),
+***************
+*** 246,255 ****
+  %
+  % Atom or object variable
+  %
+! '$collect_tokens'(4, Value, [Token|RestTokens], VarList, Stream, Options,
+  		  Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList0, Stream, Options, Err),
+  	(arg(5, Options, ObPrefix),
+  	 '$check_obvar_syntax'(Value, ObPrefix) ->
+  		'$read_obvar'(Obvar, Value, Options),
+--- 247,256 ----
+  %
+  % Atom or object variable
+  %
+! '$collect_tokens'(4, Value, [Token|RestTokens], VarList, StreamNum, Options,
+  		  Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList0, StreamNum, Options, Err),
+  	(arg(5, Options, ObPrefix),
+  	 '$check_obvar_syntax'(Value, ObPrefix) ->
+  		'$read_obvar'(Obvar, Value, Options),
+***************
+*** 265,273 ****
+  % Variable
+  %
+  '$collect_tokens'(2, Value, [Variable|RestTokens], [Variable|VarList],
+! 		  Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err),
+  	'$read_var'(Var, Value, Options),
+  	Variable = var(Var,Value),
+  	( member(Variable, VarList)
+--- 266,274 ----
+  % Variable
+  %
+  '$collect_tokens'(2, Value, [Variable|RestTokens], [Variable|VarList],
+! 		  StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err),
+  	'$read_var'(Var, Value, Options),
+  	Variable = var(Var,Value),
+  	( member(Variable, VarList)
+***************
+*** 278,286 ****
+  % Atom
+  %
+  '$collect_tokens'(4, Value, [atom(Value)|RestTokens], VarList,
+! 			Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  
+  #endif  /* QuAM */
+  
+--- 279,287 ----
+  % Atom
+  %
+  '$collect_tokens'(4, Value, [atom(Value)|RestTokens], VarList,
+! 			StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  
+  #endif  /* QuAM */
+  
+***************
+*** 287,323 ****
+  %
+  % End of clause
+  %
+! '$collect_tokens'(5, _Value, [], [], _Stream, _Options, _Err).
+  
+  %
+  % Underscore '_'
+  %
+  '$collect_tokens'(6, Value, [Token|RestTokens], [Token|VarList],
+! 			Stream, Options, Err) :-
+  	Token = var(_,Value),
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  
+  %
+  % Atom
+  %
+  '$collect_tokens'(7, Value, [atom(Value)|RestTokens], VarList,
+! 			Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  
+  %
+  % End of file
+  %
+! '$collect_tokens'(8, _Value, [end_of_file], [], _Stream, _Options, _Err).
+  
+  %
+  % Character string
+  %
+  '$collect_tokens'(9, Value, [string(Value)|RestTokens], VarList,
+! 			Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  
+  #ifdef	QuAM
+  %
+--- 288,324 ----
+  %
+  % End of clause
+  %
+! '$collect_tokens'(5, _Value, [], [], _StreamNum, _Options, _Err).
+  
+  %
+  % Underscore '_'
+  %
+  '$collect_tokens'(6, Value, [Token|RestTokens], [Token|VarList],
+! 			StreamNum, Options, Err) :-
+  	Token = var(_,Value),
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  
+  %
+  % Atom
+  %
+  '$collect_tokens'(7, Value, [atom(Value)|RestTokens], VarList,
+! 			StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  
+  %
+  % End of file
+  %
+! '$collect_tokens'(8, _Value, [end_of_file], [], _StreamNum, _Options, _Err).
+  
+  %
+  % Character string
+  %
+  '$collect_tokens'(9, Value, [string(Value)|RestTokens], VarList,
+! 			StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  
+  #ifdef	QuAM
+  %
+***************
+*** 324,332 ****
+  % LOWER8 implicit obvar
+  %
+  '$collect_tokens'(10, Value, [Token|RestTokens], VarList,
+! 			Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList0, Stream, Options, Err),
+  	'$read_obvar'(Obvar, Value, Options),
+  	Token = obvar(Obvar, Value),
+  	( member(Token, VarList0)
+--- 325,333 ----
+  % LOWER8 implicit obvar
+  %
+  '$collect_tokens'(10, Value, [Token|RestTokens], VarList,
+! 			StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList0, StreamNum, Options, Err),
+  	'$read_obvar'(Obvar, Value, Options),
+  	Token = obvar(Obvar, Value),
+  	( member(Token, VarList0)
+***************
+*** 338,347 ****
+  % ! obvar escape
+  %
+  '$collect_tokens'(11, _Value, [Token|RestTokens], VarList,
+! 			Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, OvT, Ov),		% Get obvar
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList0, Stream, Options, Err),
+  	((OvT == 2; OvT == 4; OvT == 6; OvT == 7) ->
+  		'$read_obvar'(Obvar, Ov, Options),
+  		Token = obvar(Obvar, Ov),
+--- 339,348 ----
+  % ! obvar escape
+  %
+  '$collect_tokens'(11, _Value, [Token|RestTokens], VarList,
+! 			StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, OvT, Ov),		% Get obvar
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList0, StreamNum, Options, Err),
+  	((OvT == 2; OvT == 4; OvT == 6; OvT == 7) ->
+  		'$read_obvar'(Obvar, Ov, Options),
+  		Token = obvar(Obvar, Ov),
+***************
+*** 353,361 ****
+  % !! quantifier escape
+  %
+  '$collect_tokens'(12, _Value, [quant_escape|RestTokens], VarList,
+! 			Stream, Options, Err) :-
+! 	'$read_next_token'(Stream, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, Stream, Options, Err).
+  #endif	/* QuAM */
+  
+  /*
+--- 354,362 ----
+  % !! quantifier escape
+  %
+  '$collect_tokens'(12, _Value, [quant_escape|RestTokens], VarList,
+! 			StreamNum, Options, Err) :-
+! 	'$read_next_token'(StreamNum, T, V),
+! 	'$collect_tokens'(T, V, RestTokens, VarList, StreamNum, Options, Err).
+  #endif	/* QuAM */
+  
+  /*
+diff -c -r pjr-5.0/prolog/library/stream.ql pjr/qp_src/library/stream.ql
+*** pjr-5.0/prolog/library/stream.ql	Wed Apr  8 13:17:35 1998
+--- pjr/qp_src/library/stream.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 13,20 ****
+   * mode '$init_stream'.
+   */
+  '$init_stream' :-
+!     assertz(('$stream_property'(Stream, Props) :- 
+! 	'$compl_stream_property'(Stream, Props))).
+  
+  /*
+   * To make startup faster compile in the stream properties for 
+--- 13,20 ----
+   * mode '$init_stream'.
+   */
+  '$init_stream' :-
+! 	assertz(('$stream_property'(Stream, Props) :- 
+! 			'$compl_stream_property'(Stream, Props))).
+  
+  /*
+   * To make startup faster compile in the stream properties for 
+***************
+*** 22,41 ****
+   *
+   * mode '$compl_stream_property'(?gcomp, ?comp).
+   */
+  
+- '$compl_stream_property'(StdIn,
+- 			 '$prop'(_, read, input, [user, stdin, stdin],
+- 				 reset, false, text)) :-
+-     StdIn = 0; StdIn = stdin; StdIn = user_input.
+- '$compl_stream_property'(StdOut,
+- 			 '$prop'(_, append, output, [user, stdout, stdout],
+- 				 reset, false, text)) :-
+-     StdOut = 1; StdOut = stdout; StdOut = user_output.
+- '$compl_stream_property'(StdErr,
+- 			 '$prop'(_, append, output, [stderr, stderr],
+- 				 reset, false, text)) :-
+-     StdErr = 2; StdErr = stderr; StdErr = user_error.
+- 
+  /*
+   * List of standard input, output, error streams.
+   *
+--- 22,37 ----
+   *
+   * mode '$compl_stream_property'(?gcomp, ?comp).
+   */
++ '$compl_stream_property'('$stream'(0),
++ 			 '$prop'(_, read, input, [user, stdin, user_input],
++ 				 reset, false, text)).
++ '$compl_stream_property'('$stream'(1),
++ 			 '$prop'(_, append, output, [user, stdout, user_output],
++ 				 reset, false, text)).
++ '$compl_stream_property'('$stream'(2),
++ 			 '$prop'(_, append, output, [stderr, user_error],
++ 				 reset, false, text)).
+  
+  /*
+   * List of standard input, output, error streams.
+   *
+***************
+*** 42,53 ****
+   * mode '$stdio'(@atom).
+   * mode '$stdio'(@gcomp).
+   */
+! '$stdio'(Stream) :-
+  	!,
+! 	'$stdionum'(Stream).
+  '$stdio'(StrAlias) :-
+! 	'$stdionum'(Stream),
+! 	stream_property(Stream, alias(StrAlias)),
+  	!.
+  
+  /*
+--- 38,49 ----
+   * mode '$stdio'(@atom).
+   * mode '$stdio'(@gcomp).
+   */
+! '$stdio'('$stream'(N)) :-
+  	!,
+! 	'$stdionum'(N).
+  '$stdio'(StrAlias) :-
+! 	'$stdionum'(N),
+! 	stream_property('$stream'(N), alias(StrAlias)),
+  	!.
+  
+  /*
+***************
+*** 60,65 ****
+--- 56,81 ----
+  '$stdionum'(2).
+  	
+  /*
++  * Return the stream number if it is a stream identifier or alias.
++  *
++  * mode '$stream_num'(@atom, -integer).
++  * mode '$stream_num'(@gcomp, -integer).
++  */
++ '$stream_num'('$stream'(N), N).
++ '$stream_num'(user, 0).
++ '$stream_num'(user, 1).
++ '$stream_num'(stdin, 0).
++ '$stream_num'(user_input, 0).
++ '$stream_num'(stdout, 1).
++ '$stream_num'(user_output, 1).
++ '$stream_num'(stderr, 1).
++ '$stream_num'(user_error, 1).
++ /*
++ '$stream_num'(StrAlias, N) :-
++ 	stream_property('$stream'(N), alias(StrAlias)).
++ */
++ 
++ /*
+   * Open the file for the specified mode.
+   *
+   * mode open(@atom, @atom, -gcomp).
+***************
+*** 87,95 ****
+  	!,
+  	Properties = '$prop'(File, IOMode, SourceSink, _, _, _, _, _),
+  	'$open_options'(Options, Properties),
+! 	(   '$open'(File, IOModeNum, Stream)
+  	    ->
+! 		(   Stream = -1
+  		    ->
+  			Goal = open(File, IOMode, Stream, Options),
+  		    	exception(stream_error(unrecoverable, Goal,
+--- 103,111 ----
+  	!,
+  	Properties = '$prop'(File, IOMode, SourceSink, _, _, _, _, _),
+  	'$open_options'(Options, Properties),
+! 	(   '$open'(File, IOModeNum, N)
+  	    ->
+! 		(   N = -1
+  		    ->
+  			Goal = open(File, IOMode, Stream, Options),
+  		    	exception(stream_error(unrecoverable, Goal,
+***************
+*** 103,108 ****
+--- 119,125 ----
+  					   open(File, IOMode, Stream, Options),
+  					   default))
+  	),
++ 	Stream = '$stream'(N),
+  	asserta('$stream_property'(Stream, Properties)).
+  open(File, IOMode, Stream, Options) :-
+  	var(File),
+***************
+*** 143,151 ****
+  	'$iomode'(write, IOModeNum, SourceSink),
+  	Properties = '$prop'(_, write, SourceSink, _, _, _, _, string),
+  	'$open_options'(Options, Properties),
+! 	(   '$open_string'(_, IOModeNum, _, Stream)
+  	    ->
+! 		(   Stream = -1
+  		    ->
+  			Goal = open_string(write, Stream, Options),
+  		    	exception(stream_error(unrecoverable, Goal,
+--- 160,168 ----
+  	'$iomode'(write, IOModeNum, SourceSink),
+  	Properties = '$prop'(_, write, SourceSink, _, _, _, _, string),
+  	'$open_options'(Options, Properties),
+! 	(   '$open_string'(_, IOModeNum, _, N)
+  	    ->
+! 		(   N = -1
+  		    ->
+  			Goal = open_string(write, Stream, Options),
+  		    	exception(stream_error(unrecoverable, Goal,
+***************
+*** 159,164 ****
+--- 176,182 ----
+  					   open_string(write, Stream, Options),
+  					   default))
+  	),
++ 	Stream = '$stream'(N),
+  	asserta('$stream_property'(Stream, Properties)).
+  open_string(read(Arg), Stream, Options) :-
+  	closed_list(Options),
+***************
+*** 177,185 ****
+  	'$iomode'(read, IOModeNum, SourceSink),
+  	Properties = '$prop'(_, read, SourceSink, _, _, _, _, string),
+  	'$open_options'(Options, Properties),
+! 	(   '$open_string'(Arg, IOModeNum, Type, Stream)
+  	    ->
+! 		(   Stream = -1
+  		    ->
+  			Goal = open_string(read(Arg), Stream, Options),
+  		    	exception(stream_error(unrecoverable, Goal,
+--- 195,203 ----
+  	'$iomode'(read, IOModeNum, SourceSink),
+  	Properties = '$prop'(_, read, SourceSink, _, _, _, _, string),
+  	'$open_options'(Options, Properties),
+! 	(   '$open_string'(Arg, IOModeNum, Type, N)
+  	    ->
+! 		(   N = -1
+  		    ->
+  			Goal = open_string(read(Arg), Stream, Options),
+  		    	exception(stream_error(unrecoverable, Goal,
+***************
+*** 194,199 ****
+--- 212,218 ----
+  						       Options),
+  					   default))
+  	),
++ 	Stream = '$stream'(N),
+  	asserta('$stream_property'(Stream, Properties)).
+  open_string(String, Stream, Options) :-
+  	var(Options),
+***************
+*** 264,276 ****
+  				[close(@atom, @list(gcomp)),
+  				 close(@gcomp, @list(gcomp))]).
+  close(Stream, Options) :-
+! 	(
+!             stream_property(Stream, input) -> 
+  		true
+  	    ; 
+! 		flush_output(Stream)
+  	),
+! 	'$close1'(Stream, Options).
+  close(Stream, Options) :-
+  	type_exception(close(Stream, Options), 1,
+  		       [close(@atom, @list(gcomp)),
+--- 283,297 ----
+  				[close(@atom, @list(gcomp)),
+  				 close(@gcomp, @list(gcomp))]).
+  close(Stream, Options) :-
+! 	'$stream_num'(Stream, N),
+! 	!,
+! 	(   stream_property('$stream'(N), input)
+! 	    -> 
+  		true
+  	    ; 
+! 		'$flush_output'(N)
+  	),
+! 	'$close1'(N, Options).
+  close(Stream, Options) :-
+  	type_exception(close(Stream, Options), 1,
+  		       [close(@atom, @list(gcomp)),
+***************
+*** 286,311 ****
+  	'$stdionum'(Stream),
+  	!.
+  '$close1'(Stream, Options) :-
+! 	current_input(Stream1),
+  	Stream = Stream1,
+  	!,
+  	'$close2'(Stream, Options),
+! 	set_input(stdin).
+  '$close1'(Stream, Options) :-
+! 	current_output(Stream1),
+  	Stream = Stream1,
+  	!,
+  	'$close2'(Stream, Options),
+! 	set_output(stdout).
+  '$close1'(Stream, Options) :-
+  	'$close2'(Stream, Options).
+  
+! '$close2'(Stream, OptList) :-
+  	'$close_options'(OptList, Options),
+  	arg(1, Options, Force),
+  	'$boolnum'(Force, ForceNum),
+! 	'$internal_retract'('$stream_property'(Stream, _), true),
+! 	'$close'(Stream, ForceNum).
+  
+  /*
+   * Process options for close/2.
+--- 307,332 ----
+  	'$stdionum'(Stream),
+  	!.
+  '$close1'(Stream, Options) :-
+! 	'$current_input'(Stream1),
+  	Stream = Stream1,
+  	!,
+  	'$close2'(Stream, Options),
+! 	set_input(user_input).
+  '$close1'(Stream, Options) :-
+! 	'$current_output'(Stream1),
+  	Stream = Stream1,
+  	!,
+  	'$close2'(Stream, Options),
+! 	set_output(user_output).
+  '$close1'(Stream, Options) :-
+  	'$close2'(Stream, Options).
+  
+! '$close2'(N, OptList) :-
+  	'$close_options'(OptList, Options),
+  	arg(1, Options, Force),
+  	'$boolnum'(Force, ForceNum),
+! 	'$internal_retract'('$stream_property'('$stream'(N), _), true),
+! 	'$close'(N, ForceNum).
+  
+  /*
+   * Process options for close/2.
+***************
+*** 327,343 ****
+   * Return the current input.
+   *
+   * mode current_input(?gcomp).
+-  *
+-  * Implemented directly by pseudo-instruction.
+   */
+  
+  /*
+   * Return the current output.
+   *
+   * mode current_output(?gcomp).
+-  *
+-  * Implemented directly by pseudo-instruction.
+   */
+  
+  /*
+   * Set the current input to the argument.
+--- 348,366 ----
+   * Return the current input.
+   *
+   * mode current_input(?gcomp).
+   */
++ current_input('$stream'(N)) :-
++ 	'$current_input'(N1),
++ 	N = N1.
+  
+  /*
+   * Return the current output.
+   *
+   * mode current_output(?gcomp).
+   */
++ current_output('$stream'(N)) :-
++ 	'$current_output'(N1),
++ 	N = N1.
+  
+  /*
+   * Set the current input to the argument.
+***************
+*** 344,352 ****
+   *
+   * mode set_input(@atom).
+   * mode set_input(@gcomp).
+-  *
+-  * Implemented directly by pseudo-instruction.
+   */
+  
+  /*
+   * Set the current output to the argument.
+--- 367,386 ----
+   *
+   * mode set_input(@atom).
+   * mode set_input(@gcomp).
+   */
++ set_input(Stream) :-
++ 	var(Stream),
++ 	!,
++ 	instantiation_exception(set_input(Stream), 1,
++ 				[set_input(@atom), set_input(@gcomp)]).
++ set_input(Stream) :-
++ 	'$internal_stream_property'(Stream, input),
++ 	!,
++ 	'$stream_num'(Stream, N),
++ 	'$set_input'(N).
++ set_input(Stream) :-
++ 	type_exception(set_input(Stream), 1,
++ 		       [set_input(@atom), set_input(@gcomp)], stream).
+  
+  /*
+   * Set the current output to the argument.
+***************
+*** 353,361 ****
+   *
+   * mode set_output(@atom).
+   * mode set_output(@gcomp).
+-  *
+-  * Implemented directly by pseudo-instruction.
+   */
+  
+  /*
+   * Flush the output stream.
+--- 387,406 ----
+   *
+   * mode set_output(@atom).
+   * mode set_output(@gcomp).
+   */
++ set_output(Stream) :-
++ 	var(Stream),
++ 	!,
++ 	instantiation_exception(set_output(Stream), 1,
++ 				[set_output(@atom), set_output(@gcomp)]).
++ set_output(Stream) :-
++ 	'$internal_stream_property'(Stream, output),
++ 	!,
++ 	'$stream_num'(Stream, N),
++ 	'$set_output'(N).
++ set_output(Stream) :-
++ 	type_exception(set_output(Stream), 1,
++ 		       [set_output(@atom), set_output(@gcomp)], stream).
+  
+  /*
+   * Flush the output stream.
+***************
+*** 365,381 ****
+   * mode flush_output(@gcomp).
+   */
+  flush_output :-
+! 	current_output(Stream),
+! 	flush_output(Stream).
+  
+  /*
+!  * Return the property of a stream.
+   *
+   * mode stream_property(?gcomp, ?ground).
+   */
+  stream_property(Stream, Property) :-
+  	'$stream_property'(Stream, Properties),
+! 	'$stream_property1'(Property, Stream, Properties).
+  
+  /*
+   * Return the property of a stream.
+--- 410,452 ----
+   * mode flush_output(@gcomp).
+   */
+  flush_output :-
+! 	'$current_output'(Stream),
+! 	'$flush_output'(Stream).
+  
++ flush_output(Stream) :-
++ 	var(Stream),
++ 	!,
++ 	instantiation_exception(flush_output(Stream), 1,
++ 				[flush_output(@atom), flush_output(@gcomp)]).
++ flush_output(Stream) :-
++ 	'$stream_num'(Stream, N),
++ 	!,
++ 	'$flush_output'(N).
++ flush_output(Stream) :-
++ 	type_exception(flush_output(Stream), 1,
++ 		       [flush_output(@atom), flush_output(@gcomp)], stream).
++ 	
+  /*
+!  * Return the property of a stream.  stream_property expects a stream number
+!  * while '$internal_stream_property' takes either a stream number or a stream
+!  * alias.  '$internal_stream_property' is for internal convenience.
+   *
++  * mode '$internal_stream_property'(@atom, ?ground).
++  * mode '$internal_stream_property'(@gcomp, ?ground).
+   * mode stream_property(?gcomp, ?ground).
+   */
++ '$internal_stream_property'(Stream, Property) :-
++ 	Stream = '$stream'(_),
++ 	!,
++ 	stream_property(Stream, Property).
++ '$internal_stream_property'(Stream, Property) :-
++ 	'$stream_num'(Stream, N),
++ 	stream_property('$stream'(N), Property).
++ 
+  stream_property(Stream, Property) :-
+  	'$stream_property'(Stream, Properties),
+! 	Stream = '$stream'(N),
+! 	'$stream_property1'(Property, N, Properties).
+  
+  /*
+   * Return the property of a stream.
+***************
+*** 382,400 ****
+   *
+   * mode '$stream_property1'(?ground, @integer, @list(gcomp)).
+   */
+! '$stream_property1'(end_of_stream(at), Stream, _) :-
+! 	at_end_of_stream(Stream).
+! '$stream_property1'(end_of_stream(past), Stream, _) :-
+! 	past_end_of_stream(Stream).
+! '$stream_property1'(end_of_stream(no), Stream, _) :-
+! 	\+((		at_end_of_stream(Stream)
+  		;
+! 			past_end_of_stream(Stream)
+  	  )).
+! '$stream_property1'(position(P), Stream, _) :-
+! 	'$stream_position'(Stream, P).
+! '$stream_property1'(line_number(P), Stream, _) :-
+! 	'$line_number'(Stream, P).
+  '$stream_property1'(Property, _, Properties) :-
+  	nonvar(Property),
+  	!,
+--- 453,471 ----
+   *
+   * mode '$stream_property1'(?ground, @integer, @list(gcomp)).
+   */
+! '$stream_property1'(end_of_stream(at), N, _) :-
+! 	'$at_end_of_stream'(N).
+! '$stream_property1'(end_of_stream(past), N, _) :-
+! 	'$past_end_of_stream'(N).
+! '$stream_property1'(end_of_stream(no), N, _) :-
+! 	\+((		'$at_end_of_stream'(N)
+  		;
+! 			'$past_end_of_stream'(N)
+  	  )).
+! '$stream_property1'(position(P), N, _) :-
+! 	'$stream_position'(N, P).
+! '$stream_property1'(line_number(P), N, _) :-
+! 	'$line_number'(N, P).
+  '$stream_property1'(Property, _, Properties) :-
+  	nonvar(Property),
+  	!,
+***************
+*** 438,444 ****
+  '$stream_prop'(Prop, Prop).
+  	
+  /*
+!  * Succeed if the input stream is at the end of the current input stream.
+   *
+   * mode at_end_of_stream.
+   * mode at_end_of_stream(@atom).
+--- 509,515 ----
+  '$stream_prop'(Prop, Prop).
+  	
+  /*
+!  * Succeed if the input stream is at/past the end of the stream.
+   *
+   * mode at_end_of_stream.
+   * mode at_end_of_stream(@atom).
+***************
+*** 445,476 ****
+   * mode at_end_of_stream(@gcomp).
+   */
+  at_end_of_stream :-
+! 	current_input(Stream),
+! 	at_end_of_stream(Stream), !.
+  
+  /*
+-  * Succeed if the input stream is past the end of the current input stream.
+-  *
+-  * mode past_end_of_stream.
+-  * mode past_end_of_stream(@atom).
+-  * mode past_end_of_stream(@gcomp).
+-  */
+- past_end_of_stream :-
+- 	current_input(Stream),
+- 	past_end_of_stream(Stream), !.
+- 
+- /*
+   * Perform end of file action.
+   *
+   * mode '$eof_action'(@atom, @integer).
+   */
+! '$eof_action'(error, Stream) :-
+  	exception(stream_error(unrecoverable, eof_action(error),
+  			       ['attempt to read the end of file ', Stream, nl],
+  			       Stream)).
+  '$eof_action'(eof_code, _).
+! '$eof_action'(reset, Stream) :-
+! 	'$reset_stream'(Stream).
+  	
+  /*
+   * Set the stream position.
+--- 516,561 ----
+   * mode at_end_of_stream(@gcomp).
+   */
+  at_end_of_stream :-
+! 	'$current_input'(N),
+! 	(	'$at_end_of_stream'(N)
+! 	    ;
+! 		'$past_end_of_stream'(N)
+! 	),
+! 	!.
+  
++ at_end_of_stream(Stream) :-
++ 	var(Stream),
++ 	!,
++ 	instantiation_exception(at_end_of_stream(Stream), 1,
++ 				[at_end_of_stream(@atom),
++ 				 at_end_of_stream(@gcomp)]).
++ at_end_of_stream(Stream) :-
++ 	'$internal_stream_property'(Stream, input),
++ 	!,
++ 	'$stream_num'(Stream, N),
++ 	(	'$at_end_of_stream'(N)
++ 	    ;
++ 		'$past_end_of_stream'(N)
++ 	),
++ 	!.
++ at_end_of_stream(Stream) :-
++ 	type_exception(at_end_of_stream(Stream), 1,
++ 		       [at_end_of_stream(@atom),
++ 			at_end_of_stream(@gcomp)], stream).
++ 	
+  /*
+   * Perform end of file action.
+   *
+   * mode '$eof_action'(@atom, @integer).
+   */
+! '$eof_action'(error, N) :-
+! 	Stream = '$stream'(N),
+  	exception(stream_error(unrecoverable, eof_action(error),
+  			       ['attempt to read the end of file ', Stream, nl],
+  			       Stream)).
+  '$eof_action'(eof_code, _).
+! '$eof_action'(reset, N) :-
+! 	'$reset_stream'(N).
+  	
+  /*
+   * Set the stream position.
+***************
+*** 486,496 ****
+  				 set_stream_position(@gcomp, @integer)]).
+  set_stream_position(Stream, Position) :-
+  	integer(Position),
+! 	stream_property(Stream, reposition(true)),
+  	!,
+! 	'$set_stream_position'(Stream, Position).
+  set_stream_position(Stream, Position) :-
+! 	stream_property(Stream, reposition(false)),
+  	exception(permission_error(unrecoverable,
+  				   set_stream_position(Stream, Position),
+  				   default)).
+--- 571,582 ----
+  				 set_stream_position(@gcomp, @integer)]).
+  set_stream_position(Stream, Position) :-
+  	integer(Position),
+! 	'$internal_stream_property'(Stream, reposition(true)),
+  	!,
+! 	'$stream_num'(Stream, N),
+! 	'$set_stream_position'(N, Position).
+  set_stream_position(Stream, Position) :-
+! 	'$internal_stream_property'(Stream, reposition(false)),
+  	exception(permission_error(unrecoverable,
+  				   set_stream_position(Stream, Position),
+  				   default)).
+Binary files pjr-5.0/prolog/library/stream.qo and pjr/qp_src/library/stream.qo differ
+diff -c -r pjr-5.0/prolog/library/string.ql pjr/qp_src/library/string.ql
+*** pjr-5.0/prolog/library/string.ql	Wed Apr  8 13:17:35 1998
+--- pjr/qp_src/library/string.ql	Fri Jun 13 08:45:47 1997
+***************
+*** 20,28 ****
+  				[stream_to_chars(@atom, ?list(integer)),
+  				 stream_to_chars(@gcomp, ?list(integer))]).
+  stream_to_chars(Stream, Chars) :-
+! 	stream_property(Stream, string),
+  	!,
+! 	(   stream_property(Stream, mode(write))
+  	    ->
+  		true
+  	    ;
+--- 20,28 ----
+  				[stream_to_chars(@atom, ?list(integer)),
+  				 stream_to_chars(@gcomp, ?list(integer))]).
+  stream_to_chars(Stream, Chars) :-
+! 	'$internal_stream_property'(Stream, string),
+  	!,
+! 	(   '$internal_stream_property'(Stream, mode(write))
+  	    ->
+  		true
+  	    ;
+***************
+*** 30,36 ****
+  					   stream_to_chars(Stream, Chars),
+  					   default))
+  	),
+! 	'$stream_to_chars'(Stream, Chars).
+  stream_to_chars(Stream, Chars) :-
+  	type_exception(stream_to_chars(Stream, Chars), 1,
+  		       [stream_to_chars(@atom, ?list(integer)),
+--- 30,37 ----
+  					   stream_to_chars(Stream, Chars),
+  					   default))
+  	),
+! 	'$stream_num'(Stream, N),
+! 	'$stream_to_chars'(N, Chars).
+  stream_to_chars(Stream, Chars) :-
+  	type_exception(stream_to_chars(Stream, Chars), 1,
+  		       [stream_to_chars(@atom, ?list(integer)),
+***************
+*** 49,57 ****
+  				[stream_to_atom(@atom, ?atom),
+  				 stream_to_atom(@gcomp, ?atom)]).
+  stream_to_atom(Stream, Atom) :-
+! 	stream_property(Stream, string),
+  	!,
+! 	(   stream_property(Stream, mode(write))
+  	    ->
+  		true
+  	    ;
+--- 50,58 ----
+  				[stream_to_atom(@atom, ?atom),
+  				 stream_to_atom(@gcomp, ?atom)]).
+  stream_to_atom(Stream, Atom) :-
+! 	'$internal_stream_property'(Stream, string),
+  	!,
+! 	(   '$internal_stream_property'(Stream, mode(write))
+  	    ->
+  		true
+  	    ;
+***************
+*** 59,65 ****
+  					   stream_to_atom(Stream, Atom),
+  					   default))
+  	),
+! 	'$stream_to_atom'(Stream, Atom).
+  stream_to_atom(Stream, Atom) :-
+  	type_exception(stream_to_atom(Stream, Atom), 1,
+  		       [stream_to_atom(@atom, ?atom),
+--- 60,67 ----
+  					   stream_to_atom(Stream, Atom),
+  					   default))
+  	),
+! 	Stream = '$stream'(N),
+! 	'$stream_to_atom'(N, Atom).
+  stream_to_atom(Stream, Atom) :-
+  	type_exception(stream_to_atom(Stream, Atom), 1,
+  		       [stream_to_atom(@atom, ?atom),
+diff -c -r pjr-5.0/prolog/library/write.ql pjr/qp_src/library/write.ql
+*** pjr-5.0/prolog/library/write.ql	Wed Apr  8 13:17:37 1998
+--- pjr/qp_src/library/write.ql	Fri Oct 24 09:23:47 1997
+***************
+*** 43,55 ****
+   */
+  
+  write(Term) :-
+! 	current_output(Stream),
+! 	'$write_term'(Stream, Term, write, 1200, 1),
+  	fail.
+  write(_).
+  writeq(Term) :-
+! 	current_output(Stream),
+! 	'$write_term'(Stream, Term, writeq, 1200, 1),
+  	fail.
+  writeq(_).
+  writeR(Term) :-
+--- 43,55 ----
+   */
+  
+  write(Term) :-
+! 	'$current_output'(StreamNo),
+! 	'$write_term'(StreamNo, Term, write, 1200, 1),
+  	fail.
+  write(_).
+  writeq(Term) :-
+! 	'$current_output'(StreamNo),
+! 	'$write_term'(StreamNo, Term, writeq, 1200, 1),
+  	fail.
+  writeq(_).
+  writeR(Term) :-
+***************
+*** 60,73 ****
+  	writeq(Term).
+  writeT(Term, Table) :-
+  	'$legal_write_table'(Table, writeT(Term, Table)),
+! 	current_output(Stream),
+! 	'$write_term'(Stream, Term, writeT(Table), 1200, 1),
+  	fail.
+  writeT(_, _).
+  writeTq(Term, Table) :-
+  	'$legal_write_table'(Table, writeTq(Term, Table)),
+! 	current_output(Stream),
+! 	'$write_term'(Stream, Term, writeTq(Table), 1200, 1),
+  	fail.
+  writeTq(_, _).
+  writeRT(Term, Table) :-
+--- 60,73 ----
+  	writeq(Term).
+  writeT(Term, Table) :-
+  	'$legal_write_table'(Table, writeT(Term, Table)),
+! 	'$current_output'(StreamNo),
+! 	'$write_term'(StreamNo, Term, writeT(Table), 1200, 1),
+  	fail.
+  writeT(_, _).
+  writeTq(Term, Table) :-
+  	'$legal_write_table'(Table, writeTq(Term, Table)),
+! 	'$current_output'(StreamNo),
+! 	'$write_term'(StreamNo, Term, writeTq(Table), 1200, 1),
+  	fail.
+  writeTq(_, _).
+  writeRT(Term, Table) :-
+***************
+*** 77,88 ****
+  	name_vars(Term),
+  	writeTq(Term, Table).
+  
+  write(Stream, Term) :-
+! 	'$write_term'(Stream, Term, write, 1200, 1),
+  	fail.
+  write(_, _).
+  writeq(Stream, Term) :-
+! 	'$write_term'(Stream, Term, writeq, 1200, 1),
+  	fail.
+  writeq(_, _).
+  writeR(Stream, Term) :-
+--- 77,91 ----
+  	name_vars(Term),
+  	writeTq(Term, Table).
+  
++ 
+  write(Stream, Term) :-
+! 	'$get_streamNo'(StreamNo, output, write(Stream, Term)),
+! 	'$write_term'(StreamNo, Term, write, 1200, 1),
+  	fail.
+  write(_, _).
+  writeq(Stream, Term) :-
+! 	'$get_streamNo'(StreamNo, output, writeq(Stream, Term)),
+! 	'$write_term'(StreamNo, Term, writeq, 1200, 1),
+  	fail.
+  writeq(_, _).
+  writeR(Stream, Term) :-
+***************
+*** 92,104 ****
+  	name_vars(Term),
+  	writeq(Stream, Term).
+  writeT(Stream, Term, Table) :-
+  	'$legal_write_table'(Table, writeT(Stream, Term, Table)),
+! 	'$write_term'(Stream, Term, writeT(Table), 1200, 1),
+  	fail.
+  writeT(_, _, _).
+  writeTq(Stream, Term, Table) :-
+  	'$legal_write_table'(Table, writeTq(Stream, Term, Table)),
+! 	'$write_term'(Stream, Term, writeTq(Table), 1200, 1),
+  	fail.
+  writeTq(_, _, _).
+  writeRT(Stream, Term, Table) :-
+--- 95,109 ----
+  	name_vars(Term),
+  	writeq(Stream, Term).
+  writeT(Stream, Term, Table) :-
++ 	'$get_streamNo'(StreamNo, output, writeT(Stream, Term, Table)),
+  	'$legal_write_table'(Table, writeT(Stream, Term, Table)),
+! 	'$write_term'(StreamNo, Term, writeT(Table), 1200, 1),
+  	fail.
+  writeT(_, _, _).
+  writeTq(Stream, Term, Table) :-
++ 	'$get_streamNo'(StreamNo, output, writeTq(Stream, Term, Table)),
+  	'$legal_write_table'(Table, writeTq(Stream, Term, Table)),
+! 	'$write_term'(StreamNo, Term, writeTq(Table), 1200, 1),
+  	fail.
+  writeTq(_, _, _).
+  writeRT(Stream, Term, Table) :-
+***************
+*** 117,150 ****
+  	write_term(Stream, Term,
+  		[quoted(true), ignore_ops(true)]).
+  
+- 	
+  portray_clause(Term) :-
+!         current_output(Stream),
+!         portray_clause(Stream, Term).
+  
+  portray_clause(Stream, Term) :-
+!         '$portray_clause'(Stream, Term),
+!         fail.
+  portray_clause(_, _).
+  
+  '$portray_clause'(Stream, A) :-
+          var(A),
+          !,
+!         write_term_list(Stream, [wRq(A), pc(0'.),nl]).
+  '$portray_clause'(Stream, (A :- B)) :-
+          B == true,
+          !,
+!         write_term_list(Stream, [wRq(A), pc(0'.),nl]).
+  '$portray_clause'(Stream, (A :- B)) :-
+          !,
+!         write_term_list(Stream, [wRq(A), wa(' :- '), nl]),
+          '$portray_clause_body'(Stream, B, 4, '.').
+  '$portray_clause'(Stream, A) :-
+!         write_term_list(Stream, [wRq(A), pc(0'.),nl]).
+  
+  '$portray_clause_body'(Stream, A, N, End) :-
+          var(A),!,
+!         write_term_list(Stream, [tab(N), wRq(A), wa(End), nl]).
+  '$portray_clause_body'(Stream, (A,B),N, End) :-
+          !,
+          '$portray_clause_body'(Stream, A, N, ','),
+--- 122,154 ----
+  	write_term(Stream, Term,
+  		[quoted(true), ignore_ops(true)]).
+  
+  portray_clause(Term) :-
+! 	current_output(Stream),
+! 	portray_clause(Stream, Term).
+  
+  portray_clause(Stream, Term) :-
+! 	'$portray_clause'(Stream, Term),
+! 	fail.
+  portray_clause(_, _).
+  
+  '$portray_clause'(Stream, A) :-
+          var(A),
+          !,
+!         write_term_list(Stream, [wR(A), pc(0'.),nl]).
+  '$portray_clause'(Stream, (A :- B)) :-
+          B == true,
+          !,
+!         write_term_list(Stream, [wR(A), pc(0'.),nl]).
+  '$portray_clause'(Stream, (A :- B)) :-
+          !,
+!         write_term_list(Stream, [wR(A), wa(' :- '), nl]),
+          '$portray_clause_body'(Stream, B, 4, '.').
+  '$portray_clause'(Stream, A) :-
+!         write_term_list(Stream, [wR(A), pc(0'.),nl]).
+  
+  '$portray_clause_body'(Stream, A, N, End) :-
+          var(A),!,
+!         write_term_list(Stream, [tab(N), wR(A), wa(End), nl]).
+  '$portray_clause_body'(Stream, (A,B),N, End) :-
+          !,
+          '$portray_clause_body'(Stream, A, N, ','),
+***************
+*** 161,167 ****
+  '$portray_clause_body'(Stream, (T->A;B),N,End) :-
+          !,
+          N1 is N+2,
+!         write_term_list(Stream, [tab(N), wa('( '), wRq(T), nl, tab(N1), 
+                                   wa('->'), nl]),
+          N2 is N1+2,
+          '$portray_clause_body'(Stream, A, N2, ' '),
+--- 165,171 ----
+  '$portray_clause_body'(Stream, (T->A;B),N,End) :-
+          !,
+          N1 is N+2,
+!         write_term_list(Stream, [tab(N), wa('( '), wR(T), nl, tab(N1), 
+                                   wa('->'), nl]),
+          N2 is N1+2,
+          '$portray_clause_body'(Stream, A, N2, ' '),
+***************
+*** 183,194 ****
+  	!,
+  	'$portray_inner_goal'(Stream, once, G, N, End).
+  '$portray_clause_body'(Stream, X,N,End) :-
+!         write_term_list(Stream, [tab(N), wRq(X), wa(End), nl]).
+  
+  '$portray_inner_goal'(Stream, F, G, N, End) :-
+  	var(G),!,
+  	write_term_list(Stream, 
+! 			[tab(N),wa(F),pc(0'(),wRq(G),pc(0')),wa(End),nl]).
+  '$portray_inner_goal'(Stream, F, (G1,G2), N, End) :-
+  	!,
+  	write_term_list(Stream, [tab(N),wa(F),pc(0'(),pc(0'(),nl]),
+--- 187,198 ----
+  	!,
+  	'$portray_inner_goal'(Stream, once, G, N, End).
+  '$portray_clause_body'(Stream, X,N,End) :-
+!         write_term_list(Stream, [tab(N), wR(X), wa(End), nl]).
+  
+  '$portray_inner_goal'(Stream, F, G, N, End) :-
+  	var(G),!,
+  	write_term_list(Stream, 
+! 			[tab(N),wa(F),pc(0'(),wR(G),pc(0')),wa(End),nl]).
+  '$portray_inner_goal'(Stream, F, (G1,G2), N, End) :-
+  	!,
+  	write_term_list(Stream, [tab(N),wa(F),pc(0'(),pc(0'(),nl]),
+***************
+*** 203,212 ****
+  	write_term_list(Stream, [tab(N),pc(0')),wa(End),nl]).
+  '$portray_inner_goal'(Stream, F, G, N, End) :-
+  	write_term_list(Stream, 
+! 			[tab(N),wa(F),pc(0'(),wRq(G),pc(0')),wa(End),nl]).
+  
+  
+- 
+  /*
+   * '$legal_write_table'(Table, Call),
+   * Check if Table is a legal optable - ie an atom.
+--- 207,216 ----
+  	write_term_list(Stream, [tab(N),pc(0')),wa(End),nl]).
+  '$portray_inner_goal'(Stream, F, G, N, End) :-
+  	write_term_list(Stream, 
+! 			[tab(N),wa(F),pc(0'(),wR(G),pc(0')),wa(End),nl]).
+  
++ 	
+  
+  /*
+   * '$legal_write_table'(Table, Call),
+   * Check if Table is a legal optable - ie an atom.
+***************
+*** 254,259 ****
+--- 258,320 ----
+  		type_exception(Call, 3, [Mode,Mode1])
+  	).
+  
++ /*
++  * '$get_streamNo'(StreamNo, RWMode, Call)
++  *  Return the stream number for Call, do error checking.
++  *
++  * mode '$get_streamNo'(-integer, @atom, @term).
++  * mode '$stream_inst_exception'(@term).
++  * mode '$stream_type_exception'(@term).
++  */
++ '$get_streamNo'(StreamNo, RWMode, Call) :-
++ 	arg(1, Call, Stream),
++ 	(   var(Stream)
++ 	    ->
++ 		'$stream_inst_exception'(Call)
++ 	    ;
++ 	    '$internal_stream_property'(Stream, RWMode),
++ 	    '$stream_num'(Stream, StreamNo)
++ 	    ->
++ 		true
++ 	    ;
++ 		'$stream_type_exception'(Call)
++ 	).
++ 
++ '$stream_inst_exception'(Call) :-
++ 	functor(Call, F, N),
++ 	functor(Mode1, F, N),
++ 	functor(Mode2, F, N),
++ 	arg(1, Mode1, @atom),
++ 	arg(1, Mode2, @gcomp),
++ 	arg(2, Mode1, @term),
++ 	arg(2, Mode2, @term),
++ 	(   N = 2
++ 	    ->
++ 		true
++ 	    ;
++ 		arg(3, Mode1, @atom),
++ 		arg(3, Mode2, @atom)
++ 	),
++ 	instantiation_exception(Call, 1, [Mode1, Mode2]).
++ 
++ '$stream_type_exception'(Call) :-
++ 	functor(Call, F, N),
++ 	functor(Mode1, F, N),
++ 	functor(Mode2, F, N),
++ 	arg(1, Mode1, @atom),
++ 	arg(1, Mode2, @gcomp),
++ 	arg(2, Mode1, @term),
++ 	arg(2, Mode2, @term),
++ 	(   N = 2
++ 	    ->
++ 		true
++ 	    ;
++ 		arg(3, Mode1, @atom),
++ 		arg(3, Mode2, @atom)
++ 	),
++ 	type_exception(Call, 1, [Mode1, Mode2], stream).
++ 
++ 
+  /* 
+   * write_term(Stream, T, OptList)
+   * writes the term T according to the options in OptList.
+***************
+*** 275,281 ****
+  				[write_term(@atom, @term, @list(gcomp)),
+  				 write_term(@gcomp, @term, @list(gcomp))]).
+  write_term(Stream, T, OptList) :- 
+! 	stream_property(Stream, output),
+  	!,
+  	(   member(remember_name(true), OptList)
+  	    ->
+--- 336,343 ----
+  				[write_term(@atom, @term, @list(gcomp)),
+  				 write_term(@gcomp, @term, @list(gcomp))]).
+  write_term(Stream, T, OptList) :- 
+! 	'$internal_stream_property'(Stream, output),
+! 	'$stream_num'(Stream, StreamNum),
+  	!,
+  	(   member(remember_name(true), OptList)
+  	    ->
+***************
+*** 297,303 ****
+  	global_state_lookup('$current_obvar_prefix_table', ObPrefix),		
+  	'$io_try_eq'(ObVar, ObPrefix),
+  	'$io_try_eq'(Simp, true),
+! 	'$write_term'(Stream, T, Options, 1200, 1),
+  	fail
+  	;
+  	true
+--- 359,365 ----
+  	global_state_lookup('$current_obvar_prefix_table', ObPrefix),		
+  	'$io_try_eq'(ObVar, ObPrefix),
+  	'$io_try_eq'(Simp, true),
+! 	'$write_term'(StreamNum, T, Options, 1200, 1),
+  	fail
+  	;
+  	true
+***************
+*** 433,454 ****
+  '$do_ignore_ops'(wflags(_,true,_,_,_,_,_,_)).
+  
+  /* 
+!  * '$write_term'(Stream, T, Options, Prec, Depth)
+   * writes the term T according to the Options.
+   *
+   * mode '$write_term'(@integer, @term, @gcomp, @integer, @integer).
+   */
+  
+! '$write_term'(Stream, _T, Options, _Prec, Depth) :-
+  	'$get_depth'(Options, Dep),
+  	0 < Dep,
+  	Dep < Depth,
+  	!,
+! 	'$write_atom'(Stream, '...', Options).
+  
+  #ifdef	QuAM
+  
+! '$write_term'(Stream, T, Options, Prec, Depth) :-
+          sub(T),
+          !,
+  	(   '$do_write_simplify'(Options)	/* simplify */
+--- 495,516 ----
+  '$do_ignore_ops'(wflags(_,true,_,_,_,_,_,_)).
+  
+  /* 
+!  * '$write_term'(StreamNum, T, Options, Prec, Depth)
+   * writes the term T according to the Options.
+   *
+   * mode '$write_term'(@integer, @term, @gcomp, @integer, @integer).
+   */
+  
+! '$write_term'(StreamNum, _T, Options, _Prec, Depth) :-
+  	'$get_depth'(Options, Dep),
+  	0 < Dep,
+  	Dep < Depth,
+  	!,
+! 	'$write_atom'(StreamNum, '...', Options).
+  
+  #ifdef	QuAM
+  
+! '$write_term'(StreamNum, T, Options, Prec, Depth) :-
+          sub(T),
+          !,
+  	(   '$do_write_simplify'(Options)	/* simplify */
+***************
+*** 456,510 ****
+  		'$simplify_if_local'(T, ST),
+  		(   sub(ST)
+  		    ->
+! 			'$write_substitution'(Stream, ST, Options, Depth)
+  		    ;
+! 			'$write_term'(Stream, ST, Options, Prec, Depth)
+  		)
+  	    ;
+!         	'$write_substitution'(Stream, T, Options, Depth)
+  	).
+! '$write_term'(Stream, T, Options, _Prec, _Depth) :-
+          obvar(T),
+          !,
+!         '$write_obvar'(Stream, T, Options).
+! '$write_term'(Stream, T, Options, Prec, Depth) :-
+          quant(T),
+          !,
+!        	'$write_quantification'(Stream, T, Prec, Options, Depth).
+  
+  /*
+!  * '$write_term'(Stream, T, Options, _Prec, Depth) :-
+   *	apply_struc(T),
+   *	!,
+!  *	'$write_apply_structure'(Stream, T, Options, Depth).
+   */
+  
+  #endif	/* QuAM */
+  
+! '$write_term'(Stream, T, Options, _Prec, _Depth) :- 
+  	var(T), 
+  	!, 
+! 	'$write_var'(Stream, T, Options).
+! '$write_term'(Stream, T, Options, Prec, _Depth) :- 
+  	atom(T), 
+  	!, 
+  	(	'$get_optable'(Options, Table),
+  		current_op(Table, Opprec, _, T),
+  		Prec =< Opprec,
+!                 put_code(Stream, 0'(),
+! 		'$write_atom'(Stream, T, Options),
+!                 put_code(Stream, 0'))
+  	    ;
+! 		'$write_atom'(Stream, T, Options)
+  	),
+  	!.
+! '$write_term'(Stream, T, _Options, _Prec, _Depth) :- 
+  	integer(T),
+  	!,
+! 	write_integer(Stream, T).
+! '$write_term'(Stream, T, Options, Prec, Depth) :-
+  	/* structure, including lists */
+! 	'$write_structure'(Stream, T, Options, Prec, Depth),
+  	!.
+  
+  '$write_term'(_, _, _, _, _) :-
+--- 518,572 ----
+  		'$simplify_if_local'(T, ST),
+  		(   sub(ST)
+  		    ->
+! 			'$write_substitution'(StreamNum, ST, Options, Depth)
+  		    ;
+! 			'$write_term'(StreamNum, ST, Options, Prec, Depth)
+  		)
+  	    ;
+!         	'$write_substitution'(StreamNum, T, Options, Depth)
+  	).
+! '$write_term'(StreamNum, T, Options, _Prec, _Depth) :-
+          obvar(T),
+          !,
+!         '$write_obvar'(StreamNum, T, Options).
+! '$write_term'(StreamNum, T, Options, Prec, Depth) :-
+          quant(T),
+          !,
+!        	'$write_quantification'(StreamNum, T, Prec, Options, Depth).
+  
+  /*
+!  * '$write_term'(StreamNum, T, Options, _Prec, Depth) :-
+   *	apply_struc(T),
+   *	!,
+!  *	'$write_apply_structure'(StreamNum, T, Options, Depth).
+   */
+  
+  #endif	/* QuAM */
+  
+! '$write_term'(StreamNum, T, Options, _Prec, _Depth) :- 
+  	var(T), 
+  	!, 
+! 	'$write_var'(StreamNum, T, Options).
+! '$write_term'(StreamNum, T, Options, Prec, _Depth) :- 
+  	atom(T), 
+  	!, 
+  	(	'$get_optable'(Options, Table),
+  		current_op(Table, Opprec, _, T),
+  		Prec =< Opprec,
+!                 put_code(StreamNum, 0'(),
+! 		'$write_atom'(StreamNum, T, Options),
+!                 put_code(StreamNum, 0'))
+  	    ;
+! 		'$write_atom'(StreamNum, T, Options)
+  	),
+  	!.
+! '$write_term'(StreamNum, T, _Options, _Prec, _Depth) :- 
+  	integer(T),
+  	!,
+! 	write_integer(StreamNum, T).
+! '$write_term'(StreamNum, T, Options, Prec, Depth) :-
+  	/* structure, including lists */
+! 	'$write_structure'(StreamNum, T, Options, Prec, Depth),
+  	!.
+  
+  '$write_term'(_, _, _, _, _) :-
+***************
+*** 537,543 ****
+          '$no_locals_in_sub'(NextSubPtr, 0).
+  
+  /*
+!  * '$write_var'(Stream, V, Options)
+   * writes the variable V according to the Options.
+   * If numbervars or remember_name flag is set, a new name like
+   * 	A, ..., Z, A1, ..., Z1, ...
+--- 599,605 ----
+          '$no_locals_in_sub'(NextSubPtr, 0).
+  
+  /*
+!  * '$write_var'(StreamNum, V, Options)
+   * writes the variable V according to the Options.
+   * If numbervars or remember_name flag is set, a new name like
+   * 	A, ..., Z, A1, ..., Z1, ...
+***************
+*** 549,568 ****
+  
+  #ifdef  QuAM
+  
+! '$write_var'(Stream, V, Options) :- 
+  	'$do_name_vars'(Options),
+  	!,
+! 	'$writeR_var'(Stream, V).
+  
+  #endif  /* QuAM */
+  
+! '$write_var'(Stream, V, _) :- 
+! 	'$write_var'(Stream, V).
+  
+  #ifdef	QuAM
+  
+  /*
+!  * '$write_obvar'(Stream, Ov, Options)
+   * writes the object variable Ov according to the Options.
+   *
+   * If the quote flag and the number_vars flag is set,
+--- 611,630 ----
+  
+  #ifdef  QuAM
+  
+! '$write_var'(StreamNum, V, Options) :- 
+  	'$do_name_vars'(Options),
+  	!,
+! 	'$writeR_var'(StreamNum, V).
+  
+  #endif  /* QuAM */
+  
+! '$write_var'(StreamNum, V, _) :- 
+! 	'$write_var'(StreamNum, V).
+  
+  #ifdef	QuAM
+  
+  /*
+!  * '$write_obvar'(StreamNum, Ov, Options)
+   * writes the object variable Ov according to the Options.
+   *
+   * If the quote flag and the number_vars flag is set,
+***************
+*** 581,603 ****
+   *
+   * mode '$write_obvar'(@integer, @obvar, @gcomp).
+   */
+! '$write_obvar'(Stream, Ov, Options) :-
+  	'$local_obvar'(Ov),
+  	!,
+!         put_code(Stream, 0'!),
+! 	put_code(Stream, 0'l).
+  
+! '$write_obvar'(Stream, Ov, Options) :-
+! 	'$write_obvar_escape'(Stream, Ov, Options),
+  	( '$do_writeq_obvar'(Options)
+  	  ->
+! 		'$writeq_obvar'(Stream, Ov)
+  	  ;
+! 		'$write_obvar'(Stream, Ov)
+  	).
+  
+  /*
+!  * '$write_obvar_escape'(Stream, Ov, OptionsList)
+   *
+   * Determines whether or not to output the obvar escape.
+   *
+--- 643,665 ----
+   *
+   * mode '$write_obvar'(@integer, @obvar, @gcomp).
+   */
+! '$write_obvar'(StreamNum, Ov, Options) :-
+  	'$local_obvar'(Ov),
+  	!,
+!         put_code(StreamNum, 0'!),
+! 	put_code(StreamNum, 0'l).
+  
+! '$write_obvar'(StreamNum, Ov, Options) :-
+! 	'$write_obvar_escape'(StreamNum, Ov, Options),
+  	( '$do_writeq_obvar'(Options)
+  	  ->
+! 		'$writeq_obvar'(StreamNum, Ov)
+  	  ;
+! 		'$write_obvar'(StreamNum, Ov)
+  	).
+  
+  /*
+!  * '$write_obvar_escape'(StreamNum, Ov, OptionsList)
+   *
+   * Determines whether or not to output the obvar escape.
+   *
+***************
+*** 619,631 ****
+       '$get_obprefix'(Options, ObPrefix),
+       current_obvar_prefix(ObPrefix, Prefix),
+       !.
+! '$write_obvar_escape'(Stream, _, _) :-
+!     put_code(Stream, 0'!).
+  
+  #endif	/* QuAM */
+  
+  /*
+!  * '$write_atom'(Stream, A, Options)
+   * writes the atom A according to the Options.
+   *
+   * If quoted flag is set, atom is written with quotes when the atom 
+--- 681,693 ----
+       '$get_obprefix'(Options, ObPrefix),
+       current_obvar_prefix(ObPrefix, Prefix),
+       !.
+! '$write_obvar_escape'(StreamNum, _, _) :-
+!     put_code(StreamNum, 0'!).
+  
+  #endif	/* QuAM */
+  
+  /*
+!  * '$write_atom'(StreamNum, A, Options)
+   * writes the atom A according to the Options.
+   *
+   * If quoted flag is set, atom is written with quotes when the atom 
+***************
+*** 634,658 ****
+   * mode '$write_atom'(@integer, @atom, @gcomp).
+   */
+  
+! '$write_atom'(Stream, A, Options) :- 
+  	'$do_quote'(Options),
+  	!,
+  	(   '$get_obprefix'(Options, ObPrefix),
+  	    '$check_obvar_syntax'(A, ObPrefix)
+  	    ->
+! 		put_code(Stream, 0''),
+! 		write_atom(Stream, A),
+! 		put_code(Stream, 0'')
+  	    ;
+! 		writeq_atom(Stream, A)
+  	).
+! '$write_atom'(Stream, A, _) :- 
+! 	write_atom(Stream, A).
+  
+  #ifdef	QuAM
+  
+  /*
+!  * '$write_substitution'(Stream, St, Options, Depth)
+   * writes the substitution term St according to the Options.
+   * The Options do not have effect on "*" connecting substititions 
+   * or "/" in substitution pairs.
+--- 696,720 ----
+   * mode '$write_atom'(@integer, @atom, @gcomp).
+   */
+  
+! '$write_atom'(StreamNum, A, Options) :- 
+  	'$do_quote'(Options),
+  	!,
+  	(   '$get_obprefix'(Options, ObPrefix),
+  	    '$check_obvar_syntax'(A, ObPrefix)
+  	    ->
+! 		put_code(StreamNum, 0''),
+! 		write_atom(StreamNum, A),
+! 		put_code(StreamNum, 0'')
+  	    ;
+! 		writeq_atom(StreamNum, A)
+  	).
+! '$write_atom'(StreamNum, A, _) :- 
+! 	write_atom(StreamNum, A).
+  
+  #ifdef	QuAM
+  
+  /*
+!  * '$write_substitution'(StreamNum, St, Options, Depth)
+   * writes the substitution term St according to the Options.
+   * The Options do not have effect on "*" connecting substititions 
+   * or "/" in substitution pairs.
+***************
+*** 660,724 ****
+   * mode '$write_substitution'(@integer, @term, @gcomp, @integer).
+   */
+  
+! '$write_substitution'(Stream, St, Options, Depth) :- 
+  	'$get_substitution'(St, SubPtr),
+  	sub_term(St, Subbody),
+! 	'$write_subs'(Stream, SubPtr, Options, Depth),
+  	(   list(Subbody)
+  	    ->
+! 		put_code(Stream, 0'(),
+! 		'$write_structure'(Stream, Subbody, Options, 999, Depth),
+! 		put_code(Stream, 0'))
+  	    ;
+! 		'$write_term'(Stream, Subbody, Options, 0, Depth)
+  	).
+  
+  /*
+!  * '$write_subs'(Stream, Subs, Options, Depth)
+   * writes the substitution lists Subs according to the Options.
+   *
+   * mode '$write_subs'(@integer, @integer, @gcomp, @integer).
+   */
+  
+! '$write_subs'(Stream, _Subs, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(Stream, 0'[),
+! 	'$write_atom'(Stream, '...', Options),
+! 	put_code(Stream, 0']).
+! '$write_subs'(_Stream, Subs, _Options, _Depth) :-
+  	'$empty_sub'(Subs),
+  	!.
+! '$write_subs'(Stream, Subs, Options, Depth) :-
+  	'$next_sub'(Subs, Subs1),
+! 	'$write_subs'(Stream, Subs1, Options, Depth),
+! 	put_code(Stream, 0'[),
+  	Depth1 is Depth+1,
+! 	'$write_sub'(Stream, Subs, Options, Depth1),
+! 	put_code(Stream, 0']).
+  
+  /*
+!  * '$write_sub'(Stream, Sub, Options, Depth)
+   * writes the substitution list Sub according to the Options.
+   *
+   * mode '$write_sub'(@integer, @integer, @gcomp, @integer).
+   */
+  
+! '$write_sub'(Stream, Sub, Options, Depth) :-
+  	'$get_domain'(1, Sub, X),
+  	!,
+! 	'$write_subrest'(Stream, 2, Sub, Options, Depth),
+  	'$get_range'(1, Sub, T),
+! 	'$write_subpair'(Stream, T, X, Options, Depth).
+  	
+  /*
+!  * '$write_subpair'(Stream, Range, Domain, Options, Depth)
+   * writes the substitution pair Subpair according to the Options.
+   *
+   * mode '$write_subpair'(@integer, @term, @obvar, @gcomp, @integer).
+   */
+  
+! '$write_subpair'(Stream, Range, Domain, Options, Depth) :-
+  	(	'$binop_prec_assoc'('/', Largprec, _Opprec, Rargprec, _Opassoc,
+  				    Options)
+  	    ;
+--- 722,786 ----
+   * mode '$write_substitution'(@integer, @term, @gcomp, @integer).
+   */
+  
+! '$write_substitution'(StreamNum, St, Options, Depth) :- 
+  	'$get_substitution'(St, SubPtr),
+  	sub_term(St, Subbody),
+! 	'$write_subs'(StreamNum, SubPtr, Options, Depth),
+  	(   list(Subbody)
+  	    ->
+! 		put_code(StreamNum, 0'(),
+! 		'$write_structure'(StreamNum, Subbody, Options, 999, Depth),
+! 		put_code(StreamNum, 0'))
+  	    ;
+! 		'$write_term'(StreamNum, Subbody, Options, 0, Depth)
+  	).
+  
+  /*
+!  * '$write_subs'(StreamNum, Subs, Options, Depth)
+   * writes the substitution lists Subs according to the Options.
+   *
+   * mode '$write_subs'(@integer, @integer, @gcomp, @integer).
+   */
+  
+! '$write_subs'(StreamNum, _Subs, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(StreamNum, 0'[),
+! 	'$write_atom'(StreamNum, '...', Options),
+! 	put_code(StreamNum, 0']).
+! '$write_subs'(_StreamNum, Subs, _Options, _Depth) :-
+  	'$empty_sub'(Subs),
+  	!.
+! '$write_subs'(StreamNum, Subs, Options, Depth) :-
+  	'$next_sub'(Subs, Subs1),
+! 	'$write_subs'(StreamNum, Subs1, Options, Depth),
+! 	put_code(StreamNum, 0'[),
+  	Depth1 is Depth+1,
+! 	'$write_sub'(StreamNum, Subs, Options, Depth1),
+! 	put_code(StreamNum, 0']).
+  
+  /*
+!  * '$write_sub'(StreamNum, Sub, Options, Depth)
+   * writes the substitution list Sub according to the Options.
+   *
+   * mode '$write_sub'(@integer, @integer, @gcomp, @integer).
+   */
+  
+! '$write_sub'(StreamNum, Sub, Options, Depth) :-
+  	'$get_domain'(1, Sub, X),
+  	!,
+! 	'$write_subrest'(StreamNum, 2, Sub, Options, Depth),
+  	'$get_range'(1, Sub, T),
+! 	'$write_subpair'(StreamNum, T, X, Options, Depth).
+  	
+  /*
+!  * '$write_subpair'(StreamNum, Range, Domain, Options, Depth)
+   * writes the substitution pair Subpair according to the Options.
+   *
+   * mode '$write_subpair'(@integer, @term, @obvar, @gcomp, @integer).
+   */
+  
+! '$write_subpair'(StreamNum, Range, Domain, Options, Depth) :-
+  	(	'$binop_prec_assoc'('/', Largprec, _Opprec, Rargprec, _Opassoc,
+  				    Options)
+  	    ;
+***************
+*** 726,737 ****
+  		Rargprec = 399
+  	),
+  	!,
+! 	'$write_term'(Stream, Range, Options, Largprec, Depth),
+! 	put_code(Stream, 0'/),
+! 	'$write_obvar'(Stream, Domain, Options).
+  
+  /*
+!  * '$write_subrest'(Stream, N, Sub, Options, Depth)
+   * writes the substitution pairs in Subpairs according to the Options, 
+   * each preceded by a ','.
+   *
+--- 788,799 ----
+  		Rargprec = 399
+  	),
+  	!,
+! 	'$write_term'(StreamNum, Range, Options, Largprec, Depth),
+! 	put_code(StreamNum, 0'/),
+! 	'$write_obvar'(StreamNum, Domain, Options).
+  
+  /*
+!  * '$write_subrest'(StreamNum, N, Sub, Options, Depth)
+   * writes the substitution pairs in Subpairs according to the Options, 
+   * each preceded by a ','.
+   *
+***************
+*** 738,756 ****
+   * mode '$write_subrest'(@integer, @integer, @integer, @gcomp, @integer).
+   */
+  
+! '$write_subrest'(Stream, N, Sub, Options, Depth) :-
+  	'$get_domain'(N, Sub, X),
+  	!,
+  	N1 is N+1,
+! 	'$write_subrest'(Stream, N1, Sub, Options, Depth),
+  	'$get_range'(N, Sub, T),
+! 	'$write_subpair'(Stream, T, X, Options, Depth),
+!         put_code(Stream, 0',),
+! 	put_code(Stream, 0' ).
+  '$write_subrest'(_, _, _, _, _).
+  
+  /*
+!  * '$write_quantification'(Stream, Q, Options, Depth)
+   * writes the quantification term Q according to the Options.
+   *
+   * The Options do not have effect on the typing operator ":" for bound
+--- 800,818 ----
+   * mode '$write_subrest'(@integer, @integer, @integer, @gcomp, @integer).
+   */
+  
+! '$write_subrest'(StreamNum, N, Sub, Options, Depth) :-
+  	'$get_domain'(N, Sub, X),
+  	!,
+  	N1 is N+1,
+! 	'$write_subrest'(StreamNum, N1, Sub, Options, Depth),
+  	'$get_range'(N, Sub, T),
+! 	'$write_subpair'(StreamNum, T, X, Options, Depth),
+!         put_code(StreamNum, 0',),
+! 	put_code(StreamNum, 0' ).
+  '$write_subrest'(_, _, _, _, _).
+  
+  /*
+!  * '$write_quantification'(StreamNum, Q, Options, Depth)
+   * writes the quantification term Q according to the Options.
+   *
+   * The Options do not have effect on the typing operator ":" for bound
+***************
+*** 761,839 ****
+   *
+   * mode '$write_quantification'(@integer, @quant, @integer, @gcomp, @integer).
+   */
+! '$write_quantification'(Stream, Q, Oldp, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+  	quantify(Q, Quantifier, Bvars, QuantBody),
+  	(atom(Quantifier), '$quantop_prec'(Quantifier, Qprec, Options) ->
+  		(Qprec <  Oldp ->
+! 			'$write_atom'(Stream, Quantifier, Options),
+! 			put_code(Stream, 0' ),
+! 			'$write_atom'(Stream, '...', Options)
+! 		;	put_code(Stream, 0'(),
+! 			'$write_atom'(Stream, Quantifier, Options),
+! 			put_code(Stream, 0' ),
+! 			'$write_atom'(Stream, '...', Options),
+! 			put_code(Stream, 0'))	/* Careful! */
+  		)
+  	;	(0 < Oldp ->
+! 			put_code(Stream, 0'!),
+! 			put_code(Stream, 0'!),
+! 			'$write_term'(Stream, Quantifier,
+  					Options, 0, Depth),
+! 			put_code(Stream, 0' ),
+! 			'$write_atom'(Stream, '...', Options)
+! 		;	put_code(Stream, 0'(),
+! 			put_code(Stream, 0'!),
+! 			put_code(Stream, 0'!),
+! 			'$write_term'(Stream, Quantifier,
+  					Options, 0, Depth),
+! 			put_code(Stream, 0' ),
+! 			'$write_atom'(Stream, '...', Options),
+! 			put_code(Stream, 0'))	/* Careful! */
+  		)
+  	).
+! '$write_quantification'(Stream, Q, Oldp, Options, Depth) :-
+  	Depth1 is Depth+1,
+  	quantify(Q, Quantifier, Bvars, QuantBody),
+  	(atom(Quantifier), '$quantop_prec'(Quantifier, Qprec, Options) ->
+  		(Qprec < Oldp ->
+! 			'$write_atom'(Stream, Quantifier, Options),
+! 			put_code(Stream, 0' ),
+! 			'$write_bvars'(Stream, Bvars, Options, Depth1),
+! 			put_code(Stream, 0' ),
+! 			'$write_term'(Stream, QuantBody, Options, Qprec,
+  				      Depth1)
+! 		;	put_code(Stream, 0'(),
+! 			'$write_atom'(Stream, Quantifier, Options),
+! 			put_code(Stream, 0' ),
+! 			'$write_bvars'(Stream, Bvars, Options, Depth1),
+! 			put_code(Stream, 0' ),
+! 			'$write_term'(Stream, QuantBody, Options, Qprec,
+  				      Depth1),
+! 			put_code(Stream, 0'))	/* Careful! */
+  		)
+  	;	(0 < Oldp ->
+! 			put_code(Stream, 0'!),
+! 			put_code(Stream, 0'!),
+! 			'$write_term'(Stream, Quantifier,
+  					Options, 0, Depth1),
+! 	 		put_code(Stream, 0' ),
+!          		'$write_bvars'(Stream, Bvars, Options, Depth1),
+! 	 		put_code(Stream, 0' ),
+! 	 		'$write_term'(Stream, QuantBody,
+  					Options, 0, Depth1)
+! 		;	put_code(Stream, 0'(),
+! 			put_code(Stream, 0'!),
+! 			put_code(Stream, 0'!),
+! 			'$write_term'(Stream, Quantifier,
+  					Options, 0, Depth1),
+! 			put_code(Stream, 0' ),
+! 			'$write_bvars'(Stream, Bvars, Options, Depth1),
+! 			put_code(Stream, 0' ),
+! 			'$write_term'(Stream, QuantBody,
+  					Options, 0, Depth1),
+! 			put_code(Stream, 0'))	/* Careful! */
+  		)
+  	).
+  
+--- 823,901 ----
+   *
+   * mode '$write_quantification'(@integer, @quant, @integer, @gcomp, @integer).
+   */
+! '$write_quantification'(StreamNum, Q, Oldp, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+  	quantify(Q, Quantifier, Bvars, QuantBody),
+  	(atom(Quantifier), '$quantop_prec'(Quantifier, Qprec, Options) ->
+  		(Qprec <  Oldp ->
+! 			'$write_atom'(StreamNum, Quantifier, Options),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_atom'(StreamNum, '...', Options)
+! 		;	put_code(StreamNum, 0'(),
+! 			'$write_atom'(StreamNum, Quantifier, Options),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_atom'(StreamNum, '...', Options),
+! 			put_code(StreamNum, 0'))	/* Careful! */
+  		)
+  	;	(0 < Oldp ->
+! 			put_code(StreamNum, 0'!),
+! 			put_code(StreamNum, 0'!),
+! 			'$write_term'(StreamNum, Quantifier,
+  					Options, 0, Depth),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_atom'(StreamNum, '...', Options)
+! 		;	put_code(StreamNum, 0'(),
+! 			put_code(StreamNum, 0'!),
+! 			put_code(StreamNum, 0'!),
+! 			'$write_term'(StreamNum, Quantifier,
+  					Options, 0, Depth),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_atom'(StreamNum, '...', Options),
+! 			put_code(StreamNum, 0'))	/* Careful! */
+  		)
+  	).
+! '$write_quantification'(StreamNum, Q, Oldp, Options, Depth) :-
+  	Depth1 is Depth+1,
+  	quantify(Q, Quantifier, Bvars, QuantBody),
+  	(atom(Quantifier), '$quantop_prec'(Quantifier, Qprec, Options) ->
+  		(Qprec < Oldp ->
+! 			'$write_atom'(StreamNum, Quantifier, Options),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_bvars'(StreamNum, Bvars, Options, Depth1),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_term'(StreamNum, QuantBody, Options, Qprec,
+  				      Depth1)
+! 		;	put_code(StreamNum, 0'(),
+! 			'$write_atom'(StreamNum, Quantifier, Options),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_bvars'(StreamNum, Bvars, Options, Depth1),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_term'(StreamNum, QuantBody, Options, Qprec,
+  				      Depth1),
+! 			put_code(StreamNum, 0'))	/* Careful! */
+  		)
+  	;	(0 < Oldp ->
+! 			put_code(StreamNum, 0'!),
+! 			put_code(StreamNum, 0'!),
+! 			'$write_term'(StreamNum, Quantifier,
+  					Options, 0, Depth1),
+! 	 		put_code(StreamNum, 0' ),
+!          		'$write_bvars'(StreamNum, Bvars, Options, Depth1),
+! 	 		put_code(StreamNum, 0' ),
+! 	 		'$write_term'(StreamNum, QuantBody,
+  					Options, 0, Depth1)
+! 		;	put_code(StreamNum, 0'(),
+! 			put_code(StreamNum, 0'!),
+! 			put_code(StreamNum, 0'!),
+! 			'$write_term'(StreamNum, Quantifier,
+  					Options, 0, Depth1),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_bvars'(StreamNum, Bvars, Options, Depth1),
+! 			put_code(StreamNum, 0' ),
+! 			'$write_term'(StreamNum, QuantBody,
+  					Options, 0, Depth1),
+! 			put_code(StreamNum, 0'))	/* Careful! */
+  		)
+  	).
+  
+***************
+*** 848,960 ****
+          current_op(OpTable, Qprec, quant, Quantifier).
+  
+  /* 
+!  * '$write_bvars'(Stream, Bvars, Options, Depth)
+   * writes Bvars according to the Options.
+   *
+   * mode '$write_bvars'(@integer, @list(compound), @gcomp, @integer).
+   */
+  
+! '$write_bvars'(Stream, X, Options, _Depth) :-
+  	var(X),
+  	!,
+! 	'$write_var'(Stream, X, Options).
+! '$write_bvars'(Stream, [], _Options, _Depth) :-
+! 	put_code(Stream, 0'[),
+! 	put_code(Stream, 0']).
+! '$write_bvars'(Stream, [X|Rest], Options, Depth) :-
+  	'$fast_equal'(Rest, [], true),
+  	\+('$do_quote'(Options)),
+  	!,
+! 	'$write_bvar'(Stream, X, Options, Depth).
+! '$write_bvars'(Stream, _X, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(Stream, 0'[),
+! 	'$write_atom'(Stream, '...', Options),
+! 	put_code(Stream, 0']).
+! '$write_bvars'(Stream, [X|Rest], Options, Depth) :-
+  	Depth1 is Depth+1,
+! 	put_code(Stream, 0'[),
+! 	'$write_bvar'(Stream, X, Options, Depth),
+! 	'$write_bvars_rest'(Stream, Rest, Options, Depth1).
+  
+  /*
+!  * '$write_bvar'(Stream, Bvar, Options, Depth)
+   * writes the bound variable Bvar according to the Options.
+   *
+   * mode '$write_bvar'(@integer, @compound, @gcomp, @integer).
+   */
+  
+! '$write_bvar'(Stream, V:T, Options, Depth) :-
+  	!,
+  	Depth1 is Depth+1,
+  	(   '$binop_prec_assoc'(':', _Largprec, _Opprec, Rargprec, _Opassoc,
+  				Options)
+  	    ->
+! 		'$write_obvar'(Stream, V, Options),
+! 		put_code(Stream, 0':),
+! 		'$write_term'(Stream, T, Options, Rargprec, Depth1)
+  	    ;
+! 		put_code(Stream, 0':),
+! 		put_code(Stream, 0'(),
+! 		'$write_obvar'(Stream, V, Options),
+! 		put_code(Stream, 0',),
+! 		'$write_term'(Stream, T, Options, 999, Depth1),
+! 		put_code(Stream, 0'))
+  	).
+! '$write_bvar'(Stream, V, Options, _Depth) :-
+! 	'$write_obvar'(Stream, V, Options).
+  
+  /*
+!  * '$write_bvars_rest'(Stream, Bvars, Options, Depth)
+   * writes the bound variables in the Bvars list according to the Options.
+   *
+   * mode '$write_bvars_rest'(@integer, @list(compound), @gcomp, @integer).
+   */
+  
+! '$write_bvars_rest'(Stream, X, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(Stream, 0'|),
+! 	'$write_atom'(Stream, '...', Options),
+! 	put_code(Stream, 0']).
+! '$write_bvars_rest'(Stream, X, Options, _Depth) :-
+  	var(X),
+  	!,
+! 	put_code(Stream, 0'|),
+! 	'$write_var'(Stream, X, Options),
+! 	put_code(Stream, 0']).
+! '$write_bvars_rest'(Stream, [X|Y], Options, Depth) :-
+  	!,
+  	Depth1 is Depth+1,
+! 	put_code(Stream, 0',),
+! 	put_code(Stream, 0' ),
+! 	'$write_bvar'(Stream, X, Options, Depth1),
+! 	'$write_bvars_rest'(Stream, Y, Options, Depth1).
+! '$write_bvars_rest'(Stream, [], _Options, _Depth) :-
+  	!,
+! 	put_code(Stream, 0']).
+  
+  
+  /*
+!  * '$write_apply_structure'(Stream, AppS, Options, Depth)
+   * writes the apply-structure AppS according to the Options.
+   *
+   * mode '$write_apply_structure'(@integer, @compound, @gcomp, @integer).
+   */
+  
+! '$write_apply_structure'(Stream, AppS, Options, Depth) :-
+  	apply(AppS, Func, Args),
+  	Depth1 is Depth+1,
+! 	'$write_term'(Stream, Func, Options, 0, Depth1),
+! 	put_code(Stream, 0'@),
+! 	'$write_term'(Stream, Args, Options, 0, Depth1).
+  
+  
+  #endif	/* QuAM */
+  
+  /*
+!  * '$write_structure'(Stream, S, Options, Prec, Depth)
+   * writes the structure S according to the Options.
+   * If ignore_ops flag is set, the term is written in a functional form.
+   * Otherwise, the unary and binary operations in the term are written in
+--- 910,1022 ----
+          current_op(OpTable, Qprec, quant, Quantifier).
+  
+  /* 
+!  * '$write_bvars'(StreamNum, Bvars, Options, Depth)
+   * writes Bvars according to the Options.
+   *
+   * mode '$write_bvars'(@integer, @list(compound), @gcomp, @integer).
+   */
+  
+! '$write_bvars'(StreamNum, X, Options, _Depth) :-
+  	var(X),
+  	!,
+! 	'$write_var'(StreamNum, X, Options).
+! '$write_bvars'(StreamNum, [], _Options, _Depth) :-
+! 	put_code(StreamNum, 0'[),
+! 	put_code(StreamNum, 0']).
+! '$write_bvars'(StreamNum, [X|Rest], Options, Depth) :-
+  	'$fast_equal'(Rest, [], true),
+  	\+('$do_quote'(Options)),
+  	!,
+! 	'$write_bvar'(StreamNum, X, Options, Depth).
+! '$write_bvars'(StreamNum, _X, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(StreamNum, 0'[),
+! 	'$write_atom'(StreamNum, '...', Options),
+! 	put_code(StreamNum, 0']).
+! '$write_bvars'(StreamNum, [X|Rest], Options, Depth) :-
+  	Depth1 is Depth+1,
+! 	put_code(StreamNum, 0'[),
+! 	'$write_bvar'(StreamNum, X, Options, Depth),
+! 	'$write_bvars_rest'(StreamNum, Rest, Options, Depth1).
+  
+  /*
+!  * '$write_bvar'(StreamNum, Bvar, Options, Depth)
+   * writes the bound variable Bvar according to the Options.
+   *
+   * mode '$write_bvar'(@integer, @compound, @gcomp, @integer).
+   */
+  
+! '$write_bvar'(StreamNum, V:T, Options, Depth) :-
+  	!,
+  	Depth1 is Depth+1,
+  	(   '$binop_prec_assoc'(':', _Largprec, _Opprec, Rargprec, _Opassoc,
+  				Options)
+  	    ->
+! 		'$write_obvar'(StreamNum, V, Options),
+! 		put_code(StreamNum, 0':),
+! 		'$write_term'(StreamNum, T, Options, Rargprec, Depth1)
+  	    ;
+! 		put_code(StreamNum, 0':),
+! 		put_code(StreamNum, 0'(),
+! 		'$write_obvar'(StreamNum, V, Options),
+! 		put_code(StreamNum, 0',),
+! 		'$write_term'(StreamNum, T, Options, 999, Depth1),
+! 		put_code(StreamNum, 0'))
+  	).
+! '$write_bvar'(StreamNum, V, Options, _Depth) :-
+! 	'$write_obvar'(StreamNum, V, Options).
+  
+  /*
+!  * '$write_bvars_rest'(StreamNum, Bvars, Options, Depth)
+   * writes the bound variables in the Bvars list according to the Options.
+   *
+   * mode '$write_bvars_rest'(@integer, @list(compound), @gcomp, @integer).
+   */
+  
+! '$write_bvars_rest'(StreamNum, X, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(StreamNum, 0'|),
+! 	'$write_atom'(StreamNum, '...', Options),
+! 	put_code(StreamNum, 0']).
+! '$write_bvars_rest'(StreamNum, X, Options, _Depth) :-
+  	var(X),
+  	!,
+! 	put_code(StreamNum, 0'|),
+! 	'$write_var'(StreamNum, X, Options),
+! 	put_code(StreamNum, 0']).
+! '$write_bvars_rest'(StreamNum, [X|Y], Options, Depth) :-
+  	!,
+  	Depth1 is Depth+1,
+! 	put_code(StreamNum, 0',),
+! 	put_code(StreamNum, 0' ),
+! 	'$write_bvar'(StreamNum, X, Options, Depth1),
+! 	'$write_bvars_rest'(StreamNum, Y, Options, Depth1).
+! '$write_bvars_rest'(StreamNum, [], _Options, _Depth) :-
+  	!,
+! 	put_code(StreamNum, 0']).
+  
+  
+  /*
+!  * '$write_apply_structure'(StreamNum, AppS, Options, Depth)
+   * writes the apply-structure AppS according to the Options.
+   *
+   * mode '$write_apply_structure'(@integer, @compound, @gcomp, @integer).
+   */
+  
+! '$write_apply_structure'(StreamNum, AppS, Options, Depth) :-
+  	apply(AppS, Func, Args),
+  	Depth1 is Depth+1,
+! 	'$write_term'(StreamNum, Func, Options, 0, Depth1),
+! 	put_code(StreamNum, 0'@),
+! 	'$write_term'(StreamNum, Args, Options, 0, Depth1).
+  
+  
+  #endif	/* QuAM */
+  
+  /*
+!  * '$write_structure'(StreamNum, S, Options, Prec, Depth)
+   * writes the structure S according to the Options.
+   * If ignore_ops flag is set, the term is written in a functional form.
+   * Otherwise, the unary and binary operations in the term are written in
+***************
+*** 963,988 ****
+   * mode '$write_structure'(@integer, @compound, @gcomp, @integer, @integer).
+   */
+  
+! '$write_structure'(Stream, S, Options, _, Depth) :- 
+  	'$do_ignore_ops'(Options),
+  	!,
+! 	'$write_structureF'(Stream, S, Options, Depth).
+! '$write_structure'(Stream, S, Options, Prec, Depth) :- 
+! 	'$write_structureNF'(Stream, S, Options, Prec, Depth).
+  
+  /* 
+!  * '$write_structureF'(Stream, S, Options, Depth)
+   * writes the structure S in the functional form according to the Options.
+   *
+   * mode '$write_structureF'(@integer, @compound, @gcomp, @integer).
+   */
+  
+! '$write_structureF'(Stream, S, Options, Depth) :-
+  	functor(S, P, N),
+! 	'$write_function'(Stream, S, Options, P, N, Depth).
+  
+  /*
+!  * '$write_function'(Stream, Term, Options, P, N, Depth)
+   * writes, according the Options, the N-ary Term whose functor is P,
+   * with the precedence of the enclosing operator being 999.
+   * If the maximum depth is reached, abbewviate the arguments with '...'.
+--- 1025,1050 ----
+   * mode '$write_structure'(@integer, @compound, @gcomp, @integer, @integer).
+   */
+  
+! '$write_structure'(StreamNum, S, Options, _, Depth) :- 
+  	'$do_ignore_ops'(Options),
+  	!,
+! 	'$write_structureF'(StreamNum, S, Options, Depth).
+! '$write_structure'(StreamNum, S, Options, Prec, Depth) :- 
+! 	'$write_structureNF'(StreamNum, S, Options, Prec, Depth).
+  
+  /* 
+!  * '$write_structureF'(StreamNum, S, Options, Depth)
+   * writes the structure S in the functional form according to the Options.
+   *
+   * mode '$write_structureF'(@integer, @compound, @gcomp, @integer).
+   */
+  
+! '$write_structureF'(StreamNum, S, Options, Depth) :-
+  	functor(S, P, N),
+! 	'$write_function'(StreamNum, S, Options, P, N, Depth).
+  
+  /*
+!  * '$write_function'(StreamNum, Term, Options, P, N, Depth)
+   * writes, according the Options, the N-ary Term whose functor is P,
+   * with the precedence of the enclosing operator being 999.
+   * If the maximum depth is reached, abbewviate the arguments with '...'.
+***************
+*** 991,1045 ****
+   *			  @integer).
+   */
+  
+! '$write_function'(Stream, _Term, Options, P, N, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+!         '$write_functor'(P, Stream, Options, Depth),  
+! 	put_code(Stream, 0'(), 
+! 	'$write_atom'(Stream, '...', Options),
+! 	put_code(Stream, 0')).
+! '$write_function'(Stream, Term, Options, P, N, Depth) :-
+  	Depth1 is Depth+1,
+!         '$write_functor'(P, Stream, Options, Depth),  
+! 	put_code(Stream, 0'(), 
+  	arg(1, Term, X), 
+! 	'$write_term'(Stream, X, Options, 999, Depth1),
+!         '$write_arg'(Stream, Term, Options, N, 1, Depth1), 
+! 	put_code(Stream, 0')).
+  
+  /*
+!  * '$write_functor'(F, Stream, Options, Depth)
+   * Write the functor.
+   *
+   * mode '$write_functor'(@term, @integer, @gcomp, @integer).
+   */
+! '$write_functor'(F, Stream, Options, Depth) :-
+  	sub(F),
+  	!,
+! 	put_code(Stream, 0'(),
+!         '$write_term'(Stream, F, Options, 0, Depth),
+! 	put_code(Stream, 0')).
+! '$write_functor'(F, Stream, Options, Depth) :-
+!         '$write_term'(Stream, F, Options, 0, Depth).
+  
+  /*
+!  * '$write_arg'(Stream, S, Options, N, M, Depth)
+   * writes the (M+1)th to Nth arguments of S according to the Options.
+   *
+   * mode '$write_arg'(@integer, @compound, @gcomp, @integer, @integer, @integer).
+   */
+  
+! '$write_arg'(_Stream, _S, _Options, N, N, _Depth) :- !.
+! '$write_arg'(Stream, S, Options, N, M, Depth) :-
+  	L is M+1,
+! 	put_code(Stream, 0',),
+! 	put_code(Stream, 0' ),
+  	arg(L, S, X),
+! 	'$write_term'(Stream, X, Options, 999, Depth),
+! 	'$write_arg'(Stream, S, Options, N, L, Depth).
+  
+  /*
+!  * '$write_structureNF'(Stream, S, Options, Prec, Depth)
+   * writes the structure S in a non-functional form according to the Options,
+   * with the precedence of the enclosing operator being Prec.
+   *
+--- 1053,1107 ----
+   *			  @integer).
+   */
+  
+! '$write_function'(StreamNum, _Term, Options, P, N, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+!         '$write_functor'(P, StreamNum, Options, Depth),  
+! 	put_code(StreamNum, 0'(), 
+! 	'$write_atom'(StreamNum, '...', Options),
+! 	put_code(StreamNum, 0')).
+! '$write_function'(StreamNum, Term, Options, P, N, Depth) :-
+  	Depth1 is Depth+1,
+!         '$write_functor'(P, StreamNum, Options, Depth),  
+! 	put_code(StreamNum, 0'(), 
+  	arg(1, Term, X), 
+! 	'$write_term'(StreamNum, X, Options, 999, Depth1),
+!         '$write_arg'(StreamNum, Term, Options, N, 1, Depth1), 
+! 	put_code(StreamNum, 0')).
+  
+  /*
+!  * '$write_functor'(F, StreamNum, Options, Depth)
+   * Write the functor.
+   *
+   * mode '$write_functor'(@term, @integer, @gcomp, @integer).
+   */
+! '$write_functor'(F, StreamNum, Options, Depth) :-
+  	sub(F),
+  	!,
+! 	put_code(StreamNum, 0'(),
+!         '$write_term'(StreamNum, F, Options, 0, Depth),
+! 	put_code(StreamNum, 0')).
+! '$write_functor'(F, StreamNum, Options, Depth) :-
+!         '$write_term'(StreamNum, F, Options, 0, Depth).
+  
+  /*
+!  * '$write_arg'(StreamNum, S, Options, N, M, Depth)
+   * writes the (M+1)th to Nth arguments of S according to the Options.
+   *
+   * mode '$write_arg'(@integer, @compound, @gcomp, @integer, @integer, @integer).
+   */
+  
+! '$write_arg'(_StreamNum, _S, _Options, N, N, _Depth) :- !.
+! '$write_arg'(StreamNum, S, Options, N, M, Depth) :-
+  	L is M+1,
+! 	put_code(StreamNum, 0',),
+! 	put_code(StreamNum, 0' ),
+  	arg(L, S, X),
+! 	'$write_term'(StreamNum, X, Options, 999, Depth),
+! 	'$write_arg'(StreamNum, S, Options, N, L, Depth).
+  
+  /*
+!  * '$write_structureNF'(StreamNum, S, Options, Prec, Depth)
+   * writes the structure S in a non-functional form according to the Options,
+   * with the precedence of the enclosing operator being Prec.
+   *
+***************
+*** 1046,1065 ****
+   * mode '$write_structureNF'(@integer, @compound, @gcomp, @integer, @integer).
+   */
+  
+! '$write_structureNF'(Stream, [X|Y], Options, _, Depth) :-
+  	!,
+  	(   '$get_depth'(Options, Depth)
+  	    ->
+! 		put_code(Stream, 0'[),
+! 		'$write_atom'(Stream, '...', Options),
+! 		put_code(Stream, 0'])
+  	    ;
+  		Depth1 is Depth+1,
+! 		put_code(Stream, 0'[),
+! 		'$write_term'(Stream, X, Options, 999, Depth1),
+! 		'$write_list_tail'(Stream, Y, Options, Depth1)
+  	).
+! '$write_structureNF'(Stream, S, Options, Prec, Depth) :-
+  	functor(S, P, N),
+  	(   (		\+(atom(P))
+  		;
+--- 1108,1127 ----
+   * mode '$write_structureNF'(@integer, @compound, @gcomp, @integer, @integer).
+   */
+  
+! '$write_structureNF'(StreamNum, [X|Y], Options, _, Depth) :-
+  	!,
+  	(   '$get_depth'(Options, Depth)
+  	    ->
+! 		put_code(StreamNum, 0'[),
+! 		'$write_atom'(StreamNum, '...', Options),
+! 		put_code(StreamNum, 0'])
+  	    ;
+  		Depth1 is Depth+1,
+! 		put_code(StreamNum, 0'[),
+! 		'$write_term'(StreamNum, X, Options, 999, Depth1),
+! 		'$write_list_tail'(StreamNum, Y, Options, Depth1)
+  	).
+! '$write_structureNF'(StreamNum, S, Options, Prec, Depth) :-
+  	functor(S, P, N),
+  	(   (		\+(atom(P))
+  		;
+***************
+*** 1066,1082 ****
+  			2 < N
+  	    )
+  	    ->
+! 		'$write_function'(Stream, S, Options, P, N, Depth)
+  	    ;
+  	    N = 1 
+  	    ->
+! 		'$write_uniopNF'(Stream, S, Options, P, N, Prec, Depth)
+  	    ;
+! 		'$write_binopNF'(Stream, S, Options, P, N, Prec, Depth)
+  	).
+  
+  /*
+!  * '$write_comma_tail'(Stream, X, Options)
+   * writes, according to the Options, the tail X of a comma-separated list 
+   * whose head has already been written.
+   *
+--- 1128,1144 ----
+  			2 < N
+  	    )
+  	    ->
+! 		'$write_function'(StreamNum, S, Options, P, N, Depth)
+  	    ;
+  	    N = 1 
+  	    ->
+! 		'$write_uniopNF'(StreamNum, S, Options, P, N, Prec, Depth)
+  	    ;
+! 		'$write_binopNF'(StreamNum, S, Options, P, N, Prec, Depth)
+  	).
+  
+  /*
+!  * '$write_comma_tail'(StreamNum, X, Options)
+   * writes, according to the Options, the tail X of a comma-separated list 
+   * whose head has already been written.
+   *
+***************
+*** 1083,1109 ****
+   * mode '$write_comma_tail'(@integer, @list(term), @gcomp).
+   */
+  
+! '$write_comma_tail'(Stream, X, Options) :- 
+  	var(X), 
+  	!, 
+! 	put_code(Stream, 0',), 
+! 	put_code(Stream, 0' ),
+! 	'$write_var'(Stream, X, Options), 
+! 	put_code(Stream, 0')).
+! '$write_comma_tail'(Stream, (X,Y), Options) :- 
+  	!, 
+! 	put_code(Stream, 0',), 
+! 	put_code(Stream, 0' ),
+! 	'$write_term'(Stream, X, Options, 999), 
+! 	'$write_comma_tail'(Stream, Y, Options).
+! '$write_comma_tail'(Stream, X, Options) :- 
+! 	put_code(Stream, 0',), 
+! 	put_code(Stream, 0' ),
+! 	'$write_term'(Stream, X, Options, 999), 
+! 	put_code(Stream, 0')).
+  
+  /*
+!  * '$write_list_tail'(Stream, X, Options, Depth)
+   * writes, according to the Options, the tail X of a list 
+   * whose head has already been written.
+   * If the maximum depth is reached, abbewviate the arguments with '...'.
+--- 1145,1171 ----
+   * mode '$write_comma_tail'(@integer, @list(term), @gcomp).
+   */
+  
+! '$write_comma_tail'(StreamNum, X, Options) :- 
+  	var(X), 
+  	!, 
+! 	put_code(StreamNum, 0',), 
+! 	put_code(StreamNum, 0' ),
+! 	'$write_var'(StreamNum, X, Options), 
+! 	put_code(StreamNum, 0')).
+! '$write_comma_tail'(StreamNum, (X,Y), Options) :- 
+  	!, 
+! 	put_code(StreamNum, 0',), 
+! 	put_code(StreamNum, 0' ),
+! 	'$write_term'(StreamNum, X, Options, 999), 
+! 	'$write_comma_tail'(StreamNum, Y, Options).
+! '$write_comma_tail'(StreamNum, X, Options) :- 
+! 	put_code(StreamNum, 0',), 
+! 	put_code(StreamNum, 0' ),
+! 	'$write_term'(StreamNum, X, Options, 999), 
+! 	put_code(StreamNum, 0')).
+  
+  /*
+!  * '$write_list_tail'(StreamNum, X, Options, Depth)
+   * writes, according to the Options, the tail X of a list 
+   * whose head has already been written.
+   * If the maximum depth is reached, abbewviate the arguments with '...'.
+***************
+*** 1111,1147 ****
+   * mode '$write_list_tail'(@integer, @list(term), @gcomp, @integer).
+   */
+  
+! '$write_list_tail'(Stream, _X, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(Stream, 0'|),
+! 	'$write_atom'(Stream, '...', Options),
+! 	put_code(Stream, 0']).
+! '$write_list_tail'(Stream, X, Options, Depth) :-
+  	var(X), 
+  	!, 
+  	Depth1 is Depth+1,
+! 	put_code(Stream, 0'|), 
+! 	'$write_term'(Stream, X, Options, 999, Depth1), 
+! 	put_code(Stream, 0']).
+! '$write_list_tail'(Stream, [X|Y], Options, Depth) :- 
+  	!, 
+  	Depth1 is Depth+1,
+! 	put_code(Stream, 0',), 
+! 	put_code(Stream, 0' ),
+! 	'$write_term'(Stream, X, Options, 999, Depth1), 
+! 	'$write_list_tail'(Stream, Y, Options, Depth1).
+! '$write_list_tail'(Stream, [], _Options, _Depth) :- 
+  	!, 
+! 	put_code(Stream, 0']).
+! '$write_list_tail'(Stream, X, Options, Depth) :- 
+  	Depth1 is Depth+1,
+! 	put_code(Stream, 0'|), 
+! 	'$write_term'(Stream, X, Options, 999, Depth1), 
+! 	put_code(Stream, 0']).
+  
+  /*
+!  * '$write_uniopNF'(Stream, S, Options, P, N, Prec, Depth)
+   * writes, according to the Options, 
+   * the unary term S whose functor is P in a non-functional style, 
+   * with the precedence of the enclosing operator being Prec.
+--- 1173,1209 ----
+   * mode '$write_list_tail'(@integer, @list(term), @gcomp, @integer).
+   */
+  
+! '$write_list_tail'(StreamNum, _X, Options, Depth) :-
+  	'$get_depth'(Options, Depth),
+  	!,
+! 	put_code(StreamNum, 0'|),
+! 	'$write_atom'(StreamNum, '...', Options),
+! 	put_code(StreamNum, 0']).
+! '$write_list_tail'(StreamNum, X, Options, Depth) :-
+  	var(X), 
+  	!, 
+  	Depth1 is Depth+1,
+! 	put_code(StreamNum, 0'|), 
+! 	'$write_term'(StreamNum, X, Options, 999, Depth1), 
+! 	put_code(StreamNum, 0']).
+! '$write_list_tail'(StreamNum, [X|Y], Options, Depth) :- 
+  	!, 
+  	Depth1 is Depth+1,
+! 	put_code(StreamNum, 0',), 
+! 	put_code(StreamNum, 0' ),
+! 	'$write_term'(StreamNum, X, Options, 999, Depth1), 
+! 	'$write_list_tail'(StreamNum, Y, Options, Depth1).
+! '$write_list_tail'(StreamNum, [], _Options, _Depth) :- 
+  	!, 
+! 	put_code(StreamNum, 0']).
+! '$write_list_tail'(StreamNum, X, Options, Depth) :- 
+  	Depth1 is Depth+1,
+! 	put_code(StreamNum, 0'|), 
+! 	'$write_term'(StreamNum, X, Options, 999, Depth1), 
+! 	put_code(StreamNum, 0']).
+  
+  /*
+!  * '$write_uniopNF'(StreamNum, S, Options, P, N, Prec, Depth)
+   * writes, according to the Options, 
+   * the unary term S whose functor is P in a non-functional style, 
+   * with the precedence of the enclosing operator being Prec.
+***************
+*** 1150,1156 ****
+   *			 @integer, @integer).
+   */
+  
+! '$write_uniopNF'(Stream, S, Options, P, N, Prec, Depth) :-
+  	'$uniop_prec_assoc'(P, Opprec, Argprec, Opassoc, Options),
+  	!,
+     	(   (		Opassoc = fx
+--- 1212,1218 ----
+   *			 @integer, @integer).
+   */
+  
+! '$write_uniopNF'(StreamNum, S, Options, P, N, Prec, Depth) :-
+  	'$uniop_prec_assoc'(P, Opprec, Argprec, Opassoc, Options),
+  	!,
+     	(   (		Opassoc = fx
+***************
+*** 1158,1171 ****
+  			Opassoc = fy
+  	    )
+  	    ->
+! 		'$writepreop'(Stream, S, Options, P, Prec, Opprec, Argprec,
+  			      Depth)
+  	    ;
+!        		'$writepostop'(Stream, S, Options, P, Prec, Opprec, Argprec,
+  			       Depth)
+      	).
+! '$write_uniopNF'(Stream, S, Options, P, N, _Prec, Depth) :-
+! 	'$write_function'(Stream, S, Options, P, N, Depth).
+  
+  /* 
+   * '$uniop_prec_assoc'(P, Opprec, Argprec, Opassoc, Options)
+--- 1220,1233 ----
+  			Opassoc = fy
+  	    )
+  	    ->
+! 		'$writepreop'(StreamNum, S, Options, P, Prec, Opprec, Argprec,
+  			      Depth)
+  	    ;
+!        		'$writepostop'(StreamNum, S, Options, P, Prec, Opprec, Argprec,
+  			       Depth)
+      	).
+! '$write_uniopNF'(StreamNum, S, Options, P, N, _Prec, Depth) :-
+! 	'$write_function'(StreamNum, S, Options, P, N, Depth).
+  
+  /* 
+   * '$uniop_prec_assoc'(P, Opprec, Argprec, Opassoc, Options)
+***************
+*** 1187,1193 ****
+  	!.
+  
+  /*
+!  * '$write_binopNF'(Stream, S, Options, P, N, Prec, Depth)
+   * writes, according to the Options, 
+   * the binary term S whose functor is P in a non-functional style, 
+   * with the precedence of the enclosing operator being Prec.
+--- 1249,1255 ----
+  	!.
+  
+  /*
+!  * '$write_binopNF'(StreamNum, S, Options, P, N, Prec, Depth)
+   * writes, according to the Options, 
+   * the binary term S whose functor is P in a non-functional style, 
+   * with the precedence of the enclosing operator being Prec.
+***************
+*** 1196,1208 ****
+   *			 @integer, @integer).
+   */
+  
+! '$write_binopNF'(Stream, S, Options, P, _N, Prec, Depth) :-
+      	'$binop_prec_assoc'(P, Largprec, Opprec, Rargprec, _Opassoc, Options),
+  	!,
+! 	'$writeinop'(Stream, S, Options, P, Prec, Opprec, Largprec, Rargprec,
+  		     Depth).
+! '$write_binopNF'(Stream, S, Options, P, N, _Prec, Depth) :-
+!       	'$write_function'(Stream, S, Options, P, N, Depth).
+  	
+  /* 
+   * '$binop_prec_assoc'(P, Largprec, Opprec, Rargprec, Opassoc, Options)
+--- 1258,1270 ----
+   *			 @integer, @integer).
+   */
+  
+! '$write_binopNF'(StreamNum, S, Options, P, _N, Prec, Depth) :-
+      	'$binop_prec_assoc'(P, Largprec, Opprec, Rargprec, _Opassoc, Options),
+  	!,
+! 	'$writeinop'(StreamNum, S, Options, P, Prec, Opprec, Largprec, Rargprec,
+  		     Depth).
+! '$write_binopNF'(StreamNum, S, Options, P, N, _Prec, Depth) :-
+!       	'$write_function'(StreamNum, S, Options, P, N, Depth).
+  	
+  /* 
+   * '$binop_prec_assoc'(P, Largprec, Opprec, Rargprec, Opassoc, Options)
+***************
+*** 1218,1224 ****
+  	'$infix_prec'(Assoc, Opprec, Left, Right).
+  
+  /*
+!  * '$writepreop'(Stream, Term, Options, Op, Oldp, Curp, Newp, Depth)
+   * writes, according to the Options and precedences Oldp, Curp and Newp,
+   * the unary Term whose functor is Op in a prefix form.
+   *
+--- 1280,1286 ----
+  	'$infix_prec'(Assoc, Opprec, Left, Right).
+  
+  /*
+!  * '$writepreop'(StreamNum, Term, Options, Op, Oldp, Curp, Newp, Depth)
+   * writes, according to the Options and precedences Oldp, Curp and Newp,
+   * the unary Term whose functor is Op in a prefix form.
+   *
+***************
+*** 1226,1232 ****
+   *		      @integer, @integer).
+   */
+  
+! '$writepreop'(Stream, Term, Options, '-', Oldp, Curp, Newp, Depth) :-
+          arg(1, Term, Arg),
+  	integer(Arg),
+  	!,
+--- 1288,1294 ----
+   *		      @integer, @integer).
+   */
+  
+! '$writepreop'(StreamNum, Term, Options, '-', Oldp, Curp, Newp, Depth) :-
+          arg(1, Term, Arg),
+  	integer(Arg),
+  	!,
+***************
+*** 1233,1270 ****
+  	Depth1 is Depth+1,
+          (   Newp <  Oldp
+  	    ->
+! 		'$write_atom'(Stream, -, Options),
+! 		put_code(Stream, 0' ),
+!                 put_code(Stream, 0'(),
+! 		'$write_term'(Stream, Arg, Options, Newp, Depth1),
+!                 put_code(Stream, 0'))
+              ; 
+!                 put_code(Stream, 0'(),
+! 		'$write_atom'(Stream, -, Options),
+! 		put_code(Stream, 0' ),
+!                 put_code(Stream, 0'(),
+! 		'$write_term'(Stream, Arg, Options, Newp, Depth1),
+!                 put_code(Stream, 0')),
+!                 put_code(Stream, 0'))
+          ).
+! '$writepreop'(Stream, Term, Options, Op, Oldp, Curp, Newp, Depth) :-
+  	Depth1 is Depth+1,
+          arg(1, Term, Arg),
+          (   Newp < Oldp
+  	    ->
+! 		'$write_atom'(Stream, Op, Options),
+! 		put_code(Stream, 0' ),
+! 		'$write_term'(Stream, Arg, Options, Newp, Depth1)
+              ; 
+!                 put_code(Stream, 0'(),
+! 		'$write_atom'(Stream, Op, Options),
+! 		put_code(Stream, 0' ),
+! 		'$write_term'(Stream, Arg, Options, Newp, Depth1),
+!                 put_code(Stream, 0'))
+          ).
+  
+  /*
+!  * '$writepostop'(Stream, Term, Options, Op, Oldp, Curp, Newp, Depth)
+   * writes, according to the Options and precedences Oldp, Curp and Newp,
+   * the unary Term whose functor is Op in a postfix form.
+   *
+--- 1295,1332 ----
+  	Depth1 is Depth+1,
+          (   Newp <  Oldp
+  	    ->
+! 		'$write_atom'(StreamNum, -, Options),
+! 		put_code(StreamNum, 0' ),
+!                 put_code(StreamNum, 0'(),
+! 		'$write_term'(StreamNum, Arg, Options, Newp, Depth1),
+!                 put_code(StreamNum, 0'))
+              ; 
+!                 put_code(StreamNum, 0'(),
+! 		'$write_atom'(StreamNum, -, Options),
+! 		put_code(StreamNum, 0' ),
+!                 put_code(StreamNum, 0'(),
+! 		'$write_term'(StreamNum, Arg, Options, Newp, Depth1),
+!                 put_code(StreamNum, 0')),
+!                 put_code(StreamNum, 0'))
+          ).
+! '$writepreop'(StreamNum, Term, Options, Op, Oldp, Curp, Newp, Depth) :-
+  	Depth1 is Depth+1,
+          arg(1, Term, Arg),
+          (   Newp < Oldp
+  	    ->
+! 		'$write_atom'(StreamNum, Op, Options),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_term'(StreamNum, Arg, Options, Newp, Depth1)
+              ; 
+!                 put_code(StreamNum, 0'(),
+! 		'$write_atom'(StreamNum, Op, Options),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_term'(StreamNum, Arg, Options, Newp, Depth1),
+!                 put_code(StreamNum, 0'))
+          ).
+  
+  /*
+!  * '$writepostop'(StreamNum, Term, Options, Op, Oldp, Curp, Newp, Depth)
+   * writes, according to the Options and precedences Oldp, Curp and Newp,
+   * the unary Term whose functor is Op in a postfix form.
+   *
+***************
+*** 1272,1295 ****
+   *                     @integer, @integer).
+   */
+  
+! '$writepostop'(Stream, Term, Options, Op, Oldp, Curp, Newp, Depth) :-
+  	Depth1 is Depth+1,
+          arg(1, Term, Arg),
+          (   Newp < Oldp
+  	    ->
+!                 '$write_term'(Stream, Arg, Options, Newp, Depth1),
+! 		put_code(Stream, 0' ),
+! 		'$write_atom'(Stream, Op, Options)
+              ; 
+!                 put_code(Stream, 0'(),
+!                 '$write_term'(Stream, Arg, Options, Newp, Depth1),
+! 		put_code(Stream, 0' ),
+! 		'$write_atom'(Stream, Op, Options),
+!                 put_code(Stream, 0'))
+          ).
+  
+  /*
+!  * '$writeinop'(Stream, Term, Options, Op, Oldp, Curp, Newlp, Newrp, Depth)
+   * writes, according to the Options and precedences Oldp, Curp, Newlp and Newrp,
+   * the binary Term whose functor is Op in an infix form.
+   *
+--- 1334,1357 ----
+   *                     @integer, @integer).
+   */
+  
+! '$writepostop'(StreamNum, Term, Options, Op, Oldp, Curp, Newp, Depth) :-
+  	Depth1 is Depth+1,
+          arg(1, Term, Arg),
+          (   Newp < Oldp
+  	    ->
+!                 '$write_term'(StreamNum, Arg, Options, Newp, Depth1),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_atom'(StreamNum, Op, Options)
+              ; 
+!                 put_code(StreamNum, 0'(),
+!                 '$write_term'(StreamNum, Arg, Options, Newp, Depth1),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_atom'(StreamNum, Op, Options),
+!                 put_code(StreamNum, 0'))
+          ).
+  
+  /*
+!  * '$writeinop'(StreamNum, Term, Options, Op, Oldp, Curp, Newlp, Newrp, Depth)
+   * writes, according to the Options and precedences Oldp, Curp, Newlp and Newrp,
+   * the binary Term whose functor is Op in an infix form.
+   *
+***************
+*** 1297,1321 ****
+   *                   @integer, @integer, @integer).
+   */
+  
+! '$writeinop'(Stream, Term, Options, Op, Oldp, Curp, Newlp, Newrp, Depth) :-
+  	Depth1 is Depth+1,
+          arg(1, Term, Arg1),
+          arg(2, Term, Arg2),
+          (   Newlp < Oldp, Newrp < Oldp
+  	    ->
+!                 '$write_term'(Stream, Arg1, Options, Newlp, Depth1),
+! 		put_code(Stream, 0' ),
+! 		'$write_atom'(Stream, Op, Options),
+! 		put_code(Stream, 0' ),
+! 		'$write_term'(Stream, Arg2, Options, Newrp, Depth1)
+              ;
+!                 put_code(Stream, 0'(),
+!                 '$write_term'(Stream, Arg1, Options, Newlp, Depth1),
+! 		put_code(Stream, 0' ),
+! 		'$write_atom'(Stream, Op, Options),
+! 		put_code(Stream, 0' ),
+! 		'$write_term'(Stream, Arg2, Options, Newrp, Depth1),
+!                 put_code(Stream, 0'))
+          ).
+  
+  /*
+--- 1359,1383 ----
+   *                   @integer, @integer, @integer).
+   */
+  
+! '$writeinop'(StreamNum, Term, Options, Op, Oldp, Curp, Newlp, Newrp, Depth) :-
+  	Depth1 is Depth+1,
+          arg(1, Term, Arg1),
+          arg(2, Term, Arg2),
+          (   Newlp < Oldp, Newrp < Oldp
+  	    ->
+!                 '$write_term'(StreamNum, Arg1, Options, Newlp, Depth1),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_atom'(StreamNum, Op, Options),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_term'(StreamNum, Arg2, Options, Newrp, Depth1)
+              ;
+!                 put_code(StreamNum, 0'(),
+!                 '$write_term'(StreamNum, Arg1, Options, Newlp, Depth1),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_atom'(StreamNum, Op, Options),
+! 		put_code(StreamNum, 0' ),
+! 		'$write_term'(StreamNum, Arg2, Options, Newrp, Depth1),
+!                 put_code(StreamNum, 0'))
+          ).
+  
+  /*
+***************
+*** 1327,1397 ****
+   * mode '$write_list_sep'(@list(term), @term, @gcomp).
+   */
+  write_term_list(TermList) :-
+! 	current_output(Stream),
+! 	'$write_term_list'(Stream, TermList).
+  
+  write_term_list(Stream, TermList) :-
+! 	'$get_stream'(Stream, output, write_term_list(Stream, TermList)),
+! 	'$write_term_list'(Stream, TermList).
+  
+! '$write_term_list'(Stream, []) :- !.
+! '$write_term_list'(Stream, [X|List]) :-
+! 	'$write_term_term'(X, Stream),
+! 	'$write_term_list'(Stream, List).
+  
+! '$write_term_term'(nl, Stream) :-
+  	!,
+! 	put_code(Stream, 0'
+  ).
+! '$write_term_term'(tab(N), Stream) :-
+  	!,
+! 	'$tab'(Stream, N).
+! '$write_term_term'(sp, Stream) :-
+  	!,
+! 	put_code(Stream, 0' ).
+! '$write_term_term'(pc(Code), Stream) :-
+  	!,
+! 	put_code(Stream, Code).
+! '$write_term_term'(wa(Atom), Stream) :-
+  	!,
+! 	write_atom(Stream, Atom).
+! '$write_term_term'(wqa(Atom), Stream) :-
+  	!,
+! 	writeq_atom(Stream, Atom).
+! '$write_term_term'(wi(Atom), Stream) :-
+  	!,
+! 	write_integer(Stream, Atom).
+! '$write_term_term'(q(Term), Stream) :-
+  	!,
+! 	'$write_t'(Stream, Term, writeq).
+! '$write_term_term'(w(Term), Stream) :-
+  	!,
+! 	'$write_t'(Stream, Term, write).
+! '$write_term_term'(wRq(Term), Stream) :-
+  	!,
+  	name_vars(Term),
+! 	'$write_t'(Stream, Term, writeq).
+! '$write_term_term'(wR(Term), Stream) :-
+  	!,
+  	name_vars(Term),
+! 	'$write_t'(Stream, Term, write).
+! '$write_term_term'(wl(Term, Sep), Stream) :-
+  	!,
+! 	'$write_list_sep'(Term, Sep, Stream).
+! '$write_term_term'(Term, Stream) :-
+  	!,
+! 	'$write_t'(Stream, Term, write).
+  
+! '$write_list_sep'([Term], _, Stream) :-
+  	!,
+! 	'$write_t'(Stream, Term, write).
+! '$write_list_sep'([Term|List], Sep, Stream) :-
+! 	'$write_t'(Stream, Term, write),
+! 	'$write_t'(Stream, Sep, write),
+! 	'$write_list_sep'(List, Sep, Stream).
+  
+! '$write_t'(Stream, Term, Type) :-
+! 	'$write_term'(Stream, Term, Type, 1200, 1),
+  	fail.
+  '$write_t'(_, _, _).
+  /*
+--- 1389,1459 ----
+   * mode '$write_list_sep'(@list(term), @term, @gcomp).
+   */
+  write_term_list(TermList) :-
+! 	'$current_output'(StreamNo),
+! 	'$write_term_list'(StreamNo, TermList).
+  
+  write_term_list(Stream, TermList) :-
+! 	'$get_streamNo'(StreamNo, output, write_term_list(Stream, TermList)),
+! 	'$write_term_list'(StreamNo, TermList).
+  
+! '$write_term_list'(StreamNo, []) :- !.
+! '$write_term_list'(StreamNo, [X|List]) :-
+! 	'$write_term_term'(X, StreamNo),
+! 	'$write_term_list'(StreamNo, List).
+  
+! '$write_term_term'(nl, StreamNo) :-
+  	!,
+! 	put_code(StreamNo, 0'
+  ).
+! '$write_term_term'(tab(N), StreamNo) :-
+  	!,
+! 	'$tab'(StreamNo, N).
+! '$write_term_term'(sp, StreamNo) :-
+  	!,
+! 	put_code(StreamNo, 0' ).
+! '$write_term_term'(pc(Code), StreamNo) :-
+  	!,
+! 	put_code(StreamNo, Code).
+! '$write_term_term'(wa(Atom), StreamNo) :-
+  	!,
+! 	write_atom(StreamNo, Atom).
+! '$write_term_term'(wqa(Atom), StreamNo) :-
+  	!,
+! 	writeq_atom(StreamNo, Atom).
+! '$write_term_term'(wi(Atom), StreamNo) :-
+  	!,
+! 	write_integer(StreamNo, Atom).
+! '$write_term_term'(q(Term), StreamNo) :-
+  	!,
+! 	'$write_t'(StreamNo, Term, writeq).
+! '$write_term_term'(w(Term), StreamNo) :-
+  	!,
+! 	'$write_t'(StreamNo, Term, write).
+! '$write_term_term'(wRq(Term), StreamNo) :-
+  	!,
+  	name_vars(Term),
+! 	'$write_t'(StreamNo, Term, writeq).
+! '$write_term_term'(wR(Term), StreamNo) :-
+  	!,
+  	name_vars(Term),
+! 	'$write_t'(StreamNo, Term, write).
+! '$write_term_term'(wl(Term, Sep), StreamNo) :-
+  	!,
+! 	'$write_list_sep'(Term, Sep, StreamNo).
+! '$write_term_term'(Term, StreamNo) :-
+  	!,
+! 	'$write_t'(StreamNo, Term, write).
+  
+! '$write_list_sep'([Term], _, StreamNo) :-
+  	!,
+! 	'$write_t'(StreamNo, Term, write).
+! '$write_list_sep'([Term|List], Sep, StreamNo) :-
+! 	'$write_t'(StreamNo, Term, write),
+! 	'$write_t'(StreamNo, Sep, write),
+! 	'$write_list_sep'(List, Sep, StreamNo).
+  
+! '$write_t'(StreamNo, Term, Type) :-
+! 	'$write_term'(StreamNo, Term, Type, 1200, 1),
+  	fail.
+  '$write_t'(_, _, _).
+  /*
+***************
+*** 1402,1422 ****
+   * mode '$stdout_nl'.
+   */
+  '$stdout_atom'(Atom) :-
+!     write_atom(stdout, Atom).
+  
+  '$stdout_int'(Int) :-
+!     write_integer(stdout, Int).
+  
+  '$stdout_nl' :-
+!     put_code(stdout, 0'
+!         	).
+  
+  write_atom(A) :-
+!     current_output(Stream),
+!     write_atom(Stream, A).
+  writeq_atom(A) :-
+!     current_output(Stream),
+!     writeq_atom(Stream, A).
+! 
+! write_integer(Stream, I) :-
+!     '$write_integer'(Stream, I).
+--- 1464,1481 ----
+   * mode '$stdout_nl'.
+   */
+  '$stdout_atom'(Atom) :-
+! 	write_atom(1, Atom).
+  
+  '$stdout_int'(Int) :-
+! 	write_integer(1, Int).
+  
+  '$stdout_nl' :-
+! 	put_code(1, 0'
+! 	).
+  
+  write_atom(A) :-
+! 	'$current_output'(N),
+! 	write_atom(N,A).
+  writeq_atom(A) :-
+! 	'$current_output'(N),
+! 	writeq_atom(N,A).

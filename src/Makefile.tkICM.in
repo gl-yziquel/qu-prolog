@@ -1,0 +1,40 @@
+export COMMAND.tkICM = tkICM
+
+export SOURCES.tkICM = \
+	icm_support.c \
+	tkICM.c
+
+export BASES.tkICM		= $(basename $(SOURCES.tkICM))
+export OBJECTS.tkICM	= $(addsuffix .o,$(BASES.tkICM))
+
+# additional include file directories
+CFLAGS          = -I/usr/X11R6/include \
+                  -I/usr/include \
+                  -I@TKHDIR@ \
+                  -I/opt/icm/include
+
+# additional library directories and libraries
+LOADLIBES       = -L/usr/X11R6/lib -lX11 \
+                  -L@TKDIR@ -l@TKL@ \
+                  -L@TCLDIR@ -l@TCLL@ \
+                  -L/opt/icm/lib -licm -lpthread \
+                  -lgcc -lm -lnsl -ldl
+
+# use gcc compiler
+CC      = gcc -D_REENTRANT -O2 -Wall 
+
+.PHONY: all.tkICM
+all.tkICM: $(COMMAND.tkICM)
+
+$(COMMAND.tkICM): $(OBJECTS.tkICM)
+
+.PHONY: install.tkICM
+install.tkICM: @QPHOME@/bin/$(COMMAND.tkICM)
+
+@QPHOME@/bin/$(COMMAND.tkICM): $(COMMAND.tkICM)
+	@INSTALL@ $(COMMAND.tkICM) @QPHOME@/bin
+
+$(COMMAND.tkICM): $(OBJECTS.tkICM)
+	$(CC) $(LDFLAGS) -o $(COMMAND.tkICM) $(OBJECTS.tkICM) $(LOADLIBES)
+
+

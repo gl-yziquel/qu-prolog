@@ -1,0 +1,110 @@
+#! /bin/sh
+# the next line restarts using tkICM \
+exec tkICM "$0" "$@"
+
+#
+# A monitor GUI - displays a received message and addresses and 
+# forwards the message on to the reply-to address of the message.
+
+# The name of the GUI
+set gui_name monitor_gui
+
+# Initialises the ICM-Comms
+icmInitComms 0 ""
+
+# Register the ICM-agent using gui_name as the name of this process
+# and returning the pipe file handle for incoming messages
+set icm_pipe [icmRegisterAgent $gui_name]
+
+# Set up the ICM pipe file event
+fconfigure $icm_pipe -blocking 0 -buffering line
+fileevent  $icm_pipe readable {eval [icm_msg_read]}
+
+###################################################################
+# The following function reads ICM messages from the ICM pipe
+# and calls a user defined function process_icm_message that takes
+# the message and the sender address.
+# The special message $exit_gui causes the GUI to exit.
+#
+# Do not change any of the following message processing code.
+# 
+
+# Initialise the message buffer
+set icm_msg_buffer ""
+
+# Set up the message delimiters
+set end_of_message "\$\$EICMM\$\$"
+set start_of_address "\$\$SICMA\$\$"
+set address_separator "\$\$ICMAS\$\$"
+set len_end_of_message [string length $end_of_message]
+set len_start_of_address [string length $start_of_address]
+set len_address_separator [string length $address_separator]
+
+# The function called for ICM pipe read events.
+proc icm_msg_read {} {
+    global icm_msg_buffer
+    global end_of_message
+    global start_of_address
+    global address_separator
+    global len_end_of_message
+    global len_start_of_address
+    global len_address_separator
+    global icm_pipe
+
+    set term [read $icm_pipe]
+    if [eof $icm_pipe] {
+        fileevent  $icm_pipe ""
+        close $icm_pipe
+        exit 0
+    }
+    set icm_msg_buffer $icm_msg_buffer$term
+    set end_msg [string first $end_of_message $icm_msg_buffer]
+
+# Process all complete messages
+    while {$end_msg != -1} {
+        # Extract the message and sender address
+        set icm_msg [string range $icm_msg_buffer 0 [expr $end_msg - 1]]
+        set icm_msg_buffer [string range $icm_msg_buffer \
+                       [expr $end_msg + $len_end_of_message] end]
+        set end_msg [string first $end_of_message $icm_msg_buffer]
+        set end_command [string first $start_of_address $icm_msg]
+        set icm_addr [string range $icm_msg \
+                   [expr $end_command + $len_start_of_address] end]
+        set end_from [string first $address_separator $icm_addr]
+        set reply_to [string range $icm_addr \
+                   [expr $end_from + $len_address_separator] end]
+        set from [string range $icm_addr 0 [expr $end_from - 1]]
+        set icm_msg [string range $icm_msg 0 [expr $end_command -1]]
+        if { $icm_msg == "\$exit_gui"} {
+            exit 0
+        } else {
+            process_icm_message $icm_msg $from $reply_to
+        }
+    }
+}
+
+############# end of ICM message processing ####################
+
+scrollbar .s -relief flat -command ".appio yview"
+pack .s -side right -fill y
+text .appio -relief raised -bd 2 -yscrollcommand ".s set" -setgrid true -width 80 -height 40
+pack .appio -side left -fill both -expand 1
+.appio configure -font -Adobe-Courier-Medium-R-*-*-140-*
+.appio configure -foreground blue
+.appio tag configure color1 -foreground black
+
+
+.appio mark set insert end
+
+bind .appio <Destroy> {
+        icmDeregisterAgent
+        }
+
+
+proc process_icm_message {msg addr reply} {
+    .appio insert end "Message: <|$msg|>\nFrom: $addr\nTo  : $reply\n\n"
+    .appio mark set insert end
+    .appio see end
+    icmFmtSendMsg $reply $addr $msg
+}
+

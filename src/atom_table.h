@@ -1,0 +1,615 @@
+// atom_table.h - The atom table is a hash table providing a fast search
+//		  through the string table.
+//
+// ##Copyright##
+// 
+// Copyright (C) 2000, 20001
+// Software Verification Research Centre
+// The University of Queensland
+// Australia 4072
+// 
+// email: svrc@it.uq.edu.au
+// 
+// The Qu-Prolog 6.0 System and Documentation  
+// 
+// COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
+// 
+// Copyright 2000,2001 by The University of Queensland, 
+// Queensland 4072 Australia
+// 
+// Permission to use, copy and distribute this software and associated
+// documentation for any non-commercial purpose and without fee is hereby 
+// granted, subject to the following conditions:
+// 
+// 1. 	that the above copyright notice and this permission notice and 
+// 	warranty disclaimer appear in all copies and in supporting 
+// 	documentation; 
+// 
+// 2.	that the name of the University of Queensland not be used in 
+// 	advertising or publicity pertaining to distribution of the software 
+// 	without specific, written prior permission; 
+// 
+// 3.	that users of this software should be responsible for determining the 
+// 	fitness of the software for the purposes for which the software is 
+// 	employed by them; 
+// 
+// 4. 	that no changes to the system or documentation are subsequently 
+// 	made available to third parties or redistributed without prior 
+// 	written consent from the SVRC; and
+// 
+// The University of Queensland disclaims all warranties with regard to this
+// software, including all implied warranties of merchantability and fitness
+// to the extent permitted by law. In no event shall the University of 
+// Queensland be liable for any special, indirect or consequential damages or 
+// any damages whatsoever resulting from loss of use, data or profits, whether 
+// in an action of contract, negligence or other tortious action, arising out 
+// of or in connection with the use or performance of this software.
+// 
+// THE UNIVERSITY OF QUEENSLAND MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR
+// SUITABILITY OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
+// WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
+// 
+// 
+// For information on commercial use of this software contact the SVRC.
+// 
+// ##Copyright##
+//
+// $Id: atom_table.h,v 1.2 2000/12/13 23:10:00 qp Exp $
+
+#ifndef ATOM_TABLE_H
+#define ATOM_TABLE_H
+
+#include <iostream.h>
+
+#include "config.h"
+
+#include "area_offsets.h"
+#include "defs.h"
+#include "hash_table.h"
+#include "magic.h"
+#include "qem_options.h"
+#include "string_qp.h"
+#include "string_table.h"
+
+class Atom;
+class Object;
+
+//
+// Package up the information that are needed for hashing.
+//
+class AtomKey
+{
+private:
+  const char *string;
+  const StringTab *stringTable;  // needed to lookup string for comaprison atom
+  
+public:
+  //
+  // Assign values.
+  //
+  AtomKey(const char *s, const StringTab *table)
+    : string(s), stringTable(table) { }
+  
+  //
+  // Using the string to hash into the name table.
+  //
+  AtomLoc hashFn(void) const;
+
+  //
+  // The two entries are equal if strings are the same.
+  //
+  inline bool operator==(const Atom& entry) const;
+};
+
+
+
+//
+// Each entry in the atom table points to the string in the string table and
+// hashing is based on the string.
+//	Atom Table    String Table 
+//
+//	|        |     |        |
+//	+--------+     +--------+
+//	|        |-->  |   h    | 
+//	|        |     +--------+
+//	|        |     |   e    |
+//	+--------+     +--------+
+//	|        |     |   l    |
+//	               +--------+
+//	               |   l    |
+//	               +--------+
+//	               |   o    |
+//	               +--------+
+//	               |   \0   |
+//	               +--------+
+//	               |        |
+//
+class  AtomTable : public HashTable <Atom, AtomKey>
+{
+private:
+  StringTab stringTable; // Where the strings are stored.
+  
+  //
+  // Calculate the hash value for a given entry.
+  //
+  AtomLoc hashFunction(const AtomKey key) const
+    { return(key.hashFn()); }
+
+  //
+  // Return the name of the table.
+  //
+  virtual const char *getAreaName(void) const
+    { return("atom table"); }
+
+public:
+
+  //
+  // Pre-assigned atoms.
+  // Because these are declared statically, there can only ever be one
+  // instance of AtomTable.  
+  //
+  static Atom *nil;
+  static Atom *cons;
+  static Atom *comma;
+  static Atom *success;
+  static Atom *failure;
+  
+  static Atom *unsure;
+  static Atom *colon;
+  static Atom *dollar;
+  
+  static Atom *equal;
+  static Atom *nfi;
+  static Atom *checkBinder;
+  static Atom *delays;
+  static Atom *equalVar;
+  static Atom *equalObjectVariable;
+  static Atom *arrayIP;
+  static Atom *cut_atom;
+  static Atom *neckcut;
+  static Atom *delayneckcut;
+  static Atom *psi0_call;
+  static Atom *psi1_call;
+  static Atom *psi2_call;
+  static Atom *psi3_call;
+  static Atom *psi4_call;
+  static Atom *psi5_call;
+  static Atom *psi0_resume;
+  static Atom *psi1_resume;
+  static Atom *psi2_resume;
+  static Atom *psi3_resume;
+  static Atom *psi4_resume;
+  static Atom *psi5_resume;
+  static Atom *psi0_error_handler;
+  static Atom *psi1_error_handler;
+  static Atom *psi2_error_handler;
+  static Atom *psi3_error_handler;
+  static Atom *psi4_error_handler;
+  static Atom *psi5_error_handler;
+
+  static Atom *unify_ref;
+  static Atom *xreg;
+  static Atom *yreg;
+  static Atom *put;
+  static Atom *get;
+  static Atom *meta;
+  static Atom *variable;
+  static Atom *value;
+  static Atom *substitution;
+  static Atom *empty_substitution;
+  static Atom *sub_term;
+  static Atom *call_pred;
+  static Atom *execute_pred;
+  static Atom *ccut;
+  static Atom *cneck_cut;
+  static Atom *cut_ancestor;
+  static Atom *allocate;
+  static Atom *deallocate;
+  static Atom *cproceed;
+  static Atom *get_level_ancestor;
+  static Atom *get_level;
+  static Atom *structure;
+  static Atom *structure_frame;
+  static Atom *list;
+  static Atom *quantifier;
+  static Atom *constant;
+  static Atom *noarg;
+  static Atom *object;
+  static Atom *unify;
+  static Atom *set;
+  static Atom *piarg;
+  static Atom *pieq;
+  static Atom *psi_life;
+  static Atom *cpseudo_instr0;
+  static Atom *cpseudo_instr1;
+  static Atom *cpseudo_instr2;
+  static Atom *cpseudo_instr3;
+  static Atom *cpseudo_instr4;
+  static Atom *cpseudo_instr5;
+  static Atom *start;
+
+
+  static Atom *plus;
+  static Atom *minus;
+  static Atom *multiply;
+  static Atom *divide;
+  static Atom *intdivide;
+  static Atom *mod;
+  static Atom *power;
+  static Atom *bitwiseand;
+  static Atom *bitwiseor;
+  static Atom *shiftl;
+  static Atom *shiftr;
+  static Atom *bitneg;
+
+  static Atom *block;
+  static Atom *poll;
+
+  // Used in thread naming.
+  static Atom *anonymous;
+
+  static Atom *ipc_send_options;
+  static Atom *tcp_recv_options;
+  static Atom *thread_defaults;
+  static Atom *thread_wait_conditions;
+
+  static Atom *undefined_predicate;
+  static Atom *recoverable;
+  static Atom *retry_woken_delays;
+  static Atom *exception;
+  static Atom *call_exception;
+  static Atom *default_atom;
+  static Atom *qup_shorten;
+  static Atom *signal_exception;
+  static Atom *query;
+
+  static Atom *debug_write;
+
+  static Atom *stream_user;
+  static Atom *stream_stdin;
+  static Atom *stream_stdout;
+  static Atom *stream_stderr;
+  static Atom *stream_user_input;
+  static Atom *stream_user_output;
+  static Atom *stream_user_error;
+
+  // TCP
+  static Atom *inaddr_any;
+
+  static Atom *sock_stream;
+  static Atom *sock_dgram;
+  static Atom *sock_raw;
+  static Atom *ipproto_ip;
+  static Atom *ipproto_udp;
+  static Atom *ipproto_tcp;
+  static Atom *ipproto_icmp;
+  static Atom *ipproto_raw;
+  static Atom *so_debug;
+  static Atom *so_reuseaddr;
+  static Atom *so_keepalive;
+  static Atom *so_dontroute;
+  static Atom *so_broadcast;
+  static Atom *so_oobinline;
+  static Atom *so_sndbuf;
+  static Atom *so_rcvbuf;
+  static Atom *so_sndtimeo;
+  static Atom *so_rcvtimeo;
+  static Atom *so_error;
+  static Atom *so_type;
+  static Atom *poll_read;
+  static Atom *poll_write;
+
+  // Tracing
+  static Atom *trace_instr;
+  static Atom *trace_backtrack;
+  static Atom *trace_env;
+  static Atom *trace_choice;
+  static Atom *trace_cut;
+  static Atom *trace_heap;
+  static Atom *trace_regs;
+  static Atom *trace_all;
+
+  // Locking
+  static Atom *code;
+  static Atom *record_db;
+
+  // ICM
+  static Atom *icm_handle;
+
+  AtomTable(word32 TableSize,
+	  word32 StringSize,
+	  word32 StringBoundary) :
+    HashTable <Atom, AtomKey> (TableSize),
+    stringTable(StringSize, StringBoundary)
+  {
+    //
+    // Pre-assigned atoms.
+    //
+    nil = add("[]");
+    cons = add(".");
+    comma = add(",");
+    success = add("true");
+    failure = add("fail");
+    
+    unsure = add("unsure");
+    colon = add(":");
+    dollar = add("$");
+    
+    equal = add("=");
+    nfi = add("not_free_in");
+    checkBinder = add("check_binder");
+    delays = add("$delayed_problems");
+    equalVar = add("$equal_var");
+    equalObjectVariable = add("$equal_ObjectVariable");
+    arrayIP = add("$array_ip");
+    neckcut = add("$$neckcut");
+    cut_atom = add("$cut");
+    delayneckcut = add("$delayneckcut");
+    psi0_call = add("$psi0_calls$");
+    psi1_call = add("$psi1_calls$");
+    psi2_call = add("$psi2_calls$");
+    psi3_call = add("$psi3_calls$");
+    psi4_call = add("$psi4_calls$");
+    psi5_call = add("$psi5_calls$");
+    psi0_resume = add("$psi0_resume");
+    psi1_resume = add("$psi1_resume");
+    psi2_resume = add("$psi2_resume");
+    psi3_resume = add("$psi3_resume");
+    psi4_resume = add("$psi4_resume");
+    psi5_resume = add("$psi5_resume");
+    psi0_error_handler = add("$psi0_error_handler");
+    psi1_error_handler = add("$psi1_error_handler");
+    psi2_error_handler = add("$psi2_error_handler");
+    psi3_error_handler = add("$psi3_error_handler");
+    psi4_error_handler = add("$psi4_error_handler");
+    psi5_error_handler = add("$psi5_error_handler");
+    
+    unify_ref = add("unify_ref");
+    xreg = add("$xreg");
+    yreg = add("$yreg");
+    put = add("put");
+    get = add("get");
+    meta = add("meta");
+    variable = add("variable");
+    value = add("value");
+    substitution = add("substitution");
+    empty_substitution = add("empty_substitution");
+    sub_term = add("sub_term");
+    call_pred = add("call_predicate");
+    execute_pred = add("execute_predicate");
+    ccut = add("$$cut$$");
+    cneck_cut = add("neck_cut");
+    cut_ancestor = add("$$cut_ancestor$$");
+    allocate = add("allocate");
+    deallocate = add("deallocate");
+    cproceed = add("proceed");
+    get_level_ancestor = add("$$get_level_ancestor$$");
+    get_level = add("$$get_level$$");
+    structure = add("structure");
+    structure_frame = add("structure_frame");
+    list = add("list");
+    quantifier = add("quantifier");
+    constant = add("constant");
+    noarg = add("noarg");
+    object = add("object");
+    unify = add("unify");
+    set = add("set");
+    piarg = add("$piarg");
+    pieq = add("$pieq");
+    psi_life = add("$psi_life");
+    cpseudo_instr0 = add("$pseudo_instr0");
+    cpseudo_instr1 = add("$pseudo_instr1");
+    cpseudo_instr2 = add("$pseudo_instr2");
+    cpseudo_instr3 = add("$pseudo_instr3");
+    cpseudo_instr4 = add("$pseudo_instr4");
+    cpseudo_instr5 = add("$pseudo_instr5");
+    start = add("start");
+
+    plus = add("+");
+    minus = add("-");
+    multiply = add("*");
+    divide = add("/");
+    intdivide = add("//");
+    mod = add("mod");
+    power = add("**");
+    bitwiseand = add("/\\");
+    bitwiseor = add("\\/");
+    shiftl = add("<<");
+    shiftr = add(">>");
+    bitneg = add("\\");
+
+    stream_stdin = add("stdin");
+    stream_stdout = add("stdout");
+    stream_stderr = add("stderr");
+    stream_user = add("user");
+    stream_user_input = add("user_input");
+    stream_user_output = add("user_output");
+    stream_user_error = add("user_error");
+
+    block = add("block");
+    poll = add("poll");
+
+    anonymous = add("anonymous");
+
+    ipc_send_options = add("$ipc_send_options");
+    tcp_recv_options = add("$tcp_recv_options");
+    thread_defaults = add("$thread_defaults");
+    thread_wait_conditions = add("$thread_wait_conditions");
+
+    undefined_predicate = add("$undefined_predicate");
+    recoverable = add("recoverable");
+    retry_woken_delays = add("retry_woken_delays");
+    exception = add("exception");
+    call_exception = add("$call_exception");
+    default_atom = add("default");
+    qup_shorten = add("$qup_shorten");
+    signal_exception = add("$signal_exception");
+    query = add("$query");
+
+    debug_write = add("$debug_write");
+
+    inaddr_any = add("inaddr_any");
+    
+    sock_stream = add("sock_stream");
+    sock_dgram = add("sock_dgram");
+    sock_raw = add("sock_raw");
+    ipproto_ip = add("ipproto_ip");
+    ipproto_udp = add("ipproto_udp");
+    ipproto_tcp = add("ipproto_tcp");
+    ipproto_icmp = add("ipproto_icmp");
+    ipproto_raw = add("ipproto_raw");
+    so_debug = add("so_debug");
+    so_reuseaddr = add("so_reuseaddr");
+    so_keepalive = add("so_keepalive");
+    so_dontroute = add("so_dontroute");
+    so_broadcast = add("so_broadcast");
+    so_oobinline = add("so_oobinline");
+    so_sndbuf = add("so_sndbuf");
+    so_rcvbuf = add("so_rcvbuf");
+    so_sndtimeo = add("so_sndtimeo");
+    so_rcvtimeo = add("so_rcvtimeo");
+    so_error = add("so_error");
+    so_type = add("so_type");
+    poll_read = add("poll_read");
+    poll_write = add("poll_write");
+    
+    trace_instr = add("trace_instr");
+    trace_backtrack = add("trace_backtrack");
+    trace_env = add("trace_env");
+    trace_choice = add("trace_choice");
+    trace_cut = add("trace_cut");
+    trace_heap = add("trace_heap");
+    trace_regs = add("trace_regs");
+    trace_all = add("trace_all");
+
+    code = add("code");
+    record_db = add("record_db");
+
+    icm_handle = add("$icm_handle");
+  }
+  
+  //
+  // Check whether the entry is empty or not.
+  //
+  inline bool isEntryEmpty(const AtomLoc index) const;
+
+  //
+  // Retrieve information from an entry.
+  //
+  inline char *getAtomString(Object *atom);
+
+  //
+  // Get the atom from the offset
+  //
+  Atom* getAtom(const AtomLoc loc);
+
+  //
+  // Look up the entry in the atom table and return it.
+  //
+  inline AtomLoc lookUp(const char *string);
+  //
+  // Add a new entry to the atom table.
+  //
+  Atom *add(const char *string);
+  inline Atom *add(const String& string)
+    {
+      return add(string.Str());
+    }
+
+  bool atomToBool(Object* c);
+
+  //
+  // Return the size of the table.
+  //
+  word32  size(void) const { return(allocatedSize()); }
+  
+  //
+  // Return the string table for inspection.
+  //
+const StringTab& getStringTable(void) const { return(stringTable); }
+  
+  //
+  // Save the atom table.
+  //
+  void save(ostream& ostrm) const
+    {
+      saveTable(ostrm, ATOM_TABLE_MAGIC_NUMBER);
+    }
+  
+  //
+  // Restore the atom table.
+  //
+  void load(istream& istrm)
+    {
+      loadTable(istrm);
+    }
+  
+  //
+  // Save the string table.
+  //
+  void saveStringTable(ostream& ostrm) const
+    {
+      stringTable.save(ostrm);
+    }
+  
+  //
+  // Restore the string table.
+  //
+  void loadStringTable(istream& istrm)
+    {
+      stringTable.load(istrm);
+    }
+};
+
+#endif // ATOM_TABLE_H
+
+
+#ifndef ATOM_TABLE_INLINE
+#define ATOM_TABLE_INLINE
+
+#include "objects.h"
+
+//
+// The two entries are equal if strings are the same.
+//
+inline bool AtomKey::operator==(const Atom& entry) const
+{
+  return streq(string, 
+	       stringTable->inspectString(entry.getStringTableLoc()));
+}
+
+//
+// Retrieve information from an entry.
+//
+inline char *AtomTable::getAtomString(Object *atom)
+{ 
+  DEBUG_ASSERT(atom->isAtom());
+  return stringTable.getString(OBJECT_CAST(Atom*, atom)->getStringTableLoc());
+}
+
+//
+// Check whether the entry is empty or not.
+//
+inline bool AtomTable::isEntryEmpty(const AtomLoc index) const
+{ return(inspectEntry(index).isEmpty()); }
+
+//
+// Look up the entry in the atom table and return it.
+//
+inline AtomLoc AtomTable::lookUp(const char *string)
+{
+  AtomKey key(string, &stringTable);
+  return(lookUpTable(key));
+} 
+
+#endif // ATOM_TABLE_INLINE
+
+
+
+
+
+
+
+
+
+

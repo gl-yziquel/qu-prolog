@@ -1,0 +1,41 @@
+export LIBRARY.library = library.a
+
+export SOURCES.library	= \
+	atom_table.cc \
+	block.cc \
+	code.cc \
+	compiler_support.cc \
+	dynamic_code.cc \
+	encode.cc \
+	errors.cc \
+	executable.cc \
+	gc.cc \
+	hash.cc \
+	hostname.cc \
+	name_table.cc \
+	obj_index.cc \
+	pred_table.cc \
+	record_ref_table.cc \
+	record_stack.cc \
+	signal.cc \
+	string.cc \
+	string_map.cc \
+	string_table.cc \
+	tcp.cc \
+	unix_thread.cc
+
+export BASES.library	= $(basename $(SOURCES.library))
+export OBJECTS.library = $(addsuffix .o,$(BASES.library))
+
+.PHONY: all.library
+all.library: $(LIBRARY.library)
+
+$(LIBRARY.library): $(OBJECTS.library)
+	$(AR) $(ARFLAGS) $@ $(OBJECTS.library)
+	@RANLIB@ $@
+
+.PHONY: install.library
+install.library: all.library
+
+
+
