@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: encode.h,v 1.8 2002/12/15 08:23:49 qp Exp $
+// $Id: encode.h,v 1.9 2004/02/12 23:53:47 qp Exp $
 
 #ifndef ENCODE_H
 #define ENCODE_H
@@ -232,6 +232,7 @@ public:
       success = encodeWriteTerm(th, heap, stream, term,
 				atoms, remember, names);
     }
+
 };
 
 class EncodeRead : public EncodeBase {
@@ -283,10 +284,13 @@ public:
       }
   }
 
+
   ~EncodeRead(void)
     {
       delete [] string;
     }
+
+ 
 };
 
 #endif	// ENCODE_H

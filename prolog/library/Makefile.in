@@ -10,6 +10,7 @@ SOURCES	= \
 	atoms.ql \
 	bios.ql \
 	buffers.ql \
+	builtins.ql \
 	c_to_prolog.ql \
 	call.ql \
 	catch.ql \
@@ -25,6 +26,7 @@ SOURCES	= \
 	debug.ql \
 	delay.ql \
 	dynamic.ql \
+	elvin.ql \
 	encode.ql \
 	env_var.ql \
 	equal.ql \

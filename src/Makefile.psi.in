@@ -22,6 +22,7 @@ export SOURCES.psi = \
         gc_escapes.cc \
 	get_args.cc \
 	icm_escapes.cc \
+	elvin_escapes.cc \
 	ip.cc \
 	ipc_escapes.cc \
 	load.cc \

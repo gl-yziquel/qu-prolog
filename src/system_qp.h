@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system_qp.h,v 1.2 2001/02/04 21:10:09 qp Exp $
+// $Id: system_qp.h,v 1.3 2004/02/16 04:20:30 qp Exp $
 
 #ifndef SYSTEM_QP_H
 #define SYSTEM_QP_H
@@ -74,6 +74,13 @@ ReturnValue	psi_system(Object *& , Object *& );
 // mode(in,in,out)
 //
 ReturnValue	psi_access(Object *& , Object *& , Object *& );
+
+//
+// psi_chdir(atom)
+// Change directory to dir given by the argument
+// mode(in)
+//
+ReturnValue	psi_chdir(Object *&);
 
 //
 // psi_mktemp(atom, var)

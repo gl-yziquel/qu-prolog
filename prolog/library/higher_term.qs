@@ -729,6 +729,7 @@ $2:
 	unify_x_value(0)
 	unify_x_variable(4)
 	get_y_variable(0, 2)
+	neck_cut
 	put_y_value(0, 0)
 	put_x_value(3, 1)
 	put_x_value(4, 2)

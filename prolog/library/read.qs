@@ -669,7 +669,8 @@ $1:
 	pseudo_instr3(1, 3, 7, 2)
 	put_integer(3, 4)
 	pseudo_instr3(1, 4, 7, 3)
-	execute_predicate('$collect_var_tables', 4)
+	put_constant('[]', 4)
+	execute_predicate('$collect_var_tables', 5)
 
 $2:
 	get_x_variable(0, 4)
@@ -1742,7 +1743,7 @@ end('$read_obvar'/3):
 
 
 
-'$collect_var_tables/4$0'/2:
+'$collect_var_tables/5$0'/2:
 
 	try(2, $1)
 	trust($2)
@@ -1759,11 +1760,11 @@ $2:
 	get_x_variable(0, 1)
 	put_x_value(2, 1)
 	execute_predicate('search_insert', 2)
-end('$collect_var_tables/4$0'/2):
+end('$collect_var_tables/5$0'/2):
 
 
 
-'$collect_var_tables/4$1/3$0'/1:
+'$collect_var_tables/5$1/3$0'/1:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
@@ -1786,11 +1787,11 @@ $1:
 
 $2:
 	proceed
-end('$collect_var_tables/4$1/3$0'/1):
+end('$collect_var_tables/5$1/3$0'/1):
 
 
 
-'$collect_var_tables/4$1'/3:
+'$collect_var_tables/5$1'/3:
 
 	try(3, $1)
 	retry($2)
@@ -1809,7 +1810,7 @@ $2:
 	get_y_variable(1, 1)
 	get_y_variable(0, 2)
 	put_y_value(1, 0)
-	call_predicate('$collect_var_tables/4$1/3$0', 1, 3)
+	call_predicate('$collect_var_tables/5$1/3$0', 1, 3)
 	put_structure(2, 0)
 	set_constant('=')
 	set_y_value(0)
@@ -1820,38 +1821,31 @@ $2:
 
 $3:
 	proceed
-end('$collect_var_tables/4$1'/3):
+end('$collect_var_tables/5$1'/3):
 
 
 
-'$collect_var_tables/4$2/5$0'/1:
+'$collect_var_tables/5$2/6$0'/1:
 
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, '_':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
 	try(1, $1)
 	trust($2)
 
 $1:
-	put_constant('_', 1)
-	get_x_value(0, 1)
+	put_integer(1, 2)
+	put_constant('_', 3)
+	pseudo_instr4(1, 0, 2, 3, 1)
+	put_integer(1, 0)
+	get_x_value(1, 0)
 	neck_cut
 	fail
 
 $2:
 	proceed
-end('$collect_var_tables/4$2/5$0'/1):
+end('$collect_var_tables/5$2/6$0'/1):
 
 
 
-'$collect_var_tables/4$2/5$1'/2:
+'$collect_var_tables/5$2/6$1'/2:
 
 	try(2, $1)
 	trust($2)
@@ -1865,13 +1859,31 @@ $1:
 
 $2:
 	proceed
-end('$collect_var_tables/4$2/5$1'/2):
+end('$collect_var_tables/5$2/6$1'/2):
 
 
 
-'$collect_var_tables/4$2'/5:
+'$collect_var_tables/5$2/6$2'/2:
 
-	try(5, $1)
+	try(2, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('member', 2, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('$collect_var_tables/5$2/6$2'/2):
+
+
+
+'$collect_var_tables/5$2'/6:
+
+	try(6, $1)
 	retry($2)
 	trust($3)
 
@@ -1883,17 +1895,21 @@ $1:
 	proceed
 
 $2:
-	allocate(5)
+	allocate(6)
 	get_y_variable(2, 0)
 	get_y_variable(1, 1)
-	get_y_variable(4, 2)
-	get_y_variable(3, 3)
-	get_y_variable(0, 4)
+	get_y_variable(5, 2)
+	get_y_variable(4, 3)
+	get_y_variable(3, 4)
+	get_y_variable(0, 5)
 	put_y_value(1, 0)
-	call_predicate('$collect_var_tables/4$2/5$0', 1, 5)
-	put_y_value(4, 0)
+	call_predicate('$collect_var_tables/5$2/6$0', 1, 6)
+	put_y_value(5, 0)
+	put_y_value(4, 1)
+	call_predicate('$collect_var_tables/5$2/6$1', 2, 4)
+	put_y_value(1, 0)
 	put_y_value(3, 1)
-	call_predicate('$collect_var_tables/4$2/5$1', 2, 3)
+	call_predicate('$collect_var_tables/5$2/6$2', 2, 3)
 	put_structure(2, 0)
 	set_constant('=')
 	set_y_value(0)
@@ -1904,16 +1920,16 @@ $2:
 
 $3:
 	proceed
-end('$collect_var_tables/4$2'/5):
+end('$collect_var_tables/5$2'/6):
 
 
 
-'$collect_var_tables'/4:
+'$collect_var_tables'/5:
 
 	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
 
 $3:
-	try(4, $1)
+	try(5, $1)
 	trust($2)
 
 $1:
@@ -1931,40 +1947,46 @@ $1:
 
 $2:
 	get_list(0)
-	allocate(8)
-	unify_y_variable(7)
+	allocate(9)
+	unify_y_variable(8)
 	unify_y_variable(3)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	get_y_variable(0, 3)
+	get_y_variable(5, 4)
 	put_integer(1, 1)
-	pseudo_instr3(1, 1, 27, 0)
-	get_y_variable(6, 0)
+	pseudo_instr3(1, 1, 28, 0)
+	get_y_variable(7, 0)
 	put_integer(2, 1)
-	pseudo_instr3(1, 1, 27, 0)
-	get_y_variable(5, 0)
-	get_y_level(4)
+	pseudo_instr3(1, 1, 28, 0)
+	get_y_variable(4, 0)
+	get_y_level(6)
 	put_y_value(2, 0)
-	put_y_value(6, 1)
-	call_predicate('$collect_var_tables/4$0', 2, 8)
+	put_y_value(7, 1)
+	call_predicate('$collect_var_tables/5$0', 2, 9)
 	put_y_value(1, 0)
-	put_y_value(5, 1)
-	put_y_value(6, 2)
-	call_predicate('$collect_var_tables/4$1', 3, 8)
-	put_y_value(0, 0)
-	put_y_value(5, 1)
+	put_y_value(4, 1)
 	put_y_value(7, 2)
+	call_predicate('$collect_var_tables/5$1', 3, 9)
+	put_y_value(0, 0)
+	put_y_value(4, 1)
+	put_y_value(8, 2)
 	put_y_value(3, 3)
-	put_y_value(6, 4)
-	call_predicate('$collect_var_tables/4$2', 5, 5)
-	cut(4)
+	put_y_value(5, 4)
+	put_y_value(7, 5)
+	call_predicate('$collect_var_tables/5$2', 6, 7)
+	cut(6)
+	put_x_variable(4, 0)
+	get_list(0)
+	unify_y_value(4)
+	unify_y_value(5)
 	put_y_value(3, 0)
 	put_y_value(2, 1)
 	put_y_value(1, 2)
 	put_y_value(0, 3)
 	deallocate
-	execute_predicate('$collect_var_tables', 4)
-end('$collect_var_tables'/4):
+	execute_predicate('$collect_var_tables', 5)
+end('$collect_var_tables'/5):
 
 
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.cc,v 1.30 2003/10/03 01:19:40 qp Exp $
+// $Id: scheduler.cc,v 1.31 2004/02/12 23:53:47 qp Exp $
 
 #include <algorithm>
 
@@ -125,6 +125,7 @@ Scheduler::poll_fds(int32 poll_timeout)
   //int max_fd = 0;
   int max_fd = sigint_pipe[0];
   FD_SET(sigint_pipe[0], &rfds);
+  struct timeval timeout = { poll_timeout , 0 };
   for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
 	   iter != blocked_queue.end();
 	   iter++)
@@ -137,17 +138,16 @@ Scheduler::poll_fds(int32 poll_timeout)
        iter++)
     {
       (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
+      (*iter)->processTimeouts(timeout);
     }
 
   int result;
-  if (poll_timeout == 0)
+  if (timeout.tv_sec == 0 && timeout.tv_usec == 0)
     {
       result = select(max_fd + 1, &rfds, &wfds, NULL, NULL) > 0;
     }
   else
     {
-      timeval timeout = { poll_timeout, 0 };
-
       result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout) > 0;
     }
 

@@ -1,4 +1,4 @@
-Installing Qu-Prolog 6.2
+Installing Qu-Prolog 6.3
 
 Execute the following
 
@@ -8,7 +8,7 @@ make
 
 This should have build the system.
 
-The config files have been pre-built using LINUX RedHat 7.2 and
+The config files have been pre-built using LINUX RedHat 9.0 and
 so you may need to run autoconf before configure if you are using
 different versions of LINUX or UNIX.
 
@@ -43,7 +43,7 @@ Then try
 ./configure --with-gcclib=PATH
 where PATH is the path to the STL library includes.
 
-The high-level communication of Qu-Prolog 6.2 relies on the ICM package.
+The high-level communication of Qu-Prolog 6.3 relies on the ICM package.
 If this is not present on your system then Qu-Prolog will build without the
 communication.
 
@@ -52,6 +52,15 @@ http://sourceforge.net/projects/networkagent/
 
 If this package is installed before running configure then configure should 
 find it and build a system with high-level communication.
+
+Qu-Prolog 6.3 now also uses Elvin communication.
+
+The Elvin libraries and daemon can be dowloaded from
+http://elvin.dstc.edu.au/
+
+Again, if Elvin is not installed then Qu-Prolog will be built without 
+Elvin communication.
+
 
 Qu-Prolog has been build on LINUX (Redhat 5.2 or greater).
 

@@ -3,7 +3,7 @@
 <!-- Created by texi2html 1.56k from main.tex on 30 November 1999 -->
 <!-- Edited by Michael Walters on 30 Novemeber 1999 -->
 
-<TITLE>Qu-Prolog 6.2 Reference Manual - Getting Started</TITLE>
+<TITLE>Qu-Prolog 6.3 Reference Manual - Getting Started</TITLE>
 </HEAD>
 
 <BODY>
@@ -290,11 +290,11 @@ appropriate arguments in the sequence given above.
 a Qu-Prolog source program.
 <KBD>qc</KBD> compiles the program and generates an executable.
 The executable is stored in two files.
-<KBD>output</KBD> (e.g. <KBD>a.out</KBD>) contains the basic 
+<KBD>exec_file</KBD> (e.g. <KBD>a.out</KBD>) contains the basic 
 information about the executable
-and <KBD>output.qx</KBD> (e.g. <KBD>a.out.qx</KBD>) 
+and <KBD>exec_file.qx</KBD> (e.g. <KBD>a.out.qx</KBD>) 
 has the essential data about the program.
-To run the executable, the user types in <KBD>output</KBD>.
+To run the executable, the user types in <KBD>exec_file</KBD>.
 
 <P><KBD>qc</KBD> accepts several types of filename arguments.
 <P>Files ending with <KBD>.ql</KBD> are Qu-Prolog source programs.
@@ -349,10 +349,10 @@ Stop after running the assembler.
 The default output file is the corresponding file suffixed <KBD>.qo</KBD>.
 </BLOCKQUOTE>
 
-<P><KBD>-o output</KBD>
+<P><KBD>-o exec_file</KBD>
 <BLOCKQUOTE>
 Name the object file if the <KBD>-c </KBD> switch is also supplied.
-Otherwise, name the executable. If <KBD>output</KBD> is not supplied the 
+Otherwise, name the executable. If <KBD>exec_file</KBD> is not supplied the 
 default name for the executable is <KBD>a.out</KBD>.
 </BLOCKQUOTE>
 

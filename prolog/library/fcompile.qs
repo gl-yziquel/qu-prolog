@@ -135,7 +135,29 @@ end('$fcompile_files'/2):
 
 
 
-'$fcompile_files1/7$0'/8:
+'$fcompile_files1/7$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_x_variable(2, 0)
+	get_x_variable(3, 1)
+	put_constant('.ql', 0)
+	put_constant('.qi', 1)
+	execute_predicate('$change_suffix', 4)
+
+$2:
+	get_x_variable(2, 0)
+	get_x_variable(3, 1)
+	put_constant('.pl', 0)
+	put_constant('.qi', 1)
+	execute_predicate('$change_suffix', 4)
+end('$fcompile_files1/7$0'/2):
+
+
+
+'$fcompile_files1/7$1'/8:
 
 	try(8, $1)
 	trust($2)
@@ -159,7 +181,7 @@ $2:
 	get_x_variable(5, 6)
 	put_x_value(8, 6)
 	execute_predicate('$fcompile_files2', 8)
-end('$fcompile_files1/7$0'/8):
+end('$fcompile_files1/7$1'/8):
 
 
 
@@ -167,7 +189,7 @@ end('$fcompile_files1/7$0'/8):
 
 
 $1:
-	allocate(10)
+	allocate(11)
 	get_y_variable(7, 0)
 	get_y_variable(6, 1)
 	get_y_variable(5, 2)
@@ -177,23 +199,23 @@ $1:
 	get_y_variable(1, 6)
 	put_integer(1, 1)
 	pseudo_instr3(1, 1, 22, 0)
-	put_y_variable(9, 1)
-	call_predicate('$defines_atom', 2, 10)
+	get_y_level(9)
+	put_y_variable(10, 1)
+	call_predicate('$defines_atom', 2, 11)
 	put_x_variable(1, 2)
 	get_list(2)
 	unify_constant('$QPPATH/qppp')
 	unify_x_ref(2)
 	get_list(2)
-	unify_y_value(9)
+	unify_y_value(10)
 	unify_constant('[]')
 	put_constant(' ', 2)
 	pseudo_instr3(28, 1, 2, 0)
 	get_y_variable(8, 0)
-	put_y_value(7, 2)
-	put_y_variable(0, 3)
-	put_constant('.ql', 0)
-	put_constant('.qi', 1)
-	call_predicate('$change_suffix', 4, 9)
+	put_y_value(7, 0)
+	put_y_variable(0, 1)
+	call_predicate('$fcompile_files1/7$0', 2, 10)
+	cut(9)
 	put_y_value(7, 0)
 	put_y_value(0, 1)
 	put_y_value(8, 2)
@@ -207,7 +229,7 @@ $1:
 	put_y_value(3, 6)
 	put_y_value(1, 7)
 	deallocate
-	execute_predicate('$fcompile_files1/7$0', 8)
+	execute_predicate('$fcompile_files1/7$1', 8)
 end('$fcompile_files1'/7):
 
 
@@ -328,28 +350,50 @@ end('$fcompile_files2'/8):
 
 
 
+'$fcompile_files3/7$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_x_variable(2, 0)
+	get_x_variable(3, 1)
+	put_constant('.ql', 0)
+	put_constant('.qge', 1)
+	execute_predicate('$change_suffix', 4)
+
+$2:
+	get_x_variable(2, 0)
+	get_x_variable(3, 1)
+	put_constant('.pl', 0)
+	put_constant('.qge', 1)
+	execute_predicate('$change_suffix', 4)
+end('$fcompile_files3/7$0'/2):
+
+
+
 '$fcompile_files3'/7:
 
 
 $1:
-	allocate(10)
-	get_y_variable(7, 0)
+	allocate(11)
+	get_y_variable(8, 0)
 	get_y_variable(6, 1)
-	get_y_variable(9, 2)
+	get_y_variable(10, 2)
 	get_x_variable(0, 3)
 	get_x_variable(1, 4)
 	get_y_variable(2, 6)
-	put_y_variable(8, 2)
-	call_predicate('append', 3, 10)
-	put_y_value(9, 0)
-	put_y_value(8, 1)
+	get_y_level(7)
+	put_y_variable(9, 2)
+	call_predicate('append', 3, 11)
+	put_y_value(10, 0)
+	put_y_value(9, 1)
 	put_y_variable(3, 2)
-	call_predicate('append', 3, 8)
-	put_y_value(7, 2)
-	put_y_variable(5, 3)
-	put_constant('.ql', 0)
-	put_constant('.qge', 1)
-	call_predicate('$change_suffix', 4, 7)
+	call_predicate('append', 3, 9)
+	put_y_value(8, 0)
+	put_y_variable(5, 1)
+	call_predicate('$fcompile_files3/7$0', 2, 8)
+	cut(7)
 	put_y_value(6, 2)
 	put_y_variable(4, 3)
 	put_constant('.qi', 0)
@@ -865,7 +909,8 @@ end('$get_boolean_opt_atom'/4):
 	retry($3)
 	retry($4)
 	retry($5)
-	trust($6)
+	retry($6)
+	trust($7)
 
 $1:
 	allocate(12)
@@ -903,6 +948,40 @@ $1:
 
 $2:
 	allocate(12)
+	get_y_variable(10, 0)
+	get_y_variable(9, 1)
+	get_y_variable(8, 2)
+	get_y_variable(7, 3)
+	get_y_variable(6, 4)
+	get_y_variable(5, 5)
+	get_y_variable(4, 6)
+	get_y_variable(3, 7)
+	get_y_variable(2, 8)
+	get_y_variable(1, 9)
+	get_y_variable(0, 10)
+	get_y_level(11)
+	put_x_variable(0, 0)
+	put_y_value(10, 2)
+	put_constant('.pl', 1)
+	call_predicate('atom_concat', 3, 12)
+	cut(11)
+	put_y_value(9, 0)
+	get_list(0)
+	unify_y_value(10)
+	unify_y_value(8)
+	put_y_value(7, 0)
+	get_y_value(6, 0)
+	put_y_value(5, 0)
+	get_y_value(4, 0)
+	put_y_value(3, 0)
+	get_y_value(2, 0)
+	put_y_value(1, 0)
+	get_y_value(0, 0)
+	deallocate
+	proceed
+
+$3:
+	allocate(12)
 	get_y_variable(8, 0)
 	get_y_variable(10, 1)
 	get_y_variable(9, 2)
@@ -935,7 +1014,7 @@ $2:
 	deallocate
 	proceed
 
-$3:
+$4:
 	allocate(12)
 	get_y_variable(6, 0)
 	get_y_variable(10, 1)
@@ -969,7 +1048,7 @@ $3:
 	deallocate
 	proceed
 
-$4:
+$5:
 	allocate(12)
 	get_y_variable(4, 0)
 	get_y_variable(10, 1)
@@ -1003,7 +1082,7 @@ $4:
 	deallocate
 	proceed
 
-$5:
+$6:
 	allocate(12)
 	get_y_variable(2, 0)
 	get_y_variable(10, 1)
@@ -1037,7 +1116,7 @@ $5:
 	deallocate
 	proceed
 
-$6:
+$7:
 	allocate(10)
 	get_y_variable(9, 1)
 	get_y_variable(8, 2)
@@ -1177,7 +1256,8 @@ end('$fcompile_access_check/6$0/11$0'/11):
 
 	try(11, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($4)
 
 $1:
 	get_x_variable(11, 0)
@@ -1273,6 +1353,45 @@ $2:
 	proceed
 
 $3:
+	allocate(12)
+	get_y_variable(10, 1)
+	get_y_variable(9, 2)
+	get_y_variable(7, 3)
+	get_y_variable(6, 4)
+	get_y_variable(5, 5)
+	get_y_variable(4, 6)
+	get_y_variable(3, 7)
+	get_y_variable(2, 8)
+	get_y_variable(1, 9)
+	get_y_variable(0, 10)
+	get_y_level(11)
+	put_y_variable(8, 1)
+	call_predicate('$append_pl_suffix', 2, 12)
+	put_x_variable(1, 2)
+	get_structure('\\/', 2, 2)
+	unify_integer(4)
+	unify_integer(0)
+	pseudo_instr2(0, 0, 1)
+	pseudo_instr3(34, 28, 0, 1)
+	put_integer(0, 0)
+	get_x_value(1, 0)
+	cut(11)
+	put_y_value(10, 0)
+	get_list(0)
+	unify_y_value(8)
+	unify_y_value(9)
+	put_y_value(7, 0)
+	get_y_value(6, 0)
+	put_y_value(5, 0)
+	get_y_value(4, 0)
+	put_y_value(3, 0)
+	get_y_value(2, 0)
+	put_y_value(1, 0)
+	get_y_value(0, 0)
+	deallocate
+	proceed
+
+$4:
 	execute_predicate('$fcompile_access_check/6$0/11$0', 11)
 end('$fcompile_access_check/6$0'/11):
 
@@ -1341,6 +1460,24 @@ $1:
 	get_x_value(1, 2)
 	proceed
 end('$append_ql_suffix'/2):
+
+
+
+'$append_pl_suffix'/2:
+
+
+$1:
+	put_x_variable(3, 4)
+	get_list(4)
+	unify_x_value(0)
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('.pl')
+	unify_constant('[]')
+	pseudo_instr2(31, 3, 2)
+	get_x_value(1, 2)
+	proceed
+end('$append_pl_suffix'/2):
 
 
 

@@ -136,6 +136,22 @@ else
         AC_SUBST(ICM_LIB)
 fi
 
+AC_PATH_PROG(ELVINCONFIG, elvin-config, NO_ELVINCONFIG,\
+	$PATH:/opt/icm/bin:/opt/local/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/perl/bin)
+if test "$ELVINCONFIG" = NO_ELVINCONFIG; then
+	AC_MSG_WARN(Elvin communication not supported)
+        ELVIN_LIB=
+        ELVIN_CFLAGS=
+        AC_SUBST(ELVIN_LIB)
+        AC_SUBST(ELVIN_CFLAGS)
+else
+	AC_DEFINE(ELVIN_DEF)
+        ELVIN_LIB="`elvin-config --libs` -lm -lcrypt"
+        ELVIN_CFLAGS=`elvin-config --cflags`
+        AC_SUBST(ELVIN_LIB)
+        AC_SUBST(ELVIN_CFLAGS)
+fi
+
 
 GCCINCLUDES=
 AC_ARG_WITH(gcclib,

@@ -128,6 +128,16 @@ end('$icm_deregister'/0):
 
 
 
+'elvin_disconnect'/0:
+
+
+$1:
+	pseudo_instr0(13)
+	proceed
+end('elvin_disconnect'/0):
+
+
+
 'compound'/1:
 
 
@@ -1209,6 +1219,78 @@ $1:
 	pseudo_instr1(104, 0)
 	proceed
 end('broadcast'/1):
+
+
+
+'$elvin_connect'/1:
+
+
+$1:
+	pseudo_instr1(105, 0)
+	proceed
+end('$elvin_connect'/1):
+
+
+
+'$elvin_add_subscription'/1:
+
+
+$1:
+	pseudo_instr1(106, 0)
+	proceed
+end('$elvin_add_subscription'/1):
+
+
+
+'$elvin_delete_subscription'/1:
+
+
+$1:
+	pseudo_instr1(107, 0)
+	proceed
+end('$elvin_delete_subscription'/1):
+
+
+
+'elvin_subscriptions'/1:
+
+
+$1:
+	pseudo_instr1(108, 1)
+	get_x_value(0, 1)
+	proceed
+end('elvin_subscriptions'/1):
+
+
+
+'elvin_makeID'/1:
+
+
+$1:
+	pseudo_instr1(109, 1)
+	get_x_value(0, 1)
+	proceed
+end('elvin_makeID'/1):
+
+
+
+'$elvin_add_notification'/1:
+
+
+$1:
+	pseudo_instr1(110, 0)
+	proceed
+end('$elvin_add_notification'/1):
+
+
+
+'chdir'/1:
+
+
+$1:
+	pseudo_instr1(111, 0)
+	proceed
+end('chdir'/1):
 
 
 

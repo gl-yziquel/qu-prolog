@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.38 2003/11/05 21:33:30 qp Exp $
+// $Id: pseudo_instr_arrays.cc,v 1.41 2004/02/19 03:03:27 qp Exp $
 
 #include "thread_qp.h"
 
@@ -74,7 +74,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_thread_is_initial_thread,	0,	"psi_thread_is_initial_thread"}, 
 	{&Thread::psi_signal_thread_exit,	0,	"psi_signal_thread_exit"}, 
 	{&Thread::psi_gc,	0,	"psi_gc"}, 
-	{&Thread::psi_icm_deregister,	0,	"psi_icm_deregister"}
+	{&Thread::psi_icm_deregister,	0,	"psi_icm_deregister"}, 
+	{&Thread::psi_elvin_disconnect,	0,	"psi_elvin_disconnect"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {
@@ -182,7 +183,14 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_make_iterator,	1,	"psi_make_iterator"}, 
 	{&Thread::psi_set_autoflush,	0,	"psi_set_autoflush"}, 
 	{&Thread::psi_get_open_streams,	1,	"psi_get_open_streams"}, 
-	{&Thread::psi_broadcast,	0,	"psi_broadcast"}
+	{&Thread::psi_broadcast,	0,	"psi_broadcast"}, 
+	{&Thread::psi_elvin_connect,	0,	"psi_elvin_connect"}, 
+	{&Thread::psi_elvin_add_subscription,	0,	"psi_elvin_add_subscription"}, 
+	{&Thread::psi_elvin_delete_subscription,	0,	"psi_elvin_delete_subscription"}, 
+	{&Thread::psi_elvin_subscriptions,	1,	"psi_elvin_subscriptions"}, 
+	{&Thread::psi_elvin_makeID,	1,	"psi_elvin_makeID"}, 
+	{&Thread::psi_elvin_add_notification,	0,	"psi_elvin_add_notification"}, 
+	{&Thread::psi_chdir,	0,	"psi_chdir"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {

@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 6.2 Reference Manual - Built-in Predicates
+Qu-Prolog 6.3 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -436,14 +436,15 @@ as an alias for a stream.
 
 <P>Predicates:
 
-<P><KBD><a name="access"></a>access(File, Permission, Integer)</KBD>
+<P><KBD><a name="access"></a>access(File, Permission, Result)</KBD>
 
 <BLOCKQUOTE>
 <KBD>Integer</KBD> contains the result of <KBD>Permission</KBD> 
 check for <KBD>File</KBD>.  
 <KBD>Permission</KBD> is an integer made up of mask bits 0,1,2,4
 and is used to test if the file exists, and has execute, write and 
-read permissions. The usage is identical to the Unix system call <KBD>access(2)</KBD>.
+read permissions. <KBD>Result</KBD> is <KBD>0</KBD> if the file passes the test and <KBD>-1</KBD> if it fails. The usage is identical to the Unix system call <KBD>access(2)</KBD>.
+<BR> So, for example, <KBD>access(File, 3, 0)</KBD> will succeed if the file is readable and writable.
 <BR><KBD>mode access(@atom, @integer, ?integer)</KBD>
 </BLOCKQUOTE>
 
@@ -1393,7 +1394,7 @@ Read <KBD>Term</KBD> from <KBD>Stream</KBD> or the current input stream. <KBD>Op
 	<BR>(Default: <KBD>[]</KBD>.)
 <LI>
 	<KBD>singletons(Value)</KBD>
-	<BR><KBD>Variable=Name</KBD> pair for all singleton variables, excluding anonymous variables. <KBD>To be completed.</KBD>
+	<BR><KBD>Variable=Name</KBD> pair for all singleton variables, excluding anonymous variables. 
 	<BR>(Default: <KBD>[]</KBD>.)
 </UL>
 </OL>
@@ -6522,6 +6523,12 @@ Unify <KBD>Term1</KBD> and <KBD>Term2</KBD>.
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="unify_with_occurs_check"></a>unify_with_occurs_check(Term1, Term2)</KBD>
+ 
+<BLOCKQUOTE>
+This is not really needed because Qu-Prolog's unification always carries out occurs checking. It is included for compatibility with the ISO standard.
+</BLOCKQUOTE>
+
 <P><KBD><a name="structural_unify"></a>structural_unify(Term1, Term2)</KBD>
  
 <BLOCKQUOTE>
@@ -6950,7 +6957,7 @@ are the arguments following '--' or arguments without a preceding '-'.
 <P><KBD><a name="predicate_property"></a>predicate_property(Head, Property)</KBD>
 
 <BLOCKQUOTE>
-The predicate specified by <KBD>Head</KBD> has <KBD>Property</KBD> (<KBD>interpreted</KBD>, <KBD>compiled</KBD>, <KBD>foreign</KBD>).
+The predicate specified by <KBD>Head</KBD> has <KBD>Property</KBD> (<KBD>built_in<KBD>, <KBD>dynamic</KBD>, <KBD>static</KBD>, <KBD>foreign</KBD>).
 <BR><KBD>mode predicate_property(?goal, ?atom)</KBD>
 
 <P>Example:
@@ -6958,7 +6965,7 @@ The predicate specified by <KBD>Head</KBD> has <KBD>Property</KBD> (<KBD>interpr
 <KBD>
 <P>| ?- predicate_property(true, Value).
 <BR>
-<BR>Value = compiled
+<BR>Value = built_in
 <BR>
 <BR>| ?- assert((father(A, B) :- male(A), parent(A, B))).
 <BR>
@@ -6969,7 +6976,7 @@ The predicate specified by <KBD>Head</KBD> has <KBD>Property</KBD> (<KBD>interpr
 <BR>
 <BR>A = A
 <BR>B = B
-<BR>Value = interpreted
+<BR>Value = dynamic
 </KBD>
 </BLOCKQUOTE>
 
@@ -7766,10 +7773,20 @@ seconds since the Unix epoch. See <KBD><a href="#realtime">realtime/[1]</a></KBD
 <H2>
 <A NAME="Section3.20">3.20 Interprocess Communication</A>
 </H2>
+Qu-Prolog supports two forms of high-level interprocess communication: ICM for peer-to-peer communication; and Elvin for subscription/notification communication.
+<P>
+Both forms of communication share the same incoming message buffer and use the 
+same predicates (discussed in the ICM section) to access the buffer. 
+Elvin message are distinguished from ICM
+messages by the address -- Elvin messages have the address <KBD>elvin(elvin)</KBD> to prevent them from being considered as ICM handles.
 
+<!-- Section 3.20.1 -->
+<H3>
+<A NAME="Section3.20.1">3.20.1 ICM</A>
+</H3>
 <P>Qu-Prolog uses the Inter-Agent Communications Model (ICM)
 (<a href="http://www.nar.fla.com/icm/manual.html">F. G. McCabe, ICM Reference Manual</a>)
-for communicating between different processes. 
+for peer-to-peer communicating between different processes. 
 Each process that uses ICM communication first registers its name with 
 some <KBD>icm</KBD> process (typically one running on the same machine as 
 the process being registered). For a Qu-Prolog process this is done by using
@@ -7816,6 +7833,9 @@ the default value for the process name (the current process).
 <LI> <KBD>self</KBD> - the current thread.
 </UL>
 
+<P>Machine names can be either short names (without dots) or full names 
+or IP addresses. 
+Note that, if a name contains a dot, it is assumed to be a full name or IP address.
 
 <P>Using the ICM it is possible for Qu-Prolog threads to communicate with other threads in the same process, with threads in different processes on the same machine or with threads in processes on other machines. 
 
@@ -8107,7 +8127,206 @@ switch) when the process was created.
 <BR><KBD>mode icm_port(?integer)</KBD>
 </BLOCKQUOTE>
 
+<!-- Section 3.20.2 -->
+<H3>
+<A NAME="Section3.20.2">3.20.2 Elvin</A>
+</H3>
 <!-- Section 3.21 -->
+
+<P> Elvin is a subscription/notification style communication - readers are 
+referred to <a href="http://elvin.dstc.edu.au">Elvin</a>
+for details of Elvin and the Elvin subscription language.
+<P>
+An Elvin notification (in Qu-Prolog) is a list of <KBD>Attribute = Value </KBD>terms.
+The attributes (field names) are Qu-Prolog atoms and the values are 
+Qu-Prolog terms corresponding to Elvin values of a given Elvin type.
+ Below is a table that gives the mapping between Elvin types and Qu-Prolog 
+types. There is no direct equivalent of strings in Qu-Prolog - strings can 
+be represented as atoms (up to 256 characters long) or as Qu-Prolog lists of
+ASCII values. 
+<P>
+ 
+<TABLE cellpadding="2" cellspacing="2" border="1" width="100%">
+     <TR>
+       <TD valign="top">Elvin type
+       </TD>
+       <TD valign="top">Qu-Prolog notification term sent
+       </TD>
+       <TD valign="top">Received
+       </TD>
+     </TR>
+     <TR>
+       <TD valign="top"><KBD>ELVIN_STRING</KBD>
+       </TD>
+       <TD valign="top">ASCII list
+       </TD>
+       <TD valign="top">ASCII list
+       </TD>
+     </TR>
+     <TR>
+       <TD valign="top"><KBD>ELVIN_INT32</KBD>
+       </TD>
+       <TD valign="top">Integer
+       </TD>
+       <TD valign="top">Integer
+       </TD>
+     </TR>
+     <TR>
+       <TD valign="top"><KBD>ELVIN_INT64</KBD>
+       </TD>
+       <TD valign="top"><KBD>int64(Atom)</KBD>
+       </TD>
+       <TD valign="top"><KBD>int64(Atom)</KBD>
+       </TD>
+     </TR>
+     <TR>
+       <TD valign="top"><KBD>ELVIN_REAL64</KBD>
+       </TD>
+       <TD valign="top"><KBD>real64(Atom)</KBD>
+       </TD>
+       <TD valign="top"><KBD>real64(Atom)</KBD>
+       </TD>
+     </TR>
+     <TR>
+       <TD valign="top"><KBD>ELVIN_OPAQUE</KBD>
+       </TD>
+       <TD valign="top"><KBD>qpterm(Term)</KBD>
+       </TD>
+       <TD valign="top"><KBD>qpterm(Term)</KBD>
+       </TD>
+     </TR>
+     <TR>
+       <TD valign="top"><KBD>ELVIN_OPAQUE</KBD>
+       </TD>
+       <TD valign="top"><KBD>opaque(ASCIIList)</KBD>
+       </TD>
+       <TD valign="top"><KBD>opaque(ASCIIList)</KBD>
+       </TD>
+     </TR>
+</TABLE>
+<P>
+Note that the <KBD>ELVIN_OPAQUE</KBD> type is used for both Qu-Prolog terms and
+opaque strings.
+Internally Qu-Prolog term encoding is used and the encoded term is sent as an opaque type, 
+and 
+when the message is received it is decoded back to a Qu-Prolog term.
+<P>
+<B>WARNING: </B> Because different Qu-Prolog terms in different fileds of a notification are
+separately encoded then there is no connection between variables occurring in the 
+different fields.
+<P>
+The following gives an example of a term that 
+can be uses as a notification and what the received message would look like.
+<P>
+ Sent:
+<KBD>
+<BR>[f1 = hi, f2 = "there", f3 = 86, f4 = int64('99999999999'), 
+<BR> &nbsp;f5 = real64('0.333333'), f6 = opaque([1,0,1]), f7 = qpterm(f(X,g(X))), f8 = qpterm(h(X)]
+</KBD>
+<BR>
+Received:
+<KBD>
+<BR> [f1 = [104,105], f2 = [116, 104, 101, 114, 101], f3 = 86, 
+<BR> &nbsp;f4 = int64('99999999999'), f5 = real64('0.333333'), 
+<BR> &nbsp;f6 = opaque([1,0,1]), f7 = qpterm(f(_A,g(_A))), f8 = qpterm(h(_B))]
+</KBD>
+<P>
+Note, however, that the order of elements of the sent and received notification may be different.
+<P>
+<a href="http://elvin.dstc.edu.au/doc/esl4.html">The Elvin subscription language</a>
+is used to specify notifications of interest.
+ The subscription expressions are Qu-Prolog atoms and the name of the atom
+(i.e. the string of characters making up its name) must follow the syntax
+for Elvin subscription expresssions exactly (including spaces).
+<P>
+As an example, the following code adds a subscription for notifications 
+whose <KBD>sex</KBD> attribute is <KBD>Sex</KBD> and whose <KBD>name</KBD>
+ attribute is not <KBD>Name</KBD>.
+<KBD>
+<BLOCKQUOTE>
+<BR>open_string(write, S),
+<BR>write(S, 'sex == "'),
+<BR>write(S, Sex),
+<BR>write(S, '" && name != "'),
+<BR>write(S, Name),
+<BR>write(S, '"'),
+<BR>stream_to_atom(S, Expr), 
+<BR>elvin_add_subscription(Expr)
+</BLOCKQUOTE>
+</KBD>
+
+Note that if a thread dies and there are still subscriptions attached to 
+that thread, 
+then Elvin will continue to deliver matching notifications but Qu-Prolog will 
+ignore them. If, later, a new thread is created and happens to be allocated 
+the same thread ID then the new thread will start getting these notifications. 
+It is therefore a good idea to delete all the notifications for a thread before
+it dies. 
+<P>
+Predicates:
+<P>
+
+ <a name="elvin_connect"></a><KBD>elvin_connect(Where)</KBD>
+<BLOCKQUOTE>
+Connect to an Elvin server. If <KBD>Where</KBD> is of the form 
+ <KBD>connect(URL)</KBD> (where <KBD>URL</KBD> is an atom representing the URL 
+of an Elvin server) then a connection to that server is attempted. 
+If <KBD>Where</KBD> is of the form <KBD>discover(Scope)</KBD> then Elvin server discovery 
+is used. If <KBD>Where</KBD> is <KBD>default</KBD> then default discovery is used.
+The predicate fails if connection is not made or if it is already 
+connected. In order to use discovery then the Elvin server configuration file 
+(<KBD>elvind.conf</KBD>) needs to be modified to add a scope and/or set default on.
+<P>Example:
+
+<P>
+<KBD>
+<BR>| ?- elvin_connect(connect('elvin://localhost')).
+<BR>| ?- elvin_connect(discover(scopename)).
+<BR>| ?- elvin_connect(default).
+</KBD>
+
+ </BLOCKQUOTE>
+ <a name="elvin_disconnect"></a><KBD>elvin_disconnect</KBD>
+<BLOCKQUOTE>
+Disconnect from the Elvin server. Fails if not connected before 
+the call.
+ </BLOCKQUOTE>
+ <a name="elvin_add_subscription"></a><KBD>elvin_add_subscription(Expression)</KBD>
+<BLOCKQUOTE>
+Add an Elvin subscription using <KBD>Expression</KBD> as the subscription
+expression for this thread . Fails if the attempted subscription fails.
+</BLOCKQUOTE>
+ <a name="elvin_subscriptions"></a><KBD>elvin_subscriptions(Subs)</KBD>
+ 
+<BLOCKQUOTE>
+Unifies <KBD>Subs</KBD> with a list of&nbsp;subscription expression
+s of the current subscriptions for this thread.
+</BLOCKQUOTE>
+ <a name="elvin_delete_subscription"></a><KBD>elvin_delete_subscription(Expression)</KBD>
+ 
+<BLOCKQUOTE>
+Delete a subscription with <KBD>Expression</KBD> from this thread. 
+Fails if there is no matching subscription or if the deletion fails.
+</BLOCKQUOTE>
+ <a name="elvin_delete_all_subscriptions"></a><KBD>elvin_delete_all_subscriptions</KBD>
+ 
+<BLOCKQUOTE>
+Delete all subscription from this thread. 
+</BLOCKQUOTE>
+ <a name="elvin_add_notification"></a><KBD>elvin_add_notification(ElvinTermList)</KBD>
+<BLOCKQUOTE>
+Add an Elvin notification for <KBD>ElvinTermList</KBD> (a Qu-Prolog 
+of the form described earlier). Fails if the notification is unsuccessful.
+</BLOCKQUOTE>
+ <a name="elvin_makeID"></a><KBD>elvin_makeID(ID)</KBD>
+ 
+<BLOCKQUOTE>
+Make a unique ID - uses the same algorithm as for message ID's 
+in ktickertape. This can be used, for example, when sending notifications 
+to ktickertape or other Elvin applications that require a unique message ID.
+</BLOCKQUOTE>
+ 
+
 <H2>
 <A NAME="Section3.21">3.21 Graphical User Interfaces</A>
 </H2>
@@ -8365,6 +8584,21 @@ Access the operating system.
 <BR>
 <BR>yes
 </KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="chdir"></a>chdir(Dir)</KBD>
+
+<BLOCKQUOTE>
+Change directory to that given by the atom <KBD>Dir</KBD>. 
+
+<BR><KBD>mode chdir(@atom)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- chdir('..').
+</KBD>
+<P> changes to the parent directory.
 </BLOCKQUOTE>
 
 <P><KBD><a name="prompt"></a>prompt(Variable, Atom)</KBD>

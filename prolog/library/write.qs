@@ -2323,9 +2323,7 @@ $9:
 $1:
 	get_structure('wflags', 8, 0)
 	unify_constant('true')
-	unify_void(1)
-	unify_constant('true')
-	unify_void(5)
+	unify_void(7)
 	proceed
 
 $2:
@@ -2424,9 +2422,7 @@ $9:
 $1:
 	get_structure('wflags', 8, 0)
 	unify_constant('true')
-	unify_void(2)
-	unify_constant('true')
-	unify_void(4)
+	unify_void(7)
 	proceed
 
 $2:

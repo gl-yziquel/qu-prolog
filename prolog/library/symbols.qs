@@ -444,25 +444,35 @@ end('$predicate_property'/3):
 
 	try(3, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($4)
 
 $1:
-	get_constant('interpreted', 2)
+	get_constant('built_in', 2)
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$builtin', 2, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	get_constant('dynamic', 2)
 	pseudo_instr3(33, 0, 1, 2)
 	put_integer(1, 0)
 	get_x_value(2, 0)
 	neck_cut
 	proceed
 
-$2:
-	get_constant('compiled', 2)
+$3:
+	get_constant('static', 2)
 	pseudo_instr3(33, 0, 1, 2)
 	put_integer(2, 0)
 	get_x_value(2, 0)
 	neck_cut
 	proceed
 
-$3:
+$4:
 	get_constant('foreign', 2)
 	pseudo_instr3(33, 0, 1, 2)
 	put_integer(3, 0)

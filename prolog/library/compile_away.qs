@@ -60,6 +60,16 @@ end('?='/2):
 
 
 
+'unify_with_occurs_check'/2:
+
+
+$1:
+	get_x_value(0, 1)
+	proceed
+end('unify_with_occurs_check'/2):
+
+
+
 '\\+/1$0'/1:
 
 	try(1, $1)

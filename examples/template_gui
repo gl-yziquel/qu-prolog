@@ -3,7 +3,7 @@
 exec wish "$0" "$@"
 
 # load icm interface functions
-load /home/pjr/qp_dev/rel/qp6.2/bin/tkICM.so tkICM
+load /home/pjr/qp_dev/rel/qp6.3/bin/tkICM.so tkICM
 
 #
 # A GUI template - add to this file to define a new GUI that

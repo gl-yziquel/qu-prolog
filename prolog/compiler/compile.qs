@@ -276,22 +276,29 @@ end('$compile'/3):
 
 '$compileall/4$0'/7:
 
-	switch_on_term(0, $6, $2, $2, $3, $2, $2)
-
-$3:
-	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '/'/2:$5])
+	switch_on_term(0, $8, $7, $7, $4, $7, $7)
 
 $4:
-	try(7, $1)
-	trust($2)
+	switch_on_structure(0, 4, ['$default':$7, '$'/0:$5, '/'/2:$6])
 
 $5:
 	try(7, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $6:
 	try(7, $1)
-	trust($2)
+	retry($2)
+	trust($3)
+
+$7:
+	try(7, $2)
+	trust($3)
+
+$8:
+	try(7, $1)
+	retry($2)
+	trust($3)
 
 $1:
 	get_structure('/', 2, 0)
@@ -301,18 +308,42 @@ $1:
 	proceed
 
 $2:
-	allocate(4)
-	get_y_variable(3, 1)
-	get_x_variable(7, 2)
+	allocate(7)
+	get_y_variable(5, 1)
+	get_y_variable(4, 2)
+	get_y_variable(3, 3)
 	get_y_variable(2, 4)
 	get_y_variable(1, 5)
 	get_y_variable(0, 6)
+	get_y_level(6)
+	call_predicate('$is_dynamic_pred', 1, 7)
+	cut(6)
+	put_list(0)
+	set_y_value(5)
+	set_y_value(4)
+	call_predicate('$assert_pred', 1, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
+	deallocate
+	execute_predicate('$compileall', 4)
+
+$3:
+	get_x_variable(7, 1)
+	get_x_variable(8, 2)
+	allocate(4)
+	get_y_variable(3, 3)
+	get_y_variable(2, 4)
+	get_y_variable(1, 5)
+	get_y_variable(0, 6)
+	put_y_value(2, 1)
 	put_list(2)
 	set_x_value(7)
-	set_x_value(3)
+	set_x_value(8)
 	call_predicate('$compile_pred', 3, 4)
-	put_y_value(2, 0)
-	put_y_value(3, 1)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
 	put_y_value(1, 2)
 	put_y_value(0, 3)
 	deallocate
@@ -340,15 +371,61 @@ $1:
 	put_y_variable(0, 4)
 	call_predicate('$read_new_pred', 5, 7)
 	put_y_value(2, 0)
-	put_y_value(5, 1)
-	put_y_value(3, 2)
-	put_y_value(1, 3)
-	put_y_value(6, 4)
+	put_y_value(3, 1)
+	put_y_value(1, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
 	put_y_value(4, 5)
 	put_y_value(0, 6)
 	deallocate
 	execute_predicate('$compileall/4$0', 7)
 end('$compileall'/4):
+
+
+
+'$is_dynamic_pred'/1:
+
+
+$1:
+	get_structure('/', 2, 0)
+	unify_x_variable(1)
+	unify_x_variable(2)
+	put_x_variable(0, 0)
+	pseudo_instr3(0, 0, 1, 2)
+	put_constant('dynamic', 1)
+	execute_predicate('predicate_property', 2)
+end('$is_dynamic_pred'/1):
+
+
+
+'$assert_pred'/1:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(1, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_variable(0)
+	allocate(1)
+	unify_y_variable(0)
+	put_structure(1, 1)
+	set_constant('assert')
+	set_x_value(0)
+	put_structure(1, 0)
+	set_constant('$query')
+	set_x_value(1)
+	call_predicate('assert', 1, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('$assert_pred', 1)
+end('$assert_pred'/1):
 
 
 

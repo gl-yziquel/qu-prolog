@@ -1,4 +1,4 @@
-// messages.h - message processing.
+// elvin_escapes.h - Elvin escapes
 //
 // ##Copyright##
 // 
@@ -53,70 +53,76 @@
 // 
 // ##Copyright##
 //
-// $Id: messages.h,v 1.4 2004/02/12 23:53:47 qp Exp $
+// $Id: elvin_escapes.h,v 1.1 2003/12/10 21:28:04 qp Exp $
 
-#ifndef	MESSAGES_H
-#define	MESSAGES_H
-
-#include "thread_table.h"
-class Thread;
-
-//
-// The base class for individual messages
-//
-class Message
-{
-private:
-  int references;    // reference count for deleting messages
-  bool committed;   // has message been consummed?
+#ifndef	ELVIN_ESCAPES_H
+#define	ELVIN_ESCAPES_H
 
 public:
-  Message():references(0),committed(false) {}
-
-  virtual ~Message() {}
-
-  void IncReferences(void) { references++; }
-  void DecReferences(void) { references--; }
-
-  size_t References(void) const { return references; }
-
-  void Commit(void) { committed = true; }
-  bool Committed(void) const { return committed; }
-
-  bool canDelete(void) const { return(committed && (references == 0)); }
-
-  // virtual methods vor derived classes
-
-  virtual Object* constructSenderTerm(Thread&, AtomTable&) = 0;
-  virtual Object* constructReplyToTerm(Thread&, AtomTable&) = 0;
-  virtual Object* constructMessageTerm(Thread&, AtomTable&,
-				       bool remember_names = false) = 0;
-};
 
 //
-// The base class for message channels
+// psi_elvin_connect(server)
 //
+// Connect to the elvin server
+//
+// mode(in)
+//
+ReturnValue psi_elvin_connect(Object *&);
 
-class MessageChannel
-{
-private:
-  ThreadTable& thread_table;
-public:
-  MessageChannel(ThreadTable& t) : thread_table(t) {}
+//
+// psi_elvin_disconnect
+// Disconnect from Elvin
+//
+ReturnValue psi_elvin_disconnect(void);
 
-  virtual ~MessageChannel() {}
+//
+// psi_elvin_add_subscription(subscription)
+//
+// Add an Elvin subscription
+//
+// mode(in)
+//
+ReturnValue psi_elvin_add_subscription(Object *&);
 
-  ThreadTable& getThreadTable(void) { return thread_table; }
+//
+// psi_elvin_add_notification(notification)
+//
+// Add an Elvin notification
+//
+// mode(in)
+//
+ReturnValue psi_elvin_add_notification(Object *&);
 
-  // Put messages on appropriate threads' message buffer
-  virtual bool ShuffleMessages(void) = 0;
+//
+// psi_elvin_subscriptions(subscriptions)
+//
+// Get the current Elvin subscriptions for this thread.
+//
+// mode(out)
+//
+ReturnValue psi_elvin_subscriptions(Object *&);
 
-  // Update FD_SET's for testing with select
-  virtual void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) = 0;
+//
+// psi_elvin_delete_subscription(subscription)
+//
+// Delete an Elvin subscription
+//
+// mode(in)
+//
+ReturnValue psi_elvin_delete_subscription(Object *&);
 
-  // Process timeouts related to message channel
-  virtual void processTimeouts(struct timeval& timeout) = 0;
-};
+//
+// psi_elvin_makeID(ID)
+//
+// Make a unique ID for use in Elvin notifications
+//
+// mode(out)
+//
+ReturnValue psi_elvin_makeID(Object *&);
+
+#endif	// ELVIN_ESCAPES_H
 
 
-#endif // MESSAGES_H
+
+
+

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.24 2003/10/03 01:19:40 qp Exp $
+// $Id: qem.cc,v 1.25 2003/12/10 21:28:05 qp Exp $
 
 #include <typeinfo>
 
@@ -71,6 +71,7 @@
 #include "atom_table.h"
 #include "code.h"
 #include "defs.h"
+#include "elvin_env.h"
 #include "executable.h"
 #include "icm_aux.h"
 #include "icm_environment.h"
@@ -121,6 +122,10 @@ int icm_port = 0;
 
 ICMMessageChannel* icm_channel = NULL;
 ICMEnvironment* icm_environment = NULL;
+
+#ifdef ELVIN_DEF
+ElvinMessageChannel* elvin_channel = NULL;
+#endif // ELVIN_DEF
 
 // In order that signals to unblock selects we create a pipe and write to
 // it when a signal arrives. By putting the read end of the pipe in

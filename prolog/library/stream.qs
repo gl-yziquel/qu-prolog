@@ -272,27 +272,35 @@ end('open/4$1/5$0'/4):
 	trust($2)
 
 $1:
-	get_x_variable(5, 0)
-	get_x_variable(0, 2)
-	get_x_variable(2, 3)
-	get_x_variable(3, 4)
-	pseudo_instr3(31, 5, 1, 4)
-	get_x_value(0, 4)
-	neck_cut
-	put_x_value(5, 1)
+	allocate(6)
+	get_y_variable(5, 0)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
+	get_y_variable(0, 4)
+	get_y_level(4)
+	call_predicate('$can_open', 2, 6)
+	pseudo_instr3(31, 23, 25, 0)
+	get_y_value(2, 0)
+	cut(4)
+	put_y_value(2, 0)
+	put_y_value(3, 1)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
+	deallocate
 	execute_predicate('open/4$1/5$0', 4)
 
 $2:
-	put_structure(4, 1)
+	put_structure(4, 5)
 	set_constant('open')
-	set_x_value(0)
+	set_x_value(1)
 	set_x_value(3)
 	set_x_value(2)
 	set_x_value(4)
 	put_structure(3, 0)
 	set_constant('permission_error')
 	set_constant('unrecoverable')
-	set_x_value(1)
+	set_x_value(5)
 	set_constant('default')
 	execute_predicate('exception', 1)
 end('open/4$1'/5):
@@ -389,8 +397,8 @@ $2:
 	put_y_value(2, 0)
 	put_y_value(0, 1)
 	call_predicate('$open_options', 2, 6)
-	put_y_value(5, 0)
-	put_y_value(3, 1)
+	put_y_value(3, 0)
+	put_y_value(5, 1)
 	put_y_value(1, 2)
 	put_y_value(4, 3)
 	put_y_value(2, 4)
@@ -555,6 +563,63 @@ $6:
 	put_integer(4, 1)
 	execute_predicate('type_exception', 3)
 end('open'/4):
+
+
+
+'$can_open/2$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_integer(0, 1)
+	put_integer(-1, 2)
+	execute_predicate('access', 3)
+
+$2:
+	put_integer(2, 1)
+	put_integer(0, 2)
+	execute_predicate('access', 3)
+end('$can_open/2$0'/1):
+
+
+
+'$can_open'/2:
+
+	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
+
+$4:
+	switch_on_constant(0, 8, ['$default':'fail', 0:$1, 1:$2, 2:$3])
+
+$5:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_integer(0, 0)
+	get_x_variable(0, 1)
+	put_integer(4, 1)
+	put_integer(0, 2)
+	execute_predicate('access', 3)
+
+$2:
+	get_integer(1, 0)
+	get_x_variable(0, 1)
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$can_open/2$0', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$3:
+	get_integer(2, 0)
+	get_x_variable(0, 1)
+	put_integer(2, 1)
+	put_integer(0, 2)
+	execute_predicate('access', 3)
+end('$can_open'/2):
 
 
 

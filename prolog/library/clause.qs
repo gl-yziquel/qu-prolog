@@ -506,7 +506,7 @@ end('$post_trans_decompile_rest'/3):
 $1:
 	allocate(1)
 	put_y_variable(0, 0)
-	put_constant('interpreted', 1)
+	put_constant('dynamic', 1)
 	call_predicate('predicate_property', 2, 1)
 	put_y_value(0, 0)
 	call_predicate('$listing_predicate', 1, 0)

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_escapes.cc,v 1.9 2003/10/03 01:19:40 qp Exp $
+// $Id: icm_escapes.cc,v 1.10 2003/12/11 23:41:26 qp Exp $
 
 #include "atom_table.h"
 #include "icm_environment.h"
@@ -62,7 +62,7 @@
 #include "thread_qp.h"
 #include "scheduler.h"
 
-
+#include <netdb.h>
 
 extern AtomTable *atoms;
 extern ICMEnvironment *icm_environment;
@@ -402,6 +402,30 @@ Thread::psi_icm_port(Object *& name_cell)
     }
 }
 
+bool machine_name_to_full_name(Object*& name, Object*& fullname)
+{
+  Object* mname = name->variableDereference();
+  if (!mname->isAtom())
+    {
+      return false;
+    }
+  Atom* name_atom = OBJECT_CAST(Atom*, mname);
+  char* name_string = atoms->getAtomString(name_atom);
+  if(strchr(name_string,'.') != NULL) // A dotted name
+    {
+       fullname = mname;
+      return true;
+    }
+  hostent *hp = gethostbyname(name_string);
+  endhostent();
+  if (!hp)
+    {
+      return false;
+    }
+  
+  fullname =  atoms->add(hp->h_name);
+  return true;
+}
 
 Thread::ReturnValue 
 Thread::psi_icm_symbolic_address_to_icm_handle(Object *& add_obj, 
@@ -527,6 +551,15 @@ Thread::psi_icm_symbolic_address_to_icm_handle(Object *& add_obj,
 	{
 	  machine_name = NULL;
 	}
+      if (machine_name != NULL) 
+	{
+	  Object* fullname;
+	  if (!machine_name_to_full_name(machine_name, fullname))
+	    {
+	      PSI_ERROR_RETURN(EV_TYPE, 1);
+	    }
+	  machine_name = fullname;
+	}
       if (locations == NULL)
 	{
 	  if (machine_name != NULL)
@@ -539,7 +572,40 @@ Thread::psi_icm_symbolic_address_to_icm_handle(Object *& add_obj,
 	}
       else
 	{
-	  my_hand_str->setArgument(4, locations);
+	  if (locations->isNil())
+	    {
+	      my_hand_str->setArgument(4, locations);
+	    }
+	  else
+	    {
+	      Cons* fullloc;
+	      Cons* next = heap.newCons();
+	      fullloc = next;
+	      while (!locations->isNil())
+		{
+		  if (!locations->isCons())
+		    {
+		      PSI_ERROR_RETURN(EV_TYPE, 1);
+		    }
+		  Object* head = OBJECT_CAST(Cons*, locations)->getHead()->variableDereference();
+		  locations = OBJECT_CAST(Cons*, locations)->getTail()->variableDereference();
+		  Object* fullname;
+		  if (!machine_name_to_full_name(head, fullname))
+		    {
+		      PSI_ERROR_RETURN(EV_TYPE, 1);
+		    }
+		  next->setHead(fullname);
+                  if (locations->isNil())
+		    {
+		      next->setTail(AtomTable::nil);
+		      break;
+		    }
+		  Cons* tmp = heap.newCons();
+		  next->setTail(tmp);
+		  next = tmp;
+		}
+	      my_hand_str->setArgument(4, fullloc);
+	    }
 	}
       if (machine_name != NULL) 
 	{

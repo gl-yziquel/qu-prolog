@@ -17,12 +17,13 @@ c_to_prolog.o: c_to_prolog.cc global.h atom_table.h config.h ../config.h \
   delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
   equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
   foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h ipc_escapes.h load.h \
-  machine.h name.h object_variable.h occurs_check.h pipe.h process.h \
-  pseudo_instr.h quantifier.h read_qp.h record.h signal_escapes.h state.h \
-  statistics.h stream_escapes.h string_escapes.h structure.h sub_escape.h \
-  symbols.h system_qp.h tcp_escapes.h temperature.h thread_escapes.h \
-  token.h trace_escapes.h unify.h varname.h write.h
+  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
+  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
+  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  varname.h write.h
 choice.o: choice.cc area_offsets.h defs.h config.h ../config.h debug.h \
   choice.h code.h heap_qp.h atom_table.h hash_table.h timestamp.h magic.h \
   qem_options.h option.h options.h string_table.h stack_qp.h errors.h \
@@ -41,12 +42,12 @@ choice.o: choice.cc area_offsets.h defs.h config.h ../config.h debug.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
-  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h read_qp.h \
-  record.h signal_escapes.h state.h statistics.h stream_escapes.h \
-  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
-  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
-  unify.h varname.h write.h
+  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
+  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
+  quantifier.h read_qp.h record.h signal_escapes.h state.h statistics.h \
+  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
+  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
+  trace_escapes.h unify.h varname.h write.h
 environment.o: environment.cc area_offsets.h defs.h config.h ../config.h \
   debug.h objects.h string_table.h magic.h qem_options.h option.h \
   options.h stack_qp.h errors.h page_table.h timestamp.h truth3.h \
@@ -75,12 +76,12 @@ esc_init.o: esc_init.cc atom_table.h config.h ../config.h area_offsets.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
-  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h read_qp.h \
-  record.h signal_escapes.h state.h statistics.h stream_escapes.h \
-  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
-  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
-  unify.h varname.h write.h escapes.h
+  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
+  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
+  quantifier.h read_qp.h record.h signal_escapes.h state.h statistics.h \
+  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
+  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
+  trace_escapes.h unify.h varname.h write.h escapes.h
 execute.o: execute.cc config.h ../config.h atom_table.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h magic.h qem_options.h option.h \
   options.h string_table.h stack_qp.h errors.h page_table.h objects.h \
@@ -100,12 +101,12 @@ execute.o: execute.cc config.h ../config.h atom_table.h area_offsets.h \
   env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
   exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
   generate_var_names.h get_args.h interrupt_qp.h ip_qp.h icm_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  varname.h write.h pseudo_instr_arrays.h
+  elvin_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h read_qp.h \
+  record.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h varname.h write.h pseudo_instr_arrays.h
 generate_var_names.o: generate_var_names.cc atom_table.h config.h \
   ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
@@ -124,12 +125,13 @@ generate_var_names.o: generate_var_names.cc atom_table.h config.h \
   distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
   equal_escape.h esc_init.h examine_term.h exception.h execute.h \
   foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h ipc_escapes.h load.h \
-  machine.h name.h object_variable.h occurs_check.h pipe.h process.h \
-  pseudo_instr.h quantifier.h read_qp.h record.h signal_escapes.h state.h \
-  statistics.h stream_escapes.h string_escapes.h structure.h sub_escape.h \
-  symbols.h system_qp.h tcp_escapes.h temperature.h thread_escapes.h \
-  token.h trace_escapes.h unify.h varname.h write.h
+  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
+  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
+  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  varname.h write.h
 instructions.o: instructions.cc code.h config.h ../config.h \
   area_offsets.h defs.h debug.h heap_qp.h atom_table.h hash_table.h \
   timestamp.h magic.h qem_options.h option.h options.h string_table.h \
@@ -159,12 +161,13 @@ interrupt.o: interrupt.cc global.h atom_table.h config.h ../config.h \
   delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
   equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
   foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h ipc_escapes.h load.h \
-  machine.h name.h object_variable.h occurs_check.h pipe.h process.h \
-  pseudo_instr.h quantifier.h read_qp.h record.h signal_escapes.h state.h \
-  statistics.h stream_escapes.h string_escapes.h structure.h sub_escape.h \
-  symbols.h system_qp.h tcp_escapes.h temperature.h thread_escapes.h \
-  token.h trace_escapes.h unify.h varname.h write.h pseudo_instr_arrays.h
+  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
+  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
+  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  varname.h write.h pseudo_instr_arrays.h
 io.o: io.cc global.h atom_table.h config.h ../config.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h magic.h qem_options.h option.h \
   options.h string_table.h stack_qp.h errors.h page_table.h objects.h \
@@ -184,12 +187,12 @@ io.o: io.cc global.h atom_table.h config.h ../config.h area_offsets.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
-  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h read_qp.h \
-  record.h signal_escapes.h state.h statistics.h stream_escapes.h \
-  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
-  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
-  unify.h varname.h write.h protos.h icm_handle.h int.h
+  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
+  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
+  quantifier.h read_qp.h record.h signal_escapes.h state.h statistics.h \
+  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
+  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
+  trace_escapes.h unify.h varname.h write.h protos.h icm_handle.h int.h
 pseudo_instr.o: pseudo_instr.cc global.h atom_table.h config.h \
   ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
@@ -210,12 +213,12 @@ pseudo_instr.o: pseudo_instr.cc global.h atom_table.h config.h \
   env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
   exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
   generate_var_names.h get_args.h interrupt_qp.h ip_qp.h icm_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  varname.h write.h
+  elvin_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h read_qp.h \
+  record.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h varname.h write.h
 thread.o: thread.cc thread_qp.h area_offsets.h defs.h config.h \
   ../config.h debug.h block.h icm_message.h objects.h string_table.h \
   magic.h qem_options.h option.h options.h stack_qp.h errors.h \
@@ -234,13 +237,14 @@ thread.o: thread.cc thread_qp.h area_offsets.h defs.h config.h \
   distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
   equal_escape.h esc_init.h examine_term.h exception.h execute.h \
   foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h ipc_escapes.h load.h \
-  machine.h name.h object_variable.h occurs_check.h pipe.h process.h \
-  pseudo_instr.h quantifier.h read_qp.h record.h signal_escapes.h state.h \
-  statistics.h stream_escapes.h string_escapes.h structure.h sub_escape.h \
-  symbols.h system_qp.h tcp_escapes.h temperature.h thread_escapes.h \
-  token.h trace_escapes.h unify.h varname.h write.h global.h \
-  record_ref_table.h scheduler.h manager.h scheduler_status.h
+  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
+  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
+  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  varname.h write.h global.h record_ref_table.h scheduler.h manager.h \
+  scheduler_status.h
 thread_condition.o: thread_condition.cc thread_condition.h
 thread_info.o: thread_info.cc thread_info.h config.h ../config.h \
   heap_qp.h area_offsets.h defs.h debug.h atom_table.h hash_table.h \

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_qp.h,v 1.8 2002/12/20 02:15:53 qp Exp $
+// $Id: thread_qp.h,v 1.9 2003/12/10 21:28:05 qp Exp $
 
 #ifndef	THREAD_QP_H
 #define	THREAD_QP_H
@@ -425,6 +425,7 @@ public:
 #include "interrupt_qp.h"
 #include "ip_qp.h"
 #include "icm_escapes.h"
+#include "elvin_escapes.h"
 #include "ipc_escapes.h"
 #include "load.h"
 #include "machine.h"

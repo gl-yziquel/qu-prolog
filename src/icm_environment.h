@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.h,v 1.7 2003/06/18 04:33:35 qp Exp $
+// $Id: icm_environment.h,v 1.8 2004/02/12 23:53:47 qp Exp $
 
 #ifndef	ICM_ENVIRONMENT_H
 #define	ICM_ENVIRONMENT_H
@@ -142,6 +142,8 @@ public:
   void pushMessageToBuff(ICMMessage* m) { msg_buff.push_back(m); }
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
+
+  void processTimeouts(struct timeval& t) {}
 };
 
 

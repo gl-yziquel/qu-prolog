@@ -1,11 +1,11 @@
 '$psi0_decl'/5:
 
-	switch_on_term(0, $15, 'fail', 'fail', 'fail', 'fail', $14)
-
-$14:
-	switch_on_constant(0, 32, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13])
+	switch_on_term(0, $16, 'fail', 'fail', 'fail', 'fail', $15)
 
 $15:
+	switch_on_constant(0, 32, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14])
+
+$16:
 	try(5, $1)
 	retry($2)
 	retry($3)
@@ -18,7 +18,8 @@ $15:
 	retry($10)
 	retry($11)
 	retry($12)
-	trust($13)
+	retry($13)
+	trust($14)
 
 $1:
 	get_integer(0, 0)
@@ -149,18 +150,28 @@ $13:
 	unify_constant('icm_deregister')
 	unify_constant('[]')
 	proceed
+
+$14:
+	get_integer(13, 0)
+	get_constant('elvin_disconnect', 1)
+	get_constant('psi_elvin_disconnect', 2)
+	get_constant('[]', 3)
+	get_list(4)
+	unify_constant('elvin_disconnect')
+	unify_constant('[]')
+	proceed
 end('$psi0_decl'/5):
 
 
 
 '$psi1_decl'/6:
 
-	switch_on_term(0, $107, 'fail', 'fail', 'fail', 'fail', $106)
+	switch_on_term(0, $114, 'fail', 'fail', 'fail', 'fail', $113)
 
-$106:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105])
+$113:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112])
 
-$107:
+$114:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -265,7 +276,14 @@ $107:
 	retry($102)
 	retry($103)
 	retry($104)
-	trust($105)
+	retry($105)
+	retry($106)
+	retry($107)
+	retry($108)
+	retry($109)
+	retry($110)
+	retry($111)
+	trust($112)
 
 $1:
 	get_integer(0, 0)
@@ -2161,6 +2179,134 @@ $105:
 	unify_x_ref(0)
 	get_structure('+', 1, 0)
 	unify_constant('term')
+	proceed
+
+$106:
+	get_integer(105, 0)
+	get_constant('psi_elvin_connect', 3)
+	get_structure('$elvin_connect', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('elvin_connect', 1, 0)
+	unify_x_ref(0)
+	get_structure('+', 1, 0)
+	unify_constant('term')
+	proceed
+
+$107:
+	get_integer(106, 0)
+	get_constant('psi_elvin_add_subscription', 3)
+	get_structure('$elvin_add_subscription', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('elvin_add_subscription', 1, 0)
+	unify_x_ref(0)
+	get_structure('+', 1, 0)
+	unify_constant('term')
+	proceed
+
+$108:
+	get_integer(107, 0)
+	get_constant('psi_elvin_delete_subscription', 3)
+	get_structure('$elvin_delete_subscription', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('elvin_delete_subscription', 1, 0)
+	unify_x_ref(0)
+	get_structure('+', 1, 0)
+	unify_constant('term')
+	proceed
+
+$109:
+	get_integer(108, 0)
+	get_constant('psi_elvin_subscriptions', 3)
+	get_structure('elvin_subscriptions', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('elvin_subscriptions', 1, 0)
+	unify_x_ref(0)
+	get_structure('-', 1, 0)
+	unify_x_ref(0)
+	get_structure('list', 1, 0)
+	unify_constant('term')
+	proceed
+
+$110:
+	get_integer(109, 0)
+	get_constant('psi_elvin_makeID', 3)
+	get_structure('elvin_makeID', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('elvin_makeID', 1, 0)
+	unify_x_ref(0)
+	get_structure('-', 1, 0)
+	unify_constant('term')
+	proceed
+
+$111:
+	get_integer(110, 0)
+	get_constant('psi_elvin_add_notification', 3)
+	get_structure('$elvin_add_notification', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('elvin_add_notification', 1, 0)
+	unify_x_ref(0)
+	get_structure('+', 1, 0)
+	unify_constant('term')
+	proceed
+
+$112:
+	get_integer(111, 0)
+	get_constant('psi_chdir', 3)
+	get_structure('chdir', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('chdir', 1, 0)
+	unify_x_ref(0)
+	get_structure('+', 1, 0)
+	unify_constant('atom')
 	proceed
 end('$psi1_decl'/6):
 
@@ -8760,7 +8906,7 @@ end('$psi5_decl'/10):
 
 
 
-'$query_pseudo_instr2003_11_12_12_42_51_658/0$0'/0:
+'$query_pseudo_instr2004_2_19_13_5_6_421/0$0'/0:
 
 
 $1:
@@ -8773,11 +8919,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2003_11_12_12_42_51_658/0$0'/0):
+end('$query_pseudo_instr2004_2_19_13_5_6_421/0$0'/0):
 
 
 
-'$query_pseudo_instr2003_11_12_12_42_51_658/0$1'/0:
+'$query_pseudo_instr2004_2_19_13_5_6_421/0$1'/0:
 
 
 $1:
@@ -8790,11 +8936,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2003_11_12_12_42_51_658/0$1'/0):
+end('$query_pseudo_instr2004_2_19_13_5_6_421/0$1'/0):
 
 
 
-'$query_pseudo_instr2003_11_12_12_42_51_658/0$2'/0:
+'$query_pseudo_instr2004_2_19_13_5_6_421/0$2'/0:
 
 
 $1:
@@ -8807,11 +8953,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2003_11_12_12_42_51_658/0$2'/0):
+end('$query_pseudo_instr2004_2_19_13_5_6_421/0$2'/0):
 
 
 
-'$query_pseudo_instr2003_11_12_12_42_51_658'/0:
+'$query_pseudo_instr2004_2_19_13_5_6_421'/0:
 
 	try(0, $1)
 	retry($2)
@@ -8820,22 +8966,22 @@ end('$query_pseudo_instr2003_11_12_12_42_51_658/0$2'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2003_11_12_12_42_51_658/0$0', 0, 0)
+	call_predicate('$query_pseudo_instr2004_2_19_13_5_6_421/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2003_11_12_12_42_51_658/0$1', 0, 0)
+	call_predicate('$query_pseudo_instr2004_2_19_13_5_6_421/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2003_11_12_12_42_51_658/0$2', 0, 0)
+	call_predicate('$query_pseudo_instr2004_2_19_13_5_6_421/0$2', 0, 0)
 	fail
 
 $4:
 	proceed
-end('$query_pseudo_instr2003_11_12_12_42_51_658'/0):
+end('$query_pseudo_instr2004_2_19_13_5_6_421'/0):
 
 
 
@@ -8843,7 +8989,7 @@ end('$query_pseudo_instr2003_11_12_12_42_51_658'/0):
 
 
 $1:
-	execute_predicate('$query_pseudo_instr2003_11_12_12_42_51_658', 0)
+	execute_predicate('$query_pseudo_instr2004_2_19_13_5_6_421', 0)
 end('$query'/0):
 
 

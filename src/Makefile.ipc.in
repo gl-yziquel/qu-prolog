@@ -2,6 +2,7 @@ export LIBRARY.ipc = ipc.a
 
 export SOURCES.ipc = \
 	icm_environment.cc \
+	elvin_env.cc \
 	icm_handle.cc \
 	thread_table.cc
 
@@ -17,5 +18,8 @@ $(LIBRARY.ipc): $(OBJECTS.ipc)
 
 .PHONY: install.ipc
 install.ipc: all.ipc
+
+elvin_env.o: elvin_env.cc
+	$(CXX) @ELVIN_CFLAGS@ $(CXXFLAGS) -c -o elvin_env.o elvin_env.cc
 
 

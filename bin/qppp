@@ -1,3 +1,3 @@
 #! /bin/sh
 
-/usr/bin/cpp -DQuAM=1 -C -P -traditional $*
+/usr/bin/cpp -DQuAM=1 -C -P -xassembler-with-cpp -traditional $*

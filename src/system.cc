@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system.cc,v 1.12 2002/12/23 21:45:52 qp Exp $
+// $Id: system.cc,v 1.14 2004/02/19 03:03:27 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -148,6 +148,22 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
 } 
 
 //
+// psi_chdir(atom)
+// Change directory to dir given by the argument
+// mode(in)
+//
+Thread::ReturnValue	
+Thread::psi_chdir(Object *& object1)
+{
+  Object* val1 = heap.dereference(object1);
+  if (!val1->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+  return (BOOL_TO_RV(chdir(atoms->getAtomString(val1)) == 0));
+}
+
+//
 // psi_mktemp(atom, var)
 // Return a temporary file name.
 // mode(in,out)
@@ -190,16 +206,8 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
 {
   Object* time_arg = heap.dereference(time_obj);
   Object* time_struct_arg = heap.dereference(time_struct);
-  if (time_struct_arg->isVariable())
+  if (time_arg->isNumber())
     {
-      if (time_arg->isVariable())
-	{
-	  PSI_ERROR_RETURN(EV_INST, 1);
-	}
-      if (!time_arg->isNumber())
-	{
-	  PSI_ERROR_RETURN(EV_TYPE, 1);
-	}
       time_t etime = (time_t)time_arg->getNumber();
       struct tm *tmtime = gmtime(&etime);
       Structure* t_struct = heap.newStructure(6);
@@ -215,7 +223,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
     }
   else
     {
-      if (!time_arg->isVariable() && !time_arg->isNumber())
+      if (!time_arg->isVariable())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 1);
 	}

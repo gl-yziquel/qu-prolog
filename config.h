@@ -52,6 +52,7 @@
 /* #undef FREEBSD */
 /* #undef MACOSX */
 #define ICM_DEF 1
+#define ELVIN_DEF 1
 
 #define MULTIPLE_THREADS 1
 
