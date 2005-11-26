@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compiler_support.h,v 1.8 2004/12/23 22:40:35 qp Exp $
+// $Id: compiler_support.h,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 #ifndef	COMPILER_SUPPORT_H
 #define	COMPILER_SUPPORT_H
@@ -81,7 +81,7 @@ private:
   int       last;
 
 public:
-  WordArray(int s)
+  explicit WordArray(int s)
     { 
       base = new word32[s];
       size = s; 
@@ -111,8 +111,8 @@ public:
 
   inline void resetLast(int l)
     {
-      DEBUG_ASSERT(l >= 0);
-      DEBUG_ASSERT(l < size);
+      assert(l >= 0);
+      assert(l < size);
       last = l;
     }
 
@@ -145,7 +145,7 @@ private:
 
 public:
   typedef llist* llistptr;
-  xreglife(int s) 
+  explicit xreglife(int s) 
     {      
       reginfo = new llistptr[s];
 

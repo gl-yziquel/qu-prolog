@@ -36,74 +36,82 @@ end('call'/1):
 
 '$call_2'/2:
 
-	switch_on_term(0, $22, $21, $12, $13, $21, $18)
-
-$12:
-	try(2, $1)
-	retry($2)
-	retry($8)
-	retry($10)
-	trust($11)
+	switch_on_term(0, $24, $23, $13, $14, $23, $20)
 
 $13:
-	switch_on_structure(0, 8, ['$default':$21, '$'/0:$14, ','/2:$15, ';'/2:$16, '->'/2:$17])
-
-$14:
 	try(2, $1)
 	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($8)
-	retry($10)
-	trust($11)
+	retry($9)
+	retry($11)
+	trust($12)
+
+$14:
+	switch_on_structure(0, 16, ['$default':$23, '$'/0:$15, 'message_choice'/1:$16, ','/2:$17, ';'/2:$18, '->'/2:$19])
 
 $15:
 	try(2, $1)
-	retry($3)
-	retry($8)
-	retry($10)
-	trust($11)
+	retry($2)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($9)
+	retry($11)
+	trust($12)
 
 $16:
 	try(2, $1)
-	retry($4)
-	retry($5)
-	retry($8)
-	retry($10)
-	trust($11)
+	retry($2)
+	retry($9)
+	retry($11)
+	trust($12)
 
 $17:
 	try(2, $1)
-	retry($6)
-	retry($8)
-	retry($10)
-	trust($11)
+	retry($4)
+	retry($9)
+	retry($11)
+	trust($12)
 
 $18:
-	switch_on_constant(0, 4, ['$default':$21, '!':$19, 'trace':$20])
+	try(2, $1)
+	retry($5)
+	retry($6)
+	retry($9)
+	retry($11)
+	trust($12)
 
 $19:
 	try(2, $1)
 	retry($7)
-	retry($8)
-	retry($10)
-	trust($11)
+	retry($9)
+	retry($11)
+	trust($12)
 
 $20:
-	try(2, $1)
-	retry($8)
-	retry($9)
-	retry($10)
-	trust($11)
+	switch_on_constant(0, 4, ['$default':$23, '!':$21, 'trace':$22])
 
 $21:
 	try(2, $1)
 	retry($8)
-	retry($10)
-	trust($11)
+	retry($9)
+	retry($11)
+	trust($12)
 
 $22:
+	try(2, $1)
+	retry($9)
+	retry($10)
+	retry($11)
+	trust($12)
+
+$23:
+	try(2, $1)
+	retry($9)
+	retry($11)
+	trust($12)
+
+$24:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -114,7 +122,8 @@ $22:
 	retry($8)
 	retry($9)
 	retry($10)
-	trust($11)
+	retry($11)
+	trust($12)
 
 $1:
 	get_x_variable(2, 0)
@@ -136,6 +145,19 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
+	get_structure('message_choice', 1, 0)
+	unify_x_variable(0)
+	allocate(2)
+	get_y_variable(1, 1)
+	neck_cut
+	put_y_variable(0, 1)
+	call_predicate('$mc_inline', 2, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	deallocate
+	execute_predicate('$call_2', 2)
+
+$3:
 	get_list(0)
 	unify_x_variable(0)
 	allocate(1)
@@ -146,7 +168,7 @@ $2:
 	deallocate
 	execute_predicate('consult', 1)
 
-$3:
+$4:
 	get_structure(',', 2, 0)
 	unify_x_variable(0)
 	allocate(2)
@@ -159,7 +181,7 @@ $3:
 	deallocate
 	execute_predicate('$call_2', 2)
 
-$4:
+$5:
 	get_structure(';', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(2)
@@ -171,7 +193,7 @@ $4:
 	neck_cut
 	execute_predicate('$ite_call', 4)
 
-$5:
+$6:
 	get_structure(';', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(3)
@@ -180,7 +202,7 @@ $5:
 	put_x_value(3, 1)
 	execute_predicate('$or_call', 3)
 
-$6:
+$7:
 	get_structure('->', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(3)
@@ -188,13 +210,13 @@ $6:
 	put_x_value(3, 1)
 	execute_predicate('$it_call', 3)
 
-$7:
+$8:
 	get_constant('!', 0)
 	neck_cut
 	pseudo_instr1(9, 1)
 	proceed
 
-$8:
+$9:
 	put_constant('$debugger_status', 2)
 	pseudo_instr2(73, 2, 1)
 	put_constant('off', 2)
@@ -202,13 +224,13 @@ $8:
 	neck_cut
 	execute_predicate('call_predicate', 1)
 
-$9:
+$10:
 	get_constant('trace', 0)
 	neck_cut
 	put_constant('trace', 0)
 	execute_predicate('call_predicate', 1)
 
-$10:
+$11:
 	allocate(2)
 	get_y_variable(0, 0)
 	pseudo_instr1(68, 0)
@@ -221,7 +243,7 @@ $10:
 	deallocate
 	execute_predicate('$debug_call', 1)
 
-$11:
+$12:
 	execute_predicate('call_predicate', 1)
 end('$call_2'/2):
 
@@ -286,6 +308,22 @@ $2:
 	get_x_variable(1, 2)
 	execute_predicate('$call_2', 2)
 end('$or_call'/3):
+
+
+
+'$message_choice'/2:
+
+
+$1:
+	allocate(2)
+	get_y_variable(1, 1)
+	put_y_variable(0, 1)
+	call_predicate('$mc_inline', 2, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	deallocate
+	execute_predicate('$call_2', 2)
+end('$message_choice'/2):
 
 
 

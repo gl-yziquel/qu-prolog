@@ -53,14 +53,21 @@
 // 
 // ##Copyright##
 //
-// $Id: block.h,v 1.9 2003/04/21 06:11:12 qp Exp $
+// $Id: block.h,v 1.11 2005/11/26 23:34:28 qp Exp $
 
 #ifndef	BLOCK_H
 #define	BLOCK_H
 
 #include "defs.h"
-#include "icm_message.h"
 #include <list>
+#include <sys/types.h>
+#ifdef WIN32
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <winsock2.h>
+#else
+        #include "icm_message.h"
+#endif
 
 class Thread;
 class Code;
@@ -114,7 +121,7 @@ class BlockingObject
 private:
   Thread* thread;     // the blocked thread
 public:
-  BlockingObject(Thread* const t) : thread(t) {}
+  explicit BlockingObject(Thread* const t) : thread(t) {}
 
   virtual ~BlockingObject() {}
 
@@ -123,6 +130,10 @@ public:
   virtual bool unblock(int& tout) = 0;
 
   virtual bool hasFD(void) = 0;
+
+#ifdef WIN32
+  virtual int getFD(void) = 0;
+#endif
 
   virtual void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) = 0;
 };
@@ -142,6 +153,8 @@ class BlockingIOObject : public BlockingObject
 
   bool hasFD(void) { return true; }
 
+  int getFD(void) { return fd; }
+
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
 };
 
@@ -159,6 +172,10 @@ class BlockingTimeoutObject : public BlockingObject
 
   bool hasFD(void) { return false; }
 
+#ifdef WIN32
+  int getFD(void) { return NULL; }
+#endif
+
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) {}
 
 };
@@ -167,15 +184,19 @@ class BlockingMessageObject : public BlockingObject
 {
  private:
   time_t timeout;
-  list<Message *>::iterator *iter;
+  std::list<Message *>::iterator *iter;
   u_int size;
  public:
   BlockingMessageObject(Thread* const t, time_t to, 
-			list<Message *>::iterator *i);
+			std::list<Message *>::iterator *i);
 
   bool unblock(int& tout);
 
   bool hasFD(void) { return true; }
+
+#ifdef WIN32
+  int getFD(void) { return NULL; }
+#endif
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
 
@@ -193,6 +214,10 @@ class BlockingWaitObject : public BlockingObject
   bool unblock(int& tout);
 
   bool hasFD(void) { return false; }
+
+#ifdef WIN32
+  int getFD(void) { return NULL; }
+#endif
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) {}
 

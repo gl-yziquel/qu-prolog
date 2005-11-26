@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: temperature.cc,v 1.4 2002/03/13 01:38:26 qp Exp $
+// $Id: temperature.cc,v 1.5 2005/11/26 23:34:31 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -67,12 +67,12 @@ void
 Thread::freeze_thaw_sub(Object* sub, Object*& varlist,
 			bool do_freeze, bool get_vars)
 {
-  DEBUG_ASSERT(sub->isCons());
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList());
+  assert(sub->isCons());
+  assert(OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList());
 
   for (;sub->isCons();sub = OBJECT_CAST(Cons*, sub)->getTail() )
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
       SubstitutionBlock* subblock 
 	= OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons*, sub)->getHead());
       
@@ -183,7 +183,7 @@ Thread::freeze_thaw_term(Object* term, Object*& varlist,
       break;
       
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }

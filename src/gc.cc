@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.cc,v 1.11 2004/05/26 03:04:39 qp Exp $
+// $Id: gc.cc,v 1.14 2005/11/26 23:34:29 qp Exp $
 
 #include "global.h"
 #include "gc.h"
@@ -85,7 +85,7 @@
 //
 // -------------------------
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 
 //
 // Code for checking the heap during and after GC
@@ -176,7 +176,7 @@ bool check_term(Object* term)
 }
 
 
-#endif // DEBUG
+#endif // QP_DEBUG
 
 
 void gc_mark_pointer(Object* start, int32& total_marked, Heap& heap)
@@ -190,8 +190,7 @@ void gc_mark_pointer(Object* start, int32& total_marked, Heap& heap)
       // Nothing to do
       return;
     }
-  DEBUG_CODE(
-  {
+#ifndef NDEBUG
     if (!check_term(start))
       {
 	//  Structure* ss = OBJECT_CAST(Structure*, start);
@@ -202,14 +201,13 @@ cerr << (word32)((reinterpret_cast<heapobject*>(start) + i)) << " : " << (word32
 cerr << dec << endl;
 	start->printMe_dispatch(*atoms,false);
       }
-  }
-  );
+#endif
 
-  DEBUG_ASSERT(reinterpret_cast<heapobject*>(start) < heap.getTop());
+  assert(reinterpret_cast<heapobject*>(start) < heap.getTop());
   // Mark the object (by marking the tag word)
   start->gc_mark();
-  total_marked += start->size_dispatch();
-  if (start->isNumber())
+  total_marked += static_cast<int32>(start->size_dispatch());
+  if (start->isNumber() || start->isDouble())
     {
       // If the object is a number then there are no chains to follow
       return;
@@ -221,27 +219,27 @@ cerr << dec << endl;
 
   // Initialize for marking
   heapobject* current = start->last();
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
   Object* next = reinterpret_cast<Object*>(*current & ~Object::GC_Mask);
-DEBUG_ASSERT(next != NULL);
+assert(next != NULL);
   *current = reinterpret_cast<heapobject>(start) | (*current & Object::GC_Mask);
   
-  DEBUG_ASSERT((*(reinterpret_cast<heapobject*>(start)) & Object::GC_F) == 0);
+  assert((*(reinterpret_cast<heapobject*>(start)) & Object::GC_F) == 0);
  forward:
   {
-    DEBUG_ASSERT(next != NULL);
-    DEBUG_ASSERT((*(reinterpret_cast<heapobject*>(next)) & Object::GC_F) == 0);
+    assert(next != NULL);
+    assert((*(reinterpret_cast<heapobject*>(next)) & Object::GC_F) == 0);
     if (next->gc_isMarked() || 
 	!heap.isHeapPtr(reinterpret_cast<heapobject*>(next)))
       {
 	// no more marking required on this chain
 	goto backward;
       }
-  DEBUG_ASSERT(reinterpret_cast<heapobject*>(next) < heap.getTop());
+  assert(reinterpret_cast<heapobject*>(next) < heap.getTop());
     // Mark the object in the chain
     next->gc_mark();
-    total_marked += next->size_dispatch();
-    if (next->isNumber())
+    total_marked += static_cast<int32>(next->size_dispatch());
+    if (next->isNumber() || next->isDouble())
       {
 	goto backward;
       }
@@ -249,28 +247,28 @@ DEBUG_ASSERT(next != NULL);
 
     // Move to the next chain object
 
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
     heapobject* tmp = current;
     current = next->last();
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
     next = reinterpret_cast<Object*>(*current & ~Object::GC_Mask);
-DEBUG_ASSERT(next != NULL);
+assert(next != NULL);
     *current = reinterpret_cast<heapobject>(tmp) | (*current & Object::GC_Mask);
     goto forward;
   }
 
  backward:
   {
-DEBUG_ASSERT(next != NULL);
-DEBUG_ASSERT(current != NULL);
-    DEBUG_ASSERT(( *(reinterpret_cast<heapobject*>(next)) & Object::GC_F) == 0);
-    DEBUG_ASSERT((*current & Object::GC_F) == Object::GC_F);
+assert(next != NULL);
+assert(current != NULL);
+    assert(( *(reinterpret_cast<heapobject*>(next)) & Object::GC_F) == 0);
+    assert((*current & Object::GC_F) == Object::GC_F);
     // re-reverse the pointer 
     heapobject* tmp = 
       reinterpret_cast<heapobject*>(*current & ~Object::GC_Mask);
-DEBUG_ASSERT(tmp != NULL);
+assert(tmp != NULL);
     *current = reinterpret_cast<heapobject>(next);
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
     // Move the previous "argument" of the object
     current--;
     //
@@ -281,11 +279,11 @@ DEBUG_ASSERT(current != NULL);
         *current = 0;
 	current--;
       }
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
     if (current == reinterpret_cast<heapobject*>(start))
       {
 	// returned to the start - finished marking
-	DEBUG_ASSERT(check_term(start));
+	assert(check_term(start));
 	return;
       }
     if ((*current & Object::GC_F) == 0)
@@ -293,15 +291,15 @@ DEBUG_ASSERT(current != NULL);
 	// Finished processing the "arguments"
 	// Step back in the chain
 	next = reinterpret_cast<Object*>(current);
-DEBUG_ASSERT(next != NULL);
+assert(next != NULL);
 	current = tmp;
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
 	goto backward;
       }
     // Otherwise move into the new "argument" chain for marking.
-DEBUG_ASSERT(current != NULL);
+assert(current != NULL);
     next = reinterpret_cast<Object*>(*current & ~Object::GC_Mask);
-DEBUG_ASSERT(next != NULL);
+assert(next != NULL);
     *current = 
       reinterpret_cast<heapobject>(tmp) | (*current & Object::GC_Mask);
     goto forward;
@@ -341,16 +339,17 @@ void gc_compact_heap(int32 marked, Heap& heap)
 	  heapobject* end_of_chain = 
 	    unfold_chain(reinterpret_cast<heapobject*>(*ptr & ~Object::GC_Mask));
 	  int32 size = 
-	    reinterpret_cast<Object*>(end_of_chain)->size_dispatch();
+	    static_cast<int32>(reinterpret_cast<Object*>(end_of_chain)->size_dispatch());
 	  update_relocation_chain(ptr, dest - size);
 	}
 
       if ((*ptr & Object::GC_M) == Object::GC_M)
 	{
 	  // We have reached a marked object - look at each "argument"
-	  int32 size = reinterpret_cast<Object*>(ptr)->size_dispatch();
+	  int32 size = static_cast<int32>(reinterpret_cast<Object*>(ptr)->size_dispatch());
 	  dest -= size;
-	  if (reinterpret_cast<Object*>(ptr)->isNumber())
+	  if (reinterpret_cast<Object*>(ptr)->isNumber()
+	      || reinterpret_cast<Object*>(ptr)->isDouble())
 	    {
 	      continue;
 	    }
@@ -363,7 +362,7 @@ void gc_compact_heap(int32 marked, Heap& heap)
 		{
 		  continue;
 		}
-  DEBUG_ASSERT(reinterpret_cast<heapobject*>(tmp) < heap.getTop());
+  assert(reinterpret_cast<heapobject*>(tmp) < heap.getTop());
 	      if (tmp < ptr)
 		{
 		  into_relocation_chain(tmp, curr);
@@ -379,7 +378,7 @@ void gc_compact_heap(int32 marked, Heap& heap)
 	  // other than unbound refs. This means that the F bit should 
 	  // not be set at this point. If this is not the case use
 	  // update_relocation_chain(ptr, dest);
-	  DEBUG_ASSERT((*ptr & Object::GC_F) != Object::GC_F);
+	  assert((*ptr & Object::GC_F) != Object::GC_F);
 	}
     }
 
@@ -399,7 +398,7 @@ void gc_compact_heap(int32 marked, Heap& heap)
       // relocate if we hit the end of a chain
       update_relocation_chain(ptr, dest);
 
-      int32 size = reinterpret_cast<Object*>(ptr)->size_dispatch();
+      int32 size = static_cast<int32>(reinterpret_cast<Object*>(ptr)->size_dispatch());
 
       *dest = *ptr & ~Object::GC_Mask;
       dest++;
@@ -411,6 +410,16 @@ void gc_compact_heap(int32 marked, Heap& heap)
 	  ptr += size;
 	  continue;
 	}
+      if (reinterpret_cast<Object*>(ptr)->isDouble())
+	{
+	  // Move the double to its new place
+	  *dest = *(ptr+1) & ~Object::GC_Mask;
+	  dest++;
+	  *dest = *(ptr+2) & ~Object::GC_Mask;
+	  dest++;
+	  ptr += size;
+	  continue;
+	}
       // Move the "arguments" of the object
       for (heapobject* curr = ptr+1; curr < ptr+size; curr++)
 	{
@@ -418,7 +427,7 @@ void gc_compact_heap(int32 marked, Heap& heap)
 	    reinterpret_cast<heapobject*>(*curr & ~Object::GC_Mask);
 	  if (heap.isHeapPtr(tmp) && tmp > curr)
 	    {
-  DEBUG_ASSERT(reinterpret_cast<heapobject*>(tmp) < heap.getTop());
+  assert(reinterpret_cast<heapobject*>(tmp) < heap.getTop());
 	      into_relocation_chain(tmp, dest);
 	    }
 	  else
@@ -432,7 +441,7 @@ void gc_compact_heap(int32 marked, Heap& heap)
     }
   // Finished - reset the top of heap.
   heap.setTop(heap.getBase() + marked - 1);
-  DEBUG_ASSERT(check_after_GC(heap));
+  assert(check_after_GC(heap));
 }
 
 

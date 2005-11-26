@@ -53,12 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: foreign_handle.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: foreign_handle.h,v 1.2 2005/03/08 00:35:05 qp Exp $
 
 #ifndef	FOREIGN_HANDLE_H
 #define	FOREIGN_HANDLE_H
 
+#ifndef WIN32
 #include <dlfcn.h>
+#endif
 
 class	Handle
 {
@@ -73,7 +75,12 @@ public:
       handle = h;
       next = n;
     }
-  ~Handle(void)		{ dlclose(handle); }
+#if(!defined(WIN32))
+  ~Handle(void)         { dlclose(handle); }
+#else
+   // Windows thing
+   ~Handle(void) { FreeLibrary((HMODULE)handle); }
+#endif
   
   //
   // Return the handle.

@@ -53,13 +53,19 @@
 // 
 // ##Copyright##
 //
-// $Id: block.cc,v 1.13 2003/10/05 04:50:45 qp Exp $
+// $Id: block.cc,v 1.14 2005/03/08 00:34:59 qp Exp $
 
 #include "config.h"
 
-#include <unistd.h>
+#ifdef WIN32
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <io.h>
+#else
+        #include <unistd.h>
+#endif
 
-#include "block.h"
+//#include "block.h"
 #include "io_qp.h"
 #include "thread_qp.h"
 
@@ -128,7 +134,7 @@ BlockingTimeoutObject::unblock(int& tout)
     {
       if (timeout > 0)
 	{
-	  int delta = timeout - now;
+	  int delta = static_cast<int>(timeout - now);
 	  if ((tout == 0) || tout > delta) tout = delta;
 	}
       return false;
@@ -140,7 +146,7 @@ BlockingMessageObject::BlockingMessageObject(Thread* const t, time_t to,
   : BlockingObject(t), iter(i)
 {
   timeout = absoluteTimeout(to);
-  size = t->MessageQueue().size();
+  size = static_cast<u_int>(t->MessageQueue().size());
 }
 
 void
@@ -172,7 +178,7 @@ BlockingMessageObject::unblock(int& tout)
     {      
       if (timeout > 0)
 	{
-	  int delta = timeout - now;
+	  int delta = static_cast<int>(timeout - now);
 	  if ((tout == 0) || tout > delta) tout = delta;
 	}
       return false;
@@ -206,7 +212,7 @@ BlockingWaitObject::unblock(int& tout)
     {
       if (timeout > 0)
 	{
-	  int delta = timeout - now;
+	  int delta = static_cast<int>(timeout - now);
 	  if ((tout == 0) || tout > delta) tout = delta;
 	}
       return false;

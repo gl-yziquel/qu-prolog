@@ -34,6 +34,7 @@ put_x_value		RETURN_INSTR(PUT_X_VALUE, put_x_value);
 put_y_value		RETURN_INSTR(PUT_Y_VALUE, put_y_value);
 put_constant		RETURN_INSTR(PUT_CONSTANT, put_constant);
 put_integer		RETURN_INSTR(PUT_INTEGER, put_integer);
+put_double		RETURN_INSTR(PUT_DOUBLE, put_double);
 put_list		RETURN_INSTR(PUT_LIST, put_list); 
 put_structure		RETURN_INSTR(PUT_STRUCTURE, put_structure);
 put_x_object_variable	RETURN_INSTR(PUT_X_OBJECT_VARIABLE, put_x_object_variable);
@@ -52,6 +53,7 @@ get_x_value		RETURN_INSTR(GET_X_VALUE, get_x_value);
 get_y_value		RETURN_INSTR(GET_Y_VALUE, get_y_value);
 get_constant		RETURN_INSTR(GET_CONSTANT, get_constant);
 get_integer		RETURN_INSTR(GET_INTEGER, get_integer);
+get_double		RETURN_INSTR(GET_DOUBLE, get_double);
 get_list		RETURN_INSTR(GET_LIST, get_list);
 get_structure		RETURN_INSTR(GET_STRUCTURE, get_structure);
 get_structure_frame	RETURN_INSTR(GET_STRUCTURE_FRAME, get_structure_frame);
@@ -67,6 +69,7 @@ unify_x_value		RETURN_INSTR(UNIFY_X_VALUE, unify_x_value);
 unify_y_value		RETURN_INSTR(UNIFY_Y_VALUE, unify_y_value);
 unify_constant		RETURN_INSTR(UNIFY_CONSTANT, unify_constant);		
 unify_integer		RETURN_INSTR(UNIFY_INTEGER, unify_integer);		
+unify_double		RETURN_INSTR(UNIFY_DOUBLE, unify_double);		
 unify_void		RETURN_INSTR(UNIFY_VOID, unify_void);
 set_x_variable		RETURN_INSTR(SET_X_VARIABLE, set_x_variable);
 set_y_variable		RETURN_INSTR(SET_Y_VARIABLE, set_y_variable);
@@ -78,6 +81,7 @@ set_x_object_value	RETURN_INSTR(SET_X_OBJECT_VALUE, set_x_object_value);
 set_y_object_value	RETURN_INSTR(SET_Y_OBJECT_VALUE, set_y_object_value);
 set_constant		RETURN_INSTR(SET_CONSTANT, set_constant);
 set_integer		RETURN_INSTR(SET_INTEGER, set_integer);
+set_double		RETURN_INSTR(SET_DOUBLE, set_double);
 set_void		RETURN_INSTR(SET_VOID, set_void);
 set_object_void		RETURN_INSTR(SET_OBJECT_VOID, set_object_void);
 allocate		RETURN_INSTR(ALLOCATE, wam_allocate);
@@ -138,6 +142,14 @@ end			{
 				return END_TOKEN;
 			}
 
+[[:digit:]]+"."[[:digit:]]+(""|("e"(""|"+"|"-")[[:digit:]]+))		{
+				yylval.double_value = atof(yytext);
+				return DOUBLE_TOKEN;
+			}
+[[:digit:]]+(("e"(""|"+"|"-")[[:digit:]]+))		{
+				yylval.double_value = atof(yytext);
+				return DOUBLE_TOKEN;
+			}
 [[:digit:]]+		{
 				yylval.number_value = atoi(yytext);
 				return NUMBER_TOKEN;

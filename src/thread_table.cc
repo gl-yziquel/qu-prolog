@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_table.cc,v 1.6 2003/10/03 01:19:40 qp Exp $
+// $Id: thread_table.cc,v 1.7 2005/11/26 23:34:31 qp Exp $
 
 #include <sys/types.h>
 #include <sstream>
@@ -89,7 +89,7 @@ ThreadTable::MakeName(const ThreadTableLoc loc)
           return (symbol);
 	}
     }
-  DEBUG_ASSERT(false);
+  assert(false);
   return (symbol);
 }
 
@@ -148,7 +148,7 @@ ThreadTable::RemoveName(const string& symbol)
 ThreadTableLoc
 ThreadTable::AddID(Thread *thread)
 {
-  DEBUG_ASSERT(thread != NULL);
+  assert(thread != NULL);
 
   if (live < size)
     {
@@ -172,7 +172,7 @@ ThreadTable::AddID(Thread *thread)
 Thread *
 ThreadTable::LookupID(const ThreadTableLoc loc)
 {
-  DEBUG_ASSERT(IsValid(loc));
+  assert(IsValid(loc));
 
   return array[loc];
 }
@@ -180,7 +180,7 @@ ThreadTable::LookupID(const ThreadTableLoc loc)
 const Thread *
 ThreadTable::operator[](const ThreadTableLoc loc) const
 {
-  DEBUG_ASSERT(IsValid(loc));
+  assert(IsValid(loc));
 
   return array[loc];
 }
@@ -188,7 +188,7 @@ ThreadTable::operator[](const ThreadTableLoc loc) const
 void
 ThreadTable::RemoveID(const ThreadTableLoc loc)
 {
-  DEBUG_ASSERT(IsValid(loc) && array[loc] != NULL);
+  assert(IsValid(loc) && array[loc] != NULL);
 
   array[loc] = NULL;
 }

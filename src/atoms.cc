@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: atoms.cc,v 1.4 2002/11/03 08:37:23 qp Exp $
+// $Id: atoms.cc,v 1.6 2005/11/26 23:34:28 qp Exp $
 
 #include <string.h>
 #include <sstream>
@@ -77,7 +77,7 @@ Thread::psi_atom_length(Object *& object1, Object *& object2)
   
   if (val1->isAtom())
     {
-      object2 = heap.newShort(strlen(atoms->getAtomString(val1)));
+      object2 = heap.newShort(static_cast<int32>(strlen(atoms->getAtomString(val1))));
       return(RV_SUCCESS);
     }
   else if (val1->isVariable())
@@ -326,7 +326,7 @@ Thread::psi_atom_search(Object *& object1, Object *& object2,
 	}
       else
 	{
-	  object4 = heap.newNumber(strlen(string1) - strlen(substring)+1);
+	  object4 = heap.newNumber(static_cast<long>(strlen(string1) - strlen(substring)+1));
 	  return(RV_SUCCESS);
 	}
     }
@@ -371,9 +371,9 @@ Thread::psi_sub_atom(Object *& object1, Object *& object2,
   Object* val2 = heap.dereference(object2);
   Object* val3 = heap.dereference(object3);  
   
-  DEBUG_ASSERT(val1->isAtom());
-  DEBUG_ASSERT(val2->isShort());
-  DEBUG_ASSERT(val3->isShort());
+  assert(val1->isAtom());
+  assert(val2->isShort());
+  assert(val3->isShort());
   
   length = val3->getNumber();
   strncpy(atom_buf1,

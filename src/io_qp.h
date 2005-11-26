@@ -53,28 +53,39 @@
 // 
 // ##Copyright##
 //
-// $Id: io_qp.h,v 1.17 2002/12/15 08:23:50 qp Exp $
+// $Id: io_qp.h,v 1.20 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	IO_QP_H
 #define	IO_QP_H
 
-#include <sys/file.h>
-#include <sys/types.h>
-#include <sys/times.h>
-#include <sys/time.h>
-#include <sys/socket.h>
+#ifdef WIN32
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <time.h>
+        #include <winsock2.h>
+#else
+        #include <sys/file.h>
+        #include <sys/types.h>
+        #include <sys/times.h>
+        #include <sys/time.h>
+        #include <sys/socket.h>
+        #include <unistd.h>
+#endif
+
+
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
 #include <string.h>
-#include <unistd.h>
 
 
 #include "config.h"
-
+#include "objects.h"
 #include "defs.h"
 
+#ifdef ICM_DEF
 #include "icm_environment.h"
+#endif
 
 class Thread;
 
@@ -119,7 +130,7 @@ public:
   bool isOutput(void) const 
     { return (type == OSTREAM) || (type == OSTRSTREAM) || (type == OMSTREAM); }
   bool isInputOutput(void) const 
-    { return type == SOCKET; }
+    { return type == QPSOCKET; }
 
   virtual bool isEnded(void) const = 0;
 
@@ -255,7 +266,7 @@ class QPStream
   heapobject* properties;     // a stream properties structure
   
  public:
-  QPStream(IOType t);
+  explicit QPStream(IOType t);
   
   virtual ~QPStream()
     { 
@@ -285,7 +296,7 @@ class QPStream
   virtual void setFD(int f) {}
   
   virtual void get_read(void) 
-    {  DEBUG_ASSERT((type == IFDSTREAM) || (type = IMSTREAM)); }
+    {  assert((type == IFDSTREAM) || (type = IMSTREAM)); }
 
   void newline(void) { lineCounter++; }
   void unline(void) { lineCounter--; }
@@ -303,14 +314,14 @@ class QPStream
 
   virtual bool seekg(streampos pos, ios::seekdir d = ios::beg)
     {
-      DEBUG_ASSERT(isInput());
+      assert(isInput());
       abort();
       return true;
     }
 
   virtual bool eof(void)
     {
-      DEBUG_ASSERT(isInput());
+      assert(isInput());
       abort();
       return true;
     }
@@ -323,74 +334,80 @@ class QPStream
 
   virtual bool get(char& ch)
     {
-      DEBUG_ASSERT(isInput());
+      assert(isInput());
       abort();
       return true;
     }
 
   virtual int get(void)
     {
-      DEBUG_ASSERT(isInput());
+      assert(isInput());
       abort();
       return 0;
     }
 
   virtual bool unget(void)
     {
-      DEBUG_ASSERT(isInput());
+      assert(isInput());
       abort();
       return true;
     }
 
   virtual int peek(void)
     {
-      DEBUG_ASSERT(isInput());
+      assert(isInput());
       abort();
       return 0;
     }
 
   virtual bool seekp(streampos pos, ios::seekdir d = ios::beg)
     {
-      DEBUG_ASSERT(isOutput());
+      assert(isOutput());
       abort();
       return true;
     }
 
   virtual bool put(char ch)
     {
-      DEBUG_ASSERT(isOutput());
+      assert(isOutput());
       abort();
       return true;
     }
 
   virtual const string str(void)
     {
-      DEBUG_ASSERT((type == OSTRSTREAM) || (type == OFDSTREAM));
+      assert((type == OSTRSTREAM) || (type == OFDSTREAM));
       abort();
       return "";
     }
 
   virtual void operator<<(const char c)
     {
-      DEBUG_ASSERT(isOutput());
+      assert(isOutput());
       abort();
     }
 
   virtual void operator<<(const char* s)
     {
-      DEBUG_ASSERT(isOutput());
+      assert(isOutput());
       abort();
     }
 
   virtual void operator<<(const int n)
     {
-      DEBUG_ASSERT(isOutput());
+      assert(isOutput());
+      abort();
+    }
+
+  virtual void operator<<(const double n)
+    {
+      assert(isOutput());
       abort();
     }
 
   virtual void flush(void)
     {
-      DEBUG_ASSERT(isOutput());
+      assert(isOutput());
       abort();
     }
 
@@ -403,10 +420,12 @@ class QPStream
 
   virtual bool good(void) = 0;
 
+#ifdef ICM_DEF
   virtual icmHandle getSenderHandle(void)
     {
       abort(); return icmDummyHandle();
     }
+#endif
 
 };
 
@@ -425,7 +444,7 @@ class QPistream: public QPStream
   ifstream stream;
 
  public:
-  QPistream(const char* file);
+  explicit QPistream(const char* file);
 
   ~QPistream() {}
 
@@ -473,7 +492,7 @@ class QPistringstream: public QPStream
   istringstream stream;
 
  public:
-  QPistringstream(const string& buff);
+  explicit QPistringstream(const string& buff);
 
   ~QPistringstream() {}
 
@@ -526,7 +545,7 @@ class QPifdstream: public QPStream
   bool done_get;
 
  public:
-  QPifdstream(int f);
+  explicit QPifdstream(int f);
 
   ~QPifdstream() {}
 
@@ -570,6 +589,7 @@ class QPifdstream: public QPStream
 
 };
 
+#ifdef ICM_DEF
 //
 // QP version of streams using ICM messages - an istringstream is
 // used as a buffer.
@@ -587,7 +607,7 @@ class QPimstream: public QPStream
   bool done_get;
 
  public:
-  QPimstream(icmHandle handle); 
+  explicit QPimstream(icmHandle handle); 
 
   ~QPimstream() { }
   
@@ -637,6 +657,7 @@ class QPimstream: public QPStream
   icmHandle getSenderHandle(void);
 
 };
+#endif
 
 
 // OUTPUT STREAMS
@@ -693,6 +714,11 @@ class QPostream: public QPStream
     }
 
   void operator<<(const int n)
+    {
+      (*stream) << n;
+    }
+
+  void operator<<(const double n)
     {
       (*stream) << n;
     }
@@ -758,6 +784,11 @@ class QPostringstream: public QPStream
       stream << n;
     }
 
+  void operator<<(const double n)
+    {
+      stream << n;
+    }
+
  const string str(void)
     {
       return stream.str();
@@ -783,7 +814,7 @@ class QPofdstream: public QPStream
 
 
  public:
-  QPofdstream(int n);
+  explicit QPofdstream(int n);
 
   ~QPofdstream() {}
 
@@ -815,6 +846,8 @@ class QPofdstream: public QPStream
 
   void operator<<(const int n);
 
+  void operator<<(const double n);
+
   const string str(void);
 
   void flush(void);
@@ -823,6 +856,7 @@ class QPofdstream: public QPStream
 
 };
 
+#ifdef ICM_DEF
 //
 // QP version of streams using ICM messages - an ostringstream is
 // used as a buffer.
@@ -873,6 +907,8 @@ class QPomstream: public QPStream
 
   void operator<<(const int n);
 
+  void operator<<(const double n);
+
   const string str(void);
 
   void flush(void);
@@ -880,6 +916,7 @@ class QPomstream: public QPStream
   bool set_autoflush(void);
 
 };
+#endif
 
 
 //
@@ -912,20 +949,20 @@ public:
 
   void SetCurrentInput(u_int in)
   {
-    DEBUG_ASSERT(in >= 0 && in < NUM_OPEN_STREAMS);
-    DEBUG_ASSERT(open_streams[in] != NULL);
+    assert(in >= 0 && in < NUM_OPEN_STREAMS);
+    assert(open_streams[in] != NULL);
     current_input = in;
   }
   void SetCurrentOutput(u_int out)
   {
-    DEBUG_ASSERT(out >= 0 && out < NUM_OPEN_STREAMS);
-    DEBUG_ASSERT(open_streams[out] != NULL);
+    assert(out >= 0 && out < NUM_OPEN_STREAMS);
+    assert(open_streams[out] != NULL);
     current_output = out;
   }
   void SetCurrentError(u_int error)
   {
-    DEBUG_ASSERT(error >= 0 && error < NUM_OPEN_STREAMS);
-    DEBUG_ASSERT(open_streams[error] != NULL);
+    assert(error >= 0 && error < NUM_OPEN_STREAMS);
+    assert(open_streams[error] != NULL);
     current_error = error;
   }
   int OpenStream(QPStream* strm);
@@ -938,7 +975,9 @@ public:
 
   bool reset_std_stream(int stdstrm);
 
+#ifdef ICM_DEF
   bool updateStreamMessages(icmHandle, icmMsg);
+#endif
   
 };
 
@@ -978,14 +1017,14 @@ public:
     }
   void CloseSocket(u_int i)
     {
-      DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_SOCKETS);
-      DEBUG_ASSERT(open_sockets[i] != NULL);
+      assert(i >= 0 && i < NUM_OPEN_SOCKETS);
+      assert(open_sockets[i] != NULL);
       open_sockets[i] = NULL;
     }
   
   Socket* GetSocket(u_int i)
     {
-      DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_SOCKETS);
+      assert(i >= 0 && i < NUM_OPEN_SOCKETS);
       return (open_sockets[i]);
     }
 

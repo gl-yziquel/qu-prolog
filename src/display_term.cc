@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: display_term.cc,v 1.6 2004/05/26 22:59:44 qp Exp $
+// $Id: display_term.cc,v 1.7 2005/03/08 00:35:02 qp Exp $
 
 #include "config.h"
 #ifdef GCC_VERSION_2
@@ -199,7 +199,7 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     {
       ostrm << "STRUCTURE [" << hex << reinterpret_cast<word32>(term) << "]" << dec << endl;
 
-      ostrm << " " << OBJECT_CAST(Structure*, term)->getArity() << endl;
+      ostrm << " " << static_cast<u_int>(OBJECT_CAST(Structure*, term)->getArity()) << endl;
 
       display_term(ostrm, atoms, 
 		   OBJECT_CAST(Structure*, term)->getFunctor(), depth+1);

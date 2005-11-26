@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: page_table.h,v 1.3 2002/11/08 00:44:18 qp Exp $
+// $Id: page_table.h,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #ifndef PAGE_TABLE_H
 #define PAGE_TABLE_H
@@ -63,6 +63,9 @@
 #include "area_offsets.h"
 #include "defs.h"
 #include "errors.h"
+
+#include "int.h"
+#include "magic.h"
 
 template <class StoredType>
 class	PageTable
@@ -155,8 +158,118 @@ protected:
   
 public:
   
-  PageTable(word32 size);
+  explicit PageTable(word32 size);
   virtual	~PageTable(void);
 };
+
+
+
+//
+// Constructor:
+//	Allocate the index table and initialise it NULL.  There is no need to
+//	allocate the first page because it is handled by pushElement.
+//
+template <class StoredType>
+PageTable<StoredType>::PageTable(word32 size)
+{
+  word32	FullSize;
+  
+  FullSize = size * K;
+  index = new StoredType [FullSize];
+  //
+  // Initialise the page table.
+  //
+  allocatedSize = FullSize;
+}
+
+//
+// Destructor:
+//	Clean up the index table.
+//
+template <class StoredType>
+PageTable<StoredType>::~PageTable(void)
+{
+  if (index != NULL)
+    {
+      delete [] index;		// Delete the index table.
+    }
+  
+  allocatedSize = 0;
+}
+
+//
+// Write the area bounded by "begin" and "end" to a stream.
+//
+template <class StoredType>
+void
+PageTable<StoredType>::saveArea(ostream& ostrm, const u_long magic,
+				const PageLoc begin, const PageLoc end) const
+{
+  assert(end >= begin);
+
+  const size_t size = end - begin;
+
+  //
+  // Write out the magic number.
+  //
+  IntSave<word32>(ostrm, magic);
+
+  //
+  // Write out the size (i.e. the number of entries of "StoredType").
+  //
+  IntSave<word32>(ostrm, static_cast<word32>(size));
+
+  //
+  // Write out the page.
+  //
+  ostrm.write((char*)(offsetToAddress(begin)), static_cast<std::streamsize>(size * sizeof(StoredType)));
+  if (ostrm.fail())
+    {
+      SaveFailure(__FUNCTION__, "data segment", getAreaName());
+    }
+}
+
+//
+// Read the "ReadSize" entries of data from a stream into the memory starting
+// at "start".
+//
+template <class StoredType>
+void
+PageTable<StoredType>::readData(istream& istrm, const char *AreaName,
+				const word32 ReadSize, const PageLoc start)
+{
+  //
+  // Read in a segment into the page.
+  //
+  allocateEntries(start + ReadSize);
+#if defined(MACOSX)
+    istrm.read((char*)offsetToAddress(start), ReadSize * sizeof(StoredType));
+#else
+  if (istrm.good() &&
+      istrm.read((char*)offsetToAddress(start), ReadSize * sizeof(StoredType)).fail())
+    {
+      ReadFailure(__FUNCTION__, "data segment", AreaName);
+    }
+#endif //defined(MACOSX)
+}
+
+//
+// Load the area from a stream.  "start" marks the start of the area in memory.
+//
+template <class StoredType>
+void
+PageTable<StoredType>::loadArea(istream& istrm, const PageLoc start)
+{
+  const size_t ReadSize = IntLoad<size_t>(istrm);
+  if (ReadSize > allocatedSize)
+    {
+      //
+      // Wrong size.
+      //
+      FatalS(__FUNCTION__, "wrong size for ", getAreaName());
+    }
+
+  readData(istrm, getAreaName(), static_cast<word32>(ReadSize), start);
+}
 
 #endif	// PAGE_TABLE_H

@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: write.h,v 1.4 2004/04/28 00:49:31 qp Exp $
+// $Id: write.h,v 1.5 2005/03/27 22:07:43 qp Exp $
 
 #ifndef WRITE_H
 #define WRITE_H
@@ -89,6 +89,14 @@ ReturnValue psi_writeq_atom(Object *& , Object *& );
 // mode(in,in)
 //
 ReturnValue psi_write_integer(Object *& , Object *& );
+
+//
+// psi_write_float(stream_index, float)
+// Write for floats.
+// mode(in,in)
+//
+ReturnValue psi_write_float(Object *& , Object *& );
+
 
 //
 // Different specialised versions of write for variables.

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: equal.cc,v 1.7 2002/07/26 00:39:57 qp Exp $
+// $Id: equal.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 // #include "atom_table.h"
 #include "heap_qp.h"
@@ -100,7 +100,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
       return true;
     }
 
-  DEBUG_ASSERT(term1.getTerm()->utag() == term2.getTerm()->utag());
+  assert(term1.getTerm()->utag() == term2.getTerm()->utag());
   switch (term1.getTerm()->utag())
     {
     case Object::uConst:
@@ -184,12 +184,12 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	      }    
 	    else if (head1->isStructure() && head2->isStructure())
 	      {
-		DEBUG_ASSERT(OBJECT_CAST(Structure*, head1)->getFunctor()
+		assert(OBJECT_CAST(Structure*, head1)->getFunctor()
 			     == AtomTable::colon);
-		DEBUG_ASSERT(OBJECT_CAST(Structure*, head1)->getArity() == 2);
-		DEBUG_ASSERT(OBJECT_CAST(Structure*, head2)->getFunctor()
+		assert(OBJECT_CAST(Structure*, head1)->getArity() == 2);
+		assert(OBJECT_CAST(Structure*, head2)->getFunctor()
 			     == AtomTable::colon);
-		DEBUG_ASSERT(OBJECT_CAST(Structure*, head1)->getArity() == 2);
+		assert(OBJECT_CAST(Structure*, head1)->getArity() == 2);
 		
 		pushDownStack.push(OBJECT_CAST(Structure*, head1)->getArgument(1)->variableDereference());
 		pushDownStack.push(OBJECT_CAST(Structure*, head2)->getArgument(1)->variableDereference());
@@ -237,8 +237,8 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	    Structure* ranstruct = heap.newStructure(1);
 	    ranstruct->setFunctor(atoms->add("$$quant"));
 	    ranstruct->setArgument(1, heap.newNumber(counter++));
-	    DEBUG_ASSERT(o1->isObjectVariable());
-	    DEBUG_ASSERT(o2->isObjectVariable());
+	    assert(o1->isObjectVariable());
+	    assert(o2->isObjectVariable());
 	    block2->setDomain(i, OBJECT_CAST(ObjectVariable*, o2));
 	    block1->setDomain(i, OBJECT_CAST(ObjectVariable*, o1));
 	    block1->setRange(i, ranstruct);
@@ -328,7 +328,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	      OBJECT_CAST(Cons *, term1.getSubstitutionBlockList());
 	    SubstitutionBlock *sub_block =
 	      OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
-	    DEBUG_ASSERT(sub_block->getSize() > 0);
+	    assert(sub_block->getSize() > 0);
 	    term = term1.getTerm();
 	    size_t size = sub_block->getSize();
 	    for (size_t i = 1; i <= size; i++)
@@ -342,12 +342,12 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	  }
 	else
 	  {
-	    DEBUG_ASSERT(!term2.getSubstitutionBlockList()->isNil());
+	    assert(!term2.getSubstitutionBlockList()->isNil());
 	    Cons *sub_block_list = 
 	      OBJECT_CAST(Cons *, term2.getSubstitutionBlockList());
 	    SubstitutionBlock *sub_block =
 	      OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
-	    DEBUG_ASSERT(sub_block->getSize() > 0);
+	    assert(sub_block->getSize() > 0);
 	    term = term2.getTerm();
 	    size_t size = sub_block->getSize();
 	    for (size_t i = 1; i <= size; i++)
@@ -398,10 +398,10 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	    heap.setSavedTop(savesavedtop);
 	    return false;
 	  }
-	DEBUG_ASSERT(domain->isObjectVariable());
-	DEBUG_ASSERT(term->isObjectVariable());
-	DEBUG_ASSERT(domain == domain->variableDereference());
-	DEBUG_ASSERT(!OBJECT_CAST(ObjectVariable*, domain)->distinctFrom(OBJECT_CAST(ObjectVariable*, term)));
+	assert(domain->isObjectVariable());
+	assert(term->isObjectVariable());
+	assert(domain == domain->variableDereference());
+	assert(!OBJECT_CAST(ObjectVariable*, domain)->distinctFrom(OBJECT_CAST(ObjectVariable*, term)));
 	setDistinct(OBJECT_CAST(ObjectVariable*, domain),
 		    OBJECT_CAST(ObjectVariable*, term));
 	if (!retry_delays())
@@ -429,7 +429,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	break;
       }
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return(false);   
     }
 }
@@ -476,8 +476,8 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
     case Object::uStruct:
       {
 	Structure* termstruct = OBJECT_CAST(Structure*, term.getTerm());
-	u_int arity = termstruct->getArity();
-	Object* allargs[arity+1];
+	u_int arity = static_cast<u_int>(termstruct->getArity());
+        Object** allargs = new Object*[arity+1];
 	bool is_simplified = !term.getSubstitutionBlockList()->isNil();
 	for (u_int i = 0; i <= arity; i++)
 	  {
@@ -493,11 +493,13 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 		newstruct->setArgument(i, allargs[i]);
 	      }
 	    simpterm = newstruct;
+            delete allargs;
 	    return true;
 	  }
 	else
 	  {
 	    simpterm = term.getTerm();
+            delete allargs;
 	    return false;
 	  }
 	break;
@@ -586,7 +588,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 	break;
       }
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return false;
     }
   return true;
@@ -625,7 +627,7 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
       size_t size = sub_block->getSize();
       for (size_t i = 1; i <= size; i++)
 	{
-	  DEBUG_ASSERT(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
+	  assert(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
 
 	  ObjectVariable* dom = 
 	    OBJECT_CAST(ObjectVariable*, sub_block->getDomain(i)->variableDereference());
@@ -651,10 +653,10 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 	  for (int j = pushDownStack.size(); j > old_size; )
 	    {
 	      j--;
-	      DEBUG_ASSERT(pushDownStack.getEntry(j)->isObjectVariable());
+	      assert(pushDownStack.getEntry(j)->isObjectVariable());
 	      ObjectVariable* before = 
 		OBJECT_CAST(ObjectVariable*, pushDownStack.getEntry(j));
-	      DEBUG_ASSERT(dom == dom->variableDereference());
+	      assert(dom == dom->variableDereference());
 	      if (!dom->distinctFrom(before))
 		{
 		  setDistinct(dom, before);
@@ -712,10 +714,10 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(term.getTerm()->isQuantifiedTerm());
-	      DEBUG_ASSERT(!tester->isObjectVariable());
+	      assert(term.getTerm()->isQuantifiedTerm());
+	      assert(!tester->isObjectVariable());
 	      PrologValue qterm(term.getTerm());
-	      DEBUG_ASSERT(dom == dom->variableDereference());
+	      assert(dom == dom->variableDereference());
 	      if (freeness_test(dom, qterm) != false)
 		{
 		  Object* simpterm;
@@ -749,26 +751,26 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 bool
 Thread::gen_nfi_delays(ObjectVariable* dom, Object* term)
 {
-  DEBUG_ASSERT(term->isVariable());
+  assert(term->isVariable());
   Object* var_delays = OBJECT_CAST(Reference*, term)->getDelays();
   for ( ; var_delays->isCons();
 	var_delays = OBJECT_CAST(Cons *, var_delays)->getTail())
     {
       Object* vd =
 	OBJECT_CAST(Cons*, var_delays)->getHead()->variableDereference();
-      DEBUG_ASSERT(vd->isStructure());
+      assert(vd->isStructure());
       Structure* vdstruct = OBJECT_CAST(Structure *, vd);
-      DEBUG_ASSERT(vdstruct->getArity() == 2);
+      assert(vdstruct->getArity() == 2);
       Object* vdstatus =
 	vdstruct->getArgument(1)->variableDereference();
-      DEBUG_ASSERT(vdstatus->isVariable());
+      assert(vdstatus->isVariable());
       if (!OBJECT_CAST(Variable*,vdstatus)->isFrozen())
 	{
 	  continue;
 	}
       Object* problem =
 	vdstruct->getArgument(2)->variableDereference();
-      DEBUG_ASSERT(problem->isStructure());
+      assert(problem->isStructure());
       Structure* pstruct = OBJECT_CAST(Structure*, problem);
       if (pstruct->getArity() != 2 ||
 	  pstruct->getFunctor() != AtomTable::nfi)
@@ -779,9 +781,9 @@ Thread::gen_nfi_delays(ObjectVariable* dom, Object* term)
       Object* obvar = pstruct->getArgument(1)->variableDereference();
       PrologValue pval(pstruct->getArgument(2));
       heap.prologValueDereference(pval);
-      DEBUG_ASSERT(pval.getTerm() == term);
+      assert(pval.getTerm() == term);
       pval.setTerm(dom);
-      DEBUG_ASSERT(obvar->isObjectVariable());
+      assert(obvar->isObjectVariable());
       if (!notFreeInNFISimp(OBJECT_CAST(ObjectVariable*, obvar), pval))
 	{
 	  return false;

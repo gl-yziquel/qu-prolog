@@ -2583,7 +2583,8 @@ end('$write_term/5$1'/4):
 	retry($6)
 	retry($7)
 	retry($8)
-	trust($9)
+	retry($9)
+	trust($10)
 
 $1:
 	allocate(5)
@@ -2653,6 +2654,11 @@ $7:
 	execute_predicate('write_integer', 2)
 
 $8:
+	pseudo_instr1(113, 1)
+	neck_cut
+	execute_predicate('write_float', 2)
+
+$9:
 	allocate(1)
 	get_y_level(0)
 	call_predicate('$write_structure', 5, 1)
@@ -2660,7 +2666,7 @@ $8:
 	deallocate
 	proceed
 
-$9:
+$10:
 	put_constant('fail in $write_term/5', 0)
 	allocate(0)
 	call_predicate('errornl', 1, 0)
@@ -5613,6 +5619,84 @@ $4:
 	put_integer(1, 1)
 	execute_predicate('type_exception', 3)
 end('write_integer'/2):
+
+
+
+'write_float'/2:
+
+	try(2, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$1:
+	pseudo_instr1(3, 0)
+	neck_cut
+	pseudo_instr2(115, 0, 1)
+	proceed
+
+$2:
+	get_x_variable(2, 0)
+	pseudo_instr1(1, 2)
+	neck_cut
+	put_structure(2, 0)
+	set_constant('write_float')
+	set_x_value(2)
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('stream')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('float')
+	put_structure(2, 3)
+	set_constant('write_float')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$3:
+	allocate(3)
+	get_y_variable(0, 1)
+	get_y_level(2)
+	put_y_variable(1, 1)
+	call_predicate('$streamnum', 2, 3)
+	pseudo_instr2(101, 21, 0)
+	get_structure('$prop', 7, 0)
+	unify_void(1)
+	unify_constant('output')
+	unify_void(5)
+	cut(2)
+	pseudo_instr2(115, 21, 20)
+	deallocate
+	proceed
+
+$4:
+	get_x_variable(2, 0)
+	put_structure(2, 0)
+	set_constant('write_float')
+	set_x_value(2)
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('stream')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('float')
+	put_structure(2, 3)
+	set_constant('write_float')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('type_exception', 3)
+end('write_float'/2):
 
 
 

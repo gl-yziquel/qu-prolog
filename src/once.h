@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: once.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: once.h,v 1.2 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	ONCE_H
 #define	ONCE_H
@@ -74,12 +74,12 @@ public:
   bool IsSet(void) const { return once != NULL; }
   void Set(const Type& o)
   {
-    DEBUG_ASSERT(! once);
+    assert(! once);
     once = o;
   }
   Type& Get(void)
   {
-    DEBUG_ASSERT(once);
+    assert(once);
     return once;
   }
 };

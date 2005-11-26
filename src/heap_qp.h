@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_qp.h,v 1.4 2002/12/04 00:36:13 qp Exp $
+// $Id: heap_qp.h,v 1.7 2005/11/26 23:34:30 qp Exp $
 
 #ifndef HEAP_QP_H
 #define HEAP_QP_H
@@ -66,6 +66,7 @@
 #include <stdarg.h>
 
 #include <vector>
+#include <list>
 
 #include "area_offsets.h"
 #include "atom_table.h"      
@@ -78,7 +79,9 @@
 #include "objects.h" // What's going to get created on the heap
 
 #include "error_value.h"
+#ifndef WIN32
 #include "icm.h"
+#endif
 #include "io_qp.h"
 #include "name_table.h"
 #include "prolog_value.h"
@@ -93,8 +96,8 @@ enum BoundVarState { MISMATCH, DELAY, MATCH };
 // (NB. These are encoding-imposed limits, not arbitary ones, and are
 // included merely for convenience and to avoid magic numbers)
 //
-static const unsigned long MaxArity = 0x008FFFFF; // 2**23 - 1
-static const unsigned long MaxSubstBlock = 0x00008FFF; // 2**15 - 1
+static const u_long MaxArity = 0x008FFFFF; // 2**23 - 1
+static const u_long MaxSubstBlock = 0x00008FFF; // 2**15 - 1
 
 //////////////////////////////////////////////////////////////////////
 // The Heap class specification
@@ -115,7 +118,7 @@ public:
   //
   // Constructor and destructor
   //
-  inline Heap(char *name, unsigned long size, bool GC = false);
+  inline Heap(char *name, u_long size, bool GC = false);
   inline ~Heap(void);
 
 private:
@@ -139,11 +142,11 @@ public:
   //
   // Allocated size
   //
-  inline word32 allocatedSize(void) {return (top - data); }
+  inline word32 allocatedSize(void) {return static_cast<word32>(top - data); }
   //
   // Max usage
   //
-  inline word32 maxUsage(void) {return (highwater - data); }
+  inline word32 maxUsage(void) {return static_cast<word32>(highwater - data); }
   //
   // get the heap base for copy share term
   //
@@ -188,9 +191,7 @@ public:
   inline Short *newShort(int32 val);
   inline Long *newLong(long val);
   inline Object *newNumber(long val);
-#if 0
-  inline Float *newFloat(double d);
-#endif // 0
+  inline Double *newDouble(double d);
   inline QuantifiedTerm *newQuantifiedTerm(void);
 
   inline Substitution *newSubstitution(void);
@@ -256,7 +257,7 @@ truth3 fastEqual(PrologValue&, PrologValue&);
 #include "unravel.h"
 #include "yield.h"
                                        
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(AtomTable&);
 #endif
 };
@@ -267,19 +268,19 @@ truth3 fastEqual(PrologValue&, PrologValue&);
 //
 // Default constructor
 //
-inline Heap::Heap(char* name, unsigned long size, bool GC)
+inline Heap::Heap(char* name, u_long size, bool GC)
   : data( new heapobject[size * K] )
 {
   //
   // Ensure that the heap is a sensible size
   //
-  DEBUG_ASSERT(size > 0);
+  assert(size > 0);
 
   //
   // Validate the invariant on heapobject.  This seems about the
   // nicest place to do it at the moment.
   //
-  DEBUG_ASSERT(sizeof (heapobject) == sizeof (void *));
+  assert(sizeof (heapobject) == sizeof (void *));
 
   top = data + size * K / sizeof (heapobject);
   gcMark = data + (9 * size * K) / (10 * sizeof (heapobject)); // 90% of heap
@@ -313,7 +314,7 @@ Heap::allocateHeapSpace(size_t numHeapObjs)
   //
   // Only really useful if size_t isn't unsigned
   //
-  DEBUG_ASSERT(numHeapObjs > 0);
+  assert(numHeapObjs > 0);
 
   register heapobject *result = next;
   next += numHeapObjs;
@@ -370,16 +371,16 @@ Heap::getSavedTopAddr(void)
 inline void
 Heap::setTop(heapobject* t)
 {
-  DEBUG_ASSERT(t >= data);
-  DEBUG_ASSERT(t <= top);
+  assert(t >= data);
+  assert(t <= top);
   next = t;
 }
 
 inline void
 Heap::setSavedTop(heapobject* t)
 {
-  DEBUG_ASSERT(t >= data);
-  DEBUG_ASSERT(t <= top);
+  assert(t >= data);
+  assert(t <= top);
   savedTop = t;
 }
 
@@ -449,10 +450,10 @@ Heap::newStructure(const size_t arity)
   //
   // Ensure arity is in range
   //
-  DEBUG_ASSERT(0 <= arity && arity <= MaxArity);
+  assert(0 <= arity && arity <= MaxArity);
 
   heapobject *x = allocateHeapSpace(Structure::size(arity));
-  x[0] = (arity << 8) | Object::TypeStruct;
+  x[0] = static_cast<heapobject>((arity << 8) | Object::TypeStruct);
 
   return reinterpret_cast<Structure *>(x);
 }
@@ -486,7 +487,7 @@ inline Cons *
 Heap::newObjectVariableList(ObjectVariable *head,
 			    Object *tail)
 {
-  DEBUG_ASSERT(tail->isVariable() || 
+  assert(tail->isVariable() || 
 	       tail->isNil() ||
 	       tail->isObjectVariableList());
 
@@ -502,7 +503,7 @@ inline Cons *
 Heap::newSubstitutionBlockList(SubstitutionBlock *head,
 			       Object *tail)
 {
-  DEBUG_ASSERT(tail->isNil() ||
+  assert(tail->isNil() ||
 	       (tail->isCons() &&
 	       OBJECT_CAST(Cons*, tail)->isSubstitutionBlockList())
 	       );
@@ -529,7 +530,7 @@ Heap::newShort(int32 val)
   //
   // Value out of range?  Try Long.
   //
-  DEBUG_ASSERT(-0x400000 <= val && val < 0x400000);
+  assert(-0x400000 <= val && val < 0x400000);
 
   heapobject *x = allocateHeapSpace(Short::size());
   x[0] = (val << 8) | Constant::ConstShort | Object::TypeConst;
@@ -544,12 +545,12 @@ Heap::newShort(int32 val)
 inline Long *
 Heap::newLong(long val)
 {
-  DEBUG_ASSERT(sizeof(long) == sizeof(heapobject));
+  assert(sizeof(long) == sizeof(heapobject));
 
   //
   // Value out of range?  Try using smaller numbers
   //
-  DEBUG_ASSERT(LONG_MIN <= val && val <= LONG_MAX);
+  assert(LONG_MIN <= val && val <= LONG_MAX);
 
   heapobject *x = allocateHeapSpace(Long::size());
 
@@ -572,24 +573,24 @@ Heap::newNumber(long val)
     }
 }
   
-#if 0
-//
-// Create a reference to a new Float on the heap with value `val' and
-// create a new double in C memory.
-//
-inline Float *
-Heap::newFloat(double val)
+inline Double *
+Heap::newDouble(double val)
 {
-  heapobject *x = allocateHeapSpace(Float::size());
+  heapobject *x = allocateHeapSpace(Double::size());
   double *k = (double *) malloc(sizeof (double));
 
+  word32 w[2];
+  memcpy(w, &val, sizeof(double));
+  
   *k = val;
-  x[0] = Constant::ConstFloat | Object::TypeConst;
-  x[1] = (heapobject) k;
+  x[0] = Constant::ConstDouble | Object::TypeConst 
+          | ((w[0] & Constant::DoubleLowbits) << 30) 
+          | ((w[1] & Constant::DoubleLowbits) << 28);
+  x[1] = (heapobject) (w[0] & ~Constant::DoubleLowbits);
+  x[2] = (heapobject) (w[1] & ~Constant::DoubleLowbits);
 
-  return reinterpret_cast<Float *>(x);
+  return reinterpret_cast<Double *>(x);
 }
-#endif
 
 //
 // Create a new new QuantifiedTerm on the heap
@@ -639,12 +640,12 @@ Heap::newSubstitutionBlock(size_t sub_size)
   // Too large?  Try splitting up your substitutions, 
   // or removing redundancies
   //
-  DEBUG_ASSERT(0 < sub_size);
-  DEBUG_ASSERT(sub_size <= MaxSubstBlock);
+  assert(0 < sub_size);
+  assert(sub_size <= MaxSubstBlock);
 
   heapobject *x = allocateHeapSpace(SubstitutionBlock::size(sub_size));
 
-  x[0] = sub_size << 8 | Object::TypeSubBlock;
+  x[0] = static_cast<heapobject>(sub_size << 8 | Object::TypeSubBlock);
 
   return reinterpret_cast<SubstitutionBlock *>(x);
 }
@@ -686,7 +687,7 @@ Heap::dereference(Object* o)
   //
   // Ensure we're not about to dereference a NULL pointer
   //
-  DEBUG_ASSERT(o != NULL);
+  assert(o != NULL);
   
   while ( o->isAnyVariable() ) 
     {
@@ -695,7 +696,7 @@ Heap::dereference(Object* o)
       // move to what it's referring to
       //
       Object* n = OBJECT_CAST(Reference *, o)->getReference();
-      DEBUG_ASSERT(n != NULL);
+      assert(n != NULL);
       if ( n == o ) 
 	{
 	  return o; // An unbound (ob)variable
@@ -726,8 +727,8 @@ Heap::prologValueDereference(PrologValue& pval)
     {
       Object* term = pval.getTerm();
       Object* sub = pval.getSubstitutionBlockList();
-      DEBUG_ASSERT(term->hasLegalSub());
-      DEBUG_ASSERT(sub->isLegalSub());
+      assert(term->hasLegalSub());
+      assert(sub->isLegalSub());
       substitutionDereference(sub, term);
       pval.setTerm(term);
       pval.setSubstitutionBlockList(sub);

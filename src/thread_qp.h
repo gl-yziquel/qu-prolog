@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_qp.h,v 1.9 2003/12/10 21:28:05 qp Exp $
+// $Id: thread_qp.h,v 1.11 2005/05/26 03:51:03 qp Exp $
 
 #ifndef	THREAD_QP_H
 #define	THREAD_QP_H
@@ -127,10 +127,10 @@ public:
 //
 class Thread : public ThreadCondition
 {
-#ifdef DEBUG
+#ifdef QP_DEBUG
   // The Trace class may gaze into a Thread's soul.
   friend class Trace;
-#endif // DEBUG
+#endif // QP_DEBUG
   friend class Scheduler;
 
 private:
@@ -216,10 +216,10 @@ private:
   word32 error_arg;
 
   ThreadStatus status;
-#ifdef DEBUG
+#ifdef QP_DEBUG
   // Trace class used for following the actions of the WAM.
   Trace trace;
-#endif // DEBUG
+#endif // QP_DEBUG
 
   // Save the X registers in SavedX
   void SaveXRegisters(void);
@@ -244,10 +244,10 @@ public:
   // Thread identification, etc.
   ThreadInfo& TInfo(void) { return thread_info; }
   const ThreadInfo& InspectTInfo(void) const { return thread_info; }
-#ifdef DEBUG
+#ifdef QP_DEBUG
   // Trace information.
   Trace& GetTrace(void) { return trace; }
-#endif // DEBUG
+#endif // QP_DEBUG
   // Save the state of the heap and trails for choice pointes.
   void saveHeapAndTrails(HeapAndTrailsChoice& state)
     {
@@ -436,6 +436,7 @@ public:
 #include "process.h"
 #include "pseudo_instr.h"
 #include "quantifier.h"
+#include "random.h"
 #include "read_qp.h"
 #include "record.h"
 #include "signal_escapes.h"
@@ -463,7 +464,7 @@ public:
   // is given.
   // NOTE: The state is not reset.
   //
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void Backtrack(Thread& th, 
 		 const CodeLoc pc)
   {
@@ -473,14 +474,14 @@ public:
   cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
   //  choiceStack.getNextAlternative(*this, currentChoicePoint);
   }
-#else	// DEBUG
+#else	// QP_DEBUG
   void Backtrack(CodeLoc& PC)
   {
   PC = choiceStack.nextClause(currentChoicePoint);
   cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
 //    choiceStack.getNextAlternative(*this, currentChoicePoint);
   }
-#endif	// DEBUG
+#endif	// QP_DEBUG
 
   Thread(Thread *parent,
 	 const word32 ScratchpadSize,

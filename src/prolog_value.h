@@ -54,13 +54,13 @@
 // 
 // ##Copyright##
 //
-// $Id: prolog_value.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: prolog_value.h,v 1.2 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	PROLOG_VALUE_H
 #define	PROLOG_VALUE_H
 
 #include "defs.h"
-//#include "debug.h"
+#include "debug.h"
 #include "objects.h"
 
 class PrologValue
@@ -78,7 +78,7 @@ public:
 	  Substitution *s = OBJECT_CAST(Substitution*, t);
 	  sub = s->getSubstitutionBlockList();
 	  term = s->getTerm();
-          DEBUG_ASSERT(sub->isLegalSub());
+          assert(sub->isLegalSub());
 	}
       else
 	{
@@ -89,7 +89,7 @@ public:
   PrologValue(Object *s, Object *t)
     : sub(s), term(t)
     {
-      DEBUG_ASSERT(s->isLegalSub());
+      assert(s->isLegalSub());
     }
   
   Object *getSubstitutionBlockList(void) { return sub; }
@@ -106,7 +106,7 @@ public:
 
   void setSubstitutionBlockList(Object *list)
     {
-      DEBUG_ASSERT(list->isLegalSub());
+      assert(list->isLegalSub());
 
       sub = list;
     }

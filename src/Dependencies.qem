@@ -1,6 +1,6 @@
 qem.o: qem.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
-  debug.h hash_table.h timestamp.h magic.h qem_options.h option.h \
-  options.h string_table.h stack_qp.h errors.h page_table.h objects.h \
+  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
+  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
   truth3.h code.h heap_qp.h compiler_support.h error_value.h icm.h \
   icmIo.h icmLocal.h io_qp.h icm_environment.h icm_message.h messages.h \
   thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
@@ -20,15 +20,15 @@ qem.o: qem.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
   icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
   object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h read_qp.h record.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h varname.h write.h
+  quantifier.h random.h read_qp.h record.h signal_escapes.h state.h \
+  statistics.h stream_escapes.h string_escapes.h structure.h sub_escape.h \
+  symbols.h system_qp.h tcp_escapes.h temperature.h thread_escapes.h \
+  token.h trace_escapes.h unify.h varname.h write.h
 qem_options.o: qem_options.cc qem_options.h defs.h config.h ../config.h \
   debug.h option.h options.h tcp_qp.h defaults.h
 scheduler.o: scheduler.cc global.h atom_table.h config.h ../config.h \
-  area_offsets.h defs.h debug.h hash_table.h timestamp.h magic.h \
-  qem_options.h option.h options.h string_table.h stack_qp.h errors.h \
+  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
+  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
   error_value.h icm.h icmIo.h icmLocal.h io_qp.h icm_environment.h \
   icm_message.h messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
@@ -47,8 +47,8 @@ scheduler.o: scheduler.cc global.h atom_table.h config.h ../config.h \
   foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
   get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
   ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h read_qp.h record.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  varname.h write.h icm_handle.h int.h protos.h
+  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  record.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h varname.h write.h icm_handle.h protos.h

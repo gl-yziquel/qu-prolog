@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: distinction.cc,v 1.3 2002/07/26 00:39:57 qp Exp $
+// $Id: distinction.cc,v 1.4 2005/11/26 23:34:29 qp Exp $
 
 // #include "atom_table.h"
 #include "thread_qp.h"
@@ -66,8 +66,8 @@ void
 Thread::setDistinctObjectVariable(ObjectVariable *object_variable1,
 				  ObjectVariable *object_variable2)
 {
-  DEBUG_ASSERT(object_variable1->getReference() == object_variable1);
-  DEBUG_ASSERT(object_variable2->getReference() == object_variable2);
+  assert(object_variable1->getReference() == object_variable1);
+  assert(object_variable2->getReference() == object_variable2);
 
  updateAndTrailObject(reinterpret_cast<heapobject*>(object_variable1),
 		       heap.newCons(object_variable2, 
@@ -94,21 +94,21 @@ Thread::setMutualDistinctRanges(SubstitutionBlock *sub_block)
 {
   for (size_t i = 2; i <= sub_block->getSize(); i++)
     {
-      DEBUG_ASSERT(sub_block->getRange(i)->isObjectVariable());
+      assert(sub_block->getRange(i)->isObjectVariable());
 
       ObjectVariable *irange 
 	= OBJECT_CAST(ObjectVariable* , sub_block->getRange(i)); 
 
-      DEBUG_ASSERT(irange->getReference() == irange);
+      assert(irange->getReference() == irange);
 
       for (size_t j = 1; j < i; j++)
 	{
-	  DEBUG_ASSERT(sub_block->getRange(j)->isObjectVariable());
+	  assert(sub_block->getRange(j)->isObjectVariable());
    
 	  ObjectVariable *jrange 
 	    = OBJECT_CAST(ObjectVariable*, sub_block->getRange(j));
 
-	  DEBUG_ASSERT(jrange->getReference() == jrange);
+	  assert(jrange->getReference() == jrange);
 	  
 	  setDistinct(irange, jrange);
 	}
@@ -126,22 +126,22 @@ bool
 Thread::generateDistinction(ObjectVariable *object_variable,
 			    Object *sub_block_list)
 {
-  DEBUG_ASSERT(sub_block_list->isNil() ||
+  assert(sub_block_list->isNil() ||
 	       (sub_block_list->isCons() &&
 		OBJECT_CAST(Cons*, sub_block_list)->isSubstitutionBlockList()));
-  DEBUG_ASSERT(object_variable->getReference() == object_variable);
+  assert(object_variable->getReference() == object_variable);
   
   for (Object *s = sub_block_list;
        s->isCons();
        s = OBJECT_CAST(Cons *, s)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub_block 
 	= OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, s)->getHead());
 
       for (size_t i = 1; i <= sub_block->getSize(); i++)
 	{
-	  DEBUG_ASSERT(sub_block->getDomain(i)->isObjectVariable());
+	  assert(sub_block->getDomain(i)->isObjectVariable());
 
 	  ObjectVariable *domain 
 	    = OBJECT_CAST(ObjectVariable*, 
@@ -166,7 +166,7 @@ Thread::generateDistinction(ObjectVariable *object_variable,
 bool
 Thread::distinctBoundList(ObjectVariable *object_variable, Object *bound_list)
 {
-  DEBUG_ASSERT(object_variable->variableDereference() == object_variable);
+  assert(object_variable->variableDereference() == object_variable);
   for (bound_list = bound_list->variableDereference();
        bound_list->isCons();
        bound_list 
@@ -175,7 +175,7 @@ Thread::distinctBoundList(ObjectVariable *object_variable, Object *bound_list)
       Object *bound
 	= OBJECT_CAST(Cons *, bound_list)->getHead()->variableDereference();
   
-      DEBUG_ASSERT(bound->isObjectVariable());
+      assert(bound->isObjectVariable());
       
       ObjectVariable *bound_object_variable = 
 	OBJECT_CAST(ObjectVariable *, bound);
@@ -216,8 +216,8 @@ Thread::checkBinder(Object *bound_list, Object* so_far)
 	  //
 	  // The binder is ObjVar:Term.
 	  //
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, object)->getArity() == 2);
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, object)->getFunctor() 
+	  assert(OBJECT_CAST(Structure*, object)->getArity() == 2);
+	  assert(OBJECT_CAST(Structure*, object)->getFunctor() 
 		       == AtomTable::colon);
 	  
 	  object = OBJECT_CAST(Structure*, object)->getArgument(1)->variableDereference();

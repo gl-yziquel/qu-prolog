@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_buffer.h,v 1.3 2002/11/08 00:44:16 qp Exp $
+// $Id: heap_buffer.h,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	HEAP_BUFFER_H
 #define	HEAP_BUFFER_H
@@ -134,7 +134,7 @@ public:
   //
   heapobject* getStart(word32 bindex)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       return(buffers[bindex].getStart());
     }
 
@@ -143,7 +143,7 @@ public:
   //
   heapobject* getInitialTop(word32 bindex)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       return(buffers[bindex].getInitialTop());
     }
 
@@ -152,7 +152,7 @@ public:
   //
   u_int getCount(word32 bindex)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       return(buffers[bindex].getCount());
     }
 
@@ -161,7 +161,7 @@ public:
   //
   void incCount(word32 bindex)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       buffers[bindex].incCount();
     }
   
@@ -170,7 +170,7 @@ public:
   //
   Object** getTailAddress(word32 bindex)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       return(buffers[bindex].getTailAddress());
     }
 
@@ -179,7 +179,7 @@ public:
   //
   void setTailAddress(word32 bindex, Object** addr)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       buffers[bindex].setTailAddress(addr);
     }
 
@@ -189,7 +189,7 @@ public:
   //
   Object* getTerm(word32 bindex)
     {
-      DEBUG_ASSERT(bindex == (top - 1));
+      assert(bindex == (top - 1));
       return(reinterpret_cast<Object*>(buffers[bindex].getStart()));
     }
     
@@ -197,7 +197,7 @@ public:
   //
   // Allocate space and initialize.
   //
-  HeapBufferManager(word32 NumberOfBuffers)
+  explicit HeapBufferManager(word32 NumberOfBuffers)
     {
       buffers = new HeapBuffer [NumberOfBuffers];
       size = NumberOfBuffers; 

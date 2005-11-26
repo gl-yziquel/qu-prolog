@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.cc,v 1.15 2003/10/05 04:50:45 qp Exp $
+// $Id: icm_environment.cc,v 1.16 2005/11/26 23:34:30 qp Exp $
 
 #include "config.h"
 
@@ -69,13 +69,13 @@
 bool
 ICMEnvironment::Register(char *ps)
 {
-  DEBUG_ASSERT(ps != NULL);
+  assert(ps != NULL);
 
 #ifdef DEBUG_ICM
   cerr << __FUNCTION__ << " " << ps << endl;
 #endif
 
-  DEBUG_ASSERT(process_symbol == NULL);
+  assert(process_symbol == NULL);
 
   icmHandle tmp = icmParseHandle(ps);
   
@@ -104,19 +104,19 @@ ICMEnvironment::Register(char *ps)
       return false;
       break;
     case icmEndFile:
-      DEBUG_ASSERT(false);
+      assert(false);
       return false;
       break;
     }
   
-  DEBUG_ASSERT(false);
+  assert(false);
   return false;
 }
 
 bool
 ICMEnvironment::Unregister(void)
 {
-  DEBUG_ASSERT(process_symbol != NULL);
+  assert(process_symbol != NULL);
 
 #ifdef DEBUG_ICM
   char buf[MAXSTRING];
@@ -147,12 +147,12 @@ ICMEnvironment::Unregister(void)
       return false;
       break;
     case icmEndFile:
-      DEBUG_ASSERT(false);
+      assert(false);
       return false;
       break;
     }
   
-  DEBUG_ASSERT(false);
+  assert(false);
   return false;
 }
 
@@ -374,7 +374,7 @@ ICMMessageChannel::ShuffleMessages(void)
           break;
         case icmFailed:
           Warning(__FUNCTION__, "icmGetMsg() returned icmFailed");
-          DEBUG_ASSERT(false);
+          assert(false);
           break;
         case icmError:
           Warning(__FUNCTION__, "icmGetMsg() returned icmError");

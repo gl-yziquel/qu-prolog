@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: signals.h,v 1.2 2002/11/26 23:51:53 qp Exp $
+// $Id: signals.h,v 1.3 2005/11/26 23:34:31 qp Exp $
 
 #ifndef	SIGNALS_H
 #define	SIGNALS_H
@@ -135,27 +135,27 @@ private:
 public:
   void Increment(const int sig)
     {
-      DEBUG_ASSERT(0 < sig && sig <= NSIG);
+      assert(0 < sig && sig <= NSIG);
       signals[sig].Increment();
     }
   void Decrement(const int sig)
     {
-      DEBUG_ASSERT(0 < sig && sig <= NSIG);
+      assert(0 < sig && sig <= NSIG);
       signals[sig].Decrement();
     }
   bool IsSet(const int sig)
     {
-      DEBUG_ASSERT(0 < sig && sig <= NSIG);
+      assert(0 < sig && sig <= NSIG);
       return signals[sig].IsSet();
     }
   void Clear(const int sig)
     {
-      DEBUG_ASSERT(0 < sig && sig <= NSIG);
+      assert(0 < sig && sig <= NSIG);
       signals[sig].Clear();
     }
   const char *Name(const int sig)
     {
-      DEBUG_ASSERT(0 < sig && sig <= NSIG);
+      assert(0 < sig && sig <= NSIG);
       return signals[sig].Name();
     }
 

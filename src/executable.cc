@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: executable.cc,v 1.6 2002/12/05 03:39:28 qp Exp $
+// $Id: executable.cc,v 1.7 2005/03/08 00:35:05 qp Exp $
 
 //
 // Format of a .qx file:
@@ -176,7 +176,7 @@ LoadExecutable(const char *file, Code& code, AtomTable& atoms,
   //
   // Open a file for reading.
   //
-  ifstream istrm(file);
+  ifstream istrm(file, ifstream::binary);
   if (istrm.fail())
     {
       FatalS(__FUNCTION__, "cannot open ", file);

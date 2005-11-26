@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: varname.cc,v 1.5 2003/02/25 02:06:25 qp Exp $
+// $Id: varname.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -73,11 +73,11 @@ void
 Thread::name_term_vars_sub(Object* sub, Object*& varlist, 
 			   bool do_name, bool get_vars)
 {
-  DEBUG_ASSERT(sub->isNil() || (sub->isCons() && OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList()));
+  assert(sub->isNil() || (sub->isCons() && OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList()));
 
   for (;sub->isCons();sub = OBJECT_CAST(Cons*, sub)->getTail() )
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
       SubstitutionBlock* subblock 
 	= OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons*, sub)->getHead());
       
@@ -102,7 +102,7 @@ void
 Thread::name_term_vars(Object* term, Object*& varlist, 
 		       bool do_name, bool get_vars)
 {
-  DEBUG_ASSERT(term->variableDereference()->hasLegalSub());
+  assert(term->variableDereference()->hasLegalSub());
   term = heap.dereference(term);
   switch (term->utag())
     {
@@ -199,7 +199,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
       break;
       
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }
@@ -213,7 +213,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
 Thread::ReturnValue
 Thread::psi_get_var_name(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
   if (! val1->isAnyVariable())
@@ -248,8 +248,8 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
 {
   int32 counter = 0;
 
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
@@ -324,8 +324,8 @@ Thread::ReturnValue
 Thread::psi_set_object_variable_name(Object *& object1, Object *& object2)
 {
 
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 

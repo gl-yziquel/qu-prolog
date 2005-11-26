@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: atom_table.h,v 1.5 2002/11/13 04:04:13 qp Exp $
+// $Id: atom_table.h,v 1.8 2005/11/26 23:34:28 qp Exp $
 
 #ifndef ATOM_TABLE_H
 #define ATOM_TABLE_H
@@ -243,6 +243,20 @@ public:
   static Atom *shiftl;
   static Atom *shiftr;
   static Atom *bitneg;
+  static Atom *pi;
+  static Atom *e;
+  static Atom *abs;
+  static Atom *round;
+  static Atom *floor;
+  static Atom *ceiling;
+  static Atom *sqrt;
+  static Atom *sin;
+  static Atom *cos;
+  static Atom *tan;
+  static Atom *asin;
+  static Atom *acos;
+  static Atom *atan;
+  static Atom *log;
 
   static Atom *block;
   static Atom *poll;
@@ -419,6 +433,21 @@ public:
     shiftl = add("<<");
     shiftr = add(">>");
     bitneg = add("\\");
+    pi = add("pi");
+    e = add("e");
+    abs = add("abs");
+    round = add("round");
+    floor = add("floor");
+    ceiling = add("ceiling");
+    sqrt = add("sqrt");
+    sin = add("sin");
+    cos = add("cos");
+    tan = add("tan");
+    asin = add("asin");
+    acos = add("acos");
+    atan = add("atan");
+    log = add("log");
+
 
     stream_stdin = add("stdin");
     stream_stdout = add("stdout");
@@ -586,7 +615,7 @@ inline bool AtomKey::operator==(const Atom& entry) const
 //
 inline char *AtomTable::getAtomString(Object *atom)
 { 
-  DEBUG_ASSERT(atom->isAtom());
+  assert(atom->isAtom());
   return stringTable.getString(OBJECT_CAST(Atom*, atom)->getStringTableLoc());
 }
 

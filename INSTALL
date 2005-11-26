@@ -1,4 +1,4 @@
-Installing Qu-Prolog 6.7
+Installing Qu-Prolog 7.0
 
 Execute the following
 
@@ -46,7 +46,7 @@ Then try
 ./configure --with-gcclib=PATH
 where PATH is the path to the STL library includes.
 
-The high-level communication of Qu-Prolog 6.7 relies on the ICM package.
+The high-level communication of Qu-Prolog 7.0 relies on the ICM package.
 If this is not present on your system then Qu-Prolog will build without the
 communication.
 
@@ -56,7 +56,7 @@ http://sourceforge.net/projects/networkagent/
 If this package is installed before running configure then configure should 
 find it and build a system with high-level communication.
 
-Qu-Prolog 6.7 now also uses Elvin communication.
+Qu-Prolog 7.0 now also uses Elvin communication.
 
 The Elvin libraries and daemon can be dowloaded from
 http://elvin.dstc.edu.au/

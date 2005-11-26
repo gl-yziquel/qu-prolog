@@ -6327,7 +6327,7 @@ _ACEOF
 fi
 #------------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files LOGIN_CMDS Makefile PROFILE_CMDS bin/Makefile bin/kq bin/qc bin/qc1.boot bin/qcc bin/qppp bin/qp_gui bin/xqp bin/xqpdebug bin/qp_debug_gui examples/monitor_gui examples/template_gui examples/tcp_gui prolog/Makefile prolog/compiler/Makefile prolog/library/Makefile prolog/qc1/Makefile prolog/qecat/Makefile prolog/qg/Makefile prolog/qp/Makefile src/Makefile src/Makefile.heap src/Makefile.ipc src/Makefile.library src/Makefile.psi src/Makefile.qa src/Makefile.qdeal src/Makefile.qem src/Makefile.ql src/Makefile.qod src/Makefile.template src/Makefile.thread src/Makefile.tkICM src/xqpdebug/xqpdebug.pro"
+                                                                                                                                                                                                                                                                                                                                                                        ac_config_files="$ac_config_files LOGIN_CMDS Makefile PROFILE_CMDS bin/Makefile bin/kq bin/qc bin/qc1.boot bin/qcc bin/qppp bin/qp_gui bin/xqp bin/xqpdebug bin/qp_debug_gui examples/monitor_gui examples/template_gui examples/tcp_gui prolog/Makefile prolog/compiler/Makefile prolog/library/Makefile prolog/qc1/Makefile prolog/qecat/Makefile prolog/qg/Makefile prolog/qp/Makefile src/Makefile src/Makefile.heap src/Makefile.ipc src/Makefile.library src/Makefile.psi src/Makefile.qa src/Makefile.qdeal src/Makefile.qem src/Makefile.ql src/Makefile.qod src/Makefile.thread src/Makefile.tkICM src/xqpdebug/xqpdebug.pro"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -6886,7 +6886,6 @@ do
   "src/Makefile.qem" ) CONFIG_FILES="$CONFIG_FILES src/Makefile.qem" ;;
   "src/Makefile.ql" ) CONFIG_FILES="$CONFIG_FILES src/Makefile.ql" ;;
   "src/Makefile.qod" ) CONFIG_FILES="$CONFIG_FILES src/Makefile.qod" ;;
-  "src/Makefile.template" ) CONFIG_FILES="$CONFIG_FILES src/Makefile.template" ;;
   "src/Makefile.thread" ) CONFIG_FILES="$CONFIG_FILES src/Makefile.thread" ;;
   "src/Makefile.tkICM" ) CONFIG_FILES="$CONFIG_FILES src/Makefile.tkICM" ;;
   "src/xqpdebug/xqpdebug.pro" ) CONFIG_FILES="$CONFIG_FILES src/xqpdebug/xqpdebug.pro" ;;

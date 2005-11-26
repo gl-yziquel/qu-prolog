@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.49 2004/12/08 22:43:41 qp Exp $
+// $Id: pseudo_instr_arrays.cc,v 1.59 2005/11/06 22:59:16 qp Exp $
 
 #include "thread_qp.h"
 
@@ -191,7 +191,11 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_elvin_makeID,	1,	"psi_elvin_makeID"}, 
 	{&Thread::psi_elvin_add_notification,	0,	"psi_elvin_add_notification"}, 
 	{&Thread::psi_chdir,	0,	"psi_chdir"}, 
-	{&Thread::psi_getcwd,	1,	"psi_getcwd"}
+	{&Thread::psi_getcwd,	1,	"psi_getcwd"}, 
+	{&Thread::psi_float,	0,	"psi_float"}, 
+	{&Thread::psi_srandom,	0,	"psi_srandom"}, 
+	{&Thread::psi_random_float,	1,	"psi_random_float"}, 
+	{&Thread::psi_random_int,	1,	"psi_random_int"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -309,7 +313,9 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_simplify_term,	1,	"psi_simplify_term"}, 
 	{&Thread::psi_is_not_free_in,	0,	"psi_is_not_free_in"}, 
 	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
-	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}
+	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}, 
+	{&Thread::psi_write_float,	0,	"psi_write_float"}, 
+	{&Thread::psi_hash_double,	1,	"psi_hash_double"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -382,7 +388,10 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_get_first_clause,	3,	"psi_get_first_clause"}, 
 	{&Thread::psi_get_integer,	4,	"psi_get_integer"}, 
 	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}, 
-	{&Thread::psi_simplify_term3,	3,	"psi_simplify_term3"}
+	{&Thread::psi_simplify_term3,	3,	"psi_simplify_term3"}, 
+	{&Thread::psi_get_double,	4,	"psi_get_double"}, 
+	{&Thread::psi_random_range,	1,	"psi_random_range"}, 
+	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {

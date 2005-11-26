@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pred_table.h,v 1.3 2002/11/03 08:37:30 qp Exp $
+// $Id: pred_table.h,v 1.5 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	PRED_TABLE_H
 #define	PRED_TABLE_H
@@ -117,7 +117,7 @@ public:
 
   void	makePredicate(const PredType t, const CodeLoc addr, Code *code)
     { 
-      DEBUG_ASSERT(t == STATIC_PRED); 
+      assert(t == STATIC_PRED); 
       predClass = t; 
       if (addr == NULL)
 	{
@@ -125,7 +125,7 @@ public:
 	}
       else
 	{
-	  address.pred = addr - code->getBaseOfStack(); 
+	  address.pred = static_cast<CodeOffset>(addr - code->getBaseOfStack()); 
 	}
     }
 
@@ -136,16 +136,16 @@ public:
   // Retrieval functions.
   //
   EscFn	getEscape(void) const
-  { DEBUG_ASSERT(predClass == ESCAPE_PRED); return(address.escape); }
+  { assert(predClass == ESCAPE_PRED); return(address.escape); }
 
   CodeLoc	getPredicate(Code *code) const
     {  
-      DEBUG_ASSERT(predClass == STATIC_PRED);
+      assert(predClass == STATIC_PRED);
       return(address.pred + Code::SIZE_OF_HEADER + code->getBaseOfStack()); 
     }
 
   DynamicPredicate* getDynamicPred(void) const
-  { DEBUG_ASSERT(predClass == DYNAMIC_PRED); return(address.dyn_pred); }
+  { assert(predClass == DYNAMIC_PRED); return(address.dyn_pred); }
 
   PredType	type(void)	const		{ return(predClass); }
 };
@@ -204,7 +204,7 @@ public:
       }
     else
       {
-	predicateName = PredName - atoms->getAddress(0);
+	predicateName = static_cast<AtomLoc>(PredName - atoms->getAddress(0));
       }
     predicateArity = arity;
     predicateCode = code;

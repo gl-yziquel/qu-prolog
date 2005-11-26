@@ -53,7 +53,8 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_handle.h,v 1.5 2002/11/10 07:54:52 qp Exp $
+// $Id: icm_handle.h,v 1.7 2005/11/26 23:34:30 qp Exp $
+#ifdef ICM_DEF //don't use this file if icm isn't in use
 
 #ifndef	ICM_HANDLE_H
 #define	ICM_HANDLE_H
@@ -75,7 +76,7 @@ private:
   string target;
 public:
   // Thread number
-  ICMOutgoingTarget(const ThreadTableLoc id)
+  explicit ICMOutgoingTarget(const ThreadTableLoc id)
     {
       ostringstream buff;
       buff << (u_int)id;
@@ -105,9 +106,9 @@ private:
     char *symbol;
   } desc;
 public:
-  ICMIncomingTarget(char *t)
+  explicit ICMIncomingTarget(char *t)
     {
-      DEBUG_ASSERT(t != NULL);
+      assert(t != NULL);
       bool is_num = true;
       for (char* c = t; *c != '\0'; c++)
 	{
@@ -144,14 +145,14 @@ public:
   bool IsID(void) const { return type == TARGET_ID; }
   ThreadTableLoc ID(void) const
     {
-      DEBUG_ASSERT(type == TARGET_ID);
+      assert(type == TARGET_ID);
       return desc.id;
     }
   
   bool IsSymbol(void) const { return type == TARGET_SYMBOL; }
   char *Symbol(void)
     {
-      DEBUG_ASSERT(type == TARGET_SYMBOL);
+      assert(type == TARGET_SYMBOL);
       return desc.symbol;
     }
 };
@@ -172,4 +173,4 @@ extern void icm_handle_to_heap(Heap&, AtomTable&, icmHandle, Object*&);
 
 
 
-
+#endif //ICM_DEF - don't use this file if icm isn't in use

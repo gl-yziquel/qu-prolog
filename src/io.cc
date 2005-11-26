@@ -53,19 +53,31 @@
 // 
 // ##Copyright##
 //
-// $Id: io.cc,v 1.26 2004/11/24 00:12:35 qp Exp $
+// $Id: io.cc,v 1.29 2005/11/26 23:34:30 qp Exp $
 
-#include <sys/time.h>
-#include <sys/types.h>
 #include <string.h>
 // #include <stropts.h>
 #include <fcntl.h>
+#ifdef WIN32
+        #include <time.h>
+        #include <conio.h>
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <winsock2.h>
+        #include <io.h>
+        typedef int socklen_t;
+#else
+        #include <sys/time.h>
+        #include <sys/types.h>
+#endif
 
 #include "global.h"
 #include "io_qp.h"
 #include "protos.h"
 #include "thread_qp.h"
+#ifdef ICM_DEF
 #include "icm_handle.h"
+#endif
 #include "scheduler.h"
 #include "signals.h"
 #include "thread_table.h"
@@ -74,7 +86,9 @@ extern Scheduler *scheduler;
 extern Signals *signals;
 extern ThreadTable *thread_table;
 extern ThreadOptions *thread_options;
+#ifdef ICM_DEF
 extern ICMMessageChannel * icm_channel;
+#endif
 
 //-----------------------------------------------
 //
@@ -82,7 +96,7 @@ extern ICMMessageChannel * icm_channel;
 //
 //-----------------------------------------------
 Socket::Socket(const int t, const int p, const int f)
-  : FD(f, SOCKET),
+  : FD(f, QPSOCKET),
     sstatus(SS_INIT),
     smode(SM_INIT),
     stype(t),
@@ -189,7 +203,7 @@ Socket::openSocket(const int type, const int proto)
   stype = type;
   sproto = proto;
 
-  setFD(socket(AF_INET, type, proto));
+  setFD(static_cast<const int>(socket(AF_INET, type, proto)));
 
   setIStream(-1);
   setOStream(-1);
@@ -241,11 +255,11 @@ QPStream::QPStream(IOType t):type(t),lineCounter(1)
 void 
 QPStream::setProperties(Object* prop)
 {
-  DEBUG_ASSERT(prop->isStructure());
+  assert(prop->isStructure());
   // copy the tag
   properties[0] = *(reinterpret_cast<heapobject*>(prop));
   Object* propobject = reinterpret_cast<Object*>(properties);
-  DEBUG_ASSERT(propobject->isStructure());
+  assert(propobject->isStructure());
   // copy functor and args
   for (u_int i = 0; i <= OBJECT_CAST(Structure*, propobject)->getArity(); i++)
     {
@@ -259,7 +273,7 @@ QPStream::setRSProperties(void)
   // !! WARNING !! Do the following a different way
   // This sets up the structure tag and arity directly.
   properties[0] = (7 << 8) | 0x0000000CUL;
-  DEBUG_ASSERT(reinterpret_cast<Object*>(properties)->isStructure());
+  assert(reinterpret_cast<Object*>(properties)->isStructure());
   Structure* propstr = reinterpret_cast<Structure*>(properties);
   propstr->setFunctor(atoms->add("$prop"));
   propstr->setArgument(1, atoms->add("read"));
@@ -348,7 +362,7 @@ QPifdstream::isReady(void)
 void
 QPifdstream::get_read(void)
 {
-  DEBUG_ASSERT(fd != NO_FD);
+  assert(fd != NO_FD);
   char buff[BUFFSIZE];
   // read from fd
   int buffsize = read(fd, buff, BUFFSIZE-1);
@@ -363,7 +377,7 @@ QPifdstream::get_read(void)
 ///////////////////////////////////////////////////////////
 // QPimstream
 //////////////////////////////////////////////////////////
-
+#ifdef ICM_DEF
 QPimstream::QPimstream(icmHandle handle)
   : QPStream(IMSTREAM), 
     stream(""),
@@ -449,7 +463,7 @@ QPimstream::get_read(void)
       select(max_fd + 1, &rfds, &wfds, NULL, NULL);
       icm_channel->ShuffleMessages();
     }
-  DEBUG_ASSERT(!message_strings.empty());
+  assert(!message_strings.empty());
   
   string* msg = message_strings.front();
   stream.str(*msg);
@@ -462,7 +476,7 @@ QPimstream::get_read(void)
 
 #endif // ICM_DEF
 }
-
+#endif
 ///////////////////////////////////////////////////////////
 // QPostream
 //////////////////////////////////////////////////////////
@@ -542,19 +556,27 @@ QPofdstream::operator<<(const char* s)
 	}
       else
 	{
-	  int len = ptr-s+1;
-	  char tmpbuff[len+1];
+	  int len = static_cast<int>(ptr-s+1);
+	  char* tmpbuff = new char[len+1];
 	  strncpy(tmpbuff, s, len);
 	  tmpbuff[len] = '\0';
 	  stream << tmpbuff;
 	  send();
 	  stream << (ptr+1);
+          delete tmpbuff;
 	}
     }
 }
 
 void 
 QPofdstream::operator<<(const int n)
+{
+  stream << n;
+  if (auto_flush) send();
+}
+
+void 
+QPofdstream::operator<<(const double n)
 {
   stream << n;
   if (auto_flush) send();
@@ -583,7 +605,7 @@ void
 QPofdstream::send(void)
 {
   if (fd == NO_FD) return;
-  write(fd, stream.str().data(), stream.str().length());
+  write(fd, stream.str().data(), static_cast<u_int>(stream.str().length()));
   stream.str("");
 }
 
@@ -591,7 +613,7 @@ QPofdstream::send(void)
 ///////////////////////////////////////////////////////////
 // QPomstream
 //////////////////////////////////////////////////////////
-
+#ifdef ICM_DEF
 QPomstream::QPomstream(icmHandle handle, Thread* thread, 
 		       ICMEnvironment* icm_env)
   : QPStream(OMSTREAM),
@@ -648,18 +670,26 @@ QPomstream::operator<<(const char* s)
       else
 	{
 	  int len = ptr-s+1;
-	  char tmpbuff[len+1];
+	  char* tmpbuff = new char[len+1];
 	  strncpy(tmpbuff, s, len);
 	  tmpbuff[len] = '\0';
 	  stream << tmpbuff;
 	  send();
 	  stream << (ptr+1);
+          delete tmpbuff;
 	}
     }
 }
 
 void 
 QPomstream::operator<<(const int n)
+{
+  stream << n;
+  if (auto_flush) send();
+}
+
+void 
+QPomstream::operator<<(const double n)
 {
   stream << n;
   if (auto_flush) send();
@@ -700,11 +730,11 @@ QPomstream::send(void)
 		      icm_thread_handle(*icm_environment, *sender_thread),
 		      NULL,
 		      message);
-  DEBUG_ASSERT(status == icmOk);
+  assert(status == icmOk);
   stream.str("");
 #endif // ICM_DEF
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////
 // IOManager
@@ -716,9 +746,9 @@ IOManager::IOManager(QPStream *in, QPStream *out, QPStream *error)
     {
       open_streams[i] = NULL;
     }
-  DEBUG_ASSERT(in != NULL);
-  DEBUG_ASSERT(out != NULL);
-  DEBUG_ASSERT(error != NULL);
+  assert(in != NULL);
+  assert(out != NULL);
+  assert(error != NULL);
   save_stdin = in;
   save_stdout = out;
   save_stderr = error;
@@ -730,10 +760,10 @@ IOManager::IOManager(QPStream *in, QPStream *out, QPStream *error)
   current_error = 2;
 }
 
+#ifdef ICM_DEF
 bool
 IOManager::updateStreamMessages(icmHandle sender, icmMsg message)
 {
-#ifdef ICM_DEF
   for (u_int i = 0; i < NUM_OPEN_STREAMS; i++)
     {
       if (open_streams[i] != NULL 
@@ -763,9 +793,9 @@ IOManager::updateStreamMessages(icmHandle sender, icmMsg message)
 	  return true;
 	}
     }
-#endif // ICM_DEF
   return false;
 }
+#endif // ICM_DEF
 
 int 
 IOManager::OpenStream(QPStream* strm)
@@ -789,8 +819,8 @@ IOManager::OpenStream(QPStream* strm)
 bool 
 IOManager::CloseStream(u_int i)
 {
-  DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_STREAMS);
-  DEBUG_ASSERT(open_streams[i] != NULL);
+  assert(i >= 0 && i < NUM_OPEN_STREAMS);
+  assert(open_streams[i] != NULL);
   if (i < 3) return false; // Can't close std streams
   delete open_streams[i];
   open_streams[i] = NULL;
@@ -800,7 +830,7 @@ IOManager::CloseStream(u_int i)
 QPStream* 
 IOManager::GetStream(u_int i)
 {
-  DEBUG_ASSERT(i >= 0 && i < NUM_OPEN_STREAMS);
+  assert(i >= 0 && i < NUM_OPEN_STREAMS);
   return (open_streams[i]);
 }
 
@@ -856,7 +886,7 @@ IOManager::reset_std_stream(int stdstrm)
       open_streams[2] = save_stderr;
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return false;
     }
   return true;
@@ -869,10 +899,11 @@ IOManager::reset_std_stream(int stdstrm)
 bool
 is_ready(const int fd, const IOType type)
 {
+#ifndef WIN32
   fd_set fds;
-
   FD_ZERO(&fds);
   FD_SET(fd, &fds);
+#endif
 
   // Set up the time value to indicate a poll
   timeval tv = { 0, 0 };
@@ -881,16 +912,30 @@ is_ready(const int fd, const IOType type)
   switch (type)
     {
     case IFDSTREAM:
-      result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
+#ifdef WIN32
+      result = WaitForSingleObject((HANDLE)_get_osfhandle(fd),0);
+#else
+          result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
+#endif
       break;
     case OFDSTREAM:
+#ifdef WIN32
+      result = WaitForSingleObject((HANDLE)_get_osfhandle(fd),0);
+#else
       result = select(fd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, &tv);
+#endif
       break;
-    case SOCKET:
+    case QPSOCKET:
+#ifdef WIN32
+  // Windows will do a select on a socket, but on nothing else. Bizarre, hey?
+      fd_set fds;
+      FD_ZERO(&fds);
+      FD_SET(fd, &fds);
+#endif
       result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       result = 0;
       break;
     }
@@ -899,7 +944,16 @@ is_ready(const int fd, const IOType type)
   cerr.form("%s result = %ld FD_ISSET(%ld, ...) = %ld\n",
 	    __FUNCTION__, result, fd, FD_ISSET(fd, &fds));
 #endif
+#ifdef WIN32
+  if (result == 0 || result == 128)
+  {
+          return 1;
+  } else {
+          return 0;
+  }
+#else
   return result && FD_ISSET(fd, &fds);
+#endif
 
 }
 

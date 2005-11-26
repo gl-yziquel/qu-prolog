@@ -805,7 +805,6 @@ AC_OUTPUT(LOGIN_CMDS \
 	  src/Makefile.qem \
 	  src/Makefile.ql \
 	  src/Makefile.qod \
-	  src/Makefile.template \
 	  src/Makefile.thread \
 	  src/Makefile.tkICM \
 	  src/xqpdebug/xqpdebug.pro \

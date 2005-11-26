@@ -53,11 +53,17 @@
 // 
 // ##Copyright##
 //
-// $Id: statistics.cc,v 1.4 2003/11/05 21:33:31 qp Exp $
+// $Id: statistics.cc,v 1.5 2005/03/08 00:35:14 qp Exp $
 
 #include <limits.h>
-#include <unistd.h>
-#include <sys/times.h>
+#ifdef WIN32
+        #include <io.h>
+        #include <time.h>
+#else
+        #include <unistd.h>
+        #include <sys/times.h>
+        #include <time.h>
+#endif
 
 #include "config.h"
 
@@ -82,10 +88,15 @@ extern PredTab *predicates;
 Thread::ReturnValue
 Thread::psi_cputime(Object *& object1)
 {
-  struct	tms	usage;
-  int32	msec;
+#ifdef WIN32
+  clock_t msec;
+  msec = clock() * 1000 / CLOCKS_PER_SEC;
+#else
+  struct        tms     usage;
+  int32 msec;
   times(&usage);
   msec = (usage.tms_utime + usage.tms_stime) * 1000 / CLK_TCK;
+#endif
   object1 = heap.newNumber(msec);
   return RV_SUCCESS;
 }
@@ -115,7 +126,7 @@ Thread::return_stack_stat(const FixedSizeStack& stack, Object *& object1)
 Thread::ReturnValue
 Thread::return_heap_stat(Heap& hp, Object *& object1) 
 {
-  word32  size = hp.getTop() - hp.getBase();
+  word32  size = static_cast<word32>(hp.getTop() - hp.getBase());
 
   Structure* stats = heap.newStructure(3);
   stats->setFunctor(atoms->add("stat"));
@@ -135,7 +146,7 @@ Thread::ReturnValue
 Thread::return_code_stat(Code& code, Object *& object1, 
 			  Object *& object2, Object *& object3)
 {
-  word32  size = code.getTop() - code.getBase();
+  word32  size = static_cast<word32>(code.getTop() - code.getBase());
 
   object1 = heap.newNumber(size);
   object2 = heap.newNumber(code.allocatedSize() - size);

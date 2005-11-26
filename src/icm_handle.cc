@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_handle.cc,v 1.7 2003/10/05 04:50:45 qp Exp $
+// $Id: icm_handle.cc,v 1.8 2005/11/26 23:34:30 qp Exp $
 
 #include "config.h"
 
@@ -85,7 +85,7 @@ icm_handle_to_heap(Heap& heap,
   Structure* handle_struct = heap.newStructure(4);
   handle_struct->setFunctor(AtomTable::icm_handle);
   
-  DEBUG_ASSERT(target != NULL);
+  assert(target != NULL);
 
   if (strcmp(target, "") != 0)
     {
@@ -158,7 +158,7 @@ icm_thread_handle(ICMEnvironment& icm_environment,
       thread_target = icm_outgoing_target.Target();
     }
 
-  DEBUG_ASSERT(thread_target != "");
+  assert(thread_target != "");
 
   icmHandle thread_handle = 
     icmMakeHandle(const_cast<char *>(thread_target.c_str()),

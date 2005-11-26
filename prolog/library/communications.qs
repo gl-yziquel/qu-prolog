@@ -570,10 +570,10 @@ end('$same_host'/2):
 
 'same_handle'/2:
 
-	switch_on_term(0, $8, $7, $7, $4, $7, $7)
+	switch_on_term(0, $7, $6, $6, $6, $6, $4)
 
 $4:
-	switch_on_structure(0, 4, ['$default':$7, '$'/0:$5, 'elvin'/1:$6])
+	switch_on_constant(0, 4, ['$default':$6, 'elvin':$5])
 
 $5:
 	try(2, $1)
@@ -582,14 +582,9 @@ $5:
 
 $6:
 	try(2, $1)
-	retry($2)
 	trust($3)
 
 $7:
-	try(2, $1)
-	trust($3)
-
-$8:
 	try(2, $1)
 	retry($2)
 	trust($3)
@@ -621,10 +616,9 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
-	get_structure('elvin', 1, 0)
-	unify_constant('elvin')
-	get_structure('elvin', 1, 1)
-	unify_constant('elvin')
+	get_constant('elvin', 0)
+	get_constant('elvin', 1)
+	neck_cut
 	proceed
 
 $3:
@@ -648,8 +642,7 @@ $4:
 
 $1:
 	get_constant('$elvin', 0)
-	get_structure('elvin', 1, 1)
-	unify_constant('elvin')
+	get_constant('elvin', 1)
 	proceed
 
 $2:
@@ -1021,9 +1014,35 @@ end('<<='/2):
 
 
 
-'$mc_inline/2$0'/8:
+'$is_not_timeout/1$0'/1:
 
-	try(8, $1)
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('$$ipc_timeout$$', 1)
+	pseudo_instr2(110, 0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('$is_not_timeout/1$0'/1):
+
+
+
+'$is_not_timeout'/1:
+
+
+$1:
+	execute_predicate('$is_not_timeout/1$0', 1)
+end('$is_not_timeout'/1):
+
+
+
+'$mc_inline/2$0'/7:
+
+	try(7, $1)
 	trust($2)
 
 $1:
@@ -1043,9 +1062,6 @@ $1:
 	proceed
 
 $2:
-	get_structure(';', 2, 1)
-	unify_x_ref(1)
-	unify_x_value(7)
 	get_structure(',', 2, 1)
 	unify_x_ref(1)
 	unify_x_value(6)
@@ -1057,7 +1073,7 @@ $2:
 	unify_x_value(0)
 	unify_constant('false')
 	proceed
-end('$mc_inline/2$0'/8):
+end('$mc_inline/2$0'/7):
 
 
 
@@ -1065,31 +1081,29 @@ end('$mc_inline/2$0'/8):
 
 
 $1:
-	allocate(8)
-	get_y_variable(7, 1)
-	put_y_variable(6, 1)
-	put_y_variable(5, 2)
-	put_y_variable(4, 3)
-	put_y_variable(3, 4)
-	put_y_variable(2, 5)
-	put_y_variable(1, 6)
-	put_y_variable(0, 7)
-	call_predicate('$mc_gen_choices', 8, 8)
-	put_y_value(1, 0)
-	put_y_value(7, 1)
-	put_y_value(5, 2)
-	put_y_value(4, 3)
-	put_y_value(3, 4)
-	put_y_value(2, 5)
-	put_y_value(6, 6)
-	put_y_value(0, 7)
+	allocate(7)
+	get_y_variable(6, 1)
+	put_y_variable(5, 1)
+	put_y_variable(4, 2)
+	put_y_variable(3, 3)
+	put_y_variable(2, 4)
+	put_y_variable(1, 5)
+	put_y_variable(0, 6)
+	call_predicate('$mc_gen_choices', 7, 7)
+	put_y_value(0, 0)
+	put_y_value(6, 1)
+	put_y_value(4, 2)
+	put_y_value(3, 3)
+	put_y_value(2, 4)
+	put_y_value(1, 5)
+	put_y_value(5, 6)
 	deallocate
-	execute_predicate('$mc_inline/2$0', 8)
+	execute_predicate('$mc_inline/2$0', 7)
 end('$mc_inline'/2):
 
 
 
-'$mc_gen_choices'/8:
+'$mc_gen_choices'/7:
 
 	switch_on_term(0, $9, $4, $4, $5, $4, $4)
 
@@ -1097,34 +1111,33 @@ $5:
 	switch_on_structure(0, 8, ['$default':$4, '$'/0:$6, ';'/2:$7, '->'/2:$8])
 
 $6:
-	try(8, $1)
+	try(7, $1)
 	retry($2)
 	retry($3)
 	trust($4)
 
 $7:
-	try(8, $1)
+	try(7, $1)
 	retry($2)
 	trust($4)
 
 $8:
-	try(8, $3)
+	try(7, $3)
 	trust($4)
 
 $9:
-	try(8, $1)
+	try(7, $1)
 	retry($2)
 	retry($3)
 	trust($4)
 
 $1:
-	get_constant('fail', 1)
 	get_structure(';', 2, 0)
 	unify_x_ref(0)
 	unify_void(1)
 	get_structure('->', 2, 0)
 	unify_x_ref(0)
-	unify_x_variable(1)
+	unify_x_variable(7)
 	get_structure('timeout', 1, 0)
 	unify_x_variable(0)
 	get_x_value(0, 6)
@@ -1135,35 +1148,32 @@ $1:
 $2:
 	get_structure(';', 2, 0)
 	unify_x_variable(0)
-	allocate(8)
-	unify_y_variable(7)
+	allocate(7)
+	unify_y_variable(6)
 	get_structure(';', 2, 1)
 	unify_x_variable(1)
-	unify_y_variable(6)
-	get_y_variable(5, 2)
-	get_y_variable(4, 3)
-	get_y_variable(3, 4)
-	get_y_variable(2, 5)
-	get_y_variable(1, 6)
-	get_y_variable(0, 7)
+	unify_y_variable(5)
+	get_y_variable(4, 2)
+	get_y_variable(3, 3)
+	get_y_variable(2, 4)
+	get_y_variable(1, 5)
+	get_y_variable(0, 6)
 	neck_cut
-	call_predicate('$mc_choice_to_code', 6, 8)
-	put_y_value(7, 0)
-	put_y_value(6, 1)
-	put_y_value(5, 2)
-	put_y_value(4, 3)
-	put_y_value(3, 4)
-	put_y_value(2, 5)
-	put_y_value(1, 6)
-	put_y_value(0, 7)
+	call_predicate('$mc_choice_to_code', 6, 7)
+	put_y_value(6, 0)
+	put_y_value(5, 1)
+	put_y_value(4, 2)
+	put_y_value(3, 3)
+	put_y_value(2, 4)
+	put_y_value(1, 5)
+	put_y_value(0, 6)
 	deallocate
-	execute_predicate('$mc_gen_choices', 8)
+	execute_predicate('$mc_gen_choices', 7)
 
 $3:
-	get_constant('fail', 1)
 	get_structure('->', 2, 0)
 	unify_x_ref(0)
-	unify_x_variable(1)
+	unify_x_variable(7)
 	get_structure('timeout', 1, 0)
 	unify_x_variable(0)
 	get_x_value(0, 6)
@@ -1177,7 +1187,7 @@ $4:
 	unify_constant('fail')
 	neck_cut
 	execute_predicate('$mc_choice_to_code', 6)
-end('$mc_gen_choices'/8):
+end('$mc_gen_choices'/7):
 
 
 
@@ -1225,12 +1235,9 @@ $1:
 	unify_y_value(4)
 	get_structure(',', 2, 1)
 	unify_x_ref(0)
-	unify_x_ref(1)
+	unify_y_value(3)
 	get_structure('$ipc_commit', 1, 0)
 	unify_y_value(1)
-	get_structure(',', 2, 1)
-	unify_constant('!')
-	unify_y_value(3)
 	deallocate
 	proceed
 
@@ -1256,12 +1263,9 @@ $2:
 	unify_y_value(4)
 	get_structure(',', 2, 1)
 	unify_x_ref(0)
-	unify_x_ref(1)
+	unify_y_value(3)
 	get_structure('$ipc_commit', 1, 0)
 	unify_y_value(1)
-	get_structure(',', 2, 1)
-	unify_constant('!')
-	unify_y_value(3)
 	deallocate
 	proceed
 
@@ -1281,12 +1285,9 @@ $3:
 	unify_x_ref(0)
 	get_structure(',', 2, 0)
 	unify_x_ref(0)
-	unify_x_ref(1)
+	unify_y_value(3)
 	get_structure('$ipc_commit', 1, 0)
 	unify_y_value(1)
-	get_structure(',', 2, 1)
-	unify_constant('!')
-	unify_y_value(3)
 	deallocate
 	proceed
 end('$mc_choice_to_code'/6):
@@ -1307,30 +1308,40 @@ $1:
 	get_structure(',', 2, 1)
 	unify_x_ref(1)
 	unify_x_ref(7)
-	get_structure('$same_handle', 2, 1)
+	get_structure('$is_not_timeout', 1, 1)
 	unify_x_value(2)
+	get_structure(',', 2, 7)
+	unify_x_ref(1)
+	unify_x_ref(7)
+	get_structure('$same_handle', 2, 1)
+	unify_x_value(3)
 	unify_x_value(0)
 	get_structure(',', 2, 7)
 	unify_x_ref(0)
 	unify_x_ref(1)
 	get_structure('$same_handle', 2, 0)
-	unify_x_value(3)
+	unify_x_value(4)
 	unify_x_value(6)
 	get_structure('=', 2, 1)
-	unify_x_value(4)
 	unify_x_value(5)
+	unify_x_value(2)
 	proceed
 
 $2:
 	get_structure(',', 2, 1)
 	unify_x_ref(1)
-	unify_x_ref(3)
-	get_structure('$same_handle', 2, 1)
+	unify_x_ref(4)
+	get_structure('$is_not_timeout', 1, 1)
 	unify_x_value(2)
+	get_structure(',', 2, 4)
+	unify_x_ref(1)
+	unify_x_ref(4)
+	get_structure('$same_handle', 2, 1)
+	unify_x_value(3)
 	unify_x_value(0)
-	get_structure('=', 2, 3)
-	unify_x_value(4)
+	get_structure('=', 2, 4)
 	unify_x_value(5)
+	unify_x_value(2)
 	proceed
 end('$mc_get_msg_addr_code/6$0'/6):
 
@@ -1343,17 +1354,15 @@ $1:
 	get_structure('<<-', 2, 0)
 	unify_x_variable(6)
 	unify_x_variable(0)
-	get_x_variable(7, 2)
-	get_x_variable(2, 4)
-	get_x_variable(3, 5)
-	put_x_value(6, 4)
-	put_x_value(7, 5)
+	get_x_variable(3, 4)
+	get_x_variable(4, 5)
+	put_x_value(6, 5)
 	execute_predicate('$mc_get_msg_addr_code/6$0', 6)
 end('$mc_get_msg_addr_code'/6):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$0'/0:
+'$query_communications2005_11_27_9_44_4_973/0$0'/0:
 
 
 $1:
@@ -1366,11 +1375,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$0'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$0'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$1'/0:
+'$query_communications2005_11_27_9_44_4_973/0$1'/0:
 
 
 $1:
@@ -1383,11 +1392,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$1'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$1'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$2'/0:
+'$query_communications2005_11_27_9_44_4_973/0$2'/0:
 
 
 $1:
@@ -1400,11 +1409,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$2'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$2'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$3'/0:
+'$query_communications2005_11_27_9_44_4_973/0$3'/0:
 
 
 $1:
@@ -1417,11 +1426,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$3'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$3'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$4'/0:
+'$query_communications2005_11_27_9_44_4_973/0$4'/0:
 
 
 $1:
@@ -1434,11 +1443,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$4'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$4'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$5'/0:
+'$query_communications2005_11_27_9_44_4_973/0$5'/0:
 
 
 $1:
@@ -1451,11 +1460,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$5'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$5'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$6'/0:
+'$query_communications2005_11_27_9_44_4_973/0$6'/0:
 
 
 $1:
@@ -1468,11 +1477,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$6'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$6'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$7'/0:
+'$query_communications2005_11_27_9_44_4_973/0$7'/0:
 
 
 $1:
@@ -1485,11 +1494,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$7'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$7'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$8'/0:
+'$query_communications2005_11_27_9_44_4_973/0$8'/0:
 
 
 $1:
@@ -1502,11 +1511,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$8'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$8'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$9'/0:
+'$query_communications2005_11_27_9_44_4_973/0$9'/0:
 
 
 $1:
@@ -1519,33 +1528,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$9'/0):
+end('$query_communications2005_11_27_9_44_4_973/0$9'/0):
 
 
 
-'$query_communications2004_12_24_8_55_9_458/0$10'/0:
-
-
-$1:
-	allocate(1)
-	get_y_level(0)
-	put_structure(1, 0)
-	set_constant('message_choice')
-	set_x_variable(3)
-	put_x_variable(4, 1)
-	put_structure(2, 2)
-	set_constant('$mc_inline')
-	set_x_value(3)
-	set_x_value(4)
-	call_predicate('inline', 3, 1)
-	cut(0)
-	deallocate
-	proceed
-end('$query_communications2004_12_24_8_55_9_458/0$10'/0):
-
-
-
-'$query_communications2004_12_24_8_55_9_458'/0:
+'$query_communications2005_11_27_9_44_4_973'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1557,67 +1544,61 @@ end('$query_communications2004_12_24_8_55_9_458/0$10'/0):
 	retry($8)
 	retry($9)
 	retry($10)
-	retry($11)
-	trust($12)
+	trust($11)
 
 $1:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$0', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$1', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$2', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$3', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$4', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$5', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$5', 0, 0)
 	fail
 
 $7:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$6', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$6', 0, 0)
 	fail
 
 $8:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$7', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$7', 0, 0)
 	fail
 
 $9:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$8', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$8', 0, 0)
 	fail
 
 $10:
 	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$9', 0, 0)
+	call_predicate('$query_communications2005_11_27_9_44_4_973/0$9', 0, 0)
 	fail
 
 $11:
-	allocate(0)
-	call_predicate('$query_communications2004_12_24_8_55_9_458/0$10', 0, 0)
-	fail
-
-$12:
 	proceed
-end('$query_communications2004_12_24_8_55_9_458'/0):
+end('$query_communications2005_11_27_9_44_4_973'/0):
 
 
 
@@ -1625,7 +1606,7 @@ end('$query_communications2004_12_24_8_55_9_458'/0):
 
 
 $1:
-	execute_predicate('$query_communications2004_12_24_8_55_9_458', 0)
+	execute_predicate('$query_communications2005_11_27_9_44_4_973', 0)
 end('$query'/0):
 
 

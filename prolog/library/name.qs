@@ -1076,7 +1076,7 @@ $2:
 	put_integer(48, 5)
 	pseudo_instr3(2, 5, 1, 4)
 	put_x_variable(5, 6)
-	get_structure('/', 2, 6)
+	get_structure('//', 2, 6)
 	unify_x_value(0)
 	unify_integer(10)
 	pseudo_instr2(0, 1, 5)

@@ -53,56 +53,24 @@
 // 
 // ##Copyright##
 //
-// $Id: debug.h,v 1.3 2002/11/03 08:37:25 qp Exp $
+// $Id: debug.h,v 1.5 2005/11/26 23:34:29 qp Exp $
 
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 
 #include <iostream>
-#include <pthread.h>
+//#include <pthread.h>
 #include <stdlib.h>
 
 // Every program in the suite has to define its own name.
 extern const char *Program;
 
-#define	DEBUG_ASSERT(cond)					        \
-  do {								        \
-	  using namespace std;		                                \
-    if (! (cond))						        \
-      {								        \
-	cerr << Program << "(" << pthread_self() << "): ";		\
-	cerr << __FUNCTION__ << ": debug error at ";			\
-        cerr << __LINE__ << " in " << __FILE__;				\
-        abort();				       		        \
-      }									\
-  } while (0)
-
-#define	DEBUG_CODE(s)				\
-do {						\
- s						\
-} while (0)
-
-#define DEBUG_ENTER							\
-do {                                                                    \
-  cerr << Program << "(" << pthread_self() << "):->";		        \
-  cerr << __FUNCTION__ << endl;		                	        \
-} while (0)
-
-#define DEBUG_EXIT							\
-do {									\
-  cerr << Program << "(" << pthread_self() << "):<-";		        \
-  cerr << __FUNCTION__ << endl;		                	        \
-} while (0)
-
 #else	// DEBUG
-
-#define	DEBUG_ASSERT(cond)
-#define	DEBUG_CODE(s)
-#define DEBUG_ENTER
-#define DEBUG_EXIT
+#define NDEBUG 1
 #endif	// DEBUG
+#include <assert.h>
 
 #endif	// DEBUG_H
 

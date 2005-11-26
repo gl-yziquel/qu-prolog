@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: labels.h,v 1.4 2002/11/10 07:54:52 qp Exp $
+// $Id: labels.h,v 1.6 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	LABELS_H
 #define	LABELS_H
@@ -95,7 +95,7 @@ private:
   
   vector<Reference *> *references;
 public:
-  Label(const string& s) 
+  explicit Label(const string& s) 
     : name(new string(s)),
     resolved(false),
     references(new vector<Reference *>)
@@ -104,7 +104,7 @@ public:
   ~Label(void)
   {
     delete name;
-    DEBUG_ASSERT(resolved);
+    assert(resolved);
     delete references;
   }
   
@@ -125,7 +125,7 @@ public:
 
   void Resolve(CodeBlock& code)
   {
-    DEBUG_ASSERT(!resolved);
+    assert(!resolved);
     
     resolved = true;
     
@@ -133,8 +133,7 @@ public:
 	 iter != references->end();
 	 iter++)
       {
-	const ASMInt<Code::OffsetSizedType> ref(code.Current() -
-						(*iter)->JumpOffsetBase());
+	const ASMInt<Code::OffsetSizedType> ref(static_cast<const Code::OffsetSizedType>(code.Current() - (*iter)->JumpOffsetBase()));
 	ref.Put((*iter)->Ref(), code);
       }
   }

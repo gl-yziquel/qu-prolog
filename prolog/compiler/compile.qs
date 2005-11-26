@@ -717,15 +717,20 @@ end('$read_flatten_pred'/4):
 
 
 
-'$read_one/3$0'/2:
+'$read_one/3$0'/3:
 
-	try(2, $1)
+	try(3, $1)
 	trust($2)
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	put_constant('[]', 2)
+	put_structure(1, 3)
+	set_constant('singletons')
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
 	call_predicate('encoded_read_term', 3, 1)
 	cut(0)
 	deallocate
@@ -735,7 +740,7 @@ $2:
 	put_constant('end_of_file', 0)
 	get_x_value(1, 0)
 	proceed
-end('$read_one/3$0'/2):
+end('$read_one/3$0'/3):
 
 
 
@@ -746,11 +751,15 @@ end('$read_one/3$0'/2):
 
 $1:
 	get_constant('encoded', 1)
-	allocate(3)
+	allocate(4)
 	get_y_variable(2, 0)
 	get_y_variable(1, 2)
 	put_y_variable(0, 1)
-	call_predicate('$read_one/3$0', 2, 3)
+	put_y_variable(3, 2)
+	call_predicate('$read_one/3$0', 3, 4)
+	put_y_value(3, 0)
+	put_x_variable(1, 1)
+	call_predicate('$check_singletons', 2, 3)
 	put_y_value(2, 0)
 	put_y_value(0, 1)
 	put_y_value(1, 3)
@@ -760,11 +769,20 @@ $1:
 
 $2:
 	get_constant('normal', 1)
-	allocate(3)
+	allocate(4)
 	get_y_variable(2, 0)
 	get_y_variable(1, 2)
 	put_y_variable(0, 1)
-	call_predicate('read', 2, 3)
+	put_structure(1, 3)
+	set_constant('singletons')
+	set_y_variable(3)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	call_predicate('read_term', 3, 4)
+	put_y_value(3, 0)
+	put_x_variable(1, 1)
+	call_predicate('$check_singletons', 2, 3)
 	put_y_value(2, 0)
 	put_y_value(0, 1)
 	put_y_value(1, 3)

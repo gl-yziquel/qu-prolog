@@ -53,13 +53,17 @@
 // 
 // ##Copyright##
 //
-// $Id: interrupt_handler.cc,v 1.4 2002/12/05 03:39:30 qp Exp $
+// $Id: interrupt_handler.cc,v 1.6 2005/11/26 23:34:30 qp Exp $
 
 #include <signal.h>
 #include <stdlib.h>
 #include <time.h>
+#ifdef WIN32
+#include <io.h>
+#else
 #include <sys/time.h>
 #include <unistd.h>
+#endif
 #include <iostream>
 
 #include "errors.h"
@@ -106,7 +110,7 @@ interrupt_handler(void *s)
 
     }
 
-  DEBUG_ASSERT(false);
+  assert(false);
 
   return NULL;
 }

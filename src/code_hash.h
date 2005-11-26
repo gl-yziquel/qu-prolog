@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code_hash.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: code_hash.h,v 1.3 2005/11/26 23:34:29 qp Exp $
 
 #ifndef	CODE_HASH_H
 #define	CODE_HASH_H
@@ -61,6 +61,7 @@
 #include "area_offsets.h"
 #include "code.h"
 #include "defs.h"
+
 
 //
 // Generic compiled hash table.
@@ -127,12 +128,46 @@ public:
       tableSize(TabSize),
       tableSizeMask(tableSize - 1)
     { }
+
+    virtual ~CodeHashTable() {}
 };
 
-#ifdef	STATIC_TEMPLATE
 
-#include "code_hash.cc"
-
-#endif	// STATIC_TEMPLATE
+//
+// Search for the entry in the hash table.
+//
+template <class HashEntry>
+word32
+CodeHashTable<HashEntry>::search(const HashEntry entry) const
+{
+  word32		hash, increment;
+  HashEntry	current;
+  CodeLoc		cptr;
+  
+  hash = hashFunction(entry) & tableSizeMask;
+  increment = 1;
+  while (true)
+    {
+      cptr = offsetToAddr(hash);
+      current.load(code, cptr);
+      if (current.isEmpty() || current == entry)
+	{
+	  return(hash);
+	}
+      else if (increment ==  tableSize)
+	{
+	  //
+	  // The table has been cycled through.
+	  //
+	  OutOfHashTable(__FUNCTION__,
+			 "code hash table", tableSize);
+	}
+      else
+	{
+	  hash = (hash + increment) & tableSizeMask;
+	  increment ++;
+	}
+    }
+}
 
 #endif	// CODE_HASH_H

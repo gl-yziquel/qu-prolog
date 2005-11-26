@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: timeout.cc,v 1.3 2002/04/22 03:51:06 qp Exp $
+// $Id: timeout.cc,v 1.4 2005/11/26 23:34:31 qp Exp $
 
 // #include "atom_table.h"
 #include "heap_qp.h"
@@ -82,7 +82,7 @@ Heap::DecodeTimeout(Object* cell)
 	}
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
   else if (cell->isNumber() && cell->getNumber() >= 0)
@@ -91,7 +91,7 @@ Heap::DecodeTimeout(Object* cell)
     }
 
   // Should never get here!
-  DEBUG_ASSERT(false);
+  assert(false);
 
   return 0;
 }

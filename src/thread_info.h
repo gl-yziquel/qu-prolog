@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_info.h,v 1.5 2002/11/10 07:54:55 qp Exp $
+// $Id: thread_info.h,v 1.6 2005/11/26 23:34:31 qp Exp $
 
 #ifndef THREAD_INFO_H
 #define THREAD_INFO_H
@@ -85,7 +85,7 @@ private:
   string symbol;
 
 public:
-  ThreadInfo(Thread *pt)
+  explicit ThreadInfo(Thread *pt)
     : thread_table_loc_set(false),
     is_forbid_thread(false),
     symbol_set(false),
@@ -100,7 +100,7 @@ public:
   bool IDSet(void) const { return thread_table_loc_set; }
   ThreadTableLoc ID(void) const
   {
-    DEBUG_ASSERT(thread_table_loc_set);
+    assert(thread_table_loc_set);
     return thread_table_loc;
   }
   void SetID(const ThreadTableLoc ttl)

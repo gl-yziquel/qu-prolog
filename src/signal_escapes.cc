@@ -53,15 +53,21 @@
 // 
 // ##Copyright##
 //
-// $Id: signal_escapes.cc,v 1.3 2001/06/17 21:54:48 qp Exp $
+// $Id: signal_escapes.cc,v 1.5 2005/11/26 23:34:31 qp Exp $
 
 #include <sys/types.h>
+#ifdef WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <signal.h>
 #include "scheduler.h"
 #include "signals.h"
 
+#ifndef WIN32
 extern "C" int kill(pid_t, int);
+#endif
 
 
 #include "thread_qp.h"
@@ -78,7 +84,7 @@ Thread::psi_clear_signal(Object *& object1)
 {
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isShort());
+  assert(val1->isShort());
 
   signals->Clear(val1->getNumber());
 
@@ -111,11 +117,15 @@ Thread::psi_default_signal_handler(Object *& object1)
 {
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isShort());
+  assert(val1->isShort());
 
   int sig = val1->getNumber();
 
+#ifdef WIN32
+  TerminateProcess(GetCurrentProcess(), 0);
+#else
   kill(getpid(), sig);
+#endif
 
   return(RV_SUCCESS);
 }

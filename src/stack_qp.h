@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stack_qp.h,v 1.9 2004/12/23 22:40:37 qp Exp $
+// $Id: stack_qp.h,v 1.12 2005/11/26 23:34:31 qp Exp $
 
 #ifndef	STACK_QP_H
 #define	STACK_QP_H
@@ -61,7 +61,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <sys/types.h>
-#include <unistd.h>
+#ifndef WIN32
+        #include <unistd.h>
+#endif
 #include <signal.h>
 
 #include "area_offsets.h"
@@ -69,6 +71,8 @@
 #include "errors.h"
 #include "page_table.h"
 #include "timestamp.h"
+
+#include "int.h"
 
 typedef	word32	StackWord;
 
@@ -99,6 +103,8 @@ virtual	word32		allocatedSize(void) const	{ return(0); }
 	// Return the maximum usage for this session.
 	//
 virtual	word32		maxUsage(void) const		{ return(0); }
+
+ virtual ~FixedSizeStack() {}
 };
 
 //
@@ -157,12 +163,12 @@ protected:
   
   const StoredType& inspectEntry(const StackLoc s) const
     {
-      DEBUG_CODE(
-		    if (s >= top)
-		    {
-		      BadReference(__FUNCTION__, getAreaName(), s);
-		    }
-		    );
+#ifndef NDEBUG
+    if (s >= top)
+    {
+      BadReference(__FUNCTION__, getAreaName(), s);
+    }
+#endif
       
       return(this->getItem(s));
     }
@@ -198,13 +204,14 @@ protected:
   
   const StoredType *inspectAddr(const StackLoc loc) const
     {
-      DEBUG_CODE(if (loc >= top)
-		    {
-		      BadReference(__FUNCTION__,
-				   getAreaName(),
-				   loc);
-		    }
-		    );
+#ifndef NDEBUG
+      if (loc >= top)
+        {
+          BadReference(__FUNCTION__,
+	    	       getAreaName(),
+	    	       loc);
+        }
+#endif
       return(this->offsetToAddress(loc));
     }
   
@@ -227,12 +234,13 @@ protected:
   //
   StoredType	popElement(void)
     {
-      DEBUG_CODE(if (top == 0)
-		    {
-		      EmptyStack(__FUNCTION__,
-				 getAreaName());
-		    }
-		    );
+#ifndef NDEBUG
+      if (top == 0)
+        {
+          EmptyStack(__FUNCTION__,
+  		     getAreaName());
+        }
+#endif
       //
       // Because the top points to next free entry, so
       // decrement the pointer and return the popped
@@ -318,13 +326,14 @@ public:
   //
   StoredType *fetchAddr(const StackLoc loc)
     {
-      DEBUG_CODE(if ((top > 0) && (loc >= top))
+#ifndef NDEBUG
+      if ((top > 0) && (loc >= top))
       {
 	cerr << __FUNCTION__ << " " << loc << " " << top << endl;
 	
 	BadReference(__FUNCTION__, getAreaName(), loc);
       }
-      );
+#endif
       return(this->offsetToAddress(loc));
     }
 
@@ -339,12 +348,12 @@ public:
   //
   StoredType&	getEntry(const StackLoc s)
     {
-      DEBUG_CODE(
-		    if (s >= top)
-		    {
-		      BadReference(__FUNCTION__, getAreaName(), s);
-		    }
-		    );
+#ifndef NDEBUG
+      if (s >= top)
+      {
+        BadReference(__FUNCTION__, getAreaName(), s);
+      }
+#endif
       
       return(this->getItem(s));
     }
@@ -359,5 +368,40 @@ public:
   virtual	~PrologStack(void);
 };
 
+
+
+template <class StoredType>
+PrologStack<StoredType>::~PrologStack(void)
+{
+        top = 0;
+}
+
+//
+// Write the stack to a stream.
+//
+template <class StoredType>
+void
+PrologStack<StoredType>::saveStack(ostream& ostrm, const u_long magic) const
+{
+  this->saveArea(ostrm, magic, 0, top);
+  //
+  // Write the top of stack.
+  //
+  IntSave<StackLoc>(ostrm, top);
+}
+
+//
+// Load the stack from a stream.
+//
+template <class StoredType>
+void
+PrologStack<StoredType>::loadStack(istream& istrm)
+{
+  this->loadArea(istrm, 0);
+  //
+  // Read the top of stack.
+  //
+  top = IntLoad<StackLoc>(istrm);
+}
 
 #endif	// STACK_QP_H

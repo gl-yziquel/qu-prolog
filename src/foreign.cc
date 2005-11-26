@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: foreign.cc,v 1.15 2004/11/24 00:12:34 qp Exp $
+// $Id: foreign.cc,v 1.18 2005/11/26 23:34:29 qp Exp $
 
 #include "global.h"
 #include "thread_qp.h"
@@ -64,12 +64,19 @@
 extern AtomTable *atoms;
 extern PredTab *predicates;
 
-#if defined(SOLARIS) || defined(LINUX) || defined(FREEBSD) || defined(MACOSX)
+#if defined(SOLARIS) || defined(LINUX) || defined(FREEBSD) || defined(MACOSX) || defined(WIN32)
 
-#include <dlfcn.h>
+
 #include <sstream>
 #include <stdlib.h>
+#ifdef WIN32
+#include <io.h>
+#include <windows.h>
+#else
+#include <dlfcn.h>
 #include <unistd.h>
+#endif
+
 
 #if (defined(FREEBSD) || defined(MACOSX))
 #include        <pthread.h>
@@ -78,35 +85,37 @@ extern PredTab *predicates;
 #endif //defined(FREEBSD) || defined(MACOSX)
 
 
+#ifndef WIN32
 extern	"C"	int mkstemp(char *);
+#endif
 
 #if (defined(FREEBSD) || defined(MACOSX))
 extern char **environ;
 int local_bsd_system (char *command) {
-  int pid, status;
-  
-  if (command == 0)
-    return 1;
-  pid = fork();
-  if (pid == -1)
-    return -1;
-  if (pid == 0) {
-    signal(SIGVTALRM, SIG_IGN);
-    char *argv[4];
-    argv[0] = "sh";
-    argv[1] = "-c";
-    argv[2] = command;
-    argv[3] = 0;
-    execve("/bin/sh", argv, environ);
-    exit(127);
-  }
-  do {
-    if (waitpid(pid, &status, 0) == -1) {
-      if (errno != EINTR)
-	return -1;
-    } else
-      return status;
-  } while(1);
+	int pid, status;
+
+	if (command == 0)
+		return 1;
+	pid = fork();
+	if (pid == -1)
+		return -1;
+	if (pid == 0) {
+		signal(SIGVTALRM, SIG_IGN);
+		char *argv[4];
+		argv[0] = "sh";
+		argv[1] = "-c";
+		argv[2] = command;
+		argv[3] = 0;
+		execve("/bin/sh", argv, environ);
+		exit(127);
+	}
+	do {
+		if (waitpid(pid, &status, 0) == -1) {
+			if (errno != EINTR)
+				return -1;
+		} else
+			return status;
+	} while(1);
 }
 
 #endif //defined(FREEBSD) || defined(MACOSX)
@@ -114,92 +123,115 @@ int local_bsd_system (char *command) {
 //
 // Link and load the object files and libraries.
 //
-bool
+	bool
 Thread::LinkLoad(Object* objects, Object* libraries)
 {
-  ostringstream strm;
-  char output[16];
-  Object* file;
-  void *handle;
-  strcpy(output, "/tmp/symXXXXXX");
-  //
-  // Generate the linking command.
-  //
-  mkstemp(output);
-  
+	ostringstream strm;
+	char output[16];
+	Object* file;
+	void *handle;
+
+	//
+	// Generate the linking command.
+	//
+#ifndef WIN32
+	strcpy(output, "/tmp/symXXXXXX");
+	mkstemp(output);
 #ifdef SOLARIS
-        strm << "ld -G ";
+	strm << "ld -G ";
 #else
 #ifdef MACOSX
 	strm << "g++ -flat_namespace -undefined suppress -bundle ";
 #else
-        strm << "g++ -shared -Wl,-soname," << output << " ";
+	strm << "g++ -shared -Wl,-soname," << output << " ";
 #endif // MACOSX
 #endif // SOLARIS
+#endif // WIN32
+	for (objects = objects->variableDereference();
+			objects->isCons();
+			objects = OBJECT_CAST(Cons*, objects)->getTail()->variableDereference())
+	{
+		file =  OBJECT_CAST(Cons*,objects)->getHead()->variableDereference();
+		assert(file->isAtom());
 
-  for (objects = objects->variableDereference();
-       objects->isCons();
-       objects = OBJECT_CAST(Cons*, objects)->getTail()->variableDereference())
-    {
-      file =  OBJECT_CAST(Cons*,objects)->getHead()->variableDereference();
-      DEBUG_ASSERT(file->isAtom());
-      
-      strm << atoms->getAtomString(file) << " ";
-    }
-  DEBUG_ASSERT(objects->isNil());
-  
-  for (libraries = libraries->variableDereference();
-       libraries->isCons();
-       libraries = 
-         OBJECT_CAST(Cons*, libraries)->getTail()->variableDereference())
-    {
-      file =  OBJECT_CAST(Cons*, libraries)->getHead()->variableDereference();
-      
-      DEBUG_ASSERT(file->isAtom());
-      
-      strm << atoms->getAtomString(file) << " ";
-    }
+		strm << atoms->getAtomString(file) << " ";
+	}
+	assert(objects->isNil());
 
-  DEBUG_ASSERT(libraries->isNil());
-  
+	for (libraries = libraries->variableDereference();
+			libraries->isCons();
+			libraries = 
+			OBJECT_CAST(Cons*, libraries)->getTail()->variableDereference())
+	{
+		file =  OBJECT_CAST(Cons*, libraries)->getHead()->variableDereference();
+
+		assert(file->isAtom());
+
+		strm << atoms->getAtomString(file) << " ";
+	}
+
+	assert(libraries->isNil());
+
+#ifndef WIN32
+
 #ifdef SOLARIS
-        strm << "-lc -o " << output << ends;
+	strm << "-lc -o " << output << ends;
 #else // !SOLARIS
-        strm << " -lc -o " << output << ends;
+	strm << " -lc -o " << output << ends;
 #endif // SOLARIS
 
-  
-  //
-  // Link the object files and the libraries.
-  //
-  const char *command = strm.str().data();
+
+
+	//
+	// Link the object files and the libraries.
+	//
+	char *tmpstr = new char[strm.str().size() + 1];
+	memcpy(tmpstr, strm.str().data(), strm.str().size());
+	tmpstr[strm.str().size()] = '\0';
+	const char *command = tmpstr;
+
 
 #if (defined(FREEBSD) || defined(MACOSX))
-  if (local_bsd_system(command))
+	if (local_bsd_system(command))
 #else
-  if (system(command))
+
+		if (system(command))
 #endif
-    {
+
+		{
 #ifdef SOLARIS
-      Warning(__FUNCTION__, "cannot ld -G");
+			Warning(__FUNCTION__, "cannot ld -G");
 #else // !SOLARIS
-      Warning(__FUNCTION__, "Can't create shared object");
+			Warning(__FUNCTION__, "Can't create shared object");
 #endif // SOLARIS
-      unlink(output);
-      return(false);
-    }
-  
-  if ((handle = dlopen(output, RTLD_LAZY)) == NULL)
-    {
-      Warning(__FUNCTION__, dlerror());
-      unlink(output);
-      return(false);
-    }
-  
-  ForeignFile = new Handle(handle, ForeignFile);
-  unlink(output);
-  
-  return(true);
+			unlink(output);
+			delete tmpstr;
+			return(false);
+		}
+
+
+	delete tmpstr;
+#endif
+
+#ifdef WIN32
+	//Load the library here
+	if ((handle = reinterpret_cast<void*>(LoadLibrary(atoms->getAtomString(file)))) == NULL)
+	{
+		Warning(__FUNCTION__, "Error loading DLL. Check that it exists.");
+		return(false);
+	}
+#else
+	if ((handle = dlopen(output, RTLD_LAZY)) == NULL)
+	{
+		Warning(__FUNCTION__, dlerror());
+		unlink(output);
+		return(false);
+	}
+#endif 
+	ForeignFile = new Handle(handle, ForeignFile);
+	unlink(output);
+
+	return(true);
 }
 
 //
@@ -208,28 +240,36 @@ Thread::LinkLoad(Object* objects, Object* libraries)
 EscFn
 Thread::FnAddr(const char *fn) const
 {
-  void	*loc;
-  
-  if ((loc = dlsym(ForeignFile->file(), fn)) == NULL)
-    {
-      Warning(__FUNCTION__, dlerror());
-      return((EscFn)(EMPTY_LOC));
-    }
-  return((EscFn)(loc));
+	void	*loc;
+
+#ifdef WIN32
+	if ((loc = GetProcAddress((HMODULE)ForeignFile->file(), fn)) == NULL)
+	{
+		Warning(__FUNCTION__, "Error loading function");
+		return((EscFn)(EMPTY_LOC));
+	}
+#else
+	if ((loc = dlsym(ForeignFile->file(), fn)) == NULL)
+	{
+		Warning(__FUNCTION__, dlerror());
+		return((EscFn)(EMPTY_LOC));
+	}
+#endif
+	return((EscFn)(loc));
 }
 #else	// SOLARIS
-bool
+	bool
 Thread::LinkLoad(Object*, Object*)
 {
-  // Nothing!
-  return true;
+	// Nothing!
+	return true;
 }
 
 EscFn
 Thread::FnAddr(const char *) const
 {
-  // Nothing, again!
-  return (EscFn) NULL;
+	// Nothing, again!
+	return (EscFn) NULL;
 }
 
 #endif	// SOLARIS
@@ -238,88 +278,83 @@ Thread::FnAddr(const char *) const
 // psi_load_foreign(object files, libraries, predicate list, function list)
 // Link and load the object files.  Link the predicate and function together.
 //
-Thread::ReturnValue
+	Thread::ReturnValue
 Thread::psi_load_foreign(Object *& object_file_arg,
-			    Object *& libraries_arg,
-			    Object *& predicate_list_arg,
-			    Object *& function_list_arg)
+		Object *& libraries_arg,
+		Object *& predicate_list_arg,
+		Object *& function_list_arg)
 {
-  Object* argOF = heap.dereference(object_file_arg);
-  Object* argL = heap.dereference(libraries_arg);
-  Object* argPL = heap.dereference(predicate_list_arg);
-  Object* argFL = heap.dereference(function_list_arg);
+	Object* argOF = heap.dereference(object_file_arg);
+	Object* argL = heap.dereference(libraries_arg);
+	Object* argPL = heap.dereference(predicate_list_arg);
+	Object* argFL = heap.dereference(function_list_arg);
 
 
-  if (argOF->isVariable())
-    {
-      PSI_ERROR_RETURN(EV_INST, 1);
-    }
-
-  if (argL->isVariable())
-    {
-      PSI_ERROR_RETURN(EV_INST, 2);
-    }
-
-  //
-  // Link and load the object files and libraries with the emulator.
-  //
-  if (! LinkLoad(argOF, argL))
-    {
-      return RV_FAIL;
-    }
-  
-  Object* predList = argPL->variableDereference();
-  Object* funcList = argFL->variableDereference();
-
-  //
-  // Install the predicate with the function as the definition.
-  //
-  for (;
-       predList->isCons() && funcList->isCons();
-       predList = 
-	 OBJECT_CAST(Cons*, predList)->getTail()->variableDereference(),
-       funcList = 
-	 OBJECT_CAST(Cons*, funcList)->getTail()->variableDereference())
-    {
-      Object* head = 
-	OBJECT_CAST(Cons*, predList)->getHead()->variableDereference();
-      if (!head->isStructure() ||
-	  OBJECT_CAST(Structure*, head)->getArity() != 2)
+	if (argOF->isVariable())
 	{
-	  PSI_ERROR_RETURN(EV_TYPE, 3);
+		PSI_ERROR_RETURN(EV_INST, 1);
 	}
-      
-      Object* pred 
-	= OBJECT_CAST(Structure*, head)->getArgument(1)->variableDereference();
-      Object* arity 
-	= OBJECT_CAST(Structure*, head)->getArgument(2)->variableDereference();
-      Object* fn 
-	= OBJECT_CAST(Cons*, funcList)->getHead()->variableDereference();
 
-      if (!pred->isAtom() ||
-	  !arity->isShort() ||
-	  !(0 <= arity->getNumber() && 
-	    arity->getNumber() <= (signed) ARITY_MAX) ||
-	  !fn->isAtom())
+	if (argL->isVariable())
 	{
-	  PSI_ERROR_RETURN(EV_TYPE, 4);
+		PSI_ERROR_RETURN(EV_INST, 2);
 	}
-      
-      predicates->addEscape(atoms, OBJECT_CAST(Atom*, pred), 
-			    arity->getNumber(),
-			    FnAddr(atoms->getAtomString(fn)), code);
-    }
 
-  if (!predList->isNil())
-    {
-      PSI_ERROR_RETURN(EV_RANGE, 3);
-    }
-  if (!funcList->isNil())
-    {
-      PSI_ERROR_RETURN(EV_RANGE, 4);
-    }
-  
-  return RV_SUCCESS;
+	//
+	// Link and load the object files and libraries with the emulator.
+	//
+	if (! LinkLoad(argOF, argL))
+	{
+		return RV_FAIL;
+	}
+
+	Object* predList = argPL->variableDereference();
+	Object* funcList = argFL->variableDereference();
+
+	//
+	// Install the predicate with the function as the definition.
+	//
+	for (;
+			predList->isCons() && funcList->isCons();
+			predList = OBJECT_CAST(Cons*, predList)->getTail()->variableDereference(),
+			funcList = OBJECT_CAST(Cons*, funcList)->getTail()->variableDereference())
+	{
+		Object* head = 
+			OBJECT_CAST(Cons*, predList)->getHead()->variableDereference();
+		if (!head->isStructure() ||
+				OBJECT_CAST(Structure*, head)->getArity() != 2)
+		{
+			PSI_ERROR_RETURN(EV_TYPE, 3);
+		}
+
+		Object* pred = OBJECT_CAST(Structure*, head)->getArgument(1)->variableDereference();
+		Object* arity = OBJECT_CAST(Structure*, head)->getArgument(2)->variableDereference();
+		Object* fn = OBJECT_CAST(Cons*, funcList)->getHead()->variableDereference();
+
+		if (!pred->isAtom() ||
+			!arity->isShort() ||
+			!(0 <= arity->getNumber() && 
+			arity->getNumber() <= (signed) ARITY_MAX) ||
+			!fn->isAtom())
+		{
+			PSI_ERROR_RETURN(EV_TYPE, 4);
+		}
+
+		predicates->addEscape(atoms, OBJECT_CAST(Atom*, pred), 
+				arity->getNumber(),
+				FnAddr(atoms->getAtomString(fn)), code);
+	}
+
+	if (!predList->isNil())
+	{
+		PSI_ERROR_RETURN(EV_RANGE, 3);
+	}
+	if (!funcList->isNil())
+	{
+		PSI_ERROR_RETURN(EV_RANGE, 4);
+	}
+
+	return RV_SUCCESS;
 }
 
 

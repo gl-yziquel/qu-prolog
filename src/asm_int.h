@@ -53,10 +53,15 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_int.h,v 1.4 2004/12/23 22:40:34 qp Exp $
+// $Id: asm_int.h,v 1.7 2005/08/31 03:20:19 qp Exp $
 
 #ifndef	ASM_INT_H
 #define	ASM_INT_H
+
+#ifdef WIN32
+#include <list>
+#endif
+
 
 #include "code_block.h"
 #include "int.h"
@@ -66,30 +71,42 @@ class ASMInt: public Int<IntType>
 {
 public:
   ASMInt(const IntType v,
-	 const IntType m = 0) : Int<IntType>(v, m) { }
+	 const int m = 0) : Int<IntType>(v, m) { }
 
   void Put(CodeBlock& code_block) const
   {
+#ifdef WIN32
+    const IntType v = value;
+#else
     const IntType v = this->value;
+#endif
     
     switch (sizeof(IntType))
       {
       case 1:
-	code_block.Put(v & 0xff);
+	code_block.Put(static_cast<char>((word32)v & 0xff));
 	break;
       case 2:
 	{
-	  code_block.Put((v >> 8) & 0xff);
-	  code_block.Put(v & 0xff);
+	  code_block.Put(static_cast<char>(((word32)v >> 8) & 0xff));
+	  code_block.Put(static_cast<char>((word32)v & 0xff));
 	}
 	break;
       case 4:
 	{
-	  code_block.Put((v >> 24) & 0xff);
-	  code_block.Put((v >> 16) & 0xff);
-	  code_block.Put((v >> 8) & 0xff);
-	  code_block.Put(v & 0xff);
+	  code_block.Put(static_cast<char>(((word32)v >> 24) & 0xff));
+	  code_block.Put(static_cast<char>(((word32)v >> 16) & 0xff));
+	  code_block.Put(static_cast<char>(((word32)v >> 8) & 0xff));
+	  code_block.Put(static_cast<char>((word32)v & 0xff));
 	}
+	break;
+      case sizeof(double):
+        {
+          char w[sizeof(double)];
+          memcpy(w, &v, sizeof(double));
+	  for (u_int i = 0; i < sizeof(double); i++)
+            code_block.Put(w[i]);
+        }
 	break;
       }
   }
@@ -116,6 +133,16 @@ public:
 	  code_block.Put(loc++, (v >> 8) & 0xff);
 	  code_block.Put(loc++, v & 0xff);
 	}
+	break;
+      case sizeof(double):
+        {
+          char w[sizeof(double)];
+          memcpy(w, &v, sizeof(double));
+	  for (u_int i = 0; i < sizeof(double); i++)
+            {
+              code_block.Put(loc++, w[i]);
+            }
+        }
 	break;
       }
   }

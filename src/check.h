@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: check.h,v 1.4 2003/04/21 06:11:13 qp Exp $
+// $Id: check.h,v 1.5 2005/03/08 00:35:00 qp Exp $
 
 #ifndef	CHECK_H
 #define	CHECK_H
@@ -244,8 +244,10 @@ bool decode_recv_options(Object*, Object*&, Object*&, Object*&);
 //
 ErrorValue decode_recv_options(Object*, bool&, bool&, bool&);
 
+#ifdef ICM_DEF
 bool decode_icm_handle(AtomTable& atoms, 
 		       Object*& handle_object, icmHandle& handle);
+#endif //ICM_DEF
 
 bool check_atom_list(Object*, size_t&);
 

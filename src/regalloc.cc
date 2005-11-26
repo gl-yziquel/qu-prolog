@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: regalloc.cc,v 1.8 2002/12/05 03:39:33 qp Exp $
+// $Id: regalloc.cc,v 1.9 2005/11/26 23:34:30 qp Exp $
 
 #include "atom_table.h"
 #include "heap_qp.h"
@@ -82,7 +82,7 @@ Heap::alloc_registers(WordArray& life, xreglife& xregisters,
       if (term->isVariable())
 	{
 	  Variable* var = OBJECT_CAST(Variable*, term);
-	  DEBUG_ASSERT(var->isLifeSet());
+	  assert(var->isLifeSet());
 	  u_int varoffset = var->getLife();
 	  int start = varregisters.Entries()[varoffset-1];
 	  int end = varregisters.Entries()[varoffset];
@@ -317,7 +317,7 @@ Heap::envsize(WordArray& instr, int& size)
 
       if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
-	  DEBUG_ASSERT(tstruct->getArgument(3)->variableDereference()->isVariable());
+	  assert(tstruct->getArgument(3)->variableDereference()->isVariable());
 	  tstruct->setArgument(3, newNumber(size));
 	}
       else if (tstruct->getFunctor() == AtomTable::ccut ||
@@ -354,7 +354,7 @@ Heap::envsize(WordArray& instr, int& size)
 	      Structure* reg = OBJECT_CAST(Structure*, arg);
 	      if (reg->getFunctor() == AtomTable::unify_ref)
 		{
-		  DEBUG_ASSERT(reg->getArgument(1)->variableDereference()->isStructure());
+		  assert(reg->getArgument(1)->variableDereference()->isStructure());
 		  reg = OBJECT_CAST(Structure*, reg->getArgument(1)->variableDereference());
 		  Structure* newinstr = newStructure(1);
 		  newinstr->setFunctor(AtomTable::unify_ref);
@@ -380,7 +380,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 {
   for (int i = 0; i < instr.lastEntry(); i++)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
+      assert(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instr.Entries()[i]));
       
       if (tstruct->getFunctor() == AtomTable::psi_life)
@@ -401,7 +401,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	  int voids = 1;
 	  for (i++; i < instr.lastEntry(); i++)
 	    {
-	      DEBUG_ASSERT(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
+	      assert(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
 	      Structure* vtstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instr.Entries()[i]));
 
 	      if (vtstruct->getFunctor() == AtomTable::unify &&
@@ -431,7 +431,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	      int voids = 1;
 	      for (i++; i < instr.lastEntry(); i++)
 		{
-		  DEBUG_ASSERT(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
+		  assert(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
 		  Structure* vtstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instr.Entries()[i]));
 
 		  if (vtstruct->getFunctor() == AtomTable::set &&
@@ -586,7 +586,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 
   for (int i = 0; i < ecode.lastEntry(); i++)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(ecode.Entries()[i])->isStructure());
+      assert(reinterpret_cast<Object*>(ecode.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(ecode.Entries()[i]));
 
       if (tstruct->getFunctor() == AtomTable::call_pred)
@@ -601,8 +601,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	    {
 	      Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
-	      DEBUG_ASSERT(arg3->isStructure());
-	      DEBUG_ASSERT(arg4->isStructure());
+	      assert(arg3->isStructure());
+	      assert(arg4->isStructure());
 	      int regno;
 	      if (is_xreg(arg4, regno) && regno != NUMBER_X_REGISTERS-1 &&
 		  is_yreg(arg3))
@@ -659,7 +659,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	      if (equal_regs(arg3, arg4) && i+1 < ecode.lastEntry())
 		{
-		  DEBUG_ASSERT(reinterpret_cast<Object*>(ecode.Entries()[i+1])->isStructure());
+		  assert(reinterpret_cast<Object*>(ecode.Entries()[i+1])->isStructure());
 		  Structure* nstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(ecode.Entries()[i+1]));
                   Object* fun = nstruct->getFunctor();
 		  if (nstruct->getArity() == 4 &&
@@ -688,8 +688,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	      
-	      DEBUG_ASSERT(arg3->isStructure());
-	      DEBUG_ASSERT(arg4->isStructure());
+	      assert(arg3->isStructure());
+	      assert(arg4->isStructure());
 	      int reg;
 	      if (is_xreg(arg4, reg) && is_yreg(arg3) &&
 		  is_live(arg4, arg3, xreg_life))
@@ -788,7 +788,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  int m = pseudo_instr1_array[arg1->getNumber()].mode;
 	  if (m & 1)
 	    {
@@ -800,7 +800,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr2)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  int m = pseudo_instr2_array[arg1->getNumber()].mode;
 	  if (m & 2)
 	    {
@@ -817,7 +817,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr3)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  int m = pseudo_instr3_array[arg1->getNumber()].mode;
 	  if (m & 4)
 	    {
@@ -839,7 +839,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr4)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  int m = pseudo_instr4_array[arg1->getNumber()].mode;
 	  if (m & 8)
 	    {
@@ -866,7 +866,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr5)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  int m = pseudo_instr5_array[arg1->getNumber()].mode;
 	  if (m & 16)
 	    {
@@ -911,7 +911,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
   bool alloc = false;
   for (int i = 0; i < acode.lastEntry(); i++)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(acode.Entries()[i])->isStructure());
+      assert(reinterpret_cast<Object*>(acode.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(acode.Entries()[i]));
       
       if (isCompiled && tstruct->getFunctor() == AtomTable::call_pred &&
@@ -960,7 +960,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	  Structure* nstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(acode.Entries()[i+1]));
 	  if (nstruct->getFunctor() == AtomTable::ccut)
 	    {
-	      DEBUG_ASSERT(tstruct->getArgument(1)->variableDereference() ==
+	      assert(tstruct->getArgument(1)->variableDereference() ==
 			   nstruct->getArgument(1)->variableDereference());
 	      Structure* nc = newStructure(1);
 	      nc->setFunctor(AtomTable::cneck_cut);
@@ -1067,7 +1067,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
       else if (tstruct->getFunctor() == AtomTable::checkBinder)
 	{
 	  Object* arg = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg->isStructure());
+	  assert(arg->isStructure());
 	  if (is_yreg(arg))
 	    {
 	      Structure* lstr = newStructure(4);

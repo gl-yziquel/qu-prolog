@@ -211,19 +211,20 @@ end('$get_inst_args'/5):
 
 '$get_instr_arg'/4:
 
-	switch_on_term(0, $9, 'fail', 'fail', 'fail', 'fail', $8)
-
-$8:
-	switch_on_constant(0, 16, ['$default':'fail', 'register':$1, 'constant':$2, 'integer':$3, 'number':$4, 'predatom':$5, 'address':$6, 'offset':$7])
+	switch_on_term(0, $10, 'fail', 'fail', 'fail', 'fail', $9)
 
 $9:
+	switch_on_constant(0, 16, ['$default':'fail', 'register':$1, 'constant':$2, 'integer':$3, 'double':$4, 'number':$5, 'predatom':$6, 'address':$7, 'offset':$8])
+
+$10:
 	try(4, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
 	retry($6)
-	trust($7)
+	retry($7)
+	trust($8)
 
 $1:
 	get_constant('register', 0)
@@ -256,6 +257,16 @@ $3:
 	proceed
 
 $4:
+	get_constant('double', 0)
+	put_integer(0, 4)
+	pseudo_instr3(70, 0, 2, 4)
+	get_x_value(1, 0)
+	put_integer(8, 1)
+	pseudo_instr3(2, 2, 1, 0)
+	get_x_value(3, 0)
+	proceed
+
+$5:
 	get_constant('number', 0)
 	put_integer(0, 4)
 	pseudo_instr3(22, 0, 2, 4)
@@ -265,7 +276,7 @@ $4:
 	get_x_value(3, 0)
 	proceed
 
-$5:
+$6:
 	get_constant('predatom', 0)
 	put_integer(0, 4)
 	pseudo_instr3(25, 0, 2, 4)
@@ -275,7 +286,7 @@ $5:
 	get_x_value(3, 0)
 	proceed
 
-$6:
+$7:
 	get_constant('address', 0)
 	put_integer(0, 4)
 	pseudo_instr3(23, 0, 2, 4)
@@ -285,7 +296,7 @@ $6:
 	get_x_value(3, 0)
 	proceed
 
-$7:
+$8:
 	get_constant('offset', 0)
 	put_integer(0, 4)
 	pseudo_instr3(24, 0, 2, 4)

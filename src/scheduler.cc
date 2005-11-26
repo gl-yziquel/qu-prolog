@@ -53,13 +53,15 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.cc,v 1.31 2004/02/12 23:53:47 qp Exp $
+// $Id: scheduler.cc,v 1.34 2005/11/26 23:34:30 qp Exp $
 
 #include <algorithm>
 
 #include <time.h>
 #include <sys/types.h>
-#include <sys/time.h>
+#ifndef WIN32
+        #include <sys/time.h>
+#endif
 #include <signal.h>
 
 #include "global.h"
@@ -67,8 +69,10 @@
 #include "code.h"
 #include "defs.h"
 #include "errors.h"
+#ifdef ICM_DEF
 #include "icm_handle.h"
 #include "icm_message.h"
+#endif
 #include "io_qp.h"
 #include "manager.h"
 #include "pred_table.h"
@@ -78,16 +82,26 @@
 #include "thread_condition.h"
 #include "thread_table.h"
 
+#ifdef WIN32
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <io.h>
+#endif
+
 //
 // Determine the length of the scheduler quantum.
 //
 
 #ifdef DEBUG_SCHED
 static const int32 TIME_SLICE_SECS = 1L;
-static const int32 TIME_SLICE_USECS = 0L;
+static const int32 TIME_SLICE_USECS = 1000000L;
 #else
 static const int32 TIME_SLICE_SECS = 0L;
+#ifdef WIN32
+static const int32 TIME_SLICE_USECS = 1000L;
+#else
 static const int32 TIME_SLICE_USECS = 100000L;
+#endif
 #endif
 
 //
@@ -116,16 +130,16 @@ Scheduler::~Scheduler(void) { }
 
 extern int* sigint_pipe;
 
-bool
-Scheduler::poll_fds(int32 poll_timeout)
+bool Scheduler::poll_fds(int32 poll_timeout)
 {
+  struct timeval timeout = { poll_timeout , 0 };
+#ifndef WIN32
   fd_set rfds, wfds;
   FD_ZERO(&rfds);
   FD_ZERO(&wfds);
-  //int max_fd = 0;
+
   int max_fd = sigint_pipe[0];
   FD_SET(sigint_pipe[0], &rfds);
-  struct timeval timeout = { poll_timeout , 0 };
   for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
 	   iter != blocked_queue.end();
 	   iter++)
@@ -140,16 +154,54 @@ Scheduler::poll_fds(int32 poll_timeout)
       (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
       (*iter)->processTimeouts(timeout);
     }
+#endif
+
+#ifdef WIN32
+       // We need to turn these fd sets into Handle arrays. So...
+        HANDLE* handles;
+
+        int hcount=0;
+        handles = new HANDLE[blocked_queue.size()];
+
+        for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
+                        iter != blocked_queue.end();
+                        iter++)
+        {
+                handles[hcount] = (HANDLE)_get_osfhandle((*iter)->getFD());
+                hcount++;
+        }
+
+#endif
+
 
   int result;
   if (timeout.tv_sec == 0 && timeout.tv_usec == 0)
     {
+      // Remember, select only works on sockets in windows
+#ifdef WIN32
+      result = WaitForMultipleObjects(hcount + 1, handles, true, NULL)
+ > 0;
+#else
       result = select(max_fd + 1, &rfds, &wfds, NULL, NULL) > 0;
+#endif
     }
   else
     {
+#ifdef WIN32
+      result = WaitForMultipleObjects(hcount + 1, handles, true,
+                   timeout.tv_usec / 1000 + timeout.tv_sec*1000 ) > 0;
+#else
       result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout) > 0;
+#endif
     }
+
+#ifdef WIN32
+    //Free up stuff
+    delete [] handles;
+    handles = NULL;
+
+    if (result == WAIT_FAILED) { cerr << GetLastError() << endl; }
+#endif
 
   return result > 0;
 
@@ -243,6 +295,18 @@ Scheduler::Schedule(void)
 
   run_queue.push_back(thread);
 
+#ifdef WIN32
+  timerptr = SetTimer(NULL, NULL, 500, &win32_handle_timer_wrapper);
+#else
+  // Who'd have thought it?! Here's a case where
+  // Windows > Unix for C++. Unlike Unix, in
+  // Windows you don't need to create the timer
+  // ahead of time - you create it and set it
+  // simultaneously.
+
+  // Search for "SetTimer" to see where this
+  // is done. (Or setitimer for some unices).
+
   //
   // Get the timeslicing signal happening.
   //
@@ -270,7 +334,8 @@ Scheduler::Schedule(void)
 #ifdef SOLARIS
   SYSTEM_CALL_LESS_ZERO(timer_create(CLOCK_REALTIME, &se, &timerid));
 #endif // SOLARIS
-			 
+#endif
+
   (void) InterQuantum();
 
   while (! run_queue.empty())		// Something to run?
@@ -386,6 +451,7 @@ Scheduler::Schedule(void)
 	      //
 	      // Initialise the timer.
 	      //
+#ifndef WIN32
 #ifdef SOLARIS
 	      struct itimerspec set_timerval =
 	      {
@@ -399,6 +465,7 @@ Scheduler::Schedule(void)
 		{ TIME_SLICE_SECS, TIME_SLICE_USECS }
 	      };
 #endif // SOLARIS
+#endif //WIN32
 
 #ifdef DEBUG_SCHED	      
 	      cerr << __FUNCTION__ 
@@ -408,6 +475,10 @@ Scheduler::Schedule(void)
 		   << TIME_SLICE_USECS
 		   << " usecs)" << endl;
 #endif
+#ifdef WIN32 //Alright, let's create AND set the timer CHEESE
+             timerptr = SetTimer(0, timerptr, TIME_SLICE_USECS, 
+                                 &win32_handle_timer_wrapper);
+#else
 #ifdef SOLARIS
 	      SYSTEM_CALL_LESS_ZERO(timer_settime(timerid, 0, &set_timerval,
 	      				  (itimerspec *)NULL));
@@ -416,6 +487,7 @@ Scheduler::Schedule(void)
 					      &set_timerval,
 					      (itimerval *) NULL));
 #endif // SOLARIS
+#endif // WIN32
 	    }
 
 	  //
@@ -434,6 +506,9 @@ Scheduler::Schedule(void)
 #endif // DEBUG_SCHED
 
 	  {
+#ifdef WIN32 //Now we need to kill the timer
+            (void)KillTimer(0, timerptr);
+#else
 #ifdef SOLARIS
 	    struct itimerspec unset_timerval =
 	    { 
@@ -454,6 +529,7 @@ Scheduler::Schedule(void)
 	    			    &clear_timerval,
 	    			    (itimerval *) NULL));
 #endif // SOLARIS
+#endif
 		    
 	  }
 	  
@@ -664,8 +740,18 @@ Scheduler::ShuffleAllMessages(void)
 Thread::ReturnValue
 Scheduler::HandleSignal(void)
 {
-  char buff[128];
-  read(sigint_pipe[0], buff, 120);
+#ifndef WIN32 // This doesn't do ANYTHING
+        char buff[128];
+        read(sigint_pipe[0], buff, 120);
+#else
+        // This may have been removed by the tokeniser,
+        // should we be in the position of fake EOF.
+        if (!_eof(sigint_pipe[0]))
+        {
+                char buff[128];
+                read(sigint_pipe[0], buff, 120);
+        }
+#endif
 
   Thread *thread = new Thread(NULL, thread_options);
 
@@ -734,7 +820,7 @@ void Scheduler::insertThread(Thread* th, Thread* newth)
 	  return;
 	}
     }
-  DEBUG_ASSERT(false);
+  assert(false);
 }
 
 //
@@ -760,6 +846,15 @@ void Scheduler::resetThread(Thread* th)
     }
   th->getBlockStatus().setRunnable();
 }
+
+#ifdef WIN32
+static VOID CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
+                UINT_PTR nIDEvent, DWORD dwTime)
+{
+        //cerr << "Handling a timeslice..." << endl;
+        handle_timeslice(0);
+}
+#endif
 
 static void
 handle_timeslice(int)

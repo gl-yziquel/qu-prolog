@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: hash_table.cc,v 1.7 2004/07/25 04:15:13 qp Exp $
+// $Id: hash_table.cc,v 1.8 2005/07/21 04:43:01 qp Exp $
 
 #include <iostream>
 #include <time.h>
@@ -96,7 +96,7 @@ HashTable<HashType, HashKey>::hashString(const char *string) const
 {
   word32 value = 5381;
   int c;
-  while (c = *string++)
+  while ((c = *string++))
     {
       value = ((value << 5) + value) + c; /* hash * 33 + c */
     }

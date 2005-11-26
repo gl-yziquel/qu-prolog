@@ -53,13 +53,19 @@
 // 
 // ##Copyright##
 //
-// $Id: machine.cc,v 1.3 2000/12/13 23:10:02 qp Exp $
+// $Id: machine.cc,v 1.4 2005/03/08 00:35:10 qp Exp $
 
-#include <sys/types.h>
-#include <netinet/in.h>
+#ifdef WIN32
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <winsock2.h>
+#else
+        #include <sys/types.h>
+        #include <netinet/in.h>
+        #include "icm.h"
+#endif
 
 #include "atom_table.h"
-#include "icm.h"
 #include "thread_qp.h"
 
 extern AtomTable *atoms;

@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: symbols.cc,v 1.3 2000/12/13 23:10:02 qp Exp $
+// $Id: symbols.cc,v 1.4 2005/11/26 23:34:31 qp Exp $
 
 #include "global.h"
 #include "atom_table.h"
@@ -75,7 +75,7 @@ Thread::psi_get_atom_from_atom_table(Object *& object1, Object *& object2,
 {
   int32		i;
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
 
   i = val1->getNumber();
 
@@ -102,7 +102,7 @@ Thread::psi_get_pred_from_pred_table(Object *& object1, Object *& object2,
 {
   int32		i;
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
 
   i = val1->getNumber();
 
@@ -133,8 +133,8 @@ Thread::psi_symtype(Object *& object1, Object *& object2, Object *& object3)
     Object* val1 = heap.dereference(object1);
     Object* val2 = heap.dereference(object2);
 
-    DEBUG_ASSERT(val1->isAtom());
-    DEBUG_ASSERT(val2->isShort());
+    assert(val1->isAtom());
+    assert(val2->isShort());
 
     PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, val1), 
 				     val2->getNumber(), atoms, code);

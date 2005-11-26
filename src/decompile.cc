@@ -55,15 +55,22 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: decompile.cc,v 1.6 2002/12/04 00:36:12 qp Exp $
+// $Id: decompile.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 #include <sys/types.h>
-#include <unistd.h>
 #include <signal.h>
 
 #include "config.h"
 
-extern "C" int kill(pid_t, int);
+
+#ifdef WIN32
+        #include <io.h>
+        #define _WINSOCKAPI_
+        #include <windows.h>
+#else
+        #include <unistd.h>
+        extern "C" int kill(pid_t, int);
+#endif
 
 #include "atom_table.h"
 #include "code.h"
@@ -215,6 +222,14 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  }
 	break;
 
+	case OPCODE(PUT_DOUBLE, ARGS(double, register)):
+	  {
+	    Object* c = heap.newDouble(getDouble(programCounter));
+	    const word32 i = getRegister(programCounter);
+	    X[i]= c;
+	  }
+	break;
+
 	case OPCODE(PUT_LIST, ARGS(register)):
 	  {
 	    const word32 i = getRegister(programCounter);
@@ -300,7 +315,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  {
 	    const word32 i = getRegister(programCounter);
 	    const word32 j = getRegister(programCounter);
-            DEBUG_ASSERT(!X[i]->isNil());
+            assert(!X[i]->isNil());
             X[j] = heap.newSubstitution(X[i], X[j]);       
 	  }
 	break;
@@ -309,7 +324,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  {
 	    const word32 i = getRegister(programCounter);
 	    const word32 j = getRegister(programCounter);
-            DEBUG_ASSERT(!Y[i]->isNil());
+            assert(!Y[i]->isNil());
             X[j] = heap.newSubstitution(Y[i], X[j]);   
 	  }
 	break;
@@ -410,6 +425,24 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  }
 	break; 
 	  
+	case OPCODE(GET_DOUBLE, ARGS(double, register)):
+	  {
+	    Object* c = heap.newDouble(getDouble(programCounter));
+	    const word32 i =getRegister(programCounter);
+            if (inHead)
+              {
+		if (! unify(X[i], c))
+	          {
+		    BACKTRACK;
+	          }
+              }
+            else
+              {
+                ADD_UNIFICATION(X[i], c, listElem);
+              }
+	  }
+	break; 
+	  
 	case OPCODE(GET_LIST, ARGS(register)):
 	  {
 	    const word32 i =getRegister(programCounter);
@@ -443,11 +476,11 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 
 	    Structure* newstruct = heap.newStructure(n);
 	    newstruct->setFunctor(c);
-	    for (u_int i = 1; i <= n; i++)
+	    for (u_int j = 1; j <= n; j++)
 	      {
 		Variable* arg = heap.newVariable();
 		arg->setOccursCheck();        
-		newstruct->setArgument(i, arg);
+		newstruct->setArgument(j, arg);
 	      }
 	    StructurePointer = newstruct->storage() + 1;     
 
@@ -474,11 +507,11 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    Variable* funct = heap.newVariable();
 	    funct->setOccursCheck();        // PJR
 	    newstruct->setFunctor(funct);          
-	    for (u_int i = 1; i <= n; i++)
+	    for (u_int j = 1; j <= n; j++)
 	      {
 		Variable* arg = heap.newVariable();
 		arg->setOccursCheck();        // PJR
-		newstruct->setArgument(i, arg);
+		newstruct->setArgument(j, arg);
 	      }
 	    StructurePointer = newstruct->storage();     
 
@@ -713,6 +746,14 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  }
 	break; 
 	  
+	case OPCODE(SET_DOUBLE, ARGS(double)):
+	  {
+	    const Object* c = heap.newDouble(getDouble(programCounter));
+	    *StructurePointer = reinterpret_cast<heapobject>(c); 
+	    StructurePointer++;
+	  }
+	break; 
+	  
 	case OPCODE(SET_VOID, ARGS(number)):
 	  {
 	    const word32 n = getNumber(programCounter);
@@ -768,7 +809,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    const CodeLoc address = getCodeLoc(programCounter);
 	    getNumber(programCounter);
             CodeLoc loc = address - Code::SIZE_OF_HEADER;
-	    Atom* predicate = (Atom*)(getAddress(loc));
+	    Atom* predicate = reinterpret_cast<Atom*>(getAddress(loc));
             const word32 arity = getNumber(loc);
 	    BUILD_CALL_TERM(predicate, arity, listElem);
 	  }
@@ -799,7 +840,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  {
 	    const CodeLoc address = getCodeLoc(programCounter);
             CodeLoc loc = address - Code::SIZE_OF_HEADER;
-	    Atom* predicate = (Atom*)(getAddress(loc));
+	    Atom* predicate = reinterpret_cast<Atom*>(getAddress(loc));
             const word32 arity = getNumber(loc);
             BUILD_CALL_TERM(predicate, arity, listElem);
 	    *listElem = AtomTable::nil;
@@ -1156,6 +1197,18 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  }
 	break;
 	
+	case OPCODE(UNIFY_DOUBLE, ARGS(double)):
+	  {
+	    Object* c = heap.newDouble(getDouble(programCounter));
+            Object* arg =  reinterpret_cast<Object*>(*StructurePointer);
+            StructurePointer++;
+	    if (! unify(c, arg))
+	      {
+		BACKTRACK;
+	      }
+	  }
+	break;
+	
 	case OPCODE(UNIFY_X_REF, ARGS(register)):
 	  {
 	    const word32 i =getRegister(programCounter);
@@ -1185,8 +1238,12 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	  break; 
 
 	default:
-	  (void)(kill(getpid(), SIGILL));
-	  break;
+#ifdef WIN32
+         (void)(TerminateProcess(GetCurrentProcess(), SIGILL));
+#else
+          (void)(kill(getpid(), SIGILL));
+#endif
+          break;
 	}
     }
   return RV_EXIT;
@@ -1206,7 +1263,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
   if (head->isStructure())
     {
       Structure* str = OBJECT_CAST(Structure*, head);
-      int n = str->getArity();
+      int n = static_cast<int>(str->getArity());
       while (n > 0)
         {
           X[n-1] = str->getArgument(n);
@@ -1226,6 +1283,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(PUT_Y_VALUE, ARGS(register, register)):
 	case OPCODE(PUT_CONSTANT, ARGS(constant, register)):
 	case OPCODE(PUT_INTEGER, ARGS(integer, register)):
+	case OPCODE(PUT_DOUBLE, ARGS(double, register)):
 	case OPCODE(PUT_LIST, ARGS(register)):
 	case OPCODE(PUT_STRUCTURE, ARGS(number, register)):
 	case OPCODE(PUT_X_OBJECT_VARIABLE, ARGS(register, register)):
@@ -1244,6 +1302,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(GET_Y_VALUE, ARGS(register, register)):
 	case OPCODE(GET_CONSTANT, ARGS(constant, register)):
 	case OPCODE(GET_INTEGER, ARGS(integer, register)):
+	case OPCODE(GET_DOUBLE, ARGS(double, register)):
 	case OPCODE(GET_LIST, ARGS(register)):
 	case OPCODE(GET_STRUCTURE, ARGS(constant, number, register)):
 	case OPCODE(GET_STRUCTURE_FRAME, ARGS(number, register)):
@@ -1268,6 +1327,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(SET_Y_OBJECT_VALUE, ARGS(register)):
 	case OPCODE(SET_CONSTANT, ARGS(constant)):
 	case OPCODE(SET_INTEGER, ARGS(integer)):
+	case OPCODE(SET_DOUBLE, ARGS(double)):
 	case OPCODE(SET_VOID, ARGS(number)):
 	case OPCODE(SET_OBJECT_VOID, ARGS(number)):
 	case OPCODE(ALLOCATE, ARGS(number)):
@@ -1294,9 +1354,10 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(PSEUDO_INSTR5, ARGS(number, register, register, register, register, register)):
 	case OPCODE(UNIFY_CONSTANT, ARGS(constant)):
 	case OPCODE(UNIFY_INTEGER, ARGS(integer)):
+	case OPCODE(UNIFY_DOUBLE, ARGS(double)):
           {
 	    first = heap.newNumber(
-                         (long)(programCounter - Code::SIZE_OF_INSTRUCTION));
+                         reinterpret_cast<long>(programCounter - Code::SIZE_OF_INSTRUCTION));
              return(RV_SUCCESS);
           }
         break;
@@ -1305,7 +1366,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
           {
 	    if (next->isNumber())
               {
-                programCounter = (CodeLoc)next->getNumber();
+                programCounter = reinterpret_cast<CodeLoc>(next->getNumber());
               }
             else
               {
@@ -1324,14 +1385,14 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	  {
              getNumber(programCounter);
              const word32 label = getOffset(programCounter);
-	     next = heap.newNumber((long)(programCounter + label));
+	     next = heap.newNumber(reinterpret_cast<long>(programCounter + label));
 	  }
 	break; 
 	  
 	case OPCODE(RETRY_ME_ELSE, ARGS(offset)):
 	  {
              const word32 label = getOffset(programCounter);
-	     next = heap.newNumber((long)(programCounter + label));
+	     next = heap.newNumber(reinterpret_cast<long>(programCounter + label));
 	  }
 	break;
 
@@ -1344,7 +1405,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	  {
              getNumber(programCounter);
              const word32 label = getOffset(programCounter);
-	     next = heap.newNumber((long)programCounter);
+	     next = heap.newNumber(reinterpret_cast<long>(programCounter));
              programCounter += label;
 	  }
 	break; 
@@ -1352,7 +1413,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(RETRY, ARGS(offset)):
 	  {
             const word32 label = getOffset(programCounter);
-	    next = heap.newNumber((long)programCounter);
+	    next = heap.newNumber(reinterpret_cast<long>(programCounter));
             programCounter += label;
 	  }
 	break; 
@@ -1400,7 +1461,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	      }
 	    else
 	      {
-		DEBUG_ASSERT(val->isNumber());
+		assert(val->isNumber());
 		constant.assign(val->getNumber(), 
 				ConstEntry::INTEGER_TYPE);
 	      }
@@ -1431,7 +1492,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
             if (val->isStructure())
               {
                 Structure* str = OBJECT_CAST(Structure*, val);
-                arity = str->getArity();
+                arity = static_cast<word32>(str->getArity());
                 func = heap.dereference(str->getFunctor());
                 if (!func->isAtom())
                   {
@@ -1441,13 +1502,13 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
               }
             else          
               {
-                DEBUG_ASSERT(val->isSubstitution());
+                assert(val->isSubstitution());
                 PrologValue pval(val);
 
                 heap.prologValueDereference(pval);
-                DEBUG_ASSERT(pval.getTerm()->isStructure());
+                assert(pval.getTerm()->isStructure());
                 Structure* str = OBJECT_CAST(Structure*,pval.getTerm());
-                arity = str->getArity();
+                arity = static_cast<word32>(str->getArity());
                 PrologValue pfunc(pval.getSubstitutionBlockList(),
                                   str->getFunctor());
                 heap.prologValueDereference(pfunc);
@@ -1485,12 +1546,12 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 
             heap.prologValueDereference(pval);
 
-            DEBUG_ASSERT(pval.getTerm()->isQuantifiedTerm());
+            assert(pval.getTerm()->isQuantifiedTerm());
 
             QuantifiedTerm* quantterm
               = OBJECT_CAST(QuantifiedTerm*, pval.getTerm());
             word32 arity
-              = quantterm->getBoundVars()->boundListLength();
+              = static_cast<word32>(quantterm->getBoundVars()->boundListLength());
 
 
             PrologValue quant(pval.getSubstitutionBlockList(),
@@ -1520,8 +1581,12 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	break;
 
 	default:
-	  (void)(kill(getpid(), SIGILL));
-	  break;
+#ifdef WIN32
+          (void)(TerminateProcess(GetCurrentProcess(), SIGILL));
+#else
+          (void)(kill(getpid(), SIGILL));
+#endif
+          break;
 	}
     }
   return RV_EXIT;
@@ -1537,11 +1602,12 @@ Thread::ReturnValue
 Thread::psi_decompile(Object*& o1, Object*& o2, Object*& o3)
 {
   Object* co = heap.dereference(o1);
-  DEBUG_ASSERT(co->isNumber());
-  DEBUG_ASSERT(co->getNumber() != 0);
+  assert(co->isNumber());
+  assert(co->getNumber() != 0);
   
-  CodeLoc start = (CodeLoc)(co->getNumber()) + Code::SIZE_OF_INSTRUCTION
-    + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS;
+  CodeLoc start = reinterpret_cast<CodeLoc>((co->getNumber()) 
+    + Code::SIZE_OF_INSTRUCTION
+    + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS);
   CodeLoc pc = getCodeLoc(start);
   CodeLoc tmp = pc;
   if (getInstruction(tmp) == FAIL)
@@ -1562,8 +1628,8 @@ Thread::ReturnValue
 Thread::psi_next_instr(Object*& o1, Object*& o2, Object*& o3, Object*& o4)
 {
   Object* co = heap.dereference(o1);
-  DEBUG_ASSERT(co->isNumber());
-  CodeLoc pc = (CodeLoc)(co->getNumber());
+  assert(co->isNumber());
+  CodeLoc pc = reinterpret_cast<CodeLoc>(co->getNumber());
 
   return(next_instr(pc, o2, o3, o4));
 }

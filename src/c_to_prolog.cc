@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: c_to_prolog.cc,v 1.7 2002/12/05 03:39:26 qp Exp $
+// $Id: c_to_prolog.cc,v 1.8 2005/11/26 23:34:29 qp Exp $
 
 #include <stdarg.h>
 
@@ -87,7 +87,7 @@ Thread::initialise(Object* query, const word32 arity, va_list ap)
   //
   // Look up the location for query.
   //
-  DEBUG_ASSERT(query->isAtom());
+  assert(query->isAtom());
   const PredLoc loc =
     predicates->lookUp(OBJECT_CAST(Atom*, query), arity, atoms, code);
   if (loc == EMPTY_LOC)
@@ -213,7 +213,7 @@ Thread::QuPQueryCut(Object* query, const word32 arity ...)
   //
   va_start(ap, arity);
   Thread& th = initialise(query, arity, ap);
-  DEBUG_ASSERT(&th != NULL);
+  assert(&th != NULL);
   va_end(ap);
   
   //
@@ -255,7 +255,7 @@ Thread::QuPQueryCutFail(Object* query, const word32 arity ...)
   //
   va_start(ap, arity);
   Thread& th = initialise(query, arity, ap);
-  DEBUG_ASSERT(&th != NULL);
+  assert(&th != NULL);
   va_end(ap);
   
   //

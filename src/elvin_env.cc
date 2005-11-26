@@ -1,7 +1,7 @@
 
 // elvin_env.cc - Elvin support.
 //
-// $Id: elvin_env.cc,v 1.4 2004/12/01 04:23:48 qp Exp $
+// $Id: elvin_env.cc,v 1.8 2005/11/06 22:59:16 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -27,18 +27,25 @@
 #include "config.h"
 #ifdef ELVIN_DEF
 
-using namespace std;
+// PORT
+//using namespace std;
 
 #include <string>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <elvin/elvin.h>
-#include <crypt.h>
+#ifndef WIN32
+        #include <crypt.h>
+#endif
 #include <time.h>
 #include <stdio.h>
 
+using namespace std;
 
+#ifdef WIN32
+        extern int gettimeofday(timeval *tp, void *tzp);
+#endif
 
 #include "QuProlog.h"
 #include "thread_table.h"
@@ -63,7 +70,7 @@ static bool timeout_before(struct timeval *first, struct timeval * second)
 }
 
 // Callback for notification traversal
-static int traverse_cb(char *name,
+static int ELVIN_CALLBACK traverse_cb(char *name,
 		       elvin_basetypes_t type,
 		       elvin_value_t value,
 		       int *continue_traversal,
@@ -120,7 +127,7 @@ static int traverse_cb(char *name,
 }
 
 /* This is called when we receive a notification */
-static int notify_cb(elvin_handle_t handle,
+static int ELVIN_CALLBACK notify_cb(elvin_handle_t handle,
               elvin_subscription_t sub,
               elvin_notification_t notification,
               int is_secure,
@@ -145,7 +152,7 @@ static int notify_cb(elvin_handle_t handle,
   return 0;
 }
 
-static elvin_io_handler_t add_io_handler(int fd,
+static elvin_io_handler_t ELVIN_CALLBACK add_io_handler(elvin_socket_t fd,
                                          uint32_t mask,
                                          elvin_io_handler_cb_t callback,
                                          void* rock,
@@ -164,18 +171,17 @@ static elvin_io_handler_t add_io_handler(int fd,
   return hand;
 }
 
-static int modify_io_handler(elvin_io_handler_t handler,
+static int ELVIN_CALLBACK modify_io_handler(elvin_io_handler_t handler,
     uint32_t *mask,
     elvin_io_handler_cb_t callback,
     void **io_handler_rock,
     void *mainloop_rock,
     elvin_error_t error)
 {
-cerr << "modify " << endl;
 return 1;
 }
 
-static int remove_io_handler(elvin_io_handler_t hand,
+static int ELVIN_CALLBACK remove_io_handler(elvin_io_handler_t hand,
                              void* /* mainloop_rock */,
                              elvin_error_t error)
 {
@@ -183,7 +189,7 @@ static int remove_io_handler(elvin_io_handler_t hand,
   return elvin_io_handler_free(hand, error);
 }
 
-static elvin_timeout_t add_timeout(uint32_t ms_delay,
+static elvin_timeout_t ELVIN_CALLBACK add_timeout(uint32_t ms_delay,
                                    elvin_timeout_cb_t callback,
                                    void* rock,
                                    void* /* mainloop_rock */,
@@ -195,18 +201,17 @@ static elvin_timeout_t add_timeout(uint32_t ms_delay,
   return timeout;
 }
 
-static int modify_timeout(elvin_timeout_t timeout,
+static int ELVIN_CALLBACK modify_timeout(elvin_timeout_t timeout,
     uint32_t *ms_delay,
     elvin_timeout_cb_t callback,
     void **timeout_rock,
     void *mainloop_rock,
     elvin_error_t error)
 {
-cerr << "modify timeout" << endl;
 return 1;
 }
 
-static int remove_timeout(elvin_timeout_t timeout,
+static int ELVIN_CALLBACK remove_timeout(elvin_timeout_t timeout,
                           void* /* mainloop_rock */,
                           elvin_error_t error)
 {
@@ -221,7 +226,8 @@ static int remove_timeout(elvin_timeout_t timeout,
 }
 
 // Subscription callback
-static int subscribe_cb(elvin_handle_t /*handle*/, int /*result*/,
+static int ELVIN_CALLBACK subscribe_cb(elvin_handle_t /*handle*/, 
+                         int /*result*/,
                          elvin_subscription_t subscription, void *rock,
                          elvin_error_t error)
 {
@@ -232,28 +238,28 @@ static int subscribe_cb(elvin_handle_t /*handle*/, int /*result*/,
   return 1;
 }
 
-static int unsubscribe_cb(elvin_handle_t /*handle*/, int /*result*/,
+static int ELVIN_CALLBACK unsubscribe_cb(elvin_handle_t /*handle*/, int /*result*/,
                          elvin_subscription_t subscription, void *rock,
                          elvin_error_t error)
 {
   return 1;
 }
 
-static int status_cb(elvin_handle_t handle, elvin_status_event_t event,
+static int ELVIN_CALLBACK status_cb(elvin_handle_t handle, elvin_status_event_t event,
                      void *rock, elvin_error_t error)
 {
   //cerr << "Status event " << event->description << endl;
   return 1;
 }
 
-static int connect_cb(elvin_handle_t handle, int /* result */,
+static int ELVIN_CALLBACK connect_cb(elvin_handle_t handle, int /* result */,
                        void* rock, elvin_error_t error)
 {
   elvin_channel_ptr->setConnected();
   return 1;
 }
 
-static int disconnect_cb(elvin_handle_t handle, int /* result */,
+static int ELVIN_CALLBACK disconnect_cb(elvin_handle_t handle, int /* result */,
                        void* rock, elvin_error_t error)
 {
   elvin_channel_ptr->setDisconnected();
@@ -347,7 +353,14 @@ Object*
 ElvinMsgPartString::buildTerm(Thread& thread, AtomTable& atoms)
 {
   Heap& heap = thread.TheHeap();
-  return charsToList(heap, const_cast<char*>(value.c_str()));
+  if (strlen(value.c_str()) < ATOM_LENGTH)
+    {
+      return atoms.add(const_cast<char*>(value.c_str()));
+    }
+  else
+    {
+      return charsToList(heap, const_cast<char*>(value.c_str()));
+    }
 }
 
 //
@@ -377,20 +390,12 @@ ElvinMsgPartInt64::buildTerm(Thread& thread, AtomTable& atoms)
   return val;
 }
 //
-// Elvin real64's are converted to atoms and wrapped in a 'real64' structure
-// i.e. 999999.999999 is converted to the term real64('999999.999999')
 //
 Object*
 ElvinMsgPartReal64::buildTerm(Thread& thread, AtomTable& atoms)
 {
   Heap& heap = thread.TheHeap();
-  ostringstream str;
-  str << value << ends;
-  Object* a =  atoms.add(const_cast<char*>(str.str().c_str()));
-  Structure* val = heap.newStructure(1);
-  val->setFunctor(atoms.add("real64"));
-  val->setArgument(1, a);
-  return val;
+  return heap.newDouble(value);
 }
 
 //
@@ -469,17 +474,14 @@ ElvinHandler::callHandler(elvin_error_t error)
   
   int would_block;
 
-  if (! elvin_io_handler_get_mask(handler,
-				  &active_mask,
-				  error)) {
+  if (! elvin_io_handler_get_mask(handler, &active_mask, error)) 
+  {
     elvin_error_fprintf(stderr, error);
     exit(1);
   }
   would_block = 0;
-  if (! elvin_io_handler_dispatch(handler,
-				  active_mask,
-				  &would_block,
-				  error)) {
+  if (! elvin_io_handler_dispatch(handler, active_mask, &would_block, error)) 
+  {
     elvin_error_fprintf(stderr, error);
     exit(1);
   }
@@ -649,10 +651,24 @@ ElvinMessageChannel::processTimeouts(struct timeval& next)
 
 
 //
+// Update the FD sets for use in select - this stops this class being abstract
+//
+void
+ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds,
+				  int& max_fd)
+#ifdef WIN32
+{
+	updateFDSETS(rfds, wfds, reinterpret_cast<elvin_socket_t&>(max_fd));
+}
+
+//
 // Update the FD sets for use in select
 //
 void
-ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
+ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds,
+				  elvin_socket_t& max_fd)
+#endif //if it's not windows, we don't need two separate methods, 
+       //since elvin_socket_t and int are equivalent
 {
   // Consider all the handlers
   for (list<ElvinHandler*>::iterator iter = elvin_handlers.begin();
@@ -668,7 +684,7 @@ ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
       else
 	{
 	  // Update appropriate FD set and max FD
-	  int fd = (*iter)->getFD();
+	  elvin_socket_t fd = (*iter)->getFD();
 	  if (fd > max_fd) max_fd = fd;
 	  if ((*iter)->isRead())
 	    {
@@ -694,7 +710,7 @@ ElvinMessageChannel::ShuffleMessages(void)
   // Continue processing until no more events on Elvin sockets.
   while(true)
     {
-      int max_fd = 0;
+      elvin_socket_t max_fd = 0;
       
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
@@ -704,7 +720,7 @@ ElvinMessageChannel::ShuffleMessages(void)
       updateFDSETS(&rfds, &wfds, max_fd);
       
       // Poll on Elvin sockets
-      int fdresult = select(max_fd + 1, &rfds, &wfds, (fd_set *) NULL, &tv);
+      int fdresult = select((int)max_fd + 1, &rfds, &wfds, (fd_set *) NULL, &tv);
 
       if(fdresult > 0)
 	{
@@ -817,16 +833,15 @@ ElvinMessageChannel::elvinInit(Object* where)
     }
   // Set up handlers
   if (!elvin_mainloop_add_rock(client, NULL, error) ||
-      !elvin_mainloop_add_add_io_handler_func(client,
-					      add_io_handler, error) ||
-      !elvin_mainloop_add_modify_io_handler_func(client,
-					      modify_io_handler, error) ||
-      !elvin_mainloop_add_remove_io_handler_func(client,
-						 remove_io_handler, error) ||
+// PORT
+      !elvin_mainloop_add_add_io_handler_func(client, add_io_handler, error) ||
+      !elvin_mainloop_add_modify_io_handler_func(client, modify_io_handler, error) ||
+      !elvin_mainloop_add_remove_io_handler_func(client, remove_io_handler, error) ||
       !elvin_mainloop_add_add_timeout_func(client, add_timeout, error) ||
+#ifndef WIN32
       !elvin_mainloop_add_modify_timeout_func(client, modify_timeout, error) ||
-      !elvin_mainloop_add_remove_timeout_func(client,
-					      remove_timeout, error)) 
+#endif
+      !elvin_mainloop_add_remove_timeout_func(client, remove_timeout, error)) 
     {
         exit(1);
     }
@@ -855,7 +870,7 @@ ElvinMessageChannel::elvinInit(Object* where)
         cerr << "*** elvin_handle_alloc(): failed" << endl;
         exit(1);
       }
-    elvin_handle_set_status_cb(handle, status_cb, client, error);
+    elvin_handle_set_status_cb(handle, (elvin_status_cb_t)status_cb, client, error);
     if (where == atoms->add("default"))
       {
         if (elvin_handle_set_discovery_scope(handle, NULL, error) == 0) 
@@ -925,7 +940,7 @@ void
 ElvinMessageChannel::readElvin(void)
 {
   fd_set rfds,wfds;
-  int max_fd = 0;
+  elvin_socket_t max_fd = 0;
   
   FD_ZERO(&rfds);
   FD_ZERO(&wfds);
@@ -942,7 +957,7 @@ ElvinMessageChannel::readElvin(void)
     {
       wait_val = &tout;
     }
-  if (select(max_fd + 1, &rfds, &wfds, (fd_set *) NULL, wait_val) > 0)
+  if (select((int)max_fd + 1, &rfds, &wfds, (fd_set *) NULL, wait_val) > 0)
     {
       processFDs(&rfds, &wfds);
     }
@@ -973,7 +988,7 @@ ElvinMessageChannel::elvinDisconnect(void)
 #endif
       delete *iter;
     }
-  if (elvin_async_disconnect(handle, disconnect_cb, NULL, error) == 0)
+  if (elvin_async_disconnect(handle, (elvin_disconnect_cb_t)disconnect_cb, NULL, error) == 0)
     {
       cerr <<  "*** elvin_disconnect(): failed" << endl;
       elvin_error_fprintf(stderr, error);
@@ -983,7 +998,7 @@ ElvinMessageChannel::elvinDisconnect(void)
   // Process Elvin socket events until disconnected
   while (connected)
     {
-      int max_fd = 0;
+      elvin_socket_t max_fd = 0;
       
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
@@ -1000,12 +1015,12 @@ ElvinMessageChannel::elvinDisconnect(void)
 	{
 	  wait_val = &tout;
 	}
-      if (select(max_fd + 1, &rfds, &wfds, (fd_set *) NULL, wait_val) > 0)
+      if (select((int)max_fd + 1, &rfds, &wfds, (fd_set *) NULL, wait_val) > 0)
 	{
 	  processFDs(&rfds, &wfds);
 	}
       
-      (void)select(max_fd + 1, &rfds, &wfds, (fd_set *) NULL, NULL);
+      (void)select((int)max_fd + 1, &rfds, &wfds, (fd_set *) NULL, NULL);
       processFDs(&rfds, &wfds);
       
     }
@@ -1030,8 +1045,10 @@ ElvinMessageChannel::addSubscription(ThreadTableLoc threadid, Atom* form)
   SubscriptionData* sub_data = new SubscriptionData(threadid, form);
   if (elvin_async_add_subscription(handle, 
 				   atoms->getAtomString(form),
-				   NULL, 1, notify_cb, sub_data,
-				   subscribe_cb, sub_data,
+				   NULL, 1, notify_cb,  
+                                   sub_data,
+				   subscribe_cb, 
+                                   sub_data,
 				   error) == 0)
     {
       elvin_error_fprintf(stderr, error);
@@ -1068,7 +1085,7 @@ ElvinMessageChannel::deleteSubscription(ThreadTableLoc threadID, Object* subterm
       elvin_subscription_t sub = sdata->getSubscription();
       if (elvin_async_delete_subscription(handle, 
 					  sub,
-					  unsubscribe_cb, NULL,
+					  (elvin_subscription_cb_t)unsubscribe_cb, NULL,
 					  error) == 0)
 	{
 	  elvin_error_fprintf(stderr, error);
@@ -1116,7 +1133,7 @@ ElvinMessageChannel::subListToList(Thread& th)
 // QP ASCII list - converted to Elvin string
 // integer               - converted to Elvin int32
 // int64(atom)           - converted to Elvin int64 - atom holds number
-// real64(atom)          - converted to Elvin real64
+// float                 - converted to Elvin real64
 // opaque(list)          - converted to Elvin opaque
 // qpterm(term)          - encoded and converted to Elvin opaque
 //                         prefixed by "$qpterm$"
@@ -1154,13 +1171,35 @@ ElvinMessageChannel::addNotification(Object* object0, Thread& thread)
 	      return false;
 	    }
 	}
-      else if (arg2->isNumber())
+      else if (arg2->isAtom())
+        {
+	  if (elvin_notification_add_string(n, atoms->getAtomString(arg1),
+					    atoms->getAtomString(arg2),
+					    error) == 0) 
+	    {
+	      cerr << "elvin_notification_add_string(): failed" << endl;
+	      elvin_notification_free(n, error);
+	      return false;
+	    }
+	}
+      else if (arg2->isInteger())
 	{
 	  if (elvin_notification_add_int32(n, atoms->getAtomString(arg1),
 					   arg2->getNumber(), 
 					   error) == 0) 
 	    {
 	      cerr << "elvin_notification_add_int32(): failed" << endl;
+	      elvin_notification_free(n, error);
+	      return false;
+	    }
+	}
+      else if (arg2->isDouble())
+	{
+	  if (elvin_notification_add_real64(n, atoms->getAtomString(arg1),
+					   arg2->getDouble(), 
+					   error) == 0) 
+	    {
+	      cerr << "elvin_notification_add_real64(): failed" << endl;
 	      elvin_notification_free(n, error);
 	      return false;
 	    }
@@ -1184,19 +1223,6 @@ ElvinMessageChannel::addNotification(Object* object0, Thread& thread)
 					       v, error) == 0) 
 		{
 		  cerr << "elvin_notification_add_int64(): failed" << endl;
-		  elvin_notification_free(n, error);
-		  return false;
-		}
-	    }
-	  else if (func == atoms->add("real64"))
-	    {
-	      istringstream str(atoms->getAtomString(arg));
-	      double v;
-	      str >> v;
-	      if (elvin_notification_add_real64(n, atoms->getAtomString(arg1),
-						v, error) == 0) 
-		{
-		  cerr << "elvin_notification_add_real64(): failed" << endl;
 		  elvin_notification_free(n, error);
 		  return false;
 		}
@@ -1248,6 +1274,15 @@ static char crypt_chars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY
 
 static char* crypt_id(time_t now)
 {
+#ifdef WIN32
+        // Strangely, this is a LOT easier on windows.
+        // It seems that windows has much better RPC support
+        UUID uuid;
+        UCHAR *suuid;
+        UuidCreate(&uuid);
+        UuidToString(&uuid, &suuid);
+        return reinterpret_cast<char*>(suuid);
+#else
     char hostid[9];
     char salt[3];
 
@@ -1261,6 +1296,7 @@ static char* crypt_id(time_t now)
 
     // Return the encrypted result
     return crypt(hostid, salt);
+#endif
 }
 
 static int uuid_count = 0;

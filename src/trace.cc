@@ -55,12 +55,14 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: trace.cc,v 1.8 2002/12/20 02:15:54 qp Exp $
+// $Id: trace.cc,v 1.9 2005/03/08 00:35:17 qp Exp $
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 
 #include	<sys/types.h>
-#include	<unistd.h>
+#ifndef WIN32
+#include        <unistd.h>
+#endif
 #include	<stdarg.h>
 
 #include "atom_table.h"
@@ -1313,4 +1315,4 @@ Trace::Trace(const word32 level)
     trace_init_choice(false)
 { }
 
-#endif // DEBUG
+#endif // QP_DEBUG

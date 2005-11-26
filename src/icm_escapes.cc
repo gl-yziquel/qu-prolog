@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_escapes.cc,v 1.10 2003/12/11 23:41:26 qp Exp $
+// $Id: icm_escapes.cc,v 1.12 2005/11/26 23:34:30 qp Exp $
 
 #include "atom_table.h"
 #include "icm_environment.h"
@@ -62,15 +62,19 @@
 #include "thread_qp.h"
 #include "scheduler.h"
 
+#ifndef WIN32
 #include <netdb.h>
+#endif
 
 extern AtomTable *atoms;
-extern ICMEnvironment *icm_environment;
 extern QemOptions *qem_options;
 extern char *process_symbol;
+#ifdef ICM_DEF
+extern ICMMessageChannel* icm_channel;
+extern ICMEnvironment *icm_environment;
 extern char *icm_address;
 extern int icm_port;
-extern ICMMessageChannel* icm_channel;
+#endif
 extern ThreadTable *thread_table;
 extern IOManager *iom;
 extern Signals *signals;
@@ -86,9 +90,9 @@ Thread::psi_icm_register(Object *& name_arg, Object *& port_arg,
       Warning(Program, "Already registered");
       return RV_FAIL;
     }
-  DEBUG_ASSERT(name_arg->variableDereference()->isAtom());
-  DEBUG_ASSERT(port_arg->variableDereference()->isNumber());
-  DEBUG_ASSERT(server_arg->variableDereference()->isAtom());
+  assert(name_arg->variableDereference()->isAtom());
+  assert(port_arg->variableDereference()->isNumber());
+  assert(server_arg->variableDereference()->isAtom());
   Atom* name = OBJECT_CAST(Atom*, name_arg->variableDereference());
   int port = port_arg->variableDereference()->getNumber();
   Atom* server = OBJECT_CAST(Atom*, server_arg->variableDereference());
@@ -364,6 +368,7 @@ Thread::psi_icm_handle_to_components(Object *& target_object,
 Thread::ReturnValue
 Thread::psi_icm_address(Object *& name_cell)
 {
+#ifdef ICM_DEF
   if (process_symbol == NULL)
     {
       return RV_FAIL;
@@ -378,6 +383,9 @@ Thread::psi_icm_address(Object *& name_cell)
       name_cell = atoms->add(icm_address);
       return RV_SUCCESS;
     }
+#else
+        return RV_FAIL;
+#endif
 }
 
 // @doc
@@ -391,6 +399,7 @@ Thread::psi_icm_address(Object *& name_cell)
 Thread::ReturnValue
 Thread::psi_icm_port(Object *& name_cell)
 {
+#ifdef ICM_DEF
   if (process_symbol == NULL)
     {
       return RV_FAIL;
@@ -400,6 +409,9 @@ Thread::psi_icm_port(Object *& name_cell)
       name_cell = heap.newNumber(icm_port);
       return RV_SUCCESS;
     }
+#else
+        return RV_FAIL;
+#endif
 }
 
 bool machine_name_to_full_name(Object*& name, Object*& fullname)
@@ -417,7 +429,9 @@ bool machine_name_to_full_name(Object*& name, Object*& fullname)
       return true;
     }
   hostent *hp = gethostbyname(name_string);
+#ifndef WIN32
   endhostent();
+#endif
   if (!hp)
     {
       return false;

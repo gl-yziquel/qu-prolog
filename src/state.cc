@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: state.cc,v 1.5 2002/12/05 03:39:34 qp Exp $
+// $Id: state.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
 
 #include <iostream>
 #include <fstream>
@@ -283,7 +283,7 @@ Thread::psi_global_state_lookup(Object *& object1, Object *& object2)
     }
 
   // Shouldn't ever get here.
-  DEBUG_ASSERT(false);
+  assert(false);
   return(RV_FAIL);
 }
 
@@ -323,7 +323,7 @@ Thread::psi_global_state_increment(Object *& object1, Object *& object2)
     }
   
   // Shouldn't ever get here.
-  DEBUG_ASSERT(false);
+  assert(false);
   return(RV_FAIL);
 }
 
@@ -361,7 +361,7 @@ Thread::psi_global_state_decrement(Object *& object1, Object *& object2)
     }
 
   // Shouldn't ever get here.
-  DEBUG_ASSERT(false);
+  assert(false);
   return(RV_FAIL);
 }
 

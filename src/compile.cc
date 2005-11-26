@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compile.cc,v 1.7 2004/02/25 21:25:31 qp Exp $
+// $Id: compile.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 #include "thread_qp.h"
 #include "io_qp.h"
@@ -97,7 +97,7 @@ bool in_neck_vars(Object* perm_var, Object* neck_vars)
   perm_var = perm_var->variableDereference();
   while(true)
     {
-      DEBUG_ASSERT(neck_vars != NULL);
+      assert(neck_vars != NULL);
       neck_vars = neck_vars->variableDereference();
       if (!neck_vars->isCons()) return false;
       Cons* listptr = OBJECT_CAST(Cons*, neck_vars);
@@ -131,7 +131,7 @@ Thread::permvars(Object* clause, WordArray& perms, int& numys)
   Object* rest_ptr;
 
   numys = 0;
-  DEBUG_ASSERT(clause->isCons());
+  assert(clause->isCons());
   Object* head = OBJECT_CAST(Cons*, clause)->getHead()->variableDereference();
   clause = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference();
   heap.collect_term_vars(head, vars);
@@ -144,7 +144,7 @@ Thread::permvars(Object* clause, WordArray& perms, int& numys)
 	  (OBJECT_CAST(Structure*, a)->getFunctor() == AtomTable::get_level_ancestor ||
 	  OBJECT_CAST(Structure*, a)->getFunctor() == AtomTable::cut_ancestor))
 	{
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, a)->getArgument(1)->variableDereference()->isAnyVariable());
+	  assert(OBJECT_CAST(Structure*, a)->getArgument(1)->variableDereference()->isAnyVariable());
 	  Reference* arg = 
 	    OBJECT_CAST(Reference*, OBJECT_CAST(Structure*, a)->getArgument(1)->variableDereference());
 
@@ -227,7 +227,7 @@ Thread::permvars(Object* clause, WordArray& perms, int& numys)
 	      continue;
 	    }	  
 	  Object* perm_var = reinterpret_cast<Object*>(perms.Entries()[i]);
-	  DEBUG_ASSERT(perm_var != NULL);
+	  assert(perm_var != NULL);
 	  if (!in_neck_vars(perm_var, neck_vars))
 	    {
 	      Structure* unif_struct = heap.newStructure(2);
@@ -347,7 +347,7 @@ Thread::psi_ccompile(Object*& clause, Object*& type,
     }
   else
     {
-      codeptr = heap.newNumber((word32)(dumpInstructions(array2)));
+      codeptr = heap.newNumber(reinterpret_cast<word32>(dumpInstructions(array2)));
     }
   return RV_SUCCESS;
 }

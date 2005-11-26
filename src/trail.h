@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: trail.h,v 1.10 2003/11/12 02:39:39 qp Exp $
+// $Id: trail.h,v 1.12 2005/11/26 23:34:31 qp Exp $
 
 #ifndef	TRAIL_H
 #define	TRAIL_H
@@ -90,7 +90,7 @@ public:
   //
   void trail(heapobject* v)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(v)->isAnyVariable());
+      assert(reinterpret_cast<Object*>(v)->isAnyVariable());
       pushElement(v);
     }
 
@@ -108,7 +108,7 @@ public:
 	// get address of (ob)var
 	//
 	heapobject* ptr = inspectEntry(current);
-	DEBUG_ASSERT(ptr != NULL);
+	assert(ptr != NULL);
 	//     
 	// Reset (ob)var to unbound
 	//
@@ -152,7 +152,7 @@ public:
     setTopOfStack(start);
   }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(AtomTable& atoms)
     {
       cerr << endl << "---- Trail --- " << endl;
@@ -163,7 +163,7 @@ public:
 	  cerr << endl;
 	}
     }
-#endif // DEBUG
+#endif // QP_DEBUG
 
 };
 
@@ -233,7 +233,7 @@ public:
       pushElement(v);
     }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(AtomTable& atoms)
     {
       cerr << endl << "---- Trail --- " << endl;
@@ -247,7 +247,7 @@ public:
 	  cerr << endl;
 	}
     }
-#endif // DEBUG
+#endif // QP_DEBUG
 	  
   //
   // Roll back the trail to a specified position.  While rolling back,
@@ -264,7 +264,7 @@ public:
 	// get updatable object pointer
 	//
 	UpdatableObject* ptr = fetchAddr(current);
-	DEBUG_ASSERT(ptr != NULL);
+	assert(ptr != NULL);
 	if (ptr->getAddress() != NULL)
 	  {
 	    //     
@@ -408,7 +408,7 @@ public:
 	// get updatable tag pointer
 	//
 	UpdatableTag* ptr = fetchAddr(current);
-	DEBUG_ASSERT(ptr != NULL);
+	assert(ptr != NULL);
 	if (ptr->getAddress() != NULL)
 	  {
 	    //     
@@ -458,7 +458,7 @@ public:
   }
 
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(AtomTable& atoms)
     {
       cerr << endl << "---- Trail --- " << endl;
@@ -478,7 +478,7 @@ public:
 	  cerr << endl;
 	}
     }
-#endif // DEBUG
+#endif // QP_DEBUG
 };
 
 // A trail for reference counts
@@ -497,7 +497,7 @@ public:
   RefObject(void):entryType(REF_CLAUSE),pred(0) {}
 
   RefObject(TypeOfEntry a, DynamicPredicate* p) 
-    : entryType(a),pred((word32)p) {}
+    : entryType(a),pred(reinterpret_cast<word32>(p)) {}
 
   RefObject(TypeOfEntry a, TrailLoc p) 
     : entryType(a),pred((word32)p) {}
@@ -514,14 +514,14 @@ public:
 
   DynamicPredicate* getPred(void) 
   {
-    DEBUG_ASSERT(entryType != REF_EMPTY);
-    DEBUG_ASSERT(entryType != REF_ENDCL);
+    assert(entryType != REF_EMPTY);
+    assert(entryType != REF_ENDCL);
     return reinterpret_cast<DynamicPredicate*>(pred); 
   }
 
   TrailLoc getLink(void)
   {
-    DEBUG_ASSERT(entryType == REF_ENDCL);
+    assert(entryType == REF_ENDCL);
     return (TrailLoc)pred;
   }
 
@@ -558,13 +558,13 @@ public:
       {
 	current--;
 	RefObject* ptr = fetchAddr(current);
-	DEBUG_ASSERT(ptr != NULL);
+	assert(ptr != NULL);
 	if (ptr->isEndLink())
 	  {
 	    continue;
 	  }
 	DynamicPredicate* pred = ptr->getPred();
-	DEBUG_ASSERT(pred != NULL);
+	assert(pred != NULL);
 	pred->release();
       }
     setTopOfStack(loc);
@@ -607,7 +607,7 @@ public:
       {
 	top--;
 	ptr = fetchAddr(top);
-	DEBUG_ASSERT(ptr != NULL);
+	assert(ptr != NULL);
 	if (ptr->isEmpty())
 	  {
 	    continue;
@@ -615,7 +615,7 @@ public:
 	if (ptr->isAlt())
 	  {
 	    DynamicPredicate* pred = ptr->getPred();
-	    DEBUG_ASSERT(pred != NULL);
+	    assert(pred != NULL);
 	    pred->release();
 	  }
 	else if (ptr->isClause())
@@ -632,7 +632,7 @@ public:
 	      }
 	    RefObject* lptr = fetchAddr(l);
 	    DynamicPredicate* pred = lptr->getPred();
-	    DEBUG_ASSERT(pred != NULL);
+	    assert(pred != NULL);
 	    pred->release();
 	    lptr->makeEmpty();
 	  }
@@ -649,7 +649,7 @@ public:
 	    if(top > 0)
 	      {
 		RefObject* aptr = fetchAddr(top-1);
-		DEBUG_ASSERT(aptr != NULL);
+		assert(aptr != NULL);
 		if (aptr->isAlt())
 		  {
 		    DynamicPredicate* apred = aptr->getPred();

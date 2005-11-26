@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: freeness.cc,v 1.17 2003/07/03 04:45:44 qp Exp $
+// $Id: freeness.cc,v 1.19 2005/11/26 23:34:29 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -69,7 +69,7 @@ bool
 Thread::notFreeInStructure(ObjectVariable *object_variable,
 			   PrologValue& term, bool gen_delays)
 {
-  DEBUG_ASSERT(term.getTerm()->isStructure());
+  assert(term.getTerm()->isStructure());
 
   Object *sub_block_list = term.getSubstitutionBlockList();
   Structure *structure = OBJECT_CAST(Structure*, term.getTerm());
@@ -108,7 +108,7 @@ bool
 Thread::notFreeInList(ObjectVariable *object_variable,
 		      PrologValue& list, bool gen_delays)
 {
-  DEBUG_ASSERT(list.getTerm()->isCons());
+  assert(list.getTerm()->isCons());
 
   Object *l = list.getTerm();
   for (;
@@ -138,8 +138,8 @@ bool
 Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 			    PrologValue& term, bool gen_delays)
 {
-  DEBUG_ASSERT(term.getTerm()->isQuantifiedTerm());
-  DEBUG_ASSERT(object_variable == object_variable->variableDereference());
+  assert(term.getTerm()->isQuantifiedTerm());
+  assert(object_variable == object_variable->variableDereference());
 
   Object *sub_block_list = term.getSubstitutionBlockList();
   QuantifiedTerm *quantified_term = OBJECT_CAST(QuantifiedTerm*, 
@@ -157,7 +157,7 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 
   if (! notFreeIn(object_variable, quantifier, gen_delays))
     {
-      pushDownStack.popNEntries(items);
+      pushDownStack.popNEntries(static_cast<word32>(items));
       return false;
     }
 
@@ -181,13 +181,13 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 	{
 	  Structure *structure = OBJECT_CAST(Structure *, head);
 
-	  DEBUG_ASSERT(structure->getFunctor() == AtomTable::colon &&
+	  assert(structure->getFunctor() == AtomTable::colon &&
 		       structure->getArity() == 2);
 
 	  Object *colon_object_variable 
 	    = structure->getArgument(1)->variableDereference();
 
-	  DEBUG_ASSERT(colon_object_variable->isObjectVariable());
+	  assert(colon_object_variable->isObjectVariable());
 
 	  nfi_var_found = nfi_var_found || 
                           (colon_object_variable == object_variable);
@@ -202,7 +202,7 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 
 	  if (! notFreeIn(object_variable, colon, gen_delays))
 	    {
-              pushDownStack.popNEntries(items);
+              pushDownStack.popNEntries(static_cast<word32>(items));
 	      return false;
 	    }
 
@@ -215,7 +215,7 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 	}
       else
 	{
-	  DEBUG_ASSERT(head->isObjectVariable());
+	  assert(head->isObjectVariable());
 	  nfi_var_found = nfi_var_found || 
                           (head == object_variable);
           all_dom_disjoint = all_dom_disjoint &&
@@ -236,12 +236,12 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
         {
           if (nfi_var_found)
             {
-              pushDownStack.popNEntries(items);
+              pushDownStack.popNEntries(static_cast<word32>(items));
               return true;
             }
           if (all_dom_disjoint)
             {
-              pushDownStack.popNEntries(items);
+              pushDownStack.popNEntries(static_cast<word32>(items));
               PrologValue nfi(sub_block_list, quantified_term->getBody());
               return (notFreeIn(object_variable, nfi, gen_delays));
             }
@@ -270,12 +270,12 @@ Thread::notFreeInQuantifier(ObjectVariable *object_variable,
     }
   else
     {
-      DEBUG_ASSERT(bound_var_list->isVariable());
+      assert(bound_var_list->isVariable());
       //
       // Delay the object_variable not_free_in term problem.
       // Assign the problem to the open list variable BoundVarList.
       //
-      pushDownStack.popNEntries(items);
+      pushDownStack.popNEntries(static_cast<word32>(items));
 
       if (gen_delays)
 	{
@@ -298,8 +298,8 @@ bool
 Thread::notFreeInVar(ObjectVariable *object_variable,
 		     PrologValue& var, bool gen_delays)
 {
-  DEBUG_ASSERT(var.getTerm()->isAnyVariable());
-  DEBUG_ASSERT(object_variable == object_variable->variableDereference());
+  assert(var.getTerm()->isAnyVariable());
+  assert(object_variable == object_variable->variableDereference());
 
   Object *sub_block_list = var.getSubstitutionBlockList();
 
@@ -407,7 +407,7 @@ Thread::notFreeIn(ObjectVariable *object_variable, PrologValue& term,
       break;
 
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return true;
       break;
     }
@@ -431,14 +431,14 @@ bool
 Thread::internalNotFreeIn(PrologValue object_variable,
 			  PrologValue term)
 {
-  DEBUG_ASSERT(object_variable.getTerm()->isObjectVariable());
+  assert(object_variable.getTerm()->isObjectVariable());
 
   Object *sub_block_list = object_variable.getSubstitutionBlockList();
   ObjectVariable *ov = 
     OBJECT_CAST(ObjectVariable *, 
 		object_variable.getTerm()->variableDereference());
 
-  DEBUG_ASSERT(! ov->isLocalObjectVariable());
+  assert(! ov->isLocalObjectVariable());
 
   if (! sub_block_list->isNil())
     {
@@ -467,11 +467,11 @@ Thread::internalNotFreeIn(PrologValue object_variable,
        s1->isCons();
        s1 = OBJECT_CAST(Cons *, s1)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, s1)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, s1)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub1_block =
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, s1)->getHead());
       
-      DEBUG_ASSERT(sub1_block->getSize() > 0);
+      assert(sub1_block->getSize() > 0);
       
       Object *range = sub1_block->getRange(1);
       
@@ -489,11 +489,11 @@ Thread::internalNotFreeIn(PrologValue object_variable,
 	       s2->isCons();
 	       s2 = OBJECT_CAST(Cons *, s2)->getTail())
 	    {
-              DEBUG_ASSERT(OBJECT_CAST(Cons*, s2)->getHead()->isSubstitutionBlock());
+              assert(OBJECT_CAST(Cons*, s2)->getHead()->isSubstitutionBlock());
 	      SubstitutionBlock *sub2_block = 
 		OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, s2)->getHead());
 	      
-	      DEBUG_ASSERT(sub2_block->getSize() > 0);
+	      assert(sub2_block->getSize() > 0);
 	      
 	      //
 	      // According to the way local object variables
@@ -516,7 +516,7 @@ Thread::internalNotFreeIn(PrologValue object_variable,
 	      // NOTE: sub table is copied to avoid problems
 	      // with sharing.
 	      //
-              DEBUG_ASSERT(OBJECT_CAST(Cons*, s1)->getHead()->isSubstitutionBlock());
+              assert(OBJECT_CAST(Cons*, s1)->getHead()->isSubstitutionBlock());
               size_t size =
 	        OBJECT_CAST(SubstitutionBlock *, 
                             OBJECT_CAST(Cons *, s1)->getHead())->getSize();
@@ -547,8 +547,8 @@ bool
 Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 			 PrologValue& term)
 {
-  DEBUG_ASSERT(term.getTerm()->isAnyVariable());
-  DEBUG_ASSERT(object_variable == object_variable->variableDereference());
+  assert(term.getTerm()->isAnyVariable());
+  assert(object_variable == object_variable->variableDereference());
 
   addExtraInfoToVars(term.getSubstitutionBlockList());
   addExtraInfoToVars(term.getTerm());
@@ -558,7 +558,7 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
     {
        return notFreeIn(object_variable, term);
     }
-  DEBUG_ASSERT(term.getTerm()->isAnyVariable());
+  assert(term.getTerm()->isAnyVariable());
 
   Object *sub_block_list = term.getSubstitutionBlockList();
 
@@ -595,24 +595,24 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	}
     }
 
-  DEBUG_ASSERT(!sub_block_list->isNil());
-  DEBUG_ASSERT(OBJECT_CAST(Cons* , sub_block_list)->getTail()->isNil());
+  assert(!sub_block_list->isNil());
+  assert(OBJECT_CAST(Cons* , sub_block_list)->getTail()->isNil());
   
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, sub_block_list)->getHead()->isSubstitutionBlock());
+  assert(OBJECT_CAST(Cons*, sub_block_list)->getHead()->isSubstitutionBlock());
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *,
 		OBJECT_CAST(Cons* , sub_block_list)->getHead());
   
-  DEBUG_ASSERT(sub_block->getSize() > 0);
+  assert(sub_block->getSize() > 0);
   
   Object *var = term.getTerm();
 
-  int size = sub_block->getSize();
+  int size = static_cast<int>(sub_block->getSize());
   bool all_dollars = true;
   bool obvar_in_domain = false;
   bool term_in_domain = false;
-  Object* rans[size];
-  ObjectVariable* doms[size];
+  Object** rans = new Object*[size];
+  ObjectVariable** doms = new ObjectVariable*[size];
   int total = size;
   
   //
@@ -623,7 +623,7 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
   //
   for (int i = 1; i <= size; i++)
     {
-      DEBUG_ASSERT(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
+      assert(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
       doms[i-1] = OBJECT_CAST(ObjectVariable*, sub_block->getDomain(i)->variableDereference());
       rans[i-1] = sub_block->getRange(i)->variableDereference();
       if (rans[i-1] != AtomTable::dollar)
@@ -650,17 +650,21 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	   isDelayNFI(object_variable, var))
 	  )
 	{
+          delete rans;
+          delete doms;
 	  return true;
 	}
       else if (size == 1 && object_variable == var)
 	{
-	  DEBUG_ASSERT(doms[0] == doms[0]->variableDereference());
+	  assert(doms[0] == doms[0]->variableDereference());
 	  if ((! status.testHeatWave()) &&
 	      object_variable->isFrozen() &&
 	      doms[0]->isFrozen())
 	    {
-              DEBUG_ASSERT(var->isAnyVariable());
+              assert(var->isAnyVariable());
 	      delayNFI(object_variable, term, var);
+              delete rans;
+              delete doms;
 	      return true;
 	    }
 
@@ -669,6 +673,8 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	  Object* s = AtomTable::success;
 	  (void)psi_ip_set(mp,s); 
 
+          delete rans;
+          delete doms;
 	  return true;
 	}
     }
@@ -681,15 +687,15 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
   //
   for (int i = size-1; i >= 0; i--)
     {
-      DEBUG_ASSERT(doms[i] != NULL);
-      DEBUG_ASSERT(doms[i] == doms[i]->variableDereference());
+      assert(doms[i] != NULL);
+      assert(doms[i] == doms[i]->variableDereference());
       if (rans[i] == AtomTable::dollar &&
 	  doms[i]->distinctFrom(object_variable))
 	{
 	  bool is_distinct = true;
 	  for (int j = size-1; j > i; j--) 
 	    {
-	      DEBUG_ASSERT((doms[j] == NULL) ||
+	      assert((doms[j] == NULL) ||
 			   (doms[j] == doms[j]->variableDereference()));
 	      if ((doms[j] != NULL) && (! doms[i]->distinctFrom(doms[j])))
 		{
@@ -708,15 +714,16 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
     {
       term.setSubstitutionBlockList(AtomTable::nil);
       sub_block_list = AtomTable::nil;
+      delete rans;
+      delete doms;
       return notFreeIn(object_variable, term);
     }
   
-  DEBUG_CODE({
+#ifndef NDEBUG
     Object *remember = term.getTerm();
     heap.prologValueDereference(term);
-    DEBUG_ASSERT(remember == term.getTerm());
-  }
-	     );
+    assert(remember == term.getTerm());
+#endif
   
   if (sub_block_list->isNil() &&
       term.getTerm()->isObjectVariable())
@@ -725,11 +732,13 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 						 term.getTerm());
       if (term_obj_var == object_variable)
 	{
+          delete rans;
+          delete doms;
 	  return false;
 	}
       else
 	{
-	  DEBUG_ASSERT(object_variable == 
+	  assert(object_variable == 
 		       object_variable->variableDereference());
 	  if (! object_variable->distinctFrom(term_obj_var))
 	    {
@@ -740,6 +749,8 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	      setDistinct(object_variable, term_obj_var);
 	    }
 
+          delete rans;
+          delete doms;
 	  return true;
 	}
     }
@@ -754,19 +765,21 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	      break;
 	    }
 	}
-      DEBUG_ASSERT(doms[pos] != NULL);
-      DEBUG_ASSERT(doms[pos] == doms[pos]->variableDereference());
+      assert(doms[pos] != NULL);
+      assert(doms[pos] == doms[pos]->variableDereference());
       if ((! status.testHeatWave()) &&
 	  object_variable->isFrozen() &&
 	  doms[pos]->isFrozen())
 	{
-          DEBUG_ASSERT(term.getTerm()->isAnyVariable());
+          assert(term.getTerm()->isAnyVariable());
 
 	  SubstitutionBlock* sub = heap.newSubstitutionBlock(1);
 	  sub->setDomain(1, doms[pos]);
 	  sub->setRange(1, rans[pos]);
 	  term.setSubstitutionBlockList(heap.newSubstitutionBlockList(sub, AtomTable::nil));
 	  delayNFI(object_variable, term,  term.getTerm());
+          delete rans;
+          delete doms;
 	  return true;
 	}
       Object* mp = atoms->add("$retry_make_progress");
@@ -780,11 +793,15 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 
       if (rans[pos] == AtomTable::dollar)
 	{
+          delete rans;
+          delete doms;
 	  return true;
 	}
       else
 	{
 	  PrologValue range(rans[pos]);
+          delete rans;
+          delete doms;
 	  return notFreeIn(object_variable, range);
 	}
     }
@@ -804,7 +821,7 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	}
       pos++;
       PrologValue range(rans[i]);
-      DEBUG_ASSERT(doms[i] == doms[i]->variableDereference());
+      assert(doms[i] == doms[i]->variableDereference());
       ObjectVariable* domain_object_variable = doms[i];
       if (range.getTerm() == object_variable && 
           range.getSubstitutionBlockList()->isNil()) 
@@ -814,6 +831,8 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	      PrologValue new_term(term.getTerm());
 	      if (total == 1)
 		{
+                  delete rans;
+                  delete doms;
 		  return notFreeInVar(domain_object_variable, new_term) && 
 		    notFreeIn(object_variable, new_term);
 		}
@@ -832,8 +851,10 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 			  offset++;
 			}
 		    }
-		  DEBUG_ASSERT(offset == total+1);
+		  assert(offset == total+1);
 		  PrologValue term1(heap.newSubstitutionBlockList(sub, AtomTable::nil), term.getTerm());
+                  delete rans;
+                  delete doms;
 		  return notFreeInVar(domain_object_variable, new_term) && 
 		    notFreeIn(object_variable, term1);
 		}
@@ -853,14 +874,14 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 		      offset--;
 		    }
 		}
-	      DEBUG_ASSERT(offset == 0);
+	      assert(offset == 0);
 
 	      Cons* new_sub = 
 		heap.newSubstitutionBlockList(sub, AtomTable::nil);
 	      PrologValue new_term(new_sub, term.getTerm());
 
 	      ObjectVariable* domain_object_variable = doms[i];
-	      DEBUG_ASSERT(domain_object_variable 
+	      assert(domain_object_variable 
 			   == domain_object_variable->variableDereference());
 	      doms[i] = NULL;
 	      total--;
@@ -879,20 +900,26 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 		      offset--;
 		    }
 		}
-	      DEBUG_ASSERT(offset == 0);
+	      assert(offset == 0);
 	      PrologValue term1(heap.newSubstitutionBlockList(sub, AtomTable::nil), term.getTerm());
 	      if (!new_term.getTerm()->isAnyVariable())
 		{
+                  delete rans;
+                  delete doms;
 		  return notFreeIn(domain_object_variable, new_term) && 
 		    notFreeIn(object_variable, term1);
 		}
               if (new_term.getSubstitutionBlockList()->isNil())
                 {
+                  delete rans;
+                  delete doms;
 	          return notFreeInVar(domain_object_variable, new_term) && 
 		    notFreeIn(object_variable, term1);
                 }
               else
                 {
+                  delete rans;
+                  delete doms;
 	          return notFreeInVarSimp(domain_object_variable,new_term) && 
 		         notFreeIn(object_variable, term1);
                  }
@@ -900,11 +927,13 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	}
     }
   
-  DEBUG_ASSERT(term.getTerm()->isAnyVariable());
+  assert(term.getTerm()->isAnyVariable());
   
   if (total == 0)
     {
       term.setSubstitutionBlockList(AtomTable::nil);
+      delete rans;
+      delete doms;
       return notFreeIn(object_variable, term, term.getTerm());
     }
   if (total == size)
@@ -925,10 +954,12 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 	      offset--;
 	    }
 	}
-      DEBUG_ASSERT(offset == 0);
+      assert(offset == 0);
       PrologValue term1(heap.newSubstitutionBlockList(sub, AtomTable::nil), term.getTerm());
       delayNFI(object_variable, term1, term.getTerm());
     }
+  delete rans;
+  delete doms;
   return true;
 }
 
@@ -941,7 +972,7 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 void
 Thread::addExtraInfoToVars(Object *term)
 {
-  DEBUG_ASSERT(term->variableDereference()->hasLegalSub());
+  assert(term->variableDereference()->hasLegalSub());
   term = heap.dereference(term);
 
   switch (term->utag())
@@ -982,7 +1013,7 @@ Thread::addExtraInfoToVars(Object *term)
       break;
     case Object::uSubsBlock:
       {
-        DEBUG_ASSERT(term->isSubstitutionBlock());
+        assert(term->isSubstitutionBlock());
 	SubstitutionBlock* sub_block = OBJECT_CAST(SubstitutionBlock*, term);
 	for (u_int i = 1; i <= sub_block->getSize(); i++)
 	  {
@@ -991,7 +1022,7 @@ Thread::addExtraInfoToVars(Object *term)
       }
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }
@@ -1027,7 +1058,7 @@ Thread::notFreeInNFISimp(ObjectVariable *object_variable,
       return true;
     }
   
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, sub_block_list)->getHead()->isSubstitutionBlock());
+  assert(OBJECT_CAST(Cons*, sub_block_list)->getHead()->isSubstitutionBlock());
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *,
 		OBJECT_CAST(Cons* , sub_block_list)->getHead());
@@ -1046,7 +1077,7 @@ Thread::notFreeInNFISimp(ObjectVariable *object_variable,
 	  heap.dropSubFromTerm(*this, ran);
 	}
 
-      DEBUG_ASSERT(object_variable == object_variable->variableDereference());
+      assert(object_variable == object_variable->variableDereference());
       if (ran.getTerm()->isConstant() ||
 	  ran.getTerm()->isObjectVariable() &&
 	  ran.getSubstitutionBlockList()->isNil() &&
@@ -1068,7 +1099,7 @@ Thread::notFreeInNFISimp(ObjectVariable *object_variable,
   heap.prologValueDereference(new_term);
   if (remember == new_term.getTerm() && !new_term.getSubstitutionBlockList()->isNil() )
     {
-      DEBUG_ASSERT(new_term.getTerm()->isAnyVariable());
+      assert(new_term.getTerm()->isAnyVariable());
       return notFreeInVarSimp(object_variable, new_term);
     }
   else
@@ -1087,7 +1118,7 @@ Thread::notFreeInNFISimp(ObjectVariable *object_variable,
 truth3 
 Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 {
-  DEBUG_ASSERT(obvar == obvar->variableDereference());
+  assert(obvar == obvar->variableDereference());
   heap.prologValueDereference(term);
   switch (term.getTerm()->utag())
     {
@@ -1102,7 +1133,7 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 			 OBJECT_CAST(Cons*, term.getTerm())->getHead());
 	PrologValue tail(term.getSubstitutionBlockList(), 
 			 OBJECT_CAST(Cons*, term.getTerm())->getTail());
-	DEBUG_ASSERT(obvar == obvar->variableDereference());
+	assert(obvar == obvar->variableDereference());
 	truth3 headtest = freeness_test(obvar, head);
 	if (headtest == true)
 	  {
@@ -1110,7 +1141,7 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 	  }
 	else
 	  {
-	    DEBUG_ASSERT(obvar == obvar->variableDereference());
+	    assert(obvar == obvar->variableDereference());
 	    return (freeness_test(obvar, tail) || headtest);
 	  }
 	break;
@@ -1118,13 +1149,13 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
     case Object::uStruct:
       {
 	Structure* termstruct = OBJECT_CAST(Structure*, term.getTerm());
-	u_int arity = termstruct->getArity();
+	u_int arity = static_cast<u_int>(termstruct->getArity());
 	truth3 result = false;
 	for (u_int i = 0; i <= arity; i++)
 	  {	   
 	    PrologValue arg(term.getSubstitutionBlockList(), 
 			    termstruct->getArgument(i));
-	    DEBUG_ASSERT(obvar == obvar->variableDereference());
+	    assert(obvar == obvar->variableDereference());
 	    truth3 argtest = freeness_test(obvar, arg);
 	    if (argtest == true)
 	      {
@@ -1140,25 +1171,25 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
       }
     case Object::uQuant:
       {
-	DEBUG_ASSERT(obvar == obvar->variableDereference());
+	assert(obvar == obvar->variableDereference());
 	return freeness_test_quant(obvar, term);
 	break;
       }
     case Object::uVar:
       {
-	DEBUG_ASSERT(obvar == obvar->variableDereference());
+	assert(obvar == obvar->variableDereference());
 	return freeness_test_var(obvar, term);
 	break;
       }
     case Object::uObjVar:
       {
-	DEBUG_ASSERT(obvar == obvar->variableDereference());
+	assert(obvar == obvar->variableDereference());
 	return freeness_test_obvar(obvar, term);
 	break;
       }
     default:
       {
-	DEBUG_ASSERT(false);
+	assert(false);
 	return false;
       }
     }
@@ -1177,7 +1208,7 @@ Thread::freeness_test_quant(ObjectVariable* obvar, PrologValue& term)
 
   // Test the quantifier
   PrologValue q(term.getSubstitutionBlockList(), quant->getQuantifier());
-  DEBUG_ASSERT(obvar == obvar->variableDereference());
+  assert(obvar == obvar->variableDereference());
   truth3 qtest = freeness_test(obvar, q);
   if (qtest == true)
     {
@@ -1202,16 +1233,16 @@ Thread::freeness_test_quant(ObjectVariable* obvar, PrologValue& term)
 	  // A "typed" binder
 	  Structure *structure = OBJECT_CAST(Structure *, head);
 
-	  DEBUG_ASSERT(structure->getFunctor() == AtomTable::colon &&
+	  assert(structure->getFunctor() == AtomTable::colon &&
 		       structure->getArity() == 2);
 
 	  Object *colon_object_variable 
 	    = structure->getArgument(1)->variableDereference();
 
-	  DEBUG_ASSERT(colon_object_variable->isObjectVariable());
+	  assert(colon_object_variable->isObjectVariable());
 	  PrologValue colon(term.getSubstitutionBlockList(), 
 			    structure->getArgument(2));
-	  DEBUG_ASSERT(obvar == obvar->variableDereference());
+	  assert(obvar == obvar->variableDereference());
 	  truth3 colontest = freeness_test(obvar, colon);
 	  if (colontest == true)
 	    {
@@ -1234,12 +1265,12 @@ Thread::freeness_test_quant(ObjectVariable* obvar, PrologValue& term)
     }
   // Test the body - build up a substitution that replaces the bound vars
   // with a $ and add this substitution to the outer substitution
-  DEBUG_ASSERT(bound_var_list->isNil());
+  assert(bound_var_list->isNil());
   size_t items = pushDownStack.size() - old_size;
   if (items == 0)
     {
       PrologValue body(term.getSubstitutionBlockList(), quant->getBody());
-      DEBUG_ASSERT(obvar == obvar->variableDereference());
+      assert(obvar == obvar->variableDereference());
       return (freeness_test(obvar, body) || result);
     }
   SubstitutionBlock *sub_block = heap.newSubstitutionBlock(items);
@@ -1248,12 +1279,12 @@ Thread::freeness_test_quant(ObjectVariable* obvar, PrologValue& term)
       sub_block->setRange(i, AtomTable::dollar);
       sub_block->setDomain(i, pushDownStack.pop()->variableDereference());
     }
-  DEBUG_ASSERT(old_size == pushDownStack.size());
+  assert(old_size == pushDownStack.size());
   Object *nfi_sub_block_list = 
     heap.newSubstitutionBlockList(sub_block, term.getSubstitutionBlockList());
   
   PrologValue body(nfi_sub_block_list, quant->getBody());
-  DEBUG_ASSERT(obvar == obvar->variableDereference());
+  assert(obvar == obvar->variableDereference());
   return (freeness_test(obvar, body) || result);
 }
 
@@ -1302,7 +1333,7 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
       size_t size = sub_block->getSize();
       for (size_t i = 1; i <= size; i++)
 	{
-	  DEBUG_ASSERT(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
+	  assert(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
 
 	  ObjectVariable* dom = 
 	    OBJECT_CAST(ObjectVariable*, sub_block->getDomain(i)->variableDereference());
@@ -1330,10 +1361,10 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 	  for (int j = pushDownStack.size(); j > old_size; )
 	    {
 	      j--;
-	      DEBUG_ASSERT(pushDownStack.getEntry(j)->isObjectVariable());
+	      assert(pushDownStack.getEntry(j)->isObjectVariable());
 	      ObjectVariable* before = 
 		OBJECT_CAST(ObjectVariable*, pushDownStack.getEntry(j));
-	      DEBUG_ASSERT(dom == dom->variableDereference());
+	      assert(dom == dom->variableDereference());
 	      if (!dom->distinctFrom(before))
 		{
 		  setDistinct(dom, before);
@@ -1388,10 +1419,10 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
       for (int j = pushDownStack.size(); j > old_size; )
 	{
 	  j--;
-	  DEBUG_ASSERT(pushDownStack.getEntry(j)->isObjectVariable());
+	  assert(pushDownStack.getEntry(j)->isObjectVariable());
 	  ObjectVariable* before = 
 	    OBJECT_CAST(ObjectVariable*, pushDownStack.getEntry(j));
-	  DEBUG_ASSERT(dom == dom->variableDereference());
+	  assert(dom == dom->variableDereference());
 	  if (!dom->distinctFrom(before))
 	    {
 	      setDistinct(dom, before);
@@ -1435,7 +1466,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
     {
       heap.dropSubFromTerm(*this, term);
     }
-  DEBUG_ASSERT(obvar == obvar->variableDereference());
+  assert(obvar == obvar->variableDereference());
   if (term.getSubstitutionBlockList()->isNil())
     {
       if (obvar == term.getTerm())
@@ -1478,7 +1509,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
       size_t size = sub_block->getSize();
       for (size_t i = 1; i <= size; i++)
 	{
-	  DEBUG_ASSERT(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
+	  assert(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
 
 	  ObjectVariable* dom = 
 	    OBJECT_CAST(ObjectVariable*, sub_block->getDomain(i)->variableDereference());
@@ -1504,17 +1535,17 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 	  for (int j = pushDownStack.size(); j > old_size; )
 	    {
 	      j--;
-	      DEBUG_ASSERT(pushDownStack.getEntry(j)->isObjectVariable());
+	      assert(pushDownStack.getEntry(j)->isObjectVariable());
 	      ObjectVariable* before = 
 		OBJECT_CAST(ObjectVariable*, pushDownStack.getEntry(j));
-	      DEBUG_ASSERT(dom == dom->variableDereference());
+	      assert(dom == dom->variableDereference());
 	      if (!dom->distinctFrom(before))
 		{
 		  setDistinct(dom, before);
 		}
 	    }
 	  pushDownStack.push(dom);
-	  DEBUG_ASSERT(dom == dom->variableDereference());
+	  assert(dom == dom->variableDereference());
 	  if (retry_delays() &&
 	      !dom->distinctFrom(OBJECT_CAST(ObjectVariable*, term.getTerm())))
 	    {
@@ -1572,16 +1603,16 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
       for (int j = pushDownStack.size(); j > old_size; )
 	{
 	  j--;
-	  DEBUG_ASSERT(pushDownStack.getEntry(j)->isObjectVariable());
+	  assert(pushDownStack.getEntry(j)->isObjectVariable());
 	  ObjectVariable* before = 
 	    OBJECT_CAST(ObjectVariable*, pushDownStack.getEntry(j));
-	  DEBUG_ASSERT(dom == dom->variableDereference());
+	  assert(dom == dom->variableDereference());
 	  if (!dom->distinctFrom(before))
 	    {
 	      setDistinct(dom, before);
 	    }
 	}
-      DEBUG_ASSERT(dom == dom->variableDereference());
+      assert(dom == dom->variableDereference());
       if (retry_delays() &&
 	  !dom->distinctFrom(OBJECT_CAST(ObjectVariable*, term.getTerm())))
 	{
@@ -1630,8 +1661,8 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 bool
 Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
 {
-  DEBUG_ASSERT(obvar == obvar->variableDereference());
-  DEBUG_ASSERT(term == term->variableDereference());
+  assert(obvar == obvar->variableDereference());
+  assert(term == term->variableDereference());
   switch (term->utag())
     {
     case Object::uConst:
@@ -1650,7 +1681,7 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
     case Object::uStruct:
       {
 	Structure* termstruct = OBJECT_CAST(Structure*, term);
-	u_int arity = termstruct->getArity();
+	u_int arity = static_cast<u_int>(termstruct->getArity());
 	for (u_int i = 0; i <= arity; i++)
 	  {	 
 	    if (!fastNFITerm(obvar, termstruct->getArgument(i)->variableDereference()))
@@ -1682,7 +1713,7 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
 		// A "typed" binder
 		Structure *structure = OBJECT_CAST(Structure *, head);
 		
-		DEBUG_ASSERT(structure->getFunctor() == AtomTable::colon &&
+		assert(structure->getFunctor() == AtomTable::colon &&
 			     structure->getArity() == 2);
 		
 		if (!fastNFITerm(obvar, structure->getArgument(2)->variableDereference()))
@@ -1757,7 +1788,7 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
       }
     default:
       {
-	DEBUG_ASSERT(false);
+	assert(false);
 	return false;
       }
     }

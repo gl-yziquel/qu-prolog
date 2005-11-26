@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: name_table.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: name_table.cc,v 1.3 2005/11/26 23:34:30 qp Exp $
 
 #include "area_offsets.h"
 #include "atom_table.h"
@@ -84,7 +84,7 @@ NameTable::set(NameEntry key, Thread& th)
     }
   else
     {
-      DEBUG_ASSERT(false);
+      assert(false);
       //
       // Overwrite the value of an existing entry.
       //
@@ -95,7 +95,7 @@ NameTable::set(NameEntry key, Thread& th)
 void
 NameTable::setNameNewVar(Atom* index, Object* var, Thread& th)
 {
-  DEBUG_ASSERT(var->isAnyVariable());
+  assert(var->isAnyVariable());
   setVariableName(index, var, th);
   OBJECT_CAST(Reference*, var)->setName(index);
 }
@@ -103,8 +103,8 @@ NameTable::setNameNewVar(Atom* index, Object* var, Thread& th)
 void
 NameTable::setNameOldVar(Atom* index, Object* var, Thread& th)
 {
-  DEBUG_ASSERT(var->isAnyVariable());
-  DEBUG_ASSERT(OBJECT_CAST(Reference*, var)->hasExtraInfo());
+  assert(var->isAnyVariable());
+  assert(OBJECT_CAST(Reference*, var)->hasExtraInfo());
   setVariableName(index, var, th);
   th.updateAndTrailObject(reinterpret_cast<heapobject*>(var), index, 
 			  Reference::NameOffset);

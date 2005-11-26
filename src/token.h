@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: token.h,v 1.3 2004/11/24 00:12:36 qp Exp $
+// $Id: token.h,v 1.4 2005/03/27 22:07:43 qp Exp $
 
 #ifndef TOKEN_H
 #define TOKEN_H
@@ -135,7 +135,7 @@ int32 ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer);
 // token type.  The value of the token is stored in one of the
 // variables: Integer, Simple, String.
 //
-int32 GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String);
+int32 GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple, Object*& String);
 
 public:
 //

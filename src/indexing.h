@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: indexing.h,v 1.3 2001/11/21 00:21:14 qp Exp $
+// $Id: indexing.h,v 1.6 2005/11/26 23:34:30 qp Exp $
 
 #ifndef INDEXING_H
 #define INDEXING_H
@@ -88,7 +88,7 @@ public:
   ConstEntry(void) { }
 
   ConstEntry(const word32 constant, const word16 t) 
-    : atomic(constant), type(t) { }
+    : atomic(constant), type(static_cast<word8>(t)) { }
 
   //
   // Location of the offset and the size of each entry in the hash
@@ -149,9 +149,9 @@ public:
   //
   void pointerToOffset(AtomTable& atoms)
     {
-      DEBUG_ASSERT(type == ATOM_TYPE);
+      assert(type == ATOM_TYPE);
       AtomLoc loc = atoms.getOffset(reinterpret_cast<Atom*>(atomic));
-      atomic = reinterpret_cast<word32>(loc);
+      atomic = static_cast<word32>(loc);
     }
 
   //
@@ -159,7 +159,7 @@ public:
   //
   void offsetToPointer(AtomTable& atoms)
     {
-      DEBUG_ASSERT(type == ATOM_TYPE);
+      assert(type == ATOM_TYPE);
       atomic = reinterpret_cast<word32>(atoms.getAddress(atomic));
     }
 
@@ -183,7 +183,7 @@ public:
   void assign(const word32 constant, const word16 t) 
     { 
       atomic = constant; 
-      type = t;
+      type = static_cast<word8>(t);
     }
 };
 
@@ -203,6 +203,8 @@ public:
   ConstantTable(Code& area, const CodeLoc start, const word32 TabSize) : 
     CodeHashTable <ConstEntry> (area, start, TabSize)
     {}
+
+    virtual ~ConstantTable() {}
 };
 
 
@@ -297,9 +299,9 @@ public:
   //
   void pointerToOffset(AtomTable& atoms)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(atomic)->isAtom());
+      assert(reinterpret_cast<Object*>(atomic)->isAtom());
       AtomLoc loc = atoms.getOffset(reinterpret_cast<Atom*>(atomic));
-      atomic = reinterpret_cast<word32>(loc);
+      atomic = static_cast<word32>(loc);
     }
 
   //

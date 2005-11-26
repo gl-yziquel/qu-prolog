@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: atom_table.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: atom_table.cc,v 1.3 2005/03/28 06:19:13 qp Exp $
 
 #include "area_offsets.h"
 #include "objects.h"
@@ -159,6 +159,21 @@ Atom *AtomTable::bitwiseor;
 Atom *AtomTable::shiftl;
 Atom *AtomTable::shiftr;
 Atom *AtomTable::bitneg;
+Atom *AtomTable::pi;
+Atom *AtomTable::e;
+Atom *AtomTable::abs;
+Atom *AtomTable::round;
+Atom *AtomTable::floor;
+Atom *AtomTable::ceiling;
+Atom *AtomTable::sqrt;
+Atom *AtomTable::sin;
+Atom *AtomTable::cos;
+Atom *AtomTable::tan;
+Atom *AtomTable::asin;
+Atom *AtomTable::acos;
+Atom *AtomTable::atan;
+Atom *AtomTable::log;
+
 
 Atom *AtomTable::stream_user;
 Atom *AtomTable::stream_stdin;

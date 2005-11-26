@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stack.cc,v 1.5 2004/12/23 22:40:37 qp Exp $
+// $Id: stack.cc,v 1.6 2005/03/08 00:35:14 qp Exp $
 
 #ifndef STACK_CC
 #define STACK_CC
@@ -77,7 +77,7 @@ PrologStack<StoredType>::~PrologStack(void)
 //
 template <class StoredType>
 void
-PrologStack<StoredType>::saveStack(ostream& ostrm, const unsigned long magic) const
+PrologStack<StoredType>::saveStack(ostream& ostrm, const u_long magic) const
 {
   this->saveArea(ostrm, magic, 0, top);
   //

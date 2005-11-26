@@ -53,21 +53,27 @@
 // 
 // ##Copyright##
 //
-// $Id: tcp.cc,v 1.7 2004/11/24 00:12:35 qp Exp $
+// $Id: tcp.cc,v 1.9 2005/08/31 03:20:19 qp Exp $
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+#ifdef WIN32
+        #include <io.h>
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        #include <winsock2.h>
+        typedef int socklen_t;
+#else
+        #include <unistd.h>
+        #include <sys/types.h>
+        #include <sys/socket.h>
+        #include <netinet/in.h>
+        #include <arpa/inet.h>
+        #include <netdb.h>
+        #include <sys/utsname.h>
+#endif
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-
-#include <sys/utsname.h>
-
-#include <string>
+//#include <netinet/in.h>
 
 #include "netinet_in.h"
 #include "tcp_qp.h"
@@ -79,7 +85,7 @@ int
 open_socket_any_port(u_short& port)	// Network byte order.
 {
   // Open the socket
-  const int s = socket(AF_INET, SOCK_DGRAM, 0);
+  const int s = static_cast<const int>(socket(AF_INET, SOCK_DGRAM, 0));
   if (s < 0)
     {
       perror(__FUNCTION__);
@@ -125,7 +131,7 @@ int
 open_socket(const u_short port)	// Network byte order.
 {
   // Open the socket
-  const int s = socket(AF_INET, SOCK_DGRAM, 0);
+  const int s = static_cast<const int>(socket(AF_INET, SOCK_DGRAM, 0));
   if (socket < 0)
     {
       perror(__FUNCTION__);
@@ -218,11 +224,15 @@ LookupMachineIPAddress(const char *name)
 u_long
 LookupMachineIPAddress(void)
 {
+#ifdef WIN32
+  char name[255];
+  gethostname(name, 255);
+  return LookupMachineIPAddress(name);
+#else
   struct utsname name;
-  
   SYSTEM_CALL_LESS_ZERO(uname(&name));
-
   return LookupMachineIPAddress(name.nodename);
+#endif
 }
 
 

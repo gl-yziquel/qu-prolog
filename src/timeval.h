@@ -53,13 +53,20 @@
 // 
 // ##Copyright##
 //
-// $Id: timeval.h,v 1.2 2002/11/03 08:37:35 qp Exp $
+// $Id: timeval.h,v 1.4 2005/11/26 23:34:31 qp Exp $
 
 #ifndef	TIMEVAL_H
 #define	TIMEVAL_H
 
+#ifdef WIN32
+        #include <time.h>
+        #include <io.h>
+    extern int gettimeofday(struct timeval* tp, void* tzp);
+#else
 #include <sys/time.h>
 #include <unistd.h>
+#endif
+
 #include <iostream>
 
 #include "errors.h"
@@ -72,10 +79,11 @@ private:
 public:
   Timeval(const time_t sec, const time_t usec = 0)
     {
-      DEBUG_ASSERT(sec != (time_t) -1 || usec == 0);// sec == -1 -> usec == 0
-      DEBUG_ASSERT(usec < 1000000);		// 1 million
+      assert(sec != (time_t) -1 || usec == 0);// sec == -1 -> usec == 0
+      assert(usec < 1000000);		// 1 million
 
-      tv.tv_sec = sec; tv.tv_usec = usec;
+      tv.tv_sec = static_cast<long>(sec); 
+      tv.tv_usec = static_cast<long>(usec);
     }
   Timeval(void)
     {
@@ -169,7 +177,8 @@ public:
 
 inline std::ostream& operator<<(std::ostream& ostrm, const Timeval& t)
 {
-  ostrm << "sec = " << t.Sec() << " usec = " << t.MicroSec();
+  ostrm << "sec = " << static_cast<long>(t.Sec()) << " usec = " 
+        << static_cast<long>(t.MicroSec());
 
   return ostrm;
 }

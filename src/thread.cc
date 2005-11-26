@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread.cc,v 1.10 2003/07/03 04:45:45 qp Exp $
+// $Id: thread.cc,v 1.11 2005/03/08 00:35:16 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -153,9 +153,9 @@ Thread::Thread(Thread *pt,
     refTrail(*(new RefTrail(RefTrailSize, 0))),
     envStack(EnvSize),
     choiceStack(ChoiceSize)
-#ifdef DEBUG
+#ifdef QP_DEBUG
     , trace(0)
-#endif //DEBUG
+#endif //QP_DEBUG
 {
   InitThread();
 };
@@ -176,9 +176,9 @@ Thread::Thread(Thread *pt,
     refTrail(*(new RefTrail(thread_options.RefTrailSize(), 0))),
     envStack(thread_options.EnvironmentStackSize()),
     choiceStack(thread_options.ChoiceStackSize())
-#ifdef DEBUG
+#ifdef QP_DEBUG
     , trace(0)
-#endif // DEBUG
+#endif // QP_DEBUG
 {
   InitThread();
 };
@@ -210,7 +210,7 @@ Thread::Thread(Thread *pt,
     refTrail(SharedRefTrail),
     envStack(EnvSize),
     choiceStack(ChoiceSize)
-#ifdef DEBUG
+#ifdef QP_DEBUG
     , trace(0)
 #endif
 {

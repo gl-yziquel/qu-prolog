@@ -53,13 +53,21 @@
 // 
 // ##Copyright##
 //
-// $Id: load.cc,v 1.6 2004/03/19 04:54:17 qp Exp $
+// $Id: load.cc,v 1.8 2005/11/26 23:34:30 qp Exp $
 
-#include <unistd.h>
+#ifdef WIN32
+        #include <io.h>
+#else
+        #include <unistd.h>
+#endif
 
 #include "atom_table.h"
 #include "system_support.h"
 #include "thread_qp.h"
+
+#ifndef F_OK
+#    define F_OK 00
+#endif
 
 extern AtomTable *atoms;
 extern Code *code;
@@ -76,11 +84,19 @@ Thread::psi_load(Object *& object1, Object*& object2)
 {
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
 
-  const char *file = wordexp(atoms->getAtomString(val1)).c_str(); 
+  string filename = atoms->getAtomString(val1);
+  wordexp(filename);
+  char file[1024];
+  strcpy(file, filename.c_str());
 
+
+#ifdef WIN32
+  if (_access(file, F_OK) != -1)
+#else
   if (access(file, F_OK) == 0)
+#endif
     {
       ObjectIndex index(*code, *atoms, *predicates);
       StringMap string_map(qem_options->StringMapSize(), 0);

@@ -53,13 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: errors.h,v 1.4 2002/12/05 03:39:27 qp Exp $
+// $Id: errors.h,v 1.5 2005/03/08 00:35:05 qp Exp $
 
 #ifndef	ERRORS_H
 #define	ERRORS_H
 
 #include <errno.h>
-#include <pthread.h>
+//#include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 

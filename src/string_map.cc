@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: string_map.cc,v 1.4 2002/11/03 08:37:33 qp Exp $
+// $Id: string_map.cc,v 1.5 2005/03/08 00:35:15 qp Exp $
 
 #include <iostream>
 #include <string.h>
@@ -106,7 +106,7 @@ StringMap::loadStrings(istream& istrm, const char *file, AtomTable& atoms)
       //
       pushElement(atoms.add(string));
 
-      StringSize -= (strlen(string) + 1);
+      StringSize -= static_cast<Code::AddressSizedType>(strlen(string) + 1);
     }
   
   return(true);

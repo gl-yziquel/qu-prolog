@@ -1,6 +1,6 @@
 // elvin_env.h - Elvin support.
 //
-// $Id: elvin_env.h,v 1.4 2004/12/01 04:23:48 qp Exp $
+// $Id: elvin_env.h,v 1.7 2005/11/26 23:34:29 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -31,9 +31,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <elvin/elvin.h>
+#include "messages.h"
 
 string createUUID();
 
+/* static int notify_cb(elvin_handle_t handle, */
+/*                      elvin_subscription_t sub, */
+/*                      elvin_notification_t notification, */
+/*                      int is_secure, void *rock, elvin_error_t err); */
 //
 // The base class for a component of an elvin message.
 // This contains the field name of the message and
@@ -44,7 +49,7 @@ class ElvinMsgPart
 private:
   Atom* name;                     // field name of message
 public:
-  ElvinMsgPart(Atom* n)
+  explicit ElvinMsgPart(Atom* n)
     : name(n) {}
 
   virtual ~ElvinMsgPart() {}
@@ -137,7 +142,7 @@ private:
   // from filed names to values)
   list<ElvinMsgPart*> elvin_msg;  
 public:
-  ElvinMessage(ThreadTableLoc tid) : Message(), thread_id(tid) {}
+  explicit ElvinMessage(ThreadTableLoc tid) : Message(), thread_id(tid) {}
   
   ~ElvinMessage(void)
     {
@@ -235,9 +240,9 @@ class ElvinMessageChannel : public MessageChannel
   // Are we connect to Elvin?
   bool connected;
   // Elvin error
+  elvin_error_t error;
   // Has the subscription been done?
   bool subscribed;
-  elvin_error_t error;
   // Elvin handle
   elvin_handle_t handle;
   // Registered timeouts
@@ -250,7 +255,7 @@ class ElvinMessageChannel : public MessageChannel
   // Move the given message to the appropriate QP thread's message buffer
   bool msgToThread(ElvinMessage* msg);
  public:
-  ElvinMessageChannel(ThreadTable& t): MessageChannel(t), connected(false) {}
+  explicit ElvinMessageChannel(ThreadTable& t): MessageChannel(t), connected(false) {}
   
   ~ElvinMessageChannel();
   // Initialize connection to Elvin

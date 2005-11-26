@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: unify.cc,v 1.13 2002/12/04 00:36:14 qp Exp $
+// $Id: unify.cc,v 1.15 2005/11/26 23:34:31 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -76,7 +76,7 @@ Thread::extendBoundVarListLoop(Object* varSub, Object* variable,
 			     Object*& delayedVar,
 			     const bool swap, bool in_quant)
 {
-  DEBUG_ASSERT(variable->isVariable());
+  assert(variable->isVariable());
   
   list = list->variableDereference();
   if (list->isNil())
@@ -97,7 +97,7 @@ Thread::extendBoundVarListLoop(Object* varSub, Object* variable,
     }
   else
     {
-      DEBUG_ASSERT(list->isCons());
+      assert(list->isCons());
 
       Variable* newTail = heap.newVariable();
       newTail->setOccursCheck();
@@ -138,9 +138,9 @@ Thread::extendBoundVarListLoop(Object* varSub, Object* variable,
 	}
       else 
 	{
-	  DEBUG_ASSERT(head->isStructure());
+	  assert(head->isStructure());
 	  Structure* str = OBJECT_CAST(Structure*, head);
-	  DEBUG_ASSERT(str->getArity() == 2 && 
+	  assert(str->getArity() == 2 && 
 		       str->getFunctor() == AtomTable::colon);
 	  
 	  //
@@ -162,14 +162,14 @@ Thread::extendBoundVarListLoop(Object* varSub, Object* variable,
 	  //
 	  Object* headObjectVariable 
 	    = str->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(headObjectVariable->isObjectVariable());
+	  assert(headObjectVariable->isObjectVariable());
 	  Object* headType = str->getArgument(2);
 	  
 	  //
 	  // Unify term parts
 	  // 
-          DEBUG_ASSERT(varSub->isLegalSub());
-          DEBUG_ASSERT(listSub->isLegalSub());
+          assert(varSub->isLegalSub());
+          assert(listSub->isLegalSub());
 	  PrologValue t1(varSub, type);
 	  PrologValue t2(listSub, headType);
 	  heap.prologValueDereference(t1);
@@ -209,8 +209,8 @@ BoundVarState
 Thread::pairUpBoundVarList(PrologValue& quantifier1, PrologValue& quantifier2,
 			 Object*& delayedVar, bool in_quant)
 {
-  DEBUG_ASSERT(quantifier1.getTerm()->isQuantifiedTerm());
-  DEBUG_ASSERT(quantifier1.getTerm()->isQuantifiedTerm());
+  assert(quantifier1.getTerm()->isQuantifiedTerm());
+  assert(quantifier1.getTerm()->isQuantifiedTerm());
 
   Object* boundvars1
     = OBJECT_CAST(QuantifiedTerm*, quantifier1.getTerm())->getBoundVars();
@@ -240,12 +240,12 @@ Thread::pairUpBoundVarList(PrologValue& quantifier1, PrologValue& quantifier2,
 	}
       else if (head1->isStructure() && head2->isStructure())
 	{
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, head1)->getFunctor()
+	  assert(OBJECT_CAST(Structure*, head1)->getFunctor()
 		       == AtomTable::colon);
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, head1)->getArity() == 2);
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, head2)->getFunctor()
+	  assert(OBJECT_CAST(Structure*, head1)->getArity() == 2);
+	  assert(OBJECT_CAST(Structure*, head2)->getFunctor()
 		       == AtomTable::colon);
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, head1)->getArity() == 2);
+	  assert(OBJECT_CAST(Structure*, head1)->getArity() == 2);
 	  //
 	  // head1 is  x : t1,  head2 is  y : t2
 	  //
@@ -259,8 +259,8 @@ Thread::pairUpBoundVarList(PrologValue& quantifier1, PrologValue& quantifier2,
 	  //
 	  // Unify term parts
 	  //
-          DEBUG_ASSERT(quantifier1.getSubstitutionBlockList()->isLegalSub());
-          DEBUG_ASSERT(quantifier2.getSubstitutionBlockList()->isLegalSub());
+          assert(quantifier1.getSubstitutionBlockList()->isLegalSub());
+          assert(quantifier2.getSubstitutionBlockList()->isLegalSub());
 	  PrologValue q1(quantifier1.getSubstitutionBlockList(),
 			 OBJECT_CAST(Structure*, head1)->getArgument(2));
 	  PrologValue q2(quantifier2.getSubstitutionBlockList(),
@@ -333,9 +333,9 @@ void
 Thread::makeQuantSubs(Object*& sub1, Object*& sub2, 
 		      Object* qsub1, Object* qsub2, int old_size) 
 {
-  DEBUG_ASSERT(qsub1->isNil() || (qsub1->isCons() &&
+  assert(qsub1->isNil() || (qsub1->isCons() &&
 	       OBJECT_CAST(Cons*, qsub1)->isSubstitutionBlockList()));
-  DEBUG_ASSERT(qsub2->isNil() || (qsub2->isCons() &&
+  assert(qsub2->isNil() || (qsub2->isCons() &&
 	       OBJECT_CAST(Cons*, qsub2)->isSubstitutionBlockList()));
 
   bool both_empty = (qsub1->isNil() && qsub2->isNil());
@@ -353,8 +353,8 @@ Thread::makeQuantSubs(Object*& sub1, Object*& sub2,
       n = 0;
       for (size_t i = old_size; i < pushDownStack.size(); i += 2)
 	{
-	  if (pushDownStack.getEntry(i)->variableDereference() !=
-	      pushDownStack.getEntry(i+1)->variableDereference())
+	  if (pushDownStack.getEntry(static_cast<const StackLoc>(i))->variableDereference() !=
+	      pushDownStack.getEntry(static_cast<const StackLoc>(i+1))->variableDereference())
 	    {
 	      n++;
 	    }
@@ -406,10 +406,10 @@ Thread::makeQuantSubs(Object*& sub1, Object*& sub2,
 void
 Thread::bindToSkelStruct(Object* variable, Object* structure)
 {
-  DEBUG_ASSERT(variable->isVariable());
-  DEBUG_ASSERT(structure->isStructure());
+  assert(variable->isVariable());
+  assert(structure->isStructure());
 
-  u_int arity = OBJECT_CAST(Structure*, structure)->getArity();
+  u_int arity = static_cast<u_int>(OBJECT_CAST(Structure*, structure)->getArity());
 
   Structure* newStruct = heap.newStructure(arity);
 
@@ -438,7 +438,7 @@ Thread::bindToSkelStruct(Object* variable, Object* structure)
 void
 Thread::bindToSkelList(Object* variable)
 {
-  DEBUG_ASSERT(variable->isVariable());
+  assert(variable->isVariable());
   Variable* head = heap.newVariable();
   Variable* tail = heap.newVariable();
   head->setOccursCheck();
@@ -457,7 +457,7 @@ Thread::bindToSkelList(Object* variable)
 void
 Thread::bindToSkelQuant(Object* variable)
 {
-  DEBUG_ASSERT(variable->isVariable());
+  assert(variable->isVariable());
 
   //
   // Create a new quantified term and 
@@ -495,8 +495,8 @@ bool
 Thread::unifyQuantifiers(PrologValue& quant1, PrologValue& quant2, 
 			 bool in_quant)
 {
-  DEBUG_ASSERT(quant1.getTerm()->isQuantifiedTerm());
-  DEBUG_ASSERT(quant2.getTerm()->isQuantifiedTerm()); 
+  assert(quant1.getTerm()->isQuantifiedTerm());
+  assert(quant2.getTerm()->isQuantifiedTerm()); 
 
   Object*	delayedVar;
 
@@ -720,7 +720,7 @@ Thread::unifyObjectVariableTerm(PrologValue& objectVariable, PrologValue& term)
       break;
 
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   return(true); 
 }
@@ -733,8 +733,8 @@ bool
 Thread::unifyObjectVariableObjectVariable(Object* objectVariable1, 
 					  PrologValue& objectVariable2)
 {
-  DEBUG_ASSERT(objectVariable1->isObjectVariable());
-  DEBUG_ASSERT(objectVariable1 == objectVariable1->variableDereference());
+  assert(objectVariable1->isObjectVariable());
+  assert(objectVariable1 == objectVariable1->variableDereference());
 
   if (heap.yieldObjectVariable(OBJECT_CAST(ObjectVariable*, objectVariable1), 
 			  objectVariable2.getSubstitutionBlockList(), 
@@ -774,8 +774,8 @@ bool
 Thread::unifyObjectVariables(PrologValue& objectVariable1, 
 			     PrologValue& objectVariable2)
 {
-  DEBUG_ASSERT(objectVariable1.getTerm()->isObjectVariable());
-  DEBUG_ASSERT(objectVariable2.getTerm()->isObjectVariable());
+  assert(objectVariable1.getTerm()->isObjectVariable());
+  assert(objectVariable2.getTerm()->isObjectVariable());
 
   if (objectVariable1.getSubstitutionBlockList()->isCons())
     {
@@ -839,7 +839,7 @@ Thread::unifyObjectVariables(PrologValue& objectVariable1,
   else if (objectVariable1.getTerm()->isLocalObjectVariable())
     {
       Object *domElem, *newEnd;
-      DEBUG_ASSERT(objectVariable1.getSubstitutionBlockList()->isNil());
+      assert(objectVariable1.getSubstitutionBlockList()->isNil());
       if (! objectVariable1.getTerm()->containLocalObjectVariable(objectVariable2.getSubstitutionBlockList(), domElem, newEnd))
 	{
 	  return(false);
@@ -871,7 +871,7 @@ Thread::unifyObjectVariables(PrologValue& objectVariable1,
   else if (objectVariable2.getTerm()->isLocalObjectVariable())
     {
       Object *domElem, *newEnd;
-      DEBUG_ASSERT(objectVariable2.getSubstitutionBlockList()->isNil());
+      assert(objectVariable2.getSubstitutionBlockList()->isNil());
       if (! objectVariable2.getTerm()->containLocalObjectVariable(objectVariable1.getSubstitutionBlockList(), domElem, newEnd))
 	{
 	  return(false);
@@ -961,10 +961,10 @@ bool
 Thread::unifyVariableVariable1(PrologValue& variable1, PrologValue& variable2,
 			       bool in_quant)
 {
-  DEBUG_ASSERT(variable1.getTerm()->isVariable());
-  DEBUG_ASSERT(variable2.getTerm()->isVariable());
-  DEBUG_ASSERT(variable1.getTerm() != variable2.getTerm());
-  DEBUG_ASSERT(reinterpret_cast<void*>(variable1.getTerm()) 
+  assert(variable1.getTerm()->isVariable());
+  assert(variable2.getTerm()->isVariable());
+  assert(variable1.getTerm() != variable2.getTerm());
+  assert(reinterpret_cast<void*>(variable1.getTerm()) 
 	       >
 	       reinterpret_cast<void*>(variable2.getTerm()));
   if (variable1.getSubstitutionBlockList()->isNil() ||
@@ -1037,7 +1037,7 @@ Thread::unifyVariableVariable1(PrologValue& variable1, PrologValue& variable2,
     {
       return(false);
     }
-  DEBUG_ASSERT(false);
+  assert(false);
   return true;
 }
 
@@ -1049,7 +1049,7 @@ bool
 Thread::unifyFrozenVariable(PrologValue& frozenVariable, PrologValue& variable,
 			    bool in_quant)
 {
-  DEBUG_ASSERT(frozenVariable.getTerm()->isFrozenVariable());
+  assert(frozenVariable.getTerm()->isFrozenVariable());
 
   if (variable.getSubstitutionBlockList()->isCons())
     {
@@ -1191,7 +1191,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	    {
 	      heap.dropSubFromTerm(*this, term);
 	    }
-          DEBUG_ASSERT(term.getTerm()->isObjectVariable());
+          assert(term.getTerm()->isObjectVariable());
           if (heap.yieldVariable(variable.getTerm(), 
 				 term.getSubstitutionBlockList(),
 				 status))
@@ -1393,7 +1393,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	    }
 	  else if (term.getSubstitutionBlockList()->isNil())
 	    {
-	      DEBUG_ASSERT(variable.getTerm() == variable.getTerm()->variableDereference());
+	      assert(variable.getTerm() == variable.getTerm()->variableDereference());
 	      bind(OBJECT_CAST(Variable*, variable.getTerm()),
 		   heap.newObjectVariable());
 	      heap.prologValueDereference(variable);
@@ -1438,7 +1438,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	  break;
 	  
 	default:
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
   
@@ -1452,8 +1452,8 @@ bool
 Thread::unifyVarVar(PrologValue& variable1, PrologValue& variable2, 
 		    bool in_quant)
 {
-  DEBUG_ASSERT(variable1.getTerm()->isVariable());
-  DEBUG_ASSERT(variable2.getTerm()->isVariable());
+  assert(variable1.getTerm()->isVariable());
+  assert(variable2.getTerm()->isVariable());
 
   if (!status.testHeatWave() && 
       OBJECT_CAST(Variable*, variable1.getTerm())->isFrozen())
@@ -1485,8 +1485,8 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
       return(true);
     }
 
-  DEBUG_ASSERT(term1.getTerm()->utag() < 8);
-  DEBUG_ASSERT(term2.getTerm()->utag() < 8);
+  assert(term1.getTerm()->utag() < 8);
+  assert(term2.getTerm()->utag() < 8);
   switch (CrossTag(term1.getTerm()->utag(), term2.getTerm()->utag()))
     {
       //
@@ -1580,7 +1580,7 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
       {
 	Structure* struct1 = OBJECT_CAST(Structure*, term1.getTerm());
 	Structure* struct2 = OBJECT_CAST(Structure*, term2.getTerm());
-	u_int arity = struct1->getArity();
+	u_int arity = static_cast<int>(struct1->getArity());
 	if (arity != struct2->getArity())
 	  {
 	    return(false);
@@ -1664,7 +1664,7 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
       break;
 
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return(false);
     }
   return(true);
@@ -1680,8 +1680,8 @@ Thread::unify(Object* term1, Object* term2, bool in_quant)
   //
   // Do the full dereference.
   //
-DEBUG_ASSERT(term1->variableDereference()->hasLegalSub());
-DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
+assert(term1->variableDereference()->hasLegalSub());
+assert(term2->variableDereference()->hasLegalSub());
   term1 = heap.dereference(term1);
   term2 = heap.dereference(term2);
   if (term1 == term2)
@@ -1691,8 +1691,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
   //
   // At this point the terms are different.
   //
-  DEBUG_ASSERT(term1->utag() < 8);
-  DEBUG_ASSERT(term2->utag() < 8);
+  assert(term1->utag() < 8);
+  assert(term2->utag() < 8);
   switch (CrossTag(term1->utag(), term2->utag()))
     {
       //
@@ -1816,8 +1816,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uVar, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	Variable* var1 = OBJECT_CAST(Variable*, term1);
 	Object* simpterm;
 	if( (var1->isThawed() || status.testHeatWave())
@@ -1877,8 +1877,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uObjVar, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	heap.prologValueDereference(pterm1);
@@ -1938,8 +1938,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uCons, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	heap.prologValueDereference(pterm1);
@@ -1989,7 +1989,7 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 	Structure* struct1 = OBJECT_CAST(Structure*, term1);
 	Structure* struct2 = OBJECT_CAST(Structure*, term2);
 	
-	u_int arity = struct1->getArity();
+	u_int arity = static_cast<int>(struct1->getArity());
 	if (arity != struct2->getArity())
 	  {
 	    return(false);
@@ -2017,8 +2017,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uStruct, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	heap.prologValueDereference(pterm1);
@@ -2064,8 +2064,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
   
     case CrossTag(Object::uQuant, Object::uQuant):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	return(unifyQuantifiers(pterm1, pterm2, false));
@@ -2078,8 +2078,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uQuant, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	heap.prologValueDereference(pterm1);
@@ -2117,8 +2117,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uConst, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	
@@ -2133,8 +2133,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
 
     case CrossTag(Object::uSubst, Object::uVar):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	Variable* var2 = OBJECT_CAST(Variable*, term2);
 	Object* simpterm;
 	if( (var2->isThawed() || status.testHeatWave())
@@ -2161,8 +2161,8 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
     case CrossTag(Object::uSubst, Object::uConst):
     case CrossTag(Object::uSubst, Object::uSubst):
       {
-        DEBUG_ASSERT(term1->hasLegalSub());
-        DEBUG_ASSERT(term2->hasLegalSub());
+        assert(term1->hasLegalSub());
+        assert(term2->hasLegalSub());
 	PrologValue pterm1(term1);
 	PrologValue pterm2(term2);
 	heap.prologValueDereference(pterm1);
@@ -2172,13 +2172,15 @@ DEBUG_ASSERT(term2->variableDereference()->hasLegalSub());
       }
 
     default:
-      DEBUG_CODE(cerr << "Unmatched case in unify" << endl;
-                 term1->printMe_dispatch(*atoms);
-		 term2->printMe_dispatch(*atoms););
-      DEBUG_ASSERT(false);
+#ifndef NDEBUG
+      cerr << "Unmatched case in unify" << endl;
+      term1->printMe_dispatch(*atoms);
+      term2->printMe_dispatch(*atoms);
+#endif
+      assert(false);
       return(false);
     }
-  DEBUG_ASSERT(false);
+  assert(false);
   return(false);
 }
 
@@ -2190,8 +2192,8 @@ Thread::structuralUnifySubs(Object* sub1, Object* sub2)
 	sub1 = OBJECT_CAST(Cons *, sub1)->getTail(),
 	  sub2 = OBJECT_CAST(Cons *, sub2)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, sub1)->getHead()->isSubstitutionBlock());
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, sub2)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, sub1)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, sub2)->getHead()->isSubstitutionBlock());
       SubstitutionBlock* b1 = 
 	OBJECT_CAST(SubstitutionBlock*,
 		    OBJECT_CAST(Cons *, sub1)->getHead());
@@ -2239,8 +2241,8 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
   //
   // At this point the terms are different.
   //
-  DEBUG_ASSERT(term1.getTerm()->utag() < 8);
-  DEBUG_ASSERT(term2.getTerm()->utag() < 8);
+  assert(term1.getTerm()->utag() < 8);
+  assert(term2.getTerm()->utag() < 8);
   switch (CrossTag(term1.getTerm()->utag(), term2.getTerm()->utag()))
     {
       //
@@ -2284,7 +2286,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	      heap.copySubSpine(term2.getSubstitutionBlockList(),
 				OBJECT_CAST(Cons *, sub2)->getTail(), 
                                 AtomTable::nil);
-            DEBUG_ASSERT(newsub->isCons());
+            assert(newsub->isCons());
 	    Object* newterm = heap.newSubstitution(newsub,t2);
 	    
 	    Object* simpterm;
@@ -2311,7 +2313,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	      heap.copySubSpine(term1.getSubstitutionBlockList(),
 				OBJECT_CAST(Cons *, sub1)->getTail(), 
                                 AtomTable::nil);
-            DEBUG_ASSERT(newsub->isCons());
+            assert(newsub->isCons());
 	    Object* newterm = heap.newSubstitution(newsub,t1);
 	    
 	    Object* simpterm;
@@ -2328,7 +2330,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	  }
 	else
 	  {
-	    DEBUG_ASSERT(sub1->isNil() && sub2->isNil());
+	    assert(sub1->isNil() && sub2->isNil());
 	    if (term1.getTerm() != term2.getTerm())
 	      {
 		if (var1->isFrozen() && var2->isFrozen() 
@@ -2342,7 +2344,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	      }
 	  }
 	
-	DEBUG_ASSERT(term1.getTerm() == term2.getTerm());
+	assert(term1.getTerm() == term2.getTerm());
 	sub1 = term1.getSubstitutionBlockList();
 	sub2 = term2.getSubstitutionBlockList();
 	
@@ -2386,7 +2388,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	      heap.copySubSpine(term2.getSubstitutionBlockList(),
 				OBJECT_CAST(Cons *, sub2)->getTail(), 
                                 AtomTable::nil);
-            DEBUG_ASSERT(newsub->isCons());
+            assert(newsub->isCons());
 	    Object* newterm = heap.newSubstitution(newsub,t2);
 	    
 	    Object* simpterm;
@@ -2411,7 +2413,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	    return false;
 	  }
 	
-	DEBUG_ASSERT(term1.getTerm() == term2.getTerm());
+	assert(term1.getTerm() == term2.getTerm());
 	sub1 = term1.getSubstitutionBlockList();
 	sub2 = term2.getSubstitutionBlockList();
 	
@@ -2574,7 +2576,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	      heap.copySubSpine(term1.getSubstitutionBlockList(),
 				OBJECT_CAST(Cons *, sub1)->getTail(), 
                                 AtomTable::nil);
-            DEBUG_ASSERT(newsub->isCons());
+            assert(newsub->isCons());
 	    Object* newterm = heap.newSubstitution(newsub,t1);
 	    
 	    Object* simpterm;
@@ -2599,7 +2601,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	    return false;
 	  }
 	
-	DEBUG_ASSERT(term1.getTerm() == term2.getTerm());
+	assert(term1.getTerm() == term2.getTerm());
 	sub1 = term1.getSubstitutionBlockList();
 	sub2 = term2.getSubstitutionBlockList();
 	
@@ -2761,7 +2763,7 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	Structure* struct1 = OBJECT_CAST(Structure*, term1.getTerm());
 	Structure* struct2 = OBJECT_CAST(Structure*, term2.getTerm());
 	
-	u_int arity = struct1->getArity();
+	u_int arity = static_cast<int>(struct1->getArity());
 	if (arity != struct2->getArity())
 	  {
 	    return(false);
@@ -2894,13 +2896,15 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
       break;
 
     default:
-      DEBUG_CODE(cerr << "Unmatched case in structuralUnify" << endl;
-                 heap.prologValueToObject(term1)->printMe_dispatch(*atoms);
-		 heap.prologValueToObject(term2)->printMe_dispatch(*atoms););
-      DEBUG_ASSERT(false);
+#ifndef NDEBUG
+      cerr << "Unmatched case in structuralUnify" << endl;
+      heap.prologValueToObject(term1)->printMe_dispatch(*atoms);
+      heap.prologValueToObject(term2)->printMe_dispatch(*atoms);
+#endif
+      assert(false);
       return(false);
     }
-  DEBUG_ASSERT(false);
+  assert(false);
   return(false);
 }
 

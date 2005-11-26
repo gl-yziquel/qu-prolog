@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: collect.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: collect.cc,v 1.4 2005/11/26 23:34:29 qp Exp $
 
 #include "heap_qp.h"
 
@@ -63,17 +63,17 @@
 void
 Heap::collect_sub_vars(Object* sub, Object*& varlist)
 {
-  DEBUG_ASSERT(sub->isCons());
+  assert(sub->isCons());
 
   Object* sublist = sub;
 
   while (sublist->isCons())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sublist)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sublist)->getHead()->isSubstitutionBlock());
       SubstitutionBlock* subblock
 	= OBJECT_CAST(SubstitutionBlock*, 
 		      OBJECT_CAST(Cons*, sublist)->getHead());
-      u_int size = subblock->getSize();
+      u_int size = static_cast<u_int>(subblock->getSize());
 
       for (u_int i = 1; i <= size; i++)
 	{
@@ -91,7 +91,7 @@ Heap::collect_sub_vars(Object* sub, Object*& varlist)
 void
 Heap::collect_term_vars(Object* term, Object*& varlist)
 {
-  DEBUG_ASSERT(term->variableDereference()->hasLegalSub());
+  assert(term->variableDereference()->hasLegalSub());
   term = dereference(term);
 
   switch (term->utag())
@@ -110,7 +110,7 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
       while (term->isCons())
 	{
 	  collect_term_vars(OBJECT_CAST(Cons*, term)->getHead(), varlist);
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, term)->getTail()->variableDereference()->hasLegalSub());
+  assert(OBJECT_CAST(Cons*, term)->getTail()->variableDereference()->hasLegalSub());
 	  term = dereference(OBJECT_CAST(Cons*, term)->getTail());
 	}
       collect_term_vars(term, varlist);
@@ -118,7 +118,7 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
     case Object::uStruct:
       {
 	Structure* str = OBJECT_CAST(Structure*, term);
-	u_int arity = str->getArity();
+	u_int arity = static_cast<u_int>(str->getArity());
 	collect_term_vars(str->getFunctor(), varlist);
 	for (u_int i = 1; i <= arity; i++)
 	  {
@@ -141,7 +141,7 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
       collect_term_vars(OBJECT_CAST(Substitution*, term)->getTerm(), varlist);
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
   return;
@@ -156,12 +156,12 @@ Heap::resetCollectedVarList(Object* varlist)
   while (varlist->isCons())
     {
       Object* head = OBJECT_CAST(Cons*, varlist)->getHead();
-      DEBUG_ASSERT(head->isAnyVariable());
-      DEBUG_ASSERT(OBJECT_CAST(Reference*, head)->isCollected());
+      assert(head->isAnyVariable());
+      assert(OBJECT_CAST(Reference*, head)->isCollected());
       OBJECT_CAST(Reference*, head)->unsetCollectedFlag();
       varlist = OBJECT_CAST(Cons*, varlist)->getTail();
     }
-  DEBUG_ASSERT(varlist->isNil());
+  assert(varlist->isNil());
   return;
 }
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: delay_escape.cc,v 1.5 2001/09/20 03:22:05 qp Exp $
+// $Id: delay_escape.cc,v 1.6 2005/11/26 23:34:29 qp Exp $
 
 //#include "atom_table.h"
 #include "global.h"
@@ -67,12 +67,12 @@
 Thread::ReturnValue
 Thread::psi_delay(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   
-  DEBUG_ASSERT(val1->isAnyVariable());
+  assert(val1->isAnyVariable());
   
   //
   // Delay the problem.
@@ -96,7 +96,7 @@ Thread::psi_delayed_problems_for_var(Object *& object1, Object *& object2)
   Object* o = object1;
   Object* delays = AtomTable::nil;
 
-  DEBUG_ASSERT(o != NULL);
+  assert(o != NULL);
   
   while (o->isAnyVariable()) 
     {
@@ -122,10 +122,10 @@ Thread::ReturnValue
 Thread::psi_get_bound_structure(Object *& object1, Object *& object2)
 {
 
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isAnyVariable());
+  assert(val1->isAnyVariable());
   if (val1->isVariable())
     {
       val1 = addExtraInfo(OBJECT_CAST(Variable*, val1));
@@ -149,7 +149,7 @@ Thread::psi_get_bound_structure(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_psidelay_resume(void)
 {
-  DEBUG_ASSERT(false);
+  assert(false);
   status.resetNeckCutRetry();
   RestoreXRegisters();
   programCounter = savedPC;
@@ -177,12 +177,12 @@ Thread::psi_get_delays(Object *& delaylist, Object*& type, Object*& avoid)
        global_delays->isCons();
        global_delays = OBJECT_CAST(Cons *, global_delays)->getTail()->variableDereference())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
+      assert(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
 
       Structure *delay
 	= OBJECT_CAST(Structure*, OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference());
 
-      DEBUG_ASSERT(delay->getArity() == 2);
+      assert(delay->getArity() == 2);
       Object* status = delay->getArgument(1)->variableDereference();
       if (!status->isVariable() || !OBJECT_CAST(Variable*,status)->isFrozen())
 	{
@@ -197,11 +197,11 @@ Thread::psi_get_delays(Object *& delaylist, Object*& type, Object*& avoid)
 	{
 	  Object* vd = 
 	    OBJECT_CAST(Cons*, vdelays)->getHead()->variableDereference();
-	  DEBUG_ASSERT(vd->isStructure());
+	  assert(vd->isStructure());
 	  Structure* vdstruct = OBJECT_CAST(Structure *, vd);
-	  DEBUG_ASSERT(vdstruct->getArity() == 2);
+	  assert(vdstruct->getArity() == 2);
 	  Object* vdstatus = vdstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(vdstatus->isVariable());
+	  assert(vdstatus->isVariable());
 	  if (!OBJECT_CAST(Variable*,vdstatus)->isFrozen())
 	    {
 	      continue;
@@ -283,11 +283,11 @@ Thread::psi_compress_var_delays()
        global_delays->isCons();
        global_delays = OBJECT_CAST(Cons *, global_delays)->getTail()->variableDereference())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
+      assert(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
       
       Structure *delay = OBJECT_CAST(Structure*, OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference());
       
-      DEBUG_ASSERT(delay->getArity() == 2);
+      assert(delay->getArity() == 2);
       Object* status = delay->getArgument(1)->variableDereference();
       if (!status->isVariable() || !OBJECT_CAST(Variable*,status)->isFrozen())
 	{

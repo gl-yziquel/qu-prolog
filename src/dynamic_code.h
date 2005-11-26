@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_code.h,v 1.7 2002/11/03 08:37:26 qp Exp $  
+// $Id: dynamic_code.h,v 1.10 2005/11/26 23:34:29 qp Exp $  
 
 #ifndef DYNAMIC_CODE_H
 #define DYNAMIC_CODE_H
@@ -121,7 +121,7 @@ public:
 
   void gcChain(void);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(void);
 #endif //DEBUG
   
@@ -173,8 +173,8 @@ public:
   {
     if (clauseChain != NULL)
       {
-	DEBUG_ASSERT(clauseChain->first() == NULL);
-        DEBUG_ASSERT(clauseChain->last() == NULL);
+	assert(clauseChain->first() == NULL);
+        assert(clauseChain->last() == NULL);
 	delete clauseChain;
         clauseChain = NULL;
       }
@@ -219,9 +219,9 @@ public:
 	  }
 	else
 	  {
-	    DEBUG_ASSERT(clauseChain->isRemoved());
-	    DEBUG_ASSERT(clauseChain->first() == NULL);
-	    DEBUG_ASSERT(clauseChain->last() == NULL);
+	    assert(clauseChain->isRemoved());
+	    assert(clauseChain->first() == NULL);
+	    assert(clauseChain->last() == NULL);
 	    clauseChain->unmakeRemoved();
 	  }
       }
@@ -257,7 +257,7 @@ public:
   CodeLoc getEndCodeChain(const int index)
   { return(getEntry(index).getEndCodeChain()); }
   
-  DynamicClauseHash(word32 TableSize) 
+  explicit DynamicClauseHash(word32 TableSize) 
     : DynamicHashTable <DynamicClauseHashEntry> (TableSize)
   {};
 
@@ -272,7 +272,7 @@ public:
 // varChain - the clause chain with variables in the index arg.
 // indexedClauses - the hash table for indexing.
 //
-class DynamicPredicate 
+class DynamicPredicate : public Timestamp 
 {
 private:
   word8	             clauseArity;
@@ -297,7 +297,7 @@ public:
 
   void release(void)
   {
-    DEBUG_ASSERT(refcount > 0);
+    assert(refcount > 0);
     refcount--;
     if (refcount == 0 && dirty)
       {
@@ -318,7 +318,7 @@ public:
   //
   int  lookUp(Thread &th, Object* indexarg)
   {
-    DEBUG_ASSERT(clauseArity != 0);
+    assert(clauseArity != 0);
     
     DynamicClauseHashEntry* entry = makeEntry(th, indexarg); 
 
@@ -384,7 +384,7 @@ public:
     pc += Code::SIZE_OF_INSTRUCTION;
     updateNumber(pc, clauseArity);
     pc += Code::SIZE_OF_NUMBER;
-    updateAddress(pc, (word32)this);
+    updateAddress(pc, reinterpret_cast<word32>(this));
     pc += Code::SIZE_OF_ADDRESS;
     updateCodeLoc(pc, clauseCode);
     pc += Code::SIZE_OF_ADDRESS;

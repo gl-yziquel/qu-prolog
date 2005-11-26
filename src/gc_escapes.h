@@ -53,14 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.h,v 1.4 2004/02/25 21:25:32 qp Exp $
+// $Id: gc_escapes.h,v 1.5 2005/03/08 00:35:06 qp Exp $
 
 #ifndef	GC_ESCAPES_H
 #define	GC_ESCAPES_H
 
 public: 
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 bool check_env(EnvLoc env);
 
 bool check_choice(ChoiceLoc choiceloc);
@@ -136,11 +136,11 @@ void gc(word32);
 
 ReturnValue psi_gc(void);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 void dump_choices(ChoiceLoc);
 
 void dump_areas(word32);
 
-#endif // DEBUG
+#endif // QP_DEBUG
 
 #endif	// GC_ESCAPES_H

@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 6.7 Reference Manual - Built-in Predicates
+Qu-Prolog 7.0 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -43,6 +43,8 @@ Qu-Prolog 6.7 Reference Manual - Built-in Predicates
 <UL type="disc">
 <LI>
 <KBD>integer</KBD> : an integer			
+<LI>
+<KBD>float</KBD> : a double precision float			
 <LI>
 <KBD>atom</KBD> : an atom			
 <LI>
@@ -2307,6 +2309,10 @@ Succeed if <KBD>Term</KBD> is a number.
 <BR>
 <BR>yes
 <BR>
+<BR>| ?- number(3.4).
+<BR>
+<BR>yes
+<BR>
 <BR>| ?- number(atom).
 <BR>
 <BR>no
@@ -2326,7 +2332,35 @@ Succeed if <KBD>Term</KBD> is an integer.
 <BR>
 <BR>yes
 <BR>
+<BR>| ?- integer(3.4).
+<BR>
+<BR>no
+<BR>
 <BR>| ?- integer(atom).
+<BR>
+<BR>no
+<BR> 
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="float"></a>float(Term)</KBD>
+
+<BLOCKQUOTE>
+Succeed if <KBD>Term</KBD> is a double.
+<BR><KBD>mode float(@term)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- float(10).
+<BR>
+<BR>no
+<BR>
+<BR>| ?- float(3.4).
+<BR>
+<BR>yes
+<BR>
+<BR>| ?- float(atom).
 <BR>
 <BR>no
 <BR> 
@@ -4104,7 +4138,7 @@ Execute <KBD>Goal</KBD>.  It is treated the same as <KBD>call(Goal)</KBD>. It is
 <A NAME="Section3.6">3.6 Arithmetic</A>
 </H2>
 
-<P>These predicates perform arithmetical (integer) operations on the arguments, which are arithmetic expressions.  Each expression can be a mixture of numbers, variables, and arithmetic functions.  The expression must be free of unbound variables when it is evaluated.
+<P>These predicates perform arithmetical operations on the arguments, which are arithmetic expressions.  Each expression can be a mixture of numbers, variables, and arithmetic functions.  The expression must be free of unbound variables when it is evaluated.
 
 <P>Predicates:
 
@@ -4206,7 +4240,7 @@ The result of evaulating <KBD>Expression</KBD> unifies with <KBD>Value</KBD>. Th
 <BR>Integer division
 <LI>
 <KBD>/</KBD>
-<BR>Division (It is currently the same as integer division)
+<BR>Division 
 <LI>
 <KBD>rem</KBD>
 <BR>Reminder (It is currently the same as <KBD>mod</KBD>)
@@ -4215,7 +4249,7 @@ The result of evaulating <KBD>Expression</KBD> unifies with <KBD>Value</KBD>. Th
 <BR>Modulus
 <LI>
 <KBD>**</KBD>
-<BR>Exponential
+<BR>Power
 <LI>
 <KBD>&#62;&#62;</KBD>
 <BR>Bitwise right shift.  Effectively divides by two and rounds towards negative infinity.
@@ -4231,11 +4265,50 @@ The result of evaulating <KBD>Expression</KBD> unifies with <KBD>Value</KBD>. Th
 <LI>
 <KBD>\</KBD>
 <BR>Bitwise complement
+<LI>
+<KBD>abs</KBD>
+<BR>Absolute value
+<LI>
+<KBD>sqrt</KBD>
+<BR>Square root
+<LI>
+<KBD>exp</KBD>
+<BR>Exponentiation
+<LI>
+<KBD>sin</KBD>
+<BR>Sin
+<LI>
+<KBD>cos</KBD>
+<BR>Cos
+<LI>
+<KBD>tan</KBD>
+<BR>Tan
+<LI>
+<KBD>asin</KBD>
+<BR>Asin
+<LI>
+<KBD>acos</KBD>
+<BR>Acos
+<LI>
+<KBD>atan</KBD>
+<BR>Atan
+<LI>
+<KBD>round</KBD>
+<BR>Round to nearest integer
+<LI>
+<KBD>floor</KBD>
+<BR>Floor
+<LI>
+<KBD>ceiling</KBD>
+<BR>Ceiling
 </UL>
 
+<P>
+The atoms <KBD>pi</KBD> and <KBD>e</KBD> are also available for use in
+arithmetic expressions.
 <P><KBD>is</KBD> is an infix operator. 
-<BR><KBD>mode is(?integer, @gcomp)</KBD>
-<BR><KBD>mode is(?integer, @integer)</KBD>
+<BR><KBD>mode is(?number, @gcomp)</KBD>
+<BR><KBD>mode is(?number, @number)</KBD>
 
 <P>Example: 
 
@@ -4263,7 +4336,48 @@ The result of evaulating <KBD>Expression</KBD> unifies with <KBD>Value</KBD>. Th
 <BR>| ?- A is 10 \/ 9.
 <BR>
 <BR>A = 11
+<BR>
+<BR>| ?- A is pi*3.5**2.
+<BR>
+<BR>A = 38.4845
 </KBD>
+</BLOCKQUOTE>
+
+<P>The following predicates provide uniformly distributed pseudo-random numbers.
+
+<P>Predicates:
+
+<P><KBD><a name="srandom"></a>srandom(Seed)</KBD>
+
+<BLOCKQUOTE>
+Initialize the random numbers with a seed. If <KBD>Seed</KBD> is supplied
+then that seed is used for initialization. Otherwise, a seed is generated from the current time and that seed is used for initialization and <KBD>Seed</KBD>
+is instantiated to that value.
+<BR><KBD>mode srandom(?integer)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="random"></a>random(R)</KBD>
+
+<BLOCKQUOTE>
+<KBD>R</KBD> is 
+unified with a random double between 0 and 1.
+<BR><KBD>mode random(?double)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="randomi"></a>random(Lower, Upper, I)</KBD>
+
+<BLOCKQUOTE>
+<KBD>I</KBD> is 
+unified with a random integer in the range <KBD>[Lower, Upper]</KBD>.
+<BR><KBD>mode random(@integer, @integer, ?integer)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="irandom"></a>irandom(I)</KBD>
+
+<BLOCKQUOTE>
+<KBD>I</KBD> is 
+unified with a random integer.
+<BR><KBD>mode irandom(?integer)</KBD>
 </BLOCKQUOTE>
 
 
@@ -5822,6 +5936,10 @@ The foreign function, <KBD>ForeignFn</KBD>, is written in <KBD>Language</KBD>, w
 <TD><KBD>long</KBD></TD>
 </TR>
 <TR>
+<TD><KBD>float</KBD></TD>
+<TD><KBD>double</KBD></TD>
+</TR>
+<TR>
 <TD><KBD>atom</KBD></TD>
 <TD><KBD>char *</KBD></TD>
 </TR>
@@ -5839,6 +5957,20 @@ Link the <KBD>ObjectFiles</KBD> written in another language with the support <KB
 <BR><KBD>mode load_foreign_files(@closed_list(atom), closed_list(atom))</KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="generate_foreign_interface"></a>generate_foreign_interface(ObjectFiles, Interface)</KBD>
+<BR><KBD>generate_foreign_interface(ObjectFiles, Libraries, Interface)</KBD>
+
+<BLOCKQUOTE>
+This predicate is used to generate low-level interface files. <KBD>Interface</KBD> is the root name of the interface. This predicates generates a <KBD>.cc</KBD>
+and <KBD>.ql</KBD> file with root <KBD>Interface</KBD>. The <KBD>.cc</KBD>
+file is compiled. <KBD>ObjectFiles</KBD> and <KBD>Libraries</KBD> are as above.
+It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
+<BR><KBD>mode generate_foreign_interface(@atom, @atom)</KBD>
+<BR><KBD>mode generate_foreign_interface(@closed_list(atom), @atom)</KBD>
+<BR><KBD>mode generate_foreign_interface(@atom, closed_list(atom), @atom)</KBD>
+<BR><KBD>mode generate_foreign_interface(@closed_list(atom), closed_list(atom), @atom)</KBD>
+</BLOCKQUOTE>
+
 <P>Consider the following example code in `test.cc'.
 
 <KBD>
@@ -5852,10 +5984,10 @@ Link the <KBD>ObjectFiles</KBD> written in another language with the support <KB
 <BR>}
 <BR>
 <BR>//
-<BR>// foreign(triple, c++, triple(+ integer, - integer)).
+<BR>// foreign(triple, c++, triple(+ float, - float)).
 <BR>//
 <BR>void
-<BR>triple(long x, long *a)
+<BR>triple(double x, double *a)
 <BR>{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;*a = (x * 3);
 <BR>}
@@ -5873,10 +6005,10 @@ Link the <KBD>ObjectFiles</KBD> written in another language with the support <KB
 <P>foreign_file('test.o', [twice, triple]).
 <BR>
 <BR>foreign(twice, c, twice(+ integer, [- integer])).
-<BR>foreign(triple, 'c++', triple(+ integer, - integer)).
+<BR>foreign(triple, 'c++', triple(+ float, - float)).
 </KBD>
 
-<P>When the object file <KBD>test.o</KBD> is loaded, interface functions, such as those below, are generated for each function.  These interface functions perform the necessary type checking and conversion.
+<P>When <KBD>test.ql</KBD> and the object file <KBD>test.o</KBD> is loaded, interface functions, such as those below, are generated for each function.  These interface functions perform the necessary type checking and conversion.
 
 
 <KBD>
@@ -5897,7 +6029,7 @@ Link the <KBD>ObjectFiles</KBD> written in another language with the support <KB
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* outarg1;
 <BR>
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = th.XRegs()[0]-&#62;variableDereference();
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isNumber())
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isInteger())
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(false);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
@@ -5917,24 +6049,32 @@ Link the <KBD>ObjectFiles</KBD> written in another language with the support <KB
 <BR>triple_interface(Thread&#38; th)
 <BR>{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bool result = true;
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long integer0;
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long integer1;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double float0;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double float1;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* object0;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* object1;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* outarg1;
 <BR>
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = th.XRegs()[0]-&#62;variableDereference();
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isNumber())
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isDouble())
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(false);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(false);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;integer0 = object0-&#62;getNumber();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isInteger())
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float0 = object0-&#62;getNumber();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float0 = object0-&#62;getDouble();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object1 = th.XRegs()[1];
 <BR>
 <BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;triple(integer0, &integer1);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;triple(float0, &float1);
 <BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg1 = th.TheHeap().newNumber(integer1);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg1 = th.TheHeap().newNumber(float1);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = result &#38;&#38; th.unify(object1, outarg1);
 <BR>
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(result);
@@ -5958,12 +6098,19 @@ Link the <KBD>ObjectFiles</KBD> written in another language with the support <KB
 <BR>
 <BR>no
 <BR>
-<BR>| ?- triple(3, N).
+<BR>| ?- triple(3.1, N).
 <BR>
-<BR>N = 9;
+<BR>N = 9.3;
 <BR>
 <BR>no
+<BR>
+<BR>| ?- generate_foreign_interface('test.o', test_interface).
+<BR>
+<BR>yes
 </KBD>
+<P> The files <KBD>test_interface.cc</KBD>, <KBD>test_interface.o</KBD> and
+<KBD>test_interface.ql</KBD> are generated by the above call. <KBD>test_interface.ql</KBD> contains the required query to <KBD>load_foreign/2</KBD> to
+initialize the low-level interface.
 
 
 
@@ -7520,7 +7667,7 @@ single Qu-Prolog process. All threads have a symbolic name (an atom).
 
 <P><KBD><a name="thread_set_symbol"></a>thread_set_symbol(Name)</KBD>
 <BLOCKQUOTE>
-<P>Set the symbolic name for this thread to <KBD>Name</KBD>.  Fails if the name is already taken.  
+<P>Set the symbolic name for this thread to <KBD>Name</KBD>.  Fails if the name is already taken or is <KBD>self</KBD> or <KBD>elvin</KBD>.  
 <BR><KBD>mode thread_set_symbol(@atom)</KBD>
 <P>Example:
 
@@ -7549,7 +7696,7 @@ single Qu-Prolog process. All threads have a symbolic name (an atom).
 <BR><KBD>thread_fork(ThreadName, Goal, Sizes)</KBD>
 <BLOCKQUOTE>
 <P>Creates a new thread called <KBD>ThreadName</KBD> and sets its goal 
-to be <KBD>Goal</KBD>.  
+to be <KBD>Goal</KBD>. <KBD>ThreadName</KBD> cannot be the name of any existing threads and cannot use the names <KBD>self</KBD> or <KBD>elvin</KBD>.  
 Use the current defaults for the sizes of the data areas 
 unless otherwise specified in <KBD>Sizes</KBD>.  
 The call will fail if the thread cannot be created, 
@@ -7728,20 +7875,18 @@ Currently, if the conditions are set to <KBD>false</KBD>,
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_wait_on_goal"></a>thread_wait_on_goal(Goal)</KBD>
+<BR><KBD>thread_wait_on_goal(Goal, PredList)</KBD>
 <BLOCKQUOTE>
-<P>Waits until the supplied goal succeeds.
-<BR> The predicate is defined as follows.
-<KBD>
-<P>thread_wait_on_goal(Goal) :-
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;repeat,
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;( Goal -> true
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;; thread_wait,
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fail
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;), !. 
-</KBD>
+<P>Blocks until the dynamic database is modified and then calls 
+<KBD>Goal</KBD>. It reblocks if the goal fails. The overall behaviour is that
+the thread blocks until <KBD>Goal</KBD> succeeds.
 <P> Note that if the supplied goal produces a side-effect and then fails, then
 the side-effect will be produced each time the database is modified.
+<P> If <KBD>PredList</KBD> is given (a list of terms of the form <KBD>P/N</KBD>)
+then this call blocks until at least one of the dynamic predicates given in
+<KBD>PredList</KBD> is modified. 
 <BR><KBD>mode thread_wait_on_goal(+term)</KBD>
+<BR><KBD>mode thread_wait_on_goal(+term, +list(terms))</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_sleep"></a>thread_sleep(Time_Out)</KBD>
@@ -7796,8 +7941,7 @@ Qu-Prolog supports two forms of high-level interprocess communication: ICM for p
 <P>
 Both forms of communication share the same incoming message buffer and use the 
 same predicates (discussed in the ICM section) to access the buffer. 
-Elvin message are distinguished from ICM
-messages by the address -- Elvin messages have the address <KBD>elvin(elvin)</KBD> to prevent them from being considered as ICM handles.
+Elvin messages have the address <KBD>elvin</KBD>.
 
 <!-- Section 3.20.1 -->
 <H3>
@@ -7947,7 +8091,7 @@ patterns.
 <UL type="disc">
 <LI>
 <KBD>timeout(Value)</KBD>
-<BR><KBD>Value</KBD> is either <KBD>block</KBD>, <KBD>poll</KBD> or an integer(<KBD>N</KBD>).  If <KBD>Value</KBD> is <KBD>block</KBD> then the call delays until a message arrives.  If <KBD>Value</KBD> is <KBD>poll</KBD> then the call fails immediately if no message is in the queue.  If <KBD>Value</KBD> is an integer(<KBD>N</KBD>) then the call will wait <KBD>N</KBD> seconds for a message, and if no matching message arrives in that time the call fails.
+<BR><KBD>Value</KBD> is either <KBD>block</KBD>, <KBD>poll</KBD> or an integer.  If <KBD>Value</KBD> is <KBD>block</KBD> then the call delays until a message arrives.  If <KBD>Value</KBD> is <KBD>poll</KBD> then the call fails immediately if no message is in the queue.  If <KBD>Value</KBD> is an integer, <KBD>N</KBD>, then the call will wait <KBD>N</KBD> seconds for a message, and if no matching message arrives in that time the call fails.
 <BR>Default: <KBD>block</KBD>
 <LI>
 <KBD>remember_names(Value)</KBD>
@@ -8164,7 +8308,7 @@ The attributes (field names) are Qu-Prolog atoms and the values are
 Qu-Prolog terms corresponding to Elvin values of a given Elvin type.
  Below is a table that gives the mapping between Elvin types and Qu-Prolog 
 types. There is no direct equivalent of strings in Qu-Prolog - strings are 
-represented by Qu-Prolog lists of
+represented by Qu-Prolog atoms or lists of
 ASCII values. 
 <P>
  
@@ -8180,9 +8324,9 @@ ASCII values.
      <TR>
        <TD valign="top"><KBD>ELVIN_STRING</KBD>
        </TD>
-       <TD valign="top">ASCII list
+       <TD valign="top">Atom or ASCII list
        </TD>
-       <TD valign="top">ASCII list
+       <TD valign="top">Atom if Elvin string will fit into an atom, otherwise ASCII list
        </TD>
      </TR>
      <TR>
@@ -8204,9 +8348,9 @@ ASCII values.
      <TR>
        <TD valign="top"><KBD>ELVIN_REAL64</KBD>
        </TD>
-       <TD valign="top"><KBD>real64(Atom)</KBD>
+       <TD valign="top"><KBD>Float</KBD>
        </TD>
-       <TD valign="top"><KBD>real64(Atom)</KBD>
+       <TD valign="top"><KBD>Float</KBD>
        </TD>
      </TR>
      <TR>
@@ -8242,15 +8386,14 @@ can be uses as a notification and what the received message would look like.
 <P>
  Sent:
 <KBD>
-<BR>[f1 = hi, f2 = "there", f3 = 86, f4 = int64('99999999999'), 
-<BR> &nbsp;f5 = real64('0.333333'), f6 = opaque([1,0,1]), f7 = qpterm(f(X,g(X))), f8 = qpterm(h(X)]
+<BR>[f1 = hi, f2 = there, f3 = 86, f4 = int64('99999999999'), 
+<BR> &nbsp;f5 = 0.333333, f6 = opaque([1,0,1]), f7 = qpterm(f(X,g(X))), f8 = qpterm(h(X)]
 </KBD>
 <BR>
 Received:
 <KBD>
-<BR> [f1 = [104,105], f2 = [116, 104, 101, 114, 101], f3 = 86, 
-<BR> &nbsp;f4 = int64('99999999999'), f5 = real64('0.333333'), 
-<BR> &nbsp;f6 = opaque([1,0,1]), f7 = qpterm(f(_A,g(_A))), f8 = qpterm(h(_B))]
+<BR> [f1 = hi, f2 = there, f3 = 86, f4 = int64('99999999999'),  
+<BR> &nbsp;f5 = 0.333333, f6 = opaque([1,0,1]), f7 = qpterm(f(_A,g(_A))), f8 = qpterm(h(_B))]
 </KBD>
 <P>
 Note, however, that the order of elements of the sent and received notification may be different.

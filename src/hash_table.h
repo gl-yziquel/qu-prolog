@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: hash_table.h,v 1.3 2002/11/08 00:44:16 qp Exp $
+// $Id: hash_table.h,v 1.6 2005/11/26 23:34:30 qp Exp $
 
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
@@ -64,6 +64,8 @@
 #include "area_offsets.h"
 #include "defs.h"
 #include "timestamp.h"
+#include <time.h>
+#include "int.h"
 
 //
 // This is primary used for table inspection by statistics.
@@ -83,6 +85,8 @@ public:
   // number of HashType in the table.
   //
   virtual word32 allocatedSize(void) const { return 0; }
+
+  virtual ~FixedSizeHashTable() {}
 };
 
 //
@@ -190,8 +194,8 @@ public:
   //
   HashLoc getOffset(const HashType* e)
   {
-    DEBUG_ASSERT(e >= table && e <= table + tableSize);
-    return (e - table);
+    assert(e >= table && e <= table + tableSize);
+    return static_cast<HashLoc>((e - table));
   }
 
   //
@@ -199,7 +203,7 @@ public:
    //
   HashType* getAddress(const HashLoc loc)
     {
-      DEBUG_ASSERT(loc >= 0 && loc <= tableSize);
+      assert(loc >= 0 && loc <= tableSize);
       return(table + loc);
     }
 
@@ -216,5 +220,148 @@ public:
 
 };
 
+
+
+//
+// Constructor:
+//	Allocate the hash table.
+//
+template <class HashType, class HashKey>
+HashTable<HashType, HashKey>::HashTable(word32 TabSize)
+{
+  tableSize = next_2power(TabSize);
+  table = new HashType[tableSize];
+  tableSizeMask = tableSize-1;
+}
+
+//
+// Destructor:
+//	Clean up the table.
+//
+template <class HashType, class HashKey>
+HashTable<HashType, HashKey>::~HashTable(void)
+{
+  if (table != NULL)
+    {
+      delete [] table;
+    }
+}
+
+//
+// Hash into the table by the string.
+//
+template <class HashType, class HashKey>
+HashLoc
+HashTable<HashType, HashKey>::hashString(const char *string) const
+{
+  word32 value = 5381;
+  int c;
+  while ((c = *string++))
+    {
+      value = ((value << 5) + value) + c; /* hash * 33 + c */
+    }
+  return value;
+}
+
+//
+// Search through the hash table.  Either it locates the matching entry or an
+// empty location is found.  When one of these situations becomes true, the
+// location of the entry is returned.
+//
+template <class HashType, class HashKey>
+HashLoc
+HashTable<HashType, HashKey>::search(const HashKey key) const
+{
+  HashLoc loc = hashFunction(key) & tableSizeMask;
+
+  for (word32 increment = 1;
+       ! inspectEntry(loc).isEmpty();
+       loc = (loc + increment) & tableSizeMask, increment++)
+    {
+      if (key == inspectEntry(loc))
+	{
+	  return(loc);
+	}
+      else if (increment  == tableSize)
+	{
+	  //
+	  // The table has been cycled through.
+	  //
+	  OutOfHashTable(__FUNCTION__, getAreaName(), tableSize);
+	}
+    }
+  //
+  // No matching entry is found.  Return this empty entry for possible
+  // insertion.
+  //
+  return(loc);
+}
+
+//
+// Return the size of the table in use.
+//
+template <class HashType, class HashKey>
+word32
+HashTable<HashType, HashKey>::sizeOfTable(void) const
+{
+  word32 size = 0, i;
+  
+  for (i = 0; i < allocatedSize(); i++)
+    {
+      if (! inspectEntry(i).isEmpty())
+	{
+	  size++;
+	}
+    }
+  return(size);
+}
+
+//
+// Write the table to a stream.
+//
+template <class HashType, class HashKey>
+void
+HashTable<HashType, HashKey>::saveTable(ostream& ostrm, const u_long magic) const
+{
+  IntSave<word32>(ostrm, magic);
+  IntSave<word32>(ostrm, tableSize);
+
+  // XXX Endian problem
+  if (ostrm.good() &&
+      ostrm.write((char*)table, tableSize * sizeof(HashType)).fail())
+    {
+      SaveFailure(__FUNCTION__, "data", getAreaName());
+    }
+}
+
+//
+// Load the table from a stream.
+//
+template <class HashType, class HashKey>
+void
+HashTable<HashType, HashKey>::loadTable(istream& istrm)
+{
+  const word32	ReadSize = IntLoad<word32>(istrm);
+  if (ReadSize != tableSize)
+    {
+      FatalS(__FUNCTION__, "wrong size for ", getAreaName());
+    }
+
+  //
+  // Read in the table.
+  //
+  // XXX Endian problem
+#if defined(MACOSX)
+    istrm.read((char*)table, tableSize * sizeof(HashType));
+#else
+  if (istrm.good() &&
+      istrm.read((char*)table, tableSize * sizeof(HashType)).fail())
+    {
+      ReadFailure(__FUNCTION__,
+		  "data",
+		  getAreaName());
+    }
+#endif //defined(MACOSX)
+}
 #endif	// HASH_TABLE_H
 

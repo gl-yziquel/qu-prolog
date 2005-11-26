@@ -22,6 +22,10 @@ Contact: fgm@fla.fujitsu.com
 #ifndef _ICMLOCAL_H_
 #define _ICMLOCAL_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
 /* Localization for specific operating systems */
 
 #ifdef _WIN32				/* Windows95 version */
@@ -40,7 +44,7 @@ Contact: fgm@fla.fujitsu.com
 #define APRILDIR ""		/* This should be changed */
 #define DIR_SEP ":"		/* directory separator in file names */
 #define ACCESS_MODE 0		/* dummy for Macintosh */
-#include <winsock.h>		/* Access winsock library */
+#include <winsock2.h>		/* Access winsock library */
 #define NEW_LINE '\r'		/* Mac has a different idea of new line */
 
 int access(const char *filename,int mode); /* We must provide this function */
@@ -48,8 +52,8 @@ int access(const char *filename,int mode); /* We must provide this function */
 
 /* Defaults */
 #ifndef BOLD_ESC_ON
-#define BOLD_ESC_ON "\033[5m"
-#define BOLD_ESC_OFF "\033[0m"
+#define BOLD_ESC_ON "\033[31m"
+#define BOLD_ESC_OFF "\033[30m"
 #endif
 
 #ifndef ACCESS_MODE
@@ -62,6 +66,10 @@ int access(const char *filename,int mode); /* We must provide this function */
 
 #ifndef NEW_LINE
 #define NEW_LINE '\n'
+#endif
+
+#ifdef __cplusplus
+}; /* end of extern "C" */
 #endif
 
 #endif

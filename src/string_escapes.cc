@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: string_escapes.cc,v 1.6 2002/11/13 04:04:16 qp Exp $
+// $Id: string_escapes.cc,v 1.7 2005/03/08 00:35:14 qp Exp $
 
 #include <sstream>
 
@@ -81,7 +81,7 @@ Thread::psi_stream_to_chars(Object *& stream_arg,
   // Converting the string to a list of characters.
   //
   Object* tail = AtomTable::nil;
-  int size = stream->str().length();
+  int size = static_cast<int>(stream->str().length());
   if (size > 0)
     {
       string data = stream->str();
@@ -117,7 +117,7 @@ Thread::psi_stream_to_atom(Object *& stream_arg, Object *& atom_arg)
   //
   // Return the atom.
   //
-  int size = stream->str().length();
+  int size = static_cast<int>(stream->str().length());
   if (size == 0)
     {
       atom_arg = atoms->add("");
@@ -125,13 +125,14 @@ Thread::psi_stream_to_atom(Object *& stream_arg, Object *& atom_arg)
   else
     {
       string data = stream->str();
-      char buff[size+1];
+      char* buff = new char[size+1];
       for (int i = 0; i < size; i++)
 	{
 	  buff[i] = data[i];
 	}
       buff[size] = '\0';
       atom_arg = atoms->add(buff);
+      delete buff;
     }
 
   return RV_SUCCESS;

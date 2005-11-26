@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compiler_support.cc,v 1.6 2002/12/05 03:39:26 qp Exp $
+// $Id: compiler_support.cc,v 1.8 2005/11/26 23:34:29 qp Exp $
 
 #include "code.h"
 #include "compiler_support.h"
@@ -70,10 +70,10 @@ void
 build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
 {
   Object* first = reinterpret_cast<Object*>(life.Entries()[0]);
-  DEBUG_ASSERT(first->isStructure());
+  assert(first->isStructure());
   Structure* firststr = OBJECT_CAST(Structure*, first);
-  DEBUG_ASSERT(firststr->getFunctor() == AtomTable::start);
-  DEBUG_ASSERT(firststr->getArgument(1)->isNumber());
+  assert(firststr->getFunctor() == AtomTable::start);
+  assert(firststr->getArgument(1)->isNumber());
   int offset = 1;
 
   for (int i = 0; i < firststr->getArgument(1)->getNumber(); i++)
@@ -95,12 +95,12 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
 	    }
 	  else if (estruct->getFunctor() == AtomTable::xreg)
 	    {
-	      DEBUG_ASSERT(estruct->getArgument(1)->variableDereference()->isNumber());
+	      assert(estruct->getArgument(1)->variableDereference()->isNumber());
 	      int xreg = estruct->getArgument(1)->variableDereference()->getNumber();
 	      xregisters.add(xreg, offset);
 	      continue;
 	    }
-	  DEBUG_ASSERT(estruct->getFunctor() == AtomTable::unify_ref);
+	  assert(estruct->getFunctor() == AtomTable::unify_ref);
 	  entry = estruct->getArgument(1)->variableDereference();
 	}
       if (entry->isVariable())
@@ -108,7 +108,7 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
 	  Variable* var = OBJECT_CAST(Variable*, entry);
 	  if (var->isLifeSet())
 	    {
-	      DEBUG_ASSERT(var->getLife() != 0);
+	      assert(var->getLife() != 0);
 	      u_int varoffset = var->getLife();
 	      varregisters.Entries()[varoffset] = offset;
 	    }
@@ -121,7 +121,7 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
 	}
       else
 	{
-	  DEBUG_ASSERT(entry->isNumber());
+	  assert(entry->isInteger());
 	  for (int i = 0; i < entry->getNumber(); i++)
 	    {
 	      xregisters.add(i, offset);
@@ -224,8 +224,8 @@ bool is_xreg(Object* arg, int& reg)
   Structure* argstr = OBJECT_CAST(Structure*, arg);
   if (argstr->getFunctor() == AtomTable::xreg)
     {
-      DEBUG_ASSERT(argstr->getArity() == 1);
-      DEBUG_ASSERT(argstr->getArgument(1)->variableDereference()->isNumber());
+      assert(argstr->getArity() == 1);
+      assert(argstr->getArgument(1)->variableDereference()->isInteger());
       reg = argstr->getArgument(1)->variableDereference()->getNumber();
       return true;
     }
@@ -252,10 +252,10 @@ bool is_yreg(Object* arg)
 //
 int yreg_num(Object* reg)
 {
-  DEBUG_ASSERT(reg->isStructure());
+  assert(reg->isStructure());
   Structure* regstr = OBJECT_CAST(Structure*, reg);
-  DEBUG_ASSERT(regstr->getFunctor() == AtomTable::yreg);
-  DEBUG_ASSERT(regstr->getArgument(1)->variableDereference()->isNumber());
+  assert(regstr->getFunctor() == AtomTable::yreg);
+  assert(regstr->getArgument(1)->variableDereference()->isInteger());
   return(regstr->getArgument(1)->variableDereference()->getNumber());
 }
 
@@ -264,17 +264,17 @@ int yreg_num(Object* reg)
 //
 bool equal_regs(Object* reg1, Object* reg2)
 {
-  DEBUG_ASSERT(reg1 == reg1->variableDereference());
-  DEBUG_ASSERT(reg2 == reg2->variableDereference());
+  assert(reg1 == reg1->variableDereference());
+  assert(reg2 == reg2->variableDereference());
   if (!reg1->isStructure())
     {
       return false;
     }
-  DEBUG_ASSERT(reg2->isStructure());
+  assert(reg2->isStructure());
   Structure* s1 = OBJECT_CAST(Structure*, reg1);
   Structure* s2 = OBJECT_CAST(Structure*, reg2);
-  if (!s1->getArgument(1)->variableDereference()->isNumber() ||
-      !s2->getArgument(1)->variableDereference()->isNumber())
+  if (!s1->getArgument(1)->variableDereference()->isInteger() ||
+      !s2->getArgument(1)->variableDereference()->isInteger())
     {
       return false;
     }
@@ -292,21 +292,21 @@ prefer_registers_aux(WordArray& unravel, xreglife& xregisters,
 {
   for (int i = start; i != end; i += inc)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(unravel.Entries()[i])->variableDereference()->isStructure());
+      assert(reinterpret_cast<Object*>(unravel.Entries()[i])->variableDereference()->isStructure());
       Structure* istruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(unravel.Entries()[i])->variableDereference());
 
       if (istruct->getFunctor() == AtomTable::get &&
 	  istruct->getArgument(1) == AtomTable::meta &&
 	  istruct->getArgument(2) == AtomTable::variable)
 	{
-	  DEBUG_ASSERT(istruct->getArity() == 4);
+	  assert(istruct->getArity() == 4);
 	  Object* arg1 = istruct->getArgument(3)->variableDereference();
 	  Object* arg2 = istruct->getArgument(4)->variableDereference();
 	  int reg;
 	  if (arg1->isVariable() && is_xreg(arg2, reg))
 	    {
 	      Variable* var = OBJECT_CAST(Variable*, arg1);
-	      DEBUG_ASSERT(var->isLifeSet());
+	      assert(var->isLifeSet());
 	      u_int varoffset = var->getLife();
 	      int start = varregisters.Entries()[varoffset-1];
 	      int end = varregisters.Entries()[varoffset];
@@ -319,14 +319,14 @@ prefer_registers_aux(WordArray& unravel, xreglife& xregisters,
       else if (istruct->getFunctor() == AtomTable::put &&
 	       istruct->getArgument(1) == AtomTable::meta)
 	{
-	  DEBUG_ASSERT(istruct->getArity() == 4);
+	  assert(istruct->getArity() == 4);
 	  Object* arg1 = istruct->getArgument(3)->variableDereference();
 	  Object* arg2 = istruct->getArgument(4)->variableDereference();
 	  int reg;
 	  if (arg1->isVariable() && is_xreg(arg2, reg))
 	    {
 	      Variable* var = OBJECT_CAST(Variable*, arg1);
-	      DEBUG_ASSERT(var->isLifeSet());
+	      assert(var->isLifeSet());
 	      u_int varoffset = var->getLife();
 	      int start = varregisters.Entries()[varoffset-1];
 	      int end = varregisters.Entries()[varoffset];
@@ -364,16 +364,16 @@ void init_live(Object** xreg_life)
 
 void make_live(Object* reg, Object* other, Object** xreg_life)
 {
-  DEBUG_ASSERT(reg == reg->variableDereference());
-  DEBUG_ASSERT(other == other->variableDereference());
-  DEBUG_ASSERT(reg->isStructure());
+  assert(reg == reg->variableDereference());
+  assert(other == other->variableDereference());
+  assert(reg->isStructure());
   Structure* regstr = OBJECT_CAST(Structure*, reg);
   if (regstr->getFunctor() == AtomTable::xreg)
     {
       Object* arg = regstr->getArgument(1)->variableDereference();
-      DEBUG_ASSERT(arg->isNumber());
-      DEBUG_ASSERT(arg->getNumber() >= 0);
-      DEBUG_ASSERT((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
+      assert(arg->isInteger());
+      assert(arg->getNumber() >= 0);
+      assert((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
       xreg_life[arg->getNumber()] = other;
     }
   else
@@ -384,7 +384,7 @@ void make_live(Object* reg, Object* other, Object** xreg_life)
 
 void make_dead(Object* reg, Object** xreg_life)
 {
-  DEBUG_ASSERT(reg == reg->variableDereference());
+  assert(reg == reg->variableDereference());
   if(!reg->isStructure())
     {
       return;
@@ -393,25 +393,25 @@ void make_dead(Object* reg, Object** xreg_life)
   if (regstr->getFunctor() == AtomTable::xreg)
     {
       Object* arg = regstr->getArgument(1)->variableDereference();
-      DEBUG_ASSERT(arg->isNumber());
-      DEBUG_ASSERT(arg->getNumber() >= 0);
-      DEBUG_ASSERT((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
+      assert(arg->isInteger());
+      assert(arg->getNumber() >= 0);
+      assert((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
       xreg_life[arg->getNumber()] = AtomTable::failure;
     }
 }
 
 bool is_live(Object* reg, Object* other, Object** xreg_life)
 {
-  DEBUG_ASSERT(reg == reg->variableDereference());
-  DEBUG_ASSERT(reg->isStructure());
+  assert(reg == reg->variableDereference());
+  assert(reg->isStructure());
   other = other->variableDereference();
   Structure* regstr = OBJECT_CAST(Structure*, reg);
   if (regstr->getFunctor() == AtomTable::xreg)
     {
       Object* arg = regstr->getArgument(1)->variableDereference();
-      DEBUG_ASSERT(arg->isNumber());
-      DEBUG_ASSERT(arg->getNumber() >= 0);
-      DEBUG_ASSERT((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
+      assert(arg->isInteger());
+      assert(arg->getNumber() >= 0);
+      assert((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
       if (other == AtomTable::failure)
 	{
 	  return (xreg_life[arg->getNumber()] == other);
@@ -439,10 +439,10 @@ bool is_live(Object* reg, Object* other, Object** xreg_life)
 //
 bool any_assoc_putset(Object* reg, int start, WordArray& instr)
 {
-  DEBUG_ASSERT(reg == reg->variableDereference());
+  assert(reg == reg->variableDereference());
   for (int i = start; i < instr.lastEntry(); i++)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
+      assert(reinterpret_cast<Object*>(instr.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instr.Entries()[i]));
       if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
@@ -585,7 +585,7 @@ int psi_reg(Object* arg)
     }
   else
     {
-      DEBUG_ASSERT(is_yreg(arg));
+      assert(is_yreg(arg));
       return (NUMBER_X_REGISTERS + yreg_num(arg));
     }
 }
@@ -612,18 +612,18 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 {
   for (int i = 0; i < instrs.lastEntry(); i++)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(instrs.Entries()[i])->isStructure());
+      assert(reinterpret_cast<Object*>(instrs.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instrs.Entries()[i]));
       
       if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
-	  DEBUG_ASSERT(arg1->isAtom());
-	  DEBUG_ASSERT(arg2->isNumber());
-	  DEBUG_ASSERT(arg3->isNumber());
+	  assert(arg1->isAtom());
+	  assert(arg2->isInteger());
+	  assert(arg3->isInteger());
 	  *stream << "\tcall_predicate('";
 	  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg1)), stream);
 	  *stream << "', ";
@@ -634,11 +634,11 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::execute_pred)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 2);
+	  assert(tstruct->getArity() == 2);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
-	  DEBUG_ASSERT(arg1->isAtom());
-	  DEBUG_ASSERT(arg2->isNumber());
+	  assert(arg1->isAtom());
+	  assert(arg2->isInteger());
 	  *stream << "\texecute_predicate('"; 
 	  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg1)), stream);
 	  *stream << "', ";
@@ -647,10 +647,10 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::checkBinder)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  int reg;
-	  DEBUG_ASSERT(is_xreg(arg1, reg));
+	  assert(is_xreg(arg1, reg));
 	  (void)is_xreg(arg1, reg);
 	  *stream << "\tcheck_binder("; 
 	  *stream << reg;
@@ -658,37 +658,37 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::allocate)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tallocate("; 
 	  *stream << arg1->getNumber();
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::deallocate)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  *stream << "\tdeallocate\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::cproceed)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  *stream << "\tproceed\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::failure)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  *stream << "\tfail\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::cneck_cut)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  *stream << "\tneck_cut\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::get_level ||
 	       tstruct->getFunctor() == AtomTable::get_level_ancestor)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  int reg;
 	  if (is_xreg(arg1, reg))
@@ -699,7 +699,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    }
 	  else 
 	    {
-	      DEBUG_ASSERT(is_yreg(arg1));
+	      assert(is_yreg(arg1));
 	      *stream << "\tget_y_level("; 
 	      *stream << yreg_num(arg1);
 	      *stream << ")\n";
@@ -708,28 +708,28 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
       else if (tstruct->getFunctor() == AtomTable::ccut ||
 	       tstruct->getFunctor() == AtomTable::cut_ancestor)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 
-	  DEBUG_ASSERT(is_yreg(arg1));
+	  assert(is_yreg(arg1));
 	  *stream << "\tcut("; 
 	  *stream << yreg_num(arg1);
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr0)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr0("; 
 	  *stream << arg1->getNumber();
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 2);
+	  assert(tstruct->getArity() == 2);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr1("; 
 	  *stream << arg1->getNumber();
 	  *stream << ", ";
@@ -738,9 +738,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr2)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr2("; 
 	  *stream << arg1->getNumber();
 	  *stream << ", ";
@@ -751,9 +751,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr3)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 4);
+	  assert(tstruct->getArity() == 4);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr3("; 
 	  *stream << arg1->getNumber();
 	  *stream << ", "; 
@@ -766,9 +766,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr4)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 5);
+	  assert(tstruct->getArity() == 5);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr4("; 
 	  *stream << arg1->getNumber();
 	  *stream << ", ";
@@ -783,9 +783,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr5)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 6);
+	  assert(tstruct->getArity() == 6);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr5("; 
 	  *stream << arg1->getNumber();
 	  *stream << ", ";
@@ -802,7 +802,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::unify_ref)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  int reg;
 	  if (is_xreg(arg1, reg))
@@ -813,7 +813,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    }
 	  else 
 	    {
-	      DEBUG_ASSERT(is_yreg(arg1));
+	      assert(is_yreg(arg1));
 	      *stream << "\tunify_y_ref("; 
 	      *stream << yreg_num(arg1);
 	      *stream << ")\n";
@@ -821,7 +821,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	}
       else if (tstruct->getFunctor() == AtomTable::put)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 4);
+	  assert(tstruct->getArity() == 4);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -830,21 +830,27 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  int reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
-	      if (arg3->isNumber())
+	      if (arg3->isInteger())
 		{
                   *stream << "integer(";
 		  *stream << arg3->getNumber();
 		  *stream << ", ";
 		}
+	      else if (arg3->isDouble())
+		{
+                  *stream << "double(";
+		  *stream << arg3->getDouble();
+		  *stream << ", ";
+		}
 	      else
 		{
-		  DEBUG_ASSERT(arg3->isAtom());
+		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
 		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
 		  *stream << "', ";
 		}
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -852,8 +858,8 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::structure)
 	    {
 	      *stream << "structure(";
-	      DEBUG_ASSERT(arg3->isNumber());
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << arg3->getNumber();
 	      *stream << ", ";
@@ -863,7 +869,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::list)
 	    {
 	      *stream << "list(";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -871,7 +877,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::quantifier)
 	    {
 	      *stream << "quantifier(";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -879,7 +885,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::empty_substitution)
 	    {
 	      *stream << "initial_empty_substitution(";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -894,12 +900,12 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  *stream << "y_term_substitution("; 
 		  *stream << yreg_num(arg3);
 		  *stream << ", ";
 		}
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -907,8 +913,8 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::substitution)
 	    {
 	      *stream << "substitution(";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
-	      DEBUG_ASSERT(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
+	      assert(arg3->isNumber());
 	      *stream << arg3->getNumber();
 	      *stream << ", ";
 	      (void)is_xreg(arg4, reg2);
@@ -923,16 +929,16 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  *stream << "y_";
 		}
-	      DEBUG_ASSERT(arg2->isAtom());
+	      assert(arg2->isAtom());
 	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -945,28 +951,28 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  *stream << "y_object_"; 
 		}
-	      DEBUG_ASSERT(arg2->isAtom());
+	      assert(arg2->isAtom());
 	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::get)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 4);
+	  assert(tstruct->getArity() == 4);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -975,21 +981,27 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  int reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
-	      if (arg3->isNumber())
+	      if (arg3->isInteger())
 		{
 	          *stream << "integer(";
 		  *stream << arg3->getNumber();
 		  *stream << ", ";
 		}
+	      else if (arg3->isDouble())
+		{
+	          *stream << "double(";
+		  *stream << arg3->getDouble();
+		  *stream << ", ";
+		}
 	      else
 		{
-		  DEBUG_ASSERT(arg3->isAtom());
+		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
 		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
 		  *stream << "', ";
 		}
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -997,9 +1009,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::structure)
 	    {
 	      *stream << "structure('";
-	      DEBUG_ASSERT(arg2->isAtom());
-	      DEBUG_ASSERT(arg3->isNumber());
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(arg2->isAtom());
+	      assert(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg2)), stream);
 	      *stream << "', ";
@@ -1011,8 +1023,8 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::structure_frame)
 	    {
 	      *stream << "structure_frame(";
-	      DEBUG_ASSERT(arg3->isNumber());
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(arg3->isInteger());
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << arg3->getNumber();
 	      *stream << ", ";
@@ -1022,7 +1034,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  else if (arg1 == AtomTable::list)
 	    {
 	      *stream << "list(";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -1035,16 +1047,16 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  *stream << "y_"; 
 		}
-	      DEBUG_ASSERT(arg2->isAtom());
+	      assert(arg2->isAtom());
 	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -1057,28 +1069,28 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  *stream << "y_object_"; 
 		}
-	      DEBUG_ASSERT(arg2->isAtom());
+	      assert(arg2->isAtom());
 	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
 	      *stream << ")\n";
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::unify)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -1086,14 +1098,19 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  int reg1;
 	  if (arg1 == AtomTable::constant)
 	    {
-	      if (arg3->isNumber())
+	      if (arg3->isInteger())
 		{
 	          *stream << "integer(";
 		  *stream << arg3->getNumber();
 		}
+	      else if (arg3->isDouble())
+		{
+	          *stream << "double(";
+		  *stream << arg3->getDouble();
+		}
 	      else
 		{
-		  DEBUG_ASSERT(arg3->isAtom());
+		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
 		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
@@ -1105,7 +1122,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    {
 	      if (arg2 == atoms->add("void"))
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
+		  assert(arg3->isInteger());
 		  *stream << "void(";
 		  *stream << arg3->getNumber();
 		  *stream << ")\n";
@@ -1118,11 +1135,11 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		    }
 		  else 
 		    {
-		      DEBUG_ASSERT(is_yreg(arg3));
+		      assert(is_yreg(arg3));
 		      reg1 = yreg_num(arg3);
 		      *stream << "y_"; 
 		    }
-		  DEBUG_ASSERT(arg2->isAtom());
+		  assert(arg2->isAtom());
 		  *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 		  *stream << "(";
 		  *stream << reg1;
@@ -1137,11 +1154,11 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  *stream << "y_object_"; 
 		}
-	      DEBUG_ASSERT(arg2->isAtom());
+	      assert(arg2->isAtom());
 	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 	      *stream << "(";
 	      *stream << reg1;
@@ -1149,12 +1166,12 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::set)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -1162,14 +1179,19 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  int reg1;
 	  if (arg1 == AtomTable::constant)
 	    {
-	      if (arg3->isNumber())
+	      if (arg3->isInteger())
 		{
 	          *stream << "integer(";
 		  *stream << arg3->getNumber();
 		}
+	      else if (arg3->isDouble())
+		{
+	          *stream << "double(";
+		  *stream << arg3->getDouble();
+		}
 	      else
 		{
-		  DEBUG_ASSERT(arg3->isAtom());
+		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
 		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
@@ -1181,7 +1203,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    {
 	      if (arg2 == atoms->add("void"))
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
+		  assert(arg3->isInteger());
 		  *stream << "void(";
 		  *stream << arg3->getNumber();
 		  *stream << ")\n";
@@ -1194,11 +1216,11 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		    }
 		  else 
 		    {
-		      DEBUG_ASSERT(is_yreg(arg3));
+		      assert(is_yreg(arg3));
 		      reg1 = yreg_num(arg3);
 		      *stream << "y_"; 
 		    }
-		  DEBUG_ASSERT(arg2->isAtom());
+		  assert(arg2->isAtom());
 		  *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 		  *stream << "(";
 		  *stream << reg1;
@@ -1209,7 +1231,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    {
 	      if (arg2 == atoms->add("void"))
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
+		  assert(arg3->isInteger());
 		  *stream << "object_void(";
 		  *stream << arg3->getNumber();
 		  *stream << ")\n";
@@ -1222,11 +1244,11 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		    }
 		  else 
 		    {
-		      DEBUG_ASSERT(is_yreg(arg3));
+		      assert(is_yreg(arg3));
 		      reg1 = yreg_num(arg3);
 		  *stream << "y_object_"; 
 		    }
-		  DEBUG_ASSERT(arg2->isAtom());
+		  assert(arg2->isAtom());
 		  *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
 		  *stream << "(";
 		  *stream << reg1;
@@ -1235,12 +1257,12 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	    }
 	} 
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
 }
@@ -1255,12 +1277,12 @@ CodeLoc dumpInstructions(WordArray& instrs)
 
   for (int i = 0; i < instrs.lastEntry(); i++)
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(instrs.Entries()[i])->isStructure());
+      assert(reinterpret_cast<Object*>(instrs.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instrs.Entries()[i]));
       
       if (tstruct->getFunctor() == AtomTable::put)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 4);
+	  assert(tstruct->getArity() == 4);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -1268,7 +1290,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  int reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
               if (arg3->isAtom())
 		{
@@ -1279,9 +1301,8 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
-	      else
+	      else if (arg3->isInteger())
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
 		  updateInstruction(pc, PUT_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
 		  updateInteger(pc,arg3->getNumber());
@@ -1289,11 +1310,21 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
+              else
+		{
+		  assert(arg3->isDouble());
+		  updateInstruction(pc, PUT_DOUBLE);
+		  pc += Code::SIZE_OF_INSTRUCTION; 
+		  updateDouble(pc,arg3->getDouble());
+		  pc += Code::SIZE_OF_DOUBLE;
+		  updateRegister(pc, reg2);
+		  pc += Code::SIZE_OF_REGISTER;
+		}
 	    }
 	  else if (arg1 == AtomTable::structure)
 	    {
-	      DEBUG_ASSERT(arg3->isNumber());
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_STRUCTURE);
 	      pc += Code::SIZE_OF_INSTRUCTION; 
@@ -1304,7 +1335,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else if (arg1 == AtomTable::list)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_LIST);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1313,7 +1344,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else if (arg1 == AtomTable::quantifier)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_QUANTIFIER);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1322,7 +1353,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else if (arg1 == AtomTable::empty_substitution)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_INITIAL_EMPTY_SUBSTITUTION);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1340,21 +1371,21 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  updateInstruction(pc, PUT_Y_TERM_SUBSTITUTION);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateRegister(pc, yreg_num(arg3));
 		  pc += Code::SIZE_OF_REGISTER;
 		}
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
 	    }
 	  else if (arg1 == AtomTable::substitution)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
-	      DEBUG_ASSERT(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
+	      assert(arg3->isNumber());
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_SUBSTITUTION);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1374,14 +1405,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, PUT_X_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  if (arg2 == AtomTable::variable)
 		    {
@@ -1390,14 +1421,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, PUT_Y_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      updateRegister(pc, reg1);
 	      pc += Code::SIZE_OF_REGISTER;
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
@@ -1413,14 +1444,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, PUT_X_OBJECT_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  if (arg2 == AtomTable::variable)
 		    {
@@ -1429,27 +1460,27 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, PUT_Y_OBJECT_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      updateRegister(pc, reg1);
 	      pc += Code::SIZE_OF_REGISTER;
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	      return NULL;
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::get)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 4);
+	  assert(tstruct->getArity() == 4);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -1457,7 +1488,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  int reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
               if (arg3->isAtom())
 		{
@@ -1468,9 +1499,8 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
-	      else
+	      else if (arg3->isInteger())
 		{ 
-		  DEBUG_ASSERT(arg3->isNumber());
 		  updateInstruction(pc, GET_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateInteger(pc,arg3->getNumber());
@@ -1478,12 +1508,22 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
+	      else
+		{ 
+		  assert(arg3->isDouble());
+		  updateInstruction(pc, GET_DOUBLE);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  updateDouble(pc,arg3->getDouble());
+		  pc += Code::SIZE_OF_DOUBLE;
+		  updateRegister(pc, reg2);
+		  pc += Code::SIZE_OF_REGISTER;
+		}
 	    }
 	  else if (arg1 == AtomTable::structure)
 	    {
-	      DEBUG_ASSERT(arg2->isAtom());
-	      DEBUG_ASSERT(arg3->isNumber());
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(arg2->isAtom());
+	      assert(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, GET_STRUCTURE);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1496,8 +1536,8 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else if (arg1 == AtomTable::structure_frame)
 	    {
-	      DEBUG_ASSERT(arg3->isNumber());
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(arg3->isNumber());
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, GET_STRUCTURE_FRAME);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1508,7 +1548,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else if (arg1 == AtomTable::list)
 	    {
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, GET_LIST);
 	      pc += Code::SIZE_OF_INSTRUCTION;
@@ -1526,14 +1566,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, GET_X_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  if (arg2 == AtomTable::variable)
 		    {
@@ -1542,14 +1582,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, GET_Y_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      updateRegister(pc, reg1);
 	      pc += Code::SIZE_OF_REGISTER;
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
@@ -1565,14 +1605,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, GET_X_OBJECT_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      else 
 		{
-		  DEBUG_ASSERT(is_yreg(arg3));
+		  assert(is_yreg(arg3));
 		  reg1 = yreg_num(arg3);
 		  if (arg2 == AtomTable::variable)
 		    {
@@ -1581,27 +1621,27 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		    }
 		  else
 		    {
-		      DEBUG_ASSERT(arg2 == AtomTable::value);
+		      assert(arg2 == AtomTable::value);
 		      updateInstruction(pc, GET_Y_OBJECT_VALUE);
 		      pc += Code::SIZE_OF_INSTRUCTION;
 		    }
 		}
 	      updateRegister(pc, reg1);
 	      pc += Code::SIZE_OF_REGISTER;
-	      DEBUG_ASSERT(is_xreg(arg4, reg2));
+	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	      return NULL;
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::unify)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -1615,20 +1655,27 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateConstant(pc,arg3);
 		  pc += Code::SIZE_OF_CONSTANT;
 		}
-	      else
+	      else if (arg3->isInteger())
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
 		  updateInstruction(pc, UNIFY_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateInteger(pc,arg3->getNumber());
 		  pc += Code::SIZE_OF_INTEGER;
+		}
+	      else
+		{
+		  assert(arg3->isDouble());
+		  updateInstruction(pc, UNIFY_DOUBLE);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  updateDouble(pc,arg3->getDouble());
+		  pc += Code::SIZE_OF_DOUBLE;
 		}
 	    }
 	  else if (arg1 == AtomTable::meta)
 	    {
 	      if (arg2 == atoms->add("void"))
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
+		  assert(arg3->isNumber());
 		  updateInstruction(pc, UNIFY_VOID);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
 		  updateNumber(pc, arg3->getNumber());
@@ -1645,14 +1692,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 			}
 		      else
 			{
-			  DEBUG_ASSERT(arg2 == AtomTable::value);
+			  assert(arg2 == AtomTable::value);
 			  updateInstruction(pc, UNIFY_X_VALUE);
 			  pc += Code::SIZE_OF_INSTRUCTION;
 			}
 		    }
 		  else 
 		    {
-		      DEBUG_ASSERT(is_yreg(arg3));
+		      assert(is_yreg(arg3));
 		      reg1 = yreg_num(arg3);
 		      if (arg2 == AtomTable::variable)
 			{
@@ -1661,7 +1708,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 			}
 		      else
 			{
-			  DEBUG_ASSERT(arg2 == AtomTable::value);
+			  assert(arg2 == AtomTable::value);
 			  updateInstruction(pc, UNIFY_Y_VALUE);
 			  pc += Code::SIZE_OF_INSTRUCTION;
 			}
@@ -1672,13 +1719,13 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else 
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	      return NULL;
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::set)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
@@ -1692,20 +1739,27 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateConstant(pc,arg3);
 		  pc += Code::SIZE_OF_CONSTANT;
 		}
-	      else
+	      else if (arg3->isInteger())
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
 		  updateInstruction(pc, SET_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateInteger(pc,arg3->getNumber());
 		  pc += Code::SIZE_OF_INTEGER;
+		}
+	      else
+		{
+		  assert(arg3->isDouble());
+		  updateInstruction(pc, SET_DOUBLE);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  updateDouble(pc,arg3->getDouble());
+		  pc += Code::SIZE_OF_DOUBLE;
 		}
 	    }
 	  else if (arg1 == AtomTable::meta)
 	    {
 	      if (arg2 == atoms->add("void"))
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
+		  assert(arg3->isNumber());
 		  updateInstruction(pc, SET_VOID);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
 		  updateNumber(pc, arg3->getNumber());
@@ -1722,14 +1776,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 			}
 		      else
 			{
-			  DEBUG_ASSERT(arg2 == AtomTable::value);
+			  assert(arg2 == AtomTable::value);
 			  updateInstruction(pc, SET_X_VALUE);
 			  pc += Code::SIZE_OF_INSTRUCTION;
 			}
 		    }
 		  else 
 		    {
-		      DEBUG_ASSERT(is_yreg(arg3));
+		      assert(is_yreg(arg3));
 		      reg1 = yreg_num(arg3);
 		      if (arg2 == AtomTable::variable)
 			{
@@ -1738,7 +1792,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 			}
 		      else
 			{
-			  DEBUG_ASSERT(arg2 == AtomTable::value);
+			  assert(arg2 == AtomTable::value);
 			  updateInstruction(pc, SET_Y_VALUE);
 			  pc += Code::SIZE_OF_INSTRUCTION;
 			}
@@ -1751,7 +1805,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    {
 	      if (arg2 == atoms->add("void"))
 		{
-		  DEBUG_ASSERT(arg3->isNumber());
+		  assert(arg3->isNumber());
 		  updateInstruction(pc, SET_OBJECT_VOID);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
 		  updateNumber(pc, arg3->getNumber());
@@ -1768,14 +1822,14 @@ CodeLoc dumpInstructions(WordArray& instrs)
 			}
 		      else
 			{
-			  DEBUG_ASSERT(arg2 == AtomTable::value);
+			  assert(arg2 == AtomTable::value);
 			  updateInstruction(pc, SET_X_OBJECT_VALUE);
 			  pc += Code::SIZE_OF_INSTRUCTION;
 			}
 		    }
 		  else 
 		    {
-		      DEBUG_ASSERT(is_yreg(arg3));
+		      assert(is_yreg(arg3));
 		      reg1 = yreg_num(arg3);
 		      if (arg2 == AtomTable::variable)
 			{
@@ -1784,7 +1838,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 			}
 		      else
 			{
-			  DEBUG_ASSERT(arg2 == AtomTable::value);
+			  assert(arg2 == AtomTable::value);
 			  updateInstruction(pc, SET_Y_OBJECT_VALUE);
 			  pc += Code::SIZE_OF_INSTRUCTION;
 			}
@@ -1795,19 +1849,19 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(false);
+	      assert(false);
 	      return NULL;
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
-	  DEBUG_ASSERT(arg1->isAtom());
-	  DEBUG_ASSERT(arg2->isNumber());
-	  DEBUG_ASSERT(arg3->isNumber());
+	  assert(arg1->isAtom());
+	  assert(arg2->isNumber());
+	  assert(arg3->isNumber());
 	  updateInstruction(pc, CALL_PREDICATE);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateConstant(pc, arg1);
@@ -1819,11 +1873,11 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::execute_pred)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 2);
+	  assert(tstruct->getArity() == 2);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
-	  DEBUG_ASSERT(arg1->isAtom());
-	  DEBUG_ASSERT(arg2->isNumber());
+	  assert(arg1->isAtom());
+	  assert(arg2->isNumber());
 	  updateInstruction(pc, EXECUTE_PREDICATE);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateConstant(pc, arg1);
@@ -1833,10 +1887,10 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::checkBinder)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  int reg;
-	  DEBUG_ASSERT(is_xreg(arg1, reg));
+	  assert(is_xreg(arg1, reg));
 	  (void)is_xreg(arg1, reg);
 	  updateInstruction(pc, CHECK_BINDER);
 	  pc += Code::SIZE_OF_INSTRUCTION;
@@ -1845,9 +1899,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::allocate)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, ALLOCATE);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -1855,32 +1909,32 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::deallocate)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  updateInstruction(pc, DEALLOCATE);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	}
       else if (tstruct->getFunctor() == AtomTable::cproceed)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  updateInstruction(pc, DB_TRY_DEC_REF);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	}
       else if (tstruct->getFunctor() == AtomTable::failure)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  updateInstruction(pc, FAIL);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	}
       else if (tstruct->getFunctor() == AtomTable::cneck_cut)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  updateInstruction(pc, NECK_CUT);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	}
       else if (tstruct->getFunctor() == AtomTable::get_level ||
 	       tstruct->getFunctor() == AtomTable::get_level_ancestor)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  int reg;
 	  if (is_xreg(arg1, reg))
@@ -1892,7 +1946,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else 
 	    {
-	      DEBUG_ASSERT(is_yreg(arg1));
+	      assert(is_yreg(arg1));
 	      updateInstruction(pc, GET_Y_LEVEL);
 	      pc += Code::SIZE_OF_INSTRUCTION; 
 	      updateRegister(pc, yreg_num(arg1));
@@ -1902,10 +1956,10 @@ CodeLoc dumpInstructions(WordArray& instrs)
       else if (tstruct->getFunctor() == AtomTable::ccut ||
 	       tstruct->getFunctor() == AtomTable::cut_ancestor)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  
-	  DEBUG_ASSERT(is_yreg(arg1));
+	  assert(is_yreg(arg1));
 	  updateInstruction(pc, CUT);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateRegister(pc, yreg_num(arg1));
@@ -1913,9 +1967,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr0)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR0);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -1923,9 +1977,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 2);
+	  assert(tstruct->getArity() == 2);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR1);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -1935,9 +1989,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr2)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 3);
+	  assert(tstruct->getArity() == 3);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR2);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -1949,9 +2003,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr3)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 4);
+	  assert(tstruct->getArity() == 4);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR3);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -1965,9 +2019,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr4)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 5);
+	  assert(tstruct->getArity() == 5);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR4);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -1983,9 +2037,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr5)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 6);
+	  assert(tstruct->getArity() == 6);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  DEBUG_ASSERT(arg1->isNumber());
+	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR5);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateNumber(pc, arg1->getNumber());
@@ -2003,7 +2057,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else if (tstruct->getFunctor() == AtomTable::unify_ref)
 	{
-	  DEBUG_ASSERT(tstruct->getArity() == 1);
+	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  int reg;
 	  if (is_xreg(arg1, reg))
@@ -2015,7 +2069,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	    }
 	  else 
 	    {
-	      DEBUG_ASSERT(is_yreg(arg1));
+	      assert(is_yreg(arg1));
 	      updateInstruction(pc, UNIFY_Y_REF);
 	      pc += Code::SIZE_OF_INSTRUCTION; 
 	      updateRegister(pc, yreg_num(arg1));
@@ -2024,7 +2078,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  return NULL;
 	}
     }

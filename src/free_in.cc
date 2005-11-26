@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: free_in.cc,v 1.3 2001/09/20 03:22:06 qp Exp $
+// $Id: free_in.cc,v 1.4 2005/11/26 23:34:29 qp Exp $
 
 #include        "thread_qp.h"
  
@@ -65,7 +65,7 @@
 Thread::ReturnValue
 Thread::psi_not_free_in(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue	pval2(object2);
   
   Object* obvar = object1->variableDereference();
@@ -81,7 +81,7 @@ Thread::psi_not_free_in(Object *& object1, Object *& object2)
       
   heap.prologValueDereference(pval2);
   
-  DEBUG_ASSERT(obvar->isObjectVariable());
+  assert(obvar->isObjectVariable());
   
   return (BOOL_TO_RV(notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval2)));
 }
@@ -94,20 +94,18 @@ Thread::psi_not_free_in(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_not_free_in_var_simplify(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue	pval2(object2);
   
   Object* obvar = object1->variableDereference();
   heap.prologValueDereference(pval2);
 
-DEBUG_CODE(
-{
+#ifndef NDEBUG
   Object *sub_block_list = pval2.getSubstitutionBlockList();
-  DEBUG_ASSERT(! sub_block_list->isNil());
-  DEBUG_ASSERT(OBJECT_CAST(Cons* , sub_block_list)->getTail()->isNil());
-}
-);
-  DEBUG_ASSERT(obvar->isObjectVariable()); 
+  assert(! sub_block_list->isNil());
+  assert(OBJECT_CAST(Cons* , sub_block_list)->getTail()->isNil());
+#endif
+  assert(obvar->isObjectVariable()); 
 
 
   if (pval2.getTerm()->isAnyVariable())
@@ -137,8 +135,8 @@ Thread::ReturnValue
 Thread::psi_not_free_in_nfi_simp(Object*& obvar, Object*& term)
 {
   Object* ov = obvar->variableDereference();
-  DEBUG_ASSERT(ov->isObjectVariable());
-  DEBUG_ASSERT(term->hasLegalSub());
+  assert(ov->isObjectVariable());
+  assert(term->hasLegalSub());
   PrologValue pv(term);
  
   return(BOOL_TO_RV(notFreeInNFISimp(OBJECT_CAST(ObjectVariable*, ov), pv)));
@@ -152,8 +150,8 @@ Thread::ReturnValue
 Thread::psi_is_not_free_in(Object*& obvar, Object*& term)
 {
   Object* ov = obvar->variableDereference();
-  DEBUG_ASSERT(ov->isObjectVariable());
-  DEBUG_ASSERT(term->hasLegalSub());
+  assert(ov->isObjectVariable());
+  assert(term->hasLegalSub());
   PrologValue pv(term);
  
   truth3 result = freeness_test(OBJECT_CAST(ObjectVariable*, ov), pv);
@@ -170,8 +168,8 @@ Thread::ReturnValue
 Thread::psi_is_free_in(Object*& obvar, Object*& term)
 {
   Object* ov = obvar->variableDereference();
-  DEBUG_ASSERT(ov->isObjectVariable());
-  DEBUG_ASSERT(term->hasLegalSub());
+  assert(ov->isObjectVariable());
+  assert(term->hasLegalSub());
   PrologValue pv(term);
  
   truth3 result = freeness_test(OBJECT_CAST(ObjectVariable*, ov), pv);

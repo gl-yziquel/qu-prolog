@@ -55,15 +55,21 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: execute.cc,v 1.14 2004/12/01 04:23:48 qp Exp $
+// $Id: execute.cc,v 1.17 2005/11/26 23:34:29 qp Exp $
 
 #include <sys/types.h>
+#ifdef WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <signal.h>
 
 #include "config.h"
 
+#ifndef WIN32
 extern "C" int kill(pid_t, int);
+#endif
 
 #include "atom_table.h"
 #include "code.h"
@@ -87,7 +93,7 @@ extern Signals *signals;
 
 #define	OPCODE(x, y)		x
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 #define BACKTRACK				\
 do {						\
   programCounter = PC;                          \
@@ -233,13 +239,13 @@ Thread::Execute(void)
   bool		ReadMode = true;
   Object*	saveTerm;
 
-  DEBUG_CODE(
-	     if (qem_options->Debugging())
-	     {
-	       cerr << "Turning on QuAM debugging" << endl;
-	       trace.TraceLevel() = Trace::TRACE_ALL;
-	     }
-	     );
+#ifndef NDEBUG
+ if (qem_options->Debugging())
+ {
+   cerr << "Turning on QuAM debugging" << endl;
+   trace.TraceLevel() = Trace::TRACE_ALL;
+ }
+#endif
 
 #if 0
   // TO DO: Complete the jump table implementation.
@@ -288,13 +294,10 @@ Thread::Execute(void)
 
   while (true)
     {
-#ifdef DEBUG
-      CodeLoc trace_pc = PC;
+#ifndef NDEBUG
+    CodeLoc trace_pc = PC;
+    trace.TraceStart(*this);
 #endif
-
-      DEBUG_CODE(
-		    trace.TraceStart(*this);
-		    );
 
       switch(getInstruction(PC))
 	{
@@ -505,7 +508,7 @@ Thread::Execute(void)
 	    //
 	    // Transfer the term of Xi to the substitution of Xj.
 	    //
-	    DEBUG_ASSERT(!X[i]->isNil());
+	    assert(!X[i]->isNil());
 	    X[j] = heap.newSubstitution(X[i], X[j]);
 	  }
 	VMBREAK;
@@ -517,7 +520,7 @@ Thread::Execute(void)
 	    //
 	    // Transfer Yi to the substitution of Xj.
 	    //
-	    DEBUG_ASSERT(!envStack.yReg(currentEnvironment, i)->isNil());
+	    assert(!envStack.yReg(currentEnvironment, i)->isNil());
 	    X[j] = heap.newSubstitution(envStack.yReg(currentEnvironment, i),
 					X[j]);
 	  }
@@ -613,7 +616,7 @@ Thread::Execute(void)
 	    // Check the argument from the query against the
 	    // expected constant.
 	    //
-	    DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 
 	    if (xval->isVariable())
@@ -637,7 +640,7 @@ Thread::Execute(void)
 	      }
 	    else if (xval->isSubstitution())
 	      {
-                DEBUG_ASSERT(xval->hasLegalSub());
+                assert(xval->hasLegalSub());
 		PrologValue pval(xval);
 		PrologValue cp(c);
 		heap.prologValueDereference(pval);
@@ -662,7 +665,7 @@ Thread::Execute(void)
 	    // Check the argument from the query against the
 	    // expected constant.
 	    //
-	    DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 
 	    if (xval->isVariable())
@@ -687,7 +690,7 @@ Thread::Execute(void)
 	      }
 	    else if (xval->isSubstitution())
 	      {
-                DEBUG_ASSERT(xval->hasLegalSub());
+                assert(xval->hasLegalSub());
 		PrologValue pval(xval);
 		Object* c = heap.newNumber(n);
 		PrologValue cp(c);
@@ -713,7 +716,7 @@ Thread::Execute(void)
 	    // Operation to be carried out depends on the value
 	    // of the argument from the query.
 	    // 
-	    DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 	    if (xval->isRefTag())
 	      {
@@ -800,7 +803,7 @@ Thread::Execute(void)
 	    // value of the argument in the query.
 	    //
 
-	    DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 	    if (xval->isRefTag())
 	      {
@@ -912,7 +915,7 @@ Thread::Execute(void)
 	    // an atom.  The matching of the functor is carried
 	    // out by other instructions.
 	    // 
-	    DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 	    if (xval->isRefTag())
 	      {
@@ -1014,7 +1017,7 @@ Thread::Execute(void)
 	    // The expected (new) object variable from Xi is
 	    // unified with Xj from the query.
 	    //
-	    DEBUG_ASSERT(X[j]->variableDereference()->hasLegalSub());
+	    assert(X[j]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[j]);
 	    X[i] = heap.newObjectVariable();
 	    if (!unify(xval, X[i]))
@@ -1032,7 +1035,7 @@ Thread::Execute(void)
 	    // The expected (new) object variable from Yi is
 	    // unified with Xj from the query.
 	    //
-	    DEBUG_ASSERT(X[j]->variableDereference()->hasLegalSub());
+	    assert(X[j]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[j]);
 	    ObjectVariable* ov = heap.newObjectVariable();
 	    envStack.yReg(currentEnvironment, i) = ov;
@@ -1054,8 +1057,8 @@ Thread::Execute(void)
 	    // Xi and data object in Xj.  It is not possible to
 	    // have substitution associated with Xi.
 	    //
-	    DEBUG_ASSERT(i != j);
-	    DEBUG_ASSERT(X[i]->isObjectVariable());
+	    assert(i != j);
+	    assert(X[i]->isObjectVariable());
 	    
 	    if (!unify(X[i], X[j]))
 	      {
@@ -1074,7 +1077,7 @@ Thread::Execute(void)
 	    // This instruction unifies the object variable in Yi
 	    // and data object in Xj.
 	    //
-	    DEBUG_ASSERT(envStack.yReg(currentEnvironment, i)
+	    assert(envStack.yReg(currentEnvironment, i)
 			 ->isObjectVariable());
 	    
 	    if (!unify(envStack.yReg(currentEnvironment, i), X[j]))
@@ -1550,7 +1553,7 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    //      DEBUG_ASSERT(check_cps(currentChoicePoint,choiceStack,envStack,heap ));
+	    //      assert(check_cps(currentChoicePoint,choiceStack,envStack,heap ));
 
 	    const PredLoc start = predicates->lookUp(predicate, arity, 
 						     atoms, code); 
@@ -1590,11 +1593,11 @@ Thread::Execute(void)
 		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
                   {
 		    DynamicPredicate* dp = PredAddr.getDynamicPred();
-                    DEBUG_ASSERT(dp != NULL);
+                    assert(dp != NULL);
                     const word8 arg = dp->getIndexedArg();
 
                     ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]);
-                    DEBUG_ASSERT(chain != NULL);
+                    assert(chain != NULL);
                     CodeLoc block = chain->first();
                     if (block == NULL)
                       {
@@ -1615,7 +1618,7 @@ Thread::Execute(void)
 		  }
                 else
 		  {
-	            DEBUG_ASSERT(PredAddr.type() == PredCode::STATIC_PRED);
+	            assert(PredAddr.type() == PredCode::STATIC_PRED);
 		    const CodeLoc loc = PredAddr.getPredicate(code); 
 		    code->updateCallInstruction(PC -
 						SIZE_OF_CALL_PREDICATE_INSTR,
@@ -1834,7 +1837,7 @@ Thread::Execute(void)
 		  }
 		else
 		  {
-                    DEBUG_ASSERT(PredAddr.type() == PredCode::STATIC_PRED);
+                    assert(PredAddr.type() == PredCode::STATIC_PRED);
 		    const CodeLoc loc = PredAddr.getPredicate(code);
 		    code->updateCallInstruction(PC -
 						SIZE_OF_EXECUTE_PREDICATE_INSTR,
@@ -2140,7 +2143,7 @@ Thread::Execute(void)
 	    // Set Xi to the current value of cut point register. 
 	    // 
 	    const word32 i = getRegister(PC);
-	    DEBUG_ASSERT(false);
+	    assert(false);
 	    X[i] = reinterpret_cast<Object*>(cutPoint);
 	  }
 	VMBREAK; 
@@ -2167,7 +2170,7 @@ Thread::Execute(void)
 	    // 
 	    const word32 i = getRegister(PC);
 
-	    DEBUG_ASSERT(envStack.yReg(currentEnvironment, i)->isNumber());
+	    assert(envStack.yReg(currentEnvironment, i)->isNumber());
 	    if (status.testFastRetry() && !status.testDoingRetry())
 	      {
 		Structure* problem = heap.newStructure(1);
@@ -2218,7 +2221,7 @@ Thread::Execute(void)
 	    // 
 	    const word32 i = getRegister(PC);
 
-            DEBUG_ASSERT(X[i]->hasLegalSub());
+            assert(X[i]->hasLegalSub());
 	    PrologValue pval1(X[i]);
 
 	    heap.prologValueDereference(pval1);
@@ -2258,7 +2261,7 @@ Thread::Execute(void)
 	    
 	    ConstantTable CodeConstTable(*code, PC, n);
 	    
-	    DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* val = heap.dereference(X[i]);
 	    
 	    ConstEntry constant; 
@@ -2269,9 +2272,20 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
-		DEBUG_ASSERT(val->isNumber());
-		constant.assign((word32)(val->getNumber()),
-				ConstEntry::INTEGER_TYPE);
+		assert(val->isNumber());
+                if (val->isInteger())
+                  {
+		    constant.assign((word32)(val->getNumber()),
+		        		ConstEntry::INTEGER_TYPE);
+                  }
+                else
+                  {
+                    double d = val->getDouble();
+                    u_int x[2];
+                    memcpy(x, &d, sizeof(double));
+                    word32 v = (x[0] | x[1]) & ~(x[0] & x[1]);
+                    constant.assign(v, ConstEntry::INTEGER_TYPE);
+                  }
 	      }
 	    
 	    const word32 label = CodeConstTable.lookUp(constant);
@@ -2304,7 +2318,7 @@ Thread::Execute(void)
 	    
 	    StructureTable CodeStructTable(*code, PC, n);
 	    
-DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
+assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* val = heap.dereference(X[i]);
 	    word32 arity;
 	    Object* func;
@@ -2312,7 +2326,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	    if (val->isStructure())
 	      {
 		Structure* str = OBJECT_CAST(Structure*, val);
-		arity = str->getArity();
+		arity = static_cast<word32>(str->getArity());
 		func = heap.dereference(str->getFunctor());
 		if (!func->isAtom())
 		  {
@@ -2322,14 +2336,14 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	      }
 	    else
 	      {
-		DEBUG_ASSERT(val->isSubstitution());
-                DEBUG_ASSERT(val->hasLegalSub());
+		assert(val->isSubstitution());
+                assert(val->hasLegalSub());
 		PrologValue pval(val);
 
 		heap.prologValueDereference(pval);
-		DEBUG_ASSERT(pval.getTerm()->isStructure());
+		assert(pval.getTerm()->isStructure());
 		Structure* str = OBJECT_CAST(Structure*,pval.getTerm());
-		arity = str->getArity();
+		arity = static_cast<word32>(str->getArity());
 		PrologValue pfunc(pval.getSubstitutionBlockList(), 
 				  str->getFunctor());
 		heap.prologValueDereference(pfunc);
@@ -2374,17 +2388,17 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	    
 	    const StructureTable CodeQuantTable(*code, PC, n);
 	    
-            DEBUG_ASSERT(X[i]->hasLegalSub());
+            assert(X[i]->hasLegalSub());
 	    PrologValue pval(X[i]);
 
 	    heap.prologValueDereference(pval);
 
-	    DEBUG_ASSERT(pval.getTerm()->isQuantifiedTerm());
+	    assert(pval.getTerm()->isQuantifiedTerm());
 
 	    QuantifiedTerm* quantterm 
 	      = OBJECT_CAST(QuantifiedTerm*, pval.getTerm());
 	    word32 arity 
-	      = quantterm->getBoundVars()->boundListLength();
+	      = static_cast<word32>(quantterm->getBoundVars()->boundListLength());
 	    
 	   
 	    PrologValue quant(pval.getSubstitutionBlockList(), 
@@ -2871,7 +2885,7 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
 	      reinterpret_cast<DynamicPredicate*>(getAddress(PC));
 	    CodeLoc first = getCodeLoc(PC);
 	    CodeLoc next = getCodeLoc(PC);
-	    DEBUG_ASSERT(next != NULL);
+	    assert(next != NULL);
 	    RefObject p(REF_PRED, pred);
 	    pred->aquire();
 	    refTrail.trail(p);
@@ -2917,18 +2931,147 @@ DEBUG_ASSERT(X[i]->variableDereference()->hasLegalSub());
           }
           VMBREAK;
 
+	case OPCODE(PUT_DOUBLE, ARGS(double, register)):
+	  {
+	    Object* c = heap.newDouble(getDouble(PC));
+	    const word32 i = getRegister(PC);
+	    //
+	    // Place a number cell c into
+	    // register Xi.
+	    //
+	    X[i]= c;
+	  }
+	VMBREAK;
+
+
+	case OPCODE(GET_DOUBLE, ARGS(double, register)):
+	  {
+	    double n = getDouble(PC);
+	    const word32 i = getRegister(PC);
+	    // 
+	    // Dereference register Xi.
+	    // Check the argument from the query against the
+	    // expected constant.
+	    //
+	    assert(X[i]->variableDereference()->hasLegalSub());
+	    Object* xval = heap.dereference(X[i]);
+
+	    if (xval->isVariable())
+	      {
+		Variable* var = OBJECT_CAST(Variable*, xval);
+		if (var->isFrozen() && !status.testHeatWave())
+		  {
+		    BACKTRACK;
+		  }
+		else
+		  {
+		    Object* c = heap.newDouble(n);
+		    bind(var, c); 
+		  }
+	      }
+	    else if (xval->isDouble())
+	      {
+		if (n != xval->getDouble())
+		  {
+		    BACKTRACK;
+		  }
+	      }
+	    else if (xval->isSubstitution())
+	      {
+                assert(xval->hasLegalSub());
+		PrologValue pval(xval);
+		Object* c = heap.newDouble(n);
+		PrologValue cp(c);
+		heap.prologValueDereference(pval);
+		if (!unifyPrologValues(cp, pval))
+		  {
+		    BACKTRACK;
+		  }
+	      }
+	    else
+	      {
+		BACKTRACK;
+	      }
+	    VMBREAK;
+	  }
+ 
+	case OPCODE(SET_DOUBLE, ARGS(double)):
+	  {
+	    Object* c = heap.newDouble(getDouble(PC));
+	    //
+	    // Create the constant c on the heap. Increment 
+	    // structure pointer by one.
+	    // 
+	    *StructurePointer = reinterpret_cast<heapobject>(c); 
+	    StructurePointer++;
+	  }
+	VMBREAK; 
+
+
+	case OPCODE(UNIFY_DOUBLE, ARGS(double)):
+	  {
+	    double n = getDouble(PC);
+	    if (ReadMode)
+	      {
+		Object* val = heap.dereference(reinterpret_cast<Object*>(*StructurePointer));
+	
+		if (val->isDouble())
+		  {
+		    if (n != val->getDouble())
+		      {
+			BACKTRACK;
+		      }
+		  }
+		else if (val->isVariable())
+		  {
+		    Variable* v = OBJECT_CAST(Variable*, val);
+		    if (v->isFrozen() && !status.testHeatWave())
+		      {
+			BACKTRACK;
+		      }
+		    else
+		      {
+			Object* c = heap.newDouble(n);
+			bind(v, c);
+		      }
+		  }
+		else if (val->isSubstitution())
+		  {
+		    Object* c = heap.newDouble(n);
+		    if (!unify(val, c))
+		      {
+			BACKTRACK;
+		      }
+		  }
+		else
+		  {
+		    BACKTRACK;
+		  }
+		StructurePointer++;
+	      }
+	    else
+	      {
+		Object* c = heap.newDouble(n);
+		*StructurePointer = reinterpret_cast<heapobject>(c);
+		StructurePointer++;
+	      }
+	  }
+	VMBREAK;
+
+
 	default:
-	  (void)(kill(getpid(), SIGILL));
-	  VMBREAK;
+#ifdef WIN32
+          TerminateProcess(GetCurrentProcess(),SIGILL);
+#else
+          (void)(kill(getpid(), SIGILL));
+#endif
+          VMBREAK;
 	}
-#ifdef DEBUG
+#ifndef NDEBUG
       trace.TraceInstr(*this, *atoms, *code,
 		       *predicates, trace_pc);
+      trace.TraceEnd(*this);
 #endif
-
-      DEBUG_CODE(
-		 trace.TraceEnd(*this);
-		 );
     }
 
   programCounter = PC;

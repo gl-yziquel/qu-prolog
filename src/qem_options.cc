@@ -53,10 +53,18 @@
 // 
 // ##Copyright##
 //
-// $Id: qem_options.cc,v 1.3 2001/11/21 00:21:16 qp Exp $
+// $Id: qem_options.cc,v 1.4 2005/03/08 00:35:12 qp Exp $
 
+#ifdef WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
+
+#ifdef WIN32
+#include "../win32/src/XGetopt.h"
+#endif
 #include "qem_options.h"
 #include "tcp_qp.h"
 
@@ -123,8 +131,12 @@ QemOptions::QemOptions(int argc, char **argv)
   while ((c = getopt(argc, argv, opts)),
 	 (c != -1 && c != '?'))
 #else	// LINUX
+#ifdef WIN32
+  while ((c = getopt(argc, argv, const_cast<TCHAR*>(opts))) != -1)
+#else
   while ((c = getopt(argc, argv, opts)) != -1)
 #endif	// LINUX
+#endif
     {
       switch ((char) c)
 	{

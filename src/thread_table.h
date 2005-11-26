@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_table.h,v 1.8 2004/12/23 22:40:37 qp Exp $
+// $Id: thread_table.h,v 1.10 2005/11/26 23:34:31 qp Exp $
 
 #ifndef	THREAD_TABLE_H
 #define	THREAD_TABLE_H
@@ -88,19 +88,19 @@ class ThreadHashTableEntry
 
   ThreadTableLoc Loc(void) const
     {
-      DEBUG_ASSERT(! removed);
+      assert(! removed);
       return loc;
     }
   string& Symbol(void)
     {
-      DEBUG_ASSERT(! removed);
-      DEBUG_ASSERT(symbol != NULL);
+      assert(! removed);
+      assert(symbol != NULL);
       return *symbol;
     }
   const string& InspectSymbol(void) const
     {
-      DEBUG_ASSERT(! removed);
-      DEBUG_ASSERT(symbol != NULL);
+      assert(! removed);
+      assert(symbol != NULL);
       return *symbol;
     }
   
@@ -133,7 +133,7 @@ class ThreadHashTableEntry
   
   int hashFn(void) const
     {
-      DEBUG_ASSERT(symbol != NULL);
+      assert(symbol != NULL);
       return Hash(symbol->c_str(), symbol->length());
     }
 };
@@ -173,7 +173,7 @@ class ThreadHashTableEntry
 class ThreadTableHashTable : public DynamicHashTable<ThreadHashTableEntry>
 {
  public:
-  ThreadTableHashTable(const word32 size) :
+  explicit ThreadTableHashTable(const word32 size) :
     DynamicHashTable<ThreadHashTableEntry>(size) 
     { }
   
@@ -212,14 +212,14 @@ private:
   string symbol;
 
  public:
-  typedef Thread* threadptr;
-  ThreadTable(const word32 TableSize = THREAD_TABLE_SIZE)
+  typedef Thread* ThreadPtr;
+  explicit ThreadTable(const word32 TableSize = THREAD_TABLE_SIZE)
     : hash_table(TableSize),
       live(0),
       next_id(0),
       size(TableSize)
     {
-      array = new threadptr[size];
+      array = new ThreadPtr[size];
       
       for (size_t i = 0; i < size; i++)
 	{

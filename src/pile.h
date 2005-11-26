@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pile.h,v 1.3 2004/12/23 22:40:36 qp Exp $
+// $Id: pile.h,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	PILE_H
 #define	PILE_H
@@ -105,7 +105,7 @@ public:
 	//
 	void	clear(void)		{ this->clearStack(); }
 
-	Pile(word32 size = PILE_SIZE) :
+	explicit Pile(word32 size = PILE_SIZE) :
 			PrologStack <StoredType> (size, PILE_SIZE / 10)
 					{}
 };
@@ -115,7 +115,7 @@ class	PushDownStack : public Pile <Object*>
 
 public:
 
-	PushDownStack(word32 size = PILE_SIZE) : Pile <Object*> (size)
+	explicit PushDownStack(word32 size = PILE_SIZE) : Pile <Object*> (size)
 					{}
 	~PushDownStack(void)		{}
 };

@@ -53,13 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: generate_var_names.h,v 1.2 2000/12/12 03:36:20 qp Exp $
+// $Id: generate_var_names.h,v 1.3 2005/06/29 22:05:25 qp Exp $
 
 #ifndef GENERATE_VAR_NAMES_H
 #define GENERATE_VAR_NAMES_H
 
 public:
-typedef Atom* (*Thread::NameGen)(Thread*, word32&, char*);
+typedef Atom* (*NameGen)(Thread*, word32&, char*);
 
 //
 // Generate a new name for variables.  Find one that is either not in use or

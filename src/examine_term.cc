@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: examine_term.cc,v 1.3 2000/12/17 21:02:17 qp Exp $
+// $Id: examine_term.cc,v 1.5 2005/11/26 23:34:29 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -67,7 +67,7 @@
 Thread::ReturnValue
 Thread::psi_collect_vars(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* varlist = AtomTable::nil;
 
@@ -95,7 +95,7 @@ Thread::psi_var(Object *& object1)
     {
       return RV_FAIL;
     }
-  DEBUG_ASSERT(val1->hasLegalSub());
+  assert(val1->hasLegalSub());
   PrologValue pval1(val1);
   heap.prologValueDereference(pval1);
   return(BOOL_TO_RV(pval1.getTerm()->isVariable()));
@@ -109,7 +109,7 @@ Thread::psi_var(Object *& object1)
 Thread::ReturnValue 
 Thread::psi_atom(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   
   return (BOOL_TO_RV(val1->isAtom()));
@@ -123,10 +123,24 @@ Thread::psi_atom(Object *& object1)
 Thread::ReturnValue
 Thread::psi_integer(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
-  return(BOOL_TO_RV(val1->isNumber()));
+  return(BOOL_TO_RV(val1->isInteger()));
+}
+
+//
+// psi_float(term)
+// True if term is a float, false otherwise
+// mode(in)
+//
+Thread::ReturnValue
+Thread::psi_float(Object *& object1)
+{
+  assert(object1->variableDereference()->hasLegalSub());
+  Object* val1 = heap.dereference(object1);
+
+  return(BOOL_TO_RV(val1->isDouble()));
 }
 
 //
@@ -137,7 +151,7 @@ Thread::psi_integer(Object *& object1)
 Thread::ReturnValue 
 Thread::psi_atomic(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
   return (BOOL_TO_RV(val1->isAtom() || val1->isNumber()));
@@ -159,7 +173,7 @@ Thread::psi_any_variable(Object *& object1)
     {
       return RV_FAIL;
     }
-  DEBUG_ASSERT(val1->hasLegalSub());
+  assert(val1->hasLegalSub());
   PrologValue pval1(val1);
   heap.prologValueDereference(pval1);
   return(BOOL_TO_RV(pval1.getTerm()->isAnyVariable()));
@@ -182,7 +196,7 @@ Thread::psi_simple(Object *& object1)
     {
       return RV_FAIL;
     }
-  DEBUG_ASSERT(val1->hasLegalSub());
+  assert(val1->hasLegalSub());
   PrologValue pval1(val1);
   heap.prologValueDereference(pval1);
   return(BOOL_TO_RV(pval1.getTerm()->isAnyVariable()));
@@ -205,7 +219,7 @@ Thread::psi_nonvar(Object *& object1)
     {
       return RV_SUCCESS;
     }
-  DEBUG_ASSERT(val1->hasLegalSub());
+  assert(val1->hasLegalSub());
   PrologValue pval1(val1);
   heap.prologValueDereference(pval1);
   return(BOOL_TO_RV(!pval1.getTerm()->isVariable()));
@@ -219,7 +233,7 @@ Thread::psi_nonvar(Object *& object1)
 Thread::ReturnValue
 Thread::psi_std_var(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
   return(BOOL_TO_RV(val1->isVariable()));
@@ -233,7 +247,7 @@ Thread::psi_std_var(Object *& object1)
 Thread::ReturnValue
 Thread::psi_std_compound(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1); 
 
   if (val1->isStructure())
@@ -256,7 +270,7 @@ Thread::psi_std_compound(Object *& object1)
 Thread::ReturnValue
 Thread::psi_std_nonvar(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1); 
 
   
@@ -283,7 +297,7 @@ Thread::psi_std_nonvar(Object *& object1)
 Thread::ReturnValue
 Thread::psi_list(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
   if (val1->isList())
@@ -294,7 +308,7 @@ Thread::psi_list(Object *& object1)
     {
       return RV_FAIL;
     }
-  DEBUG_ASSERT(val1->hasLegalSub());
+  assert(val1->hasLegalSub());
   PrologValue pval1(val1);
   heap.prologValueDereference(pval1);
   return(BOOL_TO_RV(pval1.getTerm()->isList()));

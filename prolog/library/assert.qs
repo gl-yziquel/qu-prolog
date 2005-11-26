@@ -928,7 +928,44 @@ end('$db_internal_form/8$2'/5):
 
 
 
-'$db_internal_form/8$3'/8:
+'$db_internal_form/8$3'/6:
+
+	try(6, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(1, 0)
+	neck_cut
+	put_constant('done', 6)
+	get_x_value(0, 6)
+	put_x_value(1, 0)
+	get_list(0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('$$get_level$$', 1, 0)
+	unify_x_value(2)
+	get_list(1)
+	unify_x_ref(0)
+	unify_x_value(5)
+	get_structure('$message_choice', 2, 0)
+	unify_x_value(3)
+	unify_x_value(4)
+	proceed
+
+$2:
+	put_x_value(1, 0)
+	get_list(0)
+	unify_x_ref(0)
+	unify_x_value(5)
+	get_structure('$message_choice', 2, 0)
+	unify_x_value(3)
+	unify_x_value(4)
+	proceed
+end('$db_internal_form/8$3'/6):
+
+
+
+'$db_internal_form/8$4'/8:
 
 	try(8, $1)
 	trust($2)
@@ -965,11 +1002,11 @@ $2:
 	unify_x_value(5)
 	unify_x_value(6)
 	proceed
-end('$db_internal_form/8$3'/8):
+end('$db_internal_form/8$4'/8):
 
 
 
-'$db_internal_form/8$4'/7:
+'$db_internal_form/8$5'/7:
 
 	try(7, $1)
 	trust($2)
@@ -1004,99 +1041,109 @@ $2:
 	unify_x_value(4)
 	unify_x_value(5)
 	proceed
-end('$db_internal_form/8$4'/7):
+end('$db_internal_form/8$5'/7):
 
 
 
 '$db_internal_form'/8:
 
-	switch_on_term(0, $26, $25, $25, $16, $25, $22)
-
-$16:
-	switch_on_structure(0, 16, ['$default':$25, '$'/0:$17, ','/2:$18, ';'/2:$19, '$$get_level_ancestor$$'/1:$20, '='/2:$21])
+	switch_on_term(0, $28, $27, $27, $17, $27, $24)
 
 $17:
-	try(8, $1)
-	retry($2)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($10)
-	retry($11)
-	retry($12)
-	retry($13)
-	retry($14)
-	trust($15)
+	switch_on_structure(0, 16, ['$default':$27, '$'/0:$18, ','/2:$19, 'message_choice'/1:$20, ';'/2:$21, '$$get_level_ancestor$$'/1:$22, '='/2:$23])
 
 $18:
 	try(8, $1)
 	retry($2)
 	retry($4)
-	retry($12)
-	retry($13)
-	retry($14)
-	trust($15)
-
-$19:
-	try(8, $1)
-	retry($2)
 	retry($5)
 	retry($6)
-	retry($12)
-	retry($13)
-	retry($14)
-	trust($15)
-
-$20:
-	try(8, $1)
-	retry($2)
-	retry($10)
-	retry($12)
-	retry($13)
-	retry($14)
-	trust($15)
-
-$21:
-	try(8, $1)
-	retry($2)
+	retry($7)
 	retry($11)
 	retry($12)
 	retry($13)
 	retry($14)
-	trust($15)
+	retry($15)
+	trust($16)
+
+$19:
+	try(8, $1)
+	retry($2)
+	retry($4)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
+
+$20:
+	try(8, $1)
+	retry($2)
+	retry($5)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
+
+$21:
+	try(8, $1)
+	retry($2)
+	retry($6)
+	retry($7)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
 
 $22:
-	switch_on_constant(0, 4, ['$default':$25, 'true':$23, '!':$24])
+	try(8, $1)
+	retry($2)
+	retry($11)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
 
 $23:
 	try(8, $1)
 	retry($2)
-	retry($3)
 	retry($12)
 	retry($13)
 	retry($14)
-	trust($15)
+	retry($15)
+	trust($16)
 
 $24:
-	try(8, $1)
-	retry($2)
-	retry($7)
-	retry($8)
-	retry($9)
-	retry($12)
-	retry($13)
-	retry($14)
-	trust($15)
+	switch_on_constant(0, 4, ['$default':$27, 'true':$25, '!':$26])
 
 $25:
 	try(8, $1)
 	retry($2)
-	retry($12)
+	retry($3)
 	retry($13)
 	retry($14)
-	trust($15)
+	retry($15)
+	trust($16)
 
 $26:
+	try(8, $1)
+	retry($2)
+	retry($8)
+	retry($9)
+	retry($10)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
+
+$27:
+	try(8, $1)
+	retry($2)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
+
+$28:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -1111,7 +1158,8 @@ $26:
 	retry($12)
 	retry($13)
 	retry($14)
-	trust($15)
+	retry($15)
+	trust($16)
 
 $1:
 	get_constant('no_cut', 2)
@@ -1181,6 +1229,22 @@ $4:
 
 $5:
 	get_constant('no_cut', 2)
+	get_structure('message_choice', 1, 0)
+	unify_x_variable(8)
+	get_x_variable(1, 3)
+	get_x_variable(9, 4)
+	get_x_variable(2, 5)
+	get_x_variable(0, 6)
+	neck_cut
+	put_x_value(7, 3)
+	get_structure('$get_level', 1, 3)
+	unify_x_variable(4)
+	put_x_value(8, 3)
+	put_x_value(9, 5)
+	execute_predicate('$db_internal_form/8$3', 6)
+
+$6:
+	get_constant('no_cut', 2)
 	get_structure(';', 2, 0)
 	unify_x_variable(8)
 	unify_x_variable(9)
@@ -1204,9 +1268,9 @@ $5:
 	unify_x_variable(6)
 	put_x_value(9, 5)
 	put_x_value(10, 7)
-	execute_predicate('$db_internal_form/8$3', 8)
+	execute_predicate('$db_internal_form/8$4', 8)
 
-$6:
+$7:
 	get_constant('no_cut', 2)
 	get_structure(';', 2, 0)
 	unify_x_variable(8)
@@ -1222,9 +1286,9 @@ $6:
 	put_x_value(8, 3)
 	put_x_value(9, 4)
 	put_x_value(10, 6)
-	execute_predicate('$db_internal_form/8$4', 7)
+	execute_predicate('$db_internal_form/8$5', 7)
 
-$7:
+$8:
 	get_constant('!', 0)
 	get_constant('no_cut', 1)
 	get_constant('cut', 2)
@@ -1245,7 +1309,7 @@ $7:
 	unify_x_value(5)
 	proceed
 
-$8:
+$9:
 	get_constant('!', 0)
 	get_constant('no_cut', 1)
 	get_constant('cut', 2)
@@ -1258,7 +1322,7 @@ $8:
 	unify_x_value(5)
 	proceed
 
-$9:
+$10:
 	get_constant('!', 0)
 	get_constant('cut', 1)
 	get_constant('cut', 2)
@@ -1266,7 +1330,7 @@ $9:
 	neck_cut
 	proceed
 
-$10:
+$11:
 	get_constant('no_cut', 2)
 	put_x_value(0, 1)
 	get_structure('$$get_level_ancestor$$', 1, 1)
@@ -1278,7 +1342,7 @@ $10:
 	unify_x_value(4)
 	proceed
 
-$11:
+$12:
 	get_constant('no_cut', 2)
 	put_x_value(0, 1)
 	get_structure('=', 2, 1)
@@ -1290,7 +1354,7 @@ $11:
 	unify_x_value(4)
 	proceed
 
-$12:
+$13:
 	get_constant('no_cut', 2)
 	allocate(11)
 	get_y_variable(9, 0)
@@ -1327,7 +1391,7 @@ $12:
 	deallocate
 	execute_predicate('append', 3)
 
-$13:
+$14:
 	get_constant('no_cut', 2)
 	allocate(4)
 	get_y_variable(2, 0)
@@ -1343,7 +1407,7 @@ $13:
 	deallocate
 	proceed
 
-$14:
+$15:
 	get_constant('no_cut', 2)
 	allocate(5)
 	get_y_variable(3, 3)
@@ -1368,7 +1432,7 @@ $14:
 	deallocate
 	proceed
 
-$15:
+$16:
 	get_constant('no_cut', 2)
 	allocate(3)
 	get_y_variable(2, 3)

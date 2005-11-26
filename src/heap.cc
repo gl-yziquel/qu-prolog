@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap.cc,v 1.9 2002/12/23 00:22:10 qp Exp $
+// $Id: heap.cc,v 1.11 2005/11/26 23:34:30 qp Exp $
 
 // Standard C++ header files
 
@@ -74,7 +74,7 @@ void Heap::outOfSpace(void)
 {
     
       cerr << "Out of " << heapname << " space ("
-           << (top - data) * sizeof (heapobject) / K
+           << static_cast<long>((top - data) * sizeof (heapobject) / K)
            << ")" << endl;
 }
 
@@ -92,10 +92,10 @@ Object *
 Heap::appendSubstitutionBlockLists(Object *list1,
 				   Object *list2)
 {
-  DEBUG_ASSERT(list1->isNil() ||
+  assert(list1->isNil() ||
 	       (list1->isCons() && 
 		OBJECT_CAST(Cons*, list1)->isSubstitutionBlockList()));
-  DEBUG_ASSERT(list2->isNil() ||
+  assert(list2->isNil() ||
 	       (list2->isCons() && 
 		OBJECT_CAST(Cons*, list2)->isSubstitutionBlockList()));
 
@@ -114,7 +114,7 @@ Heap::appendSubstitutionBlockLists(Object *list1,
 	appendSubstitutionBlockLists(OBJECT_CAST(Cons *, list1)->getTail(),
 				     list2);
       
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, list1)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, list1)->getHead()->isSubstitutionBlock());
       return newSubstitutionBlockList(OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons *, list1)->getHead()), copy_list);
     }
 }
@@ -127,14 +127,14 @@ Heap::appendSubstitutionBlockLists(Object *list1,
 Object*
 Heap::copyDistinctnessList(Object* dist_list, ObjectVariable* obvar)
 {
-  DEBUG_ASSERT(dist_list->isCons());
+  assert(dist_list->isCons());
   
   Object* dist = obvar->getDistinctness();
 
   for (; dist_list->isCons(); 
        dist_list = OBJECT_CAST(Cons*, dist_list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, dist_list)->getHead()->variableDereference()->isObjectVariable());
+      assert(OBJECT_CAST(Cons*, dist_list)->getHead()->variableDereference()->isObjectVariable());
       ObjectVariable* object_variable = OBJECT_CAST(ObjectVariable*, OBJECT_CAST(Cons*, dist_list)->getHead()->variableDereference());
 
       if (!object_variable->isObjectVariableInDistinctList(obvar))
@@ -143,7 +143,7 @@ Heap::copyDistinctnessList(Object* dist_list, ObjectVariable* obvar)
 	  dist = temp;
 	}
     }
-  DEBUG_ASSERT(dist_list->isNil());
+  assert(dist_list->isNil());
   return(dist);
 }
 
@@ -183,7 +183,7 @@ Heap::isBindingList(Object* o) const
 Object *
 Heap::newDelay(Object *problem, Object *tail)
 {
-  DEBUG_ASSERT(tail->isList());
+  assert(tail->isList());
 
   // Create the status variable, and set to frozen.
   Variable *status = newVariable();
@@ -200,7 +200,7 @@ Heap::newDelay(Object *problem, Object *tail)
 
 
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 void Heap::printMe(AtomTable& atoms)
 {
   const heapobject *pho = data;
@@ -212,7 +212,7 @@ void Heap::printMe(AtomTable& atoms)
       cerr << endl;
       pho += ((Object *) pho)->size_dispatch();
     }
-  DEBUG_ASSERT(pho == next);
+  assert(pho == next);
   cerr << "----" << endl;
 }
 #endif
@@ -229,11 +229,11 @@ Heap::save(ostream& ostrm) const
     //
     // Write out the size.
     //
-    IntSave<word32>(ostrm, size);
+    IntSave<word32>(ostrm, static_cast<const word32>(size));
     //
     // Write out the heap.
     //
-    ostrm.write((char*)data, size * sizeof(heapobject));
+    ostrm.write((char*)data, static_cast<std::streamsize>(size * sizeof(heapobject)));
     if (ostrm.fail())
     {
       SaveFailure(__FUNCTION__, "data segment", getAreaName());
@@ -269,7 +269,7 @@ Heap::load(istream& istrm)
     istrm.read((char*)here, ReadSize * sizeof(heapobject));
 #else
     if (istrm.good() &&
-	istrm.read((char*)here, ReadSize * sizeof(heapobject)).fail())
+	istrm.read((char*)here, static_cast<std::streamsize>(ReadSize * sizeof(heapobject))).fail())
       {
 	ReadFailure(__FUNCTION__, "data segment", getAreaName());
       }
@@ -311,8 +311,8 @@ Heap::fastEqualSubstitutionBlock(SubstitutionBlock *sub_block1,
       //
       // Check the range.
       //
-      DEBUG_ASSERT(sub_block1->getRange(i)->hasLegalSub());
-      DEBUG_ASSERT(sub_block2->getRange(i)->hasLegalSub());
+      assert(sub_block1->getRange(i)->hasLegalSub());
+      assert(sub_block2->getRange(i)->hasLegalSub());
       PrologValue term1(sub_block1->getRange(i));
       PrologValue term2(sub_block2->getRange(i));
       
@@ -335,10 +335,10 @@ Heap::fastEqualSubstitutionBlock(SubstitutionBlock *sub_block1,
 bool
 Heap::fastEqualSubstitution(Object *sub_block_list1, Object *sub_block_list2)
 {
-  DEBUG_ASSERT(sub_block_list1->isNil() ||
+  assert(sub_block_list1->isNil() ||
 	       (sub_block_list1->isCons() &&
 		OBJECT_CAST(Cons*, sub_block_list1)->isSubstitutionBlockList()));
-  DEBUG_ASSERT(sub_block_list2->isNil() ||
+  assert(sub_block_list2->isNil() ||
 	       (sub_block_list2->isCons() &&
 		OBJECT_CAST(Cons*, sub_block_list2)->isSubstitutionBlockList()));
 
@@ -376,8 +376,8 @@ Heap::fastEqualSubstitution(Object *sub_block_list1, Object *sub_block_list2)
 	   sbl2 = OBJECT_CAST(Cons *, sbl2)->getTail()
 	 )
       {
-	DEBUG_ASSERT(OBJECT_CAST(Cons *, sbl1)->getHead()->isSubstitutionBlock());
-	DEBUG_ASSERT(OBJECT_CAST(Cons *, sbl2)->getHead()->isSubstitutionBlock());
+	assert(OBJECT_CAST(Cons *, sbl1)->getHead()->isSubstitutionBlock());
+	assert(OBJECT_CAST(Cons *, sbl2)->getHead()->isSubstitutionBlock());
 
 	SubstitutionBlock *sub_block1 = 
 	  OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, sbl1)->getHead());
@@ -412,8 +412,8 @@ Heap::fastEqualBoundVariables(Object *bound_var_list1, Object *bound_var_list2)
 	 bvl2 = OBJECT_CAST(Cons *, bvl2)->getTail()->variableDereference()
        )
     {
-      DEBUG_ASSERT(isBindingList(bvl1));
-      DEBUG_ASSERT(isBindingList(bvl2));
+      assert(isBindingList(bvl1));
+      assert(isBindingList(bvl2));
 
       //
       // Get the bound variable.
@@ -458,8 +458,8 @@ Heap::fastEqualBoundVariables(Object *bound_var_list1, Object *bound_var_list2)
 truth3
 Heap::fastEqualQuant(Object *quantified_term1, Object *quantified_term2)
 {
-  DEBUG_ASSERT(quantified_term1->isQuantifiedTerm());
-  DEBUG_ASSERT(quantified_term2->isQuantifiedTerm());
+  assert(quantified_term1->isQuantifiedTerm());
+  assert(quantified_term2->isQuantifiedTerm());
   truth3 result = true;
 
   {
@@ -502,8 +502,8 @@ Heap::fastEqualQuant(Object *quantified_term1, Object *quantified_term2)
 truth3
 Heap::fastEqualStruct(Object *structure1, Object *structure2)
 {
-  DEBUG_ASSERT(structure1->isStructure());
-  DEBUG_ASSERT(structure2->isStructure());
+  assert(structure1->isStructure());
+  assert(structure2->isStructure());
   //
   // Check arities.
   //
@@ -556,8 +556,8 @@ Heap::fastEqualStruct(Object *structure1, Object *structure2)
 truth3
 Heap::fastEqualCons(Object *list1, Object *list2)
 {
-  DEBUG_ASSERT(list1->isCons());
-  DEBUG_ASSERT(list2->isCons());
+  assert(list1->isCons());
+  assert(list2->isCons());
 
   truth3 result = true;
 
@@ -616,7 +616,7 @@ Heap::fastEqualTerm(Object *t1, Object *t2)
       //
       // If the previous test didnt work, then fastEqual has failed.
       //
-      DEBUG_ASSERT(t1 != t2);
+      assert(t1 != t2);
       return false;
       break;
       
@@ -646,14 +646,14 @@ Heap::fastEqualTerm(Object *t1, Object *t2)
       //
       if (t1->isAtom() || t2->isAtom())
 	{
-	  DEBUG_ASSERT(t1 != t2);
+	  assert(t1 != t2);
 	  return(false);
 	}
-      DEBUG_ASSERT(t1->isNumber() && t2->isNumber());
+      assert(t1->isNumber() && t2->isNumber());
       return(t1->getNumber() == t2->getNumber());
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   return true;
 }

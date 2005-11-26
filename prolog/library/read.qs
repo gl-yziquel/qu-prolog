@@ -1257,16 +1257,16 @@ end('$collect_tokens/8$7'/7):
 
 '$collect_tokens'/8:
 
-	switch_on_term(0, $18, 'fail', 'fail', 'fail', 'fail', $16)
-
-$16:
-	switch_on_constant(0, 32, ['$default':'fail', 0:$17, 1:$3, 3:$4, 2:$5, 4:$6, 5:$7, 6:$8, 7:$9, 8:$10, 9:$11, 10:$12, 11:$13, 12:$14, 13:$15])
+	switch_on_term(0, $19, 'fail', 'fail', 'fail', 'fail', $17)
 
 $17:
+	switch_on_constant(0, 32, ['$default':'fail', 0:$18, 1:$3, 3:$4, 2:$5, 4:$6, 5:$7, 6:$8, 7:$9, 8:$10, 9:$11, 10:$12, 11:$13, 12:$14, 13:$15, 14:$16])
+
+$18:
 	try(8, $1)
 	trust($2)
 
-$18:
+$19:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -1281,7 +1281,8 @@ $18:
 	retry($12)
 	retry($13)
 	retry($14)
-	trust($15)
+	retry($15)
+	trust($16)
 
 $1:
 	get_integer(0, 0)
@@ -1651,6 +1652,34 @@ $15:
 	get_integer(13, 0)
 	allocate(8)
 	get_y_variable(7, 2)
+	get_y_variable(6, 3)
+	get_y_variable(5, 4)
+	get_y_variable(4, 5)
+	get_y_variable(3, 6)
+	get_y_variable(2, 7)
+	put_y_value(5, 0)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_next_token_or_nl', 3, 8)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_y_value(7, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	put_y_value(4, 5)
+	put_y_value(3, 6)
+	put_y_value(2, 7)
+	deallocate
+	execute_predicate('$collect_tokens', 8)
+
+$16:
+	get_integer(14, 0)
+	get_list(2)
+	unify_x_ref(0)
+	allocate(8)
+	unify_y_variable(7)
+	get_structure('double', 1, 0)
+	unify_x_value(1)
 	get_y_variable(6, 3)
 	get_y_variable(5, 4)
 	get_y_variable(4, 5)
@@ -2129,71 +2158,78 @@ end('$parse_start_term/6$1'/1):
 
 '$parse_start_term'/6:
 
-	switch_on_term(0, $30, $16, $16, $17, $16, $24)
+	switch_on_term(0, $33, $18, $18, $19, $18, $27)
 
-$17:
-	switch_on_structure(0, 16, ['$default':$16, '$'/0:$18, 'var'/2:$19, 'string'/1:$20, 'atom'/1:$21, 'number'/1:$22, 'obvar'/2:$23])
+$19:
+	switch_on_structure(0, 16, ['$default':$18, '$'/0:$20, 'var'/2:$21, 'string'/1:$22, 'atom'/1:$23, 'number'/1:$24, 'double'/1:$25, 'obvar'/2:$26])
 
-$18:
+$20:
 	try(6, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
+	retry($6)
 	retry($7)
-	retry($8)
 	retry($9)
-	trust($16)
-
-$19:
-	try(6, $1)
-	trust($16)
-
-$20:
-	try(6, $2)
-	trust($16)
+	retry($10)
+	retry($11)
+	trust($18)
 
 $21:
-	try(6, $3)
-	retry($7)
-	retry($8)
-	retry($9)
-	trust($16)
+	try(6, $1)
+	trust($18)
 
 $22:
-	try(6, $4)
-	trust($16)
+	try(6, $2)
+	trust($18)
 
 $23:
-	try(6, $5)
-	trust($16)
+	try(6, $3)
+	retry($4)
+	retry($9)
+	retry($10)
+	retry($11)
+	trust($18)
 
 $24:
-	switch_on_constant(0, 16, ['$default':$16, 'quant_escape':$25, '[':$26, '(':$27, ' (':$28, '{':$29])
+	try(6, $5)
+	trust($18)
 
 $25:
 	try(6, $6)
-	trust($16)
+	trust($18)
 
 $26:
-	try(6, $10)
-	retry($11)
-	trust($16)
+	try(6, $7)
+	trust($18)
 
 $27:
-	try(6, $12)
-	trust($16)
+	switch_on_constant(0, 16, ['$default':$18, 'quant_escape':$28, '[':$29, '(':$30, ' (':$31, '{':$32])
 
 $28:
-	try(6, $13)
-	trust($16)
+	try(6, $8)
+	trust($18)
 
 $29:
-	try(6, $14)
-	retry($15)
-	trust($16)
+	try(6, $12)
+	retry($13)
+	trust($18)
 
 $30:
+	try(6, $14)
+	trust($18)
+
+$31:
+	try(6, $15)
+	trust($18)
+
+$32:
+	try(6, $16)
+	retry($17)
+	trust($18)
+
+$33:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -2209,7 +2245,9 @@ $30:
 	retry($13)
 	retry($14)
 	retry($15)
-	trust($16)
+	retry($16)
+	retry($17)
+	trust($18)
 
 $1:
 	get_structure('var', 2, 0)
@@ -2266,6 +2304,29 @@ $3:
 	execute_predicate('$parse_after_term', 7)
 
 $4:
+	get_structure('atom', 1, 0)
+	unify_constant('-')
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_variable(0)
+	get_structure('double', 1, 1)
+	unify_x_variable(1)
+	get_x_variable(7, 3)
+	get_x_variable(8, 4)
+	get_x_variable(6, 5)
+	neck_cut
+	put_x_variable(4, 5)
+	get_structure('-', 1, 5)
+	unify_x_value(1)
+	pseudo_instr2(0, 3, 4)
+	get_x_variable(1, 3)
+	put_x_value(2, 3)
+	put_x_value(7, 4)
+	put_x_value(8, 5)
+	put_integer(0, 2)
+	execute_predicate('$parse_after_term', 7)
+
+$5:
 	get_structure('number', 1, 0)
 	unify_x_variable(7)
 	get_x_variable(0, 1)
@@ -2280,7 +2341,22 @@ $4:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$5:
+$6:
+	get_structure('double', 1, 0)
+	unify_x_variable(7)
+	get_x_variable(0, 1)
+	get_x_variable(8, 3)
+	get_x_variable(9, 4)
+	get_x_variable(6, 5)
+	neck_cut
+	put_x_value(7, 1)
+	put_x_value(2, 3)
+	put_x_value(8, 4)
+	put_x_value(9, 5)
+	put_integer(0, 2)
+	execute_predicate('$parse_after_term', 7)
+
+$7:
 	get_structure('obvar', 2, 0)
 	unify_x_variable(7)
 	unify_void(1)
@@ -2296,7 +2372,7 @@ $5:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$6:
+$8:
 	get_constant('quant_escape', 0)
 	get_list(1)
 	unify_x_variable(0)
@@ -2333,7 +2409,7 @@ $6:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$7:
+$9:
 	get_structure('atom', 1, 0)
 	allocate(10)
 	unify_y_variable(9)
@@ -2367,7 +2443,7 @@ $7:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$8:
+$10:
 	get_structure('atom', 1, 0)
 	allocate(10)
 	unify_y_variable(9)
@@ -2404,7 +2480,7 @@ $8:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$9:
+$11:
 	get_structure('atom', 1, 0)
 	unify_x_variable(7)
 	get_x_variable(0, 1)
@@ -2419,7 +2495,7 @@ $9:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$10:
+$12:
 	get_constant('[', 0)
 	get_list(1)
 	unify_constant(']')
@@ -2435,7 +2511,7 @@ $10:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$11:
+$13:
 	get_constant('[', 0)
 	get_x_variable(0, 1)
 	allocate(9)
@@ -2469,7 +2545,7 @@ $11:
 	deallocate
 	execute_predicate('$parse_substitution_or_list', 6)
 
-$12:
+$14:
 	get_constant('(', 0)
 	get_x_variable(0, 1)
 	allocate(7)
@@ -2498,7 +2574,7 @@ $12:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$13:
+$15:
 	get_constant(' (', 0)
 	get_x_variable(0, 1)
 	allocate(7)
@@ -2527,7 +2603,7 @@ $13:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$14:
+$16:
 	get_constant('{', 0)
 	get_list(1)
 	unify_constant('}')
@@ -2543,7 +2619,7 @@ $14:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$15:
+$17:
 	get_constant('{', 0)
 	get_x_variable(0, 1)
 	allocate(7)
@@ -2574,7 +2650,7 @@ $15:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$16:
+$18:
 	get_x_variable(6, 1)
 	put_list(1)
 	set_x_value(0)
@@ -3972,46 +4048,52 @@ end('$report_syntax_error'/3):
 
 '$strip_token'/2:
 
-	switch_on_term(0, $14, $6, $6, $7, $6, $6)
-
-$7:
-	switch_on_structure(0, 16, ['$default':$6, '$'/0:$8, 'atom'/1:$9, 'var'/2:$10, 'obvar'/2:$11, 'number'/1:$12, 'string'/1:$13])
+	switch_on_term(0, $16, $7, $7, $8, $7, $7)
 
 $8:
-	try(2, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	trust($6)
+	switch_on_structure(0, 16, ['$default':$7, '$'/0:$9, 'atom'/1:$10, 'var'/2:$11, 'obvar'/2:$12, 'number'/1:$13, 'double'/1:$14, 'string'/1:$15])
 
 $9:
 	try(2, $1)
-	trust($6)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	trust($7)
 
 $10:
-	try(2, $2)
-	trust($6)
+	try(2, $1)
+	trust($7)
 
 $11:
-	try(2, $3)
-	trust($6)
+	try(2, $2)
+	trust($7)
 
 $12:
-	try(2, $4)
-	trust($6)
+	try(2, $3)
+	trust($7)
 
 $13:
-	try(2, $5)
-	trust($6)
+	try(2, $4)
+	trust($7)
 
 $14:
+	try(2, $5)
+	trust($7)
+
+$15:
+	try(2, $6)
+	trust($7)
+
+$16:
 	try(2, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
-	trust($6)
+	retry($6)
+	trust($7)
 
 $1:
 	get_structure('atom', 1, 0)
@@ -4044,13 +4126,20 @@ $4:
 	proceed
 
 $5:
-	get_structure('string', 1, 0)
+	get_structure('double', 1, 0)
 	unify_x_variable(0)
 	get_x_value(0, 1)
 	neck_cut
 	proceed
 
 $6:
+	get_structure('string', 1, 0)
+	unify_x_variable(0)
+	get_x_value(0, 1)
+	neck_cut
+	proceed
+
+$7:
 	get_x_value(0, 1)
 	proceed
 end('$strip_token'/2):

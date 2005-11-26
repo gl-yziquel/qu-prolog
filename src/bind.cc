@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: bind.cc,v 1.4 2002/03/10 07:34:02 qp Exp $
+// $Id: bind.cc,v 1.5 2005/11/26 23:34:28 qp Exp $
 
 
 #include        "thread_qp.h"
@@ -66,8 +66,8 @@
 void
 Thread::bindVariables(Variable *variable1, Variable *variable2)
 {
-  DEBUG_ASSERT(variable1 == variable1->variableDereference());
-  DEBUG_ASSERT(variable2 == variable2->variableDereference());
+  assert(variable1 == variable1->variableDereference());
+  assert(variable2 == variable2->variableDereference());
 
   Variable *junior;
   Variable *senior;
@@ -76,7 +76,7 @@ Thread::bindVariables(Variable *variable1, Variable *variable2)
   // Find which variable is "younger", and which is "older".
   //
 
-  DEBUG_ASSERT(variable1->isThawed() || variable2->isThawed());
+  assert(variable1->isThawed() || variable2->isThawed());
   if (variable1->isFrozen())
     {
       junior = variable2;
@@ -128,13 +128,13 @@ Thread::bindObjectVariables(ObjectVariable *object_variable1,
 {
   ObjectVariable *junior;
   ObjectVariable *senior;
-  DEBUG_ASSERT(object_variable1->isObjectVariable() 
+  assert(object_variable1->isObjectVariable() 
 	       && object_variable1 == object_variable1->variableDereference());
-  DEBUG_ASSERT(object_variable2->isObjectVariable() 
+  assert(object_variable2->isObjectVariable() 
 	       && object_variable2 == object_variable2->variableDereference());
   
-  DEBUG_ASSERT(! object_variable1->isLocalObjectVariable());
-  DEBUG_ASSERT(! object_variable2->isLocalObjectVariable());
+  assert(! object_variable1->isLocalObjectVariable());
+  assert(! object_variable2->isLocalObjectVariable());
 
   //
   // Find which variable is "younger", and which is "older".

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: token.cc,v 1.8 2004/11/24 00:12:36 qp Exp $
+// $Id: token.cc,v 1.13 2005/11/26 23:34:31 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -66,6 +66,11 @@
 #include "is_ready.h"
 #include "thread_qp.h" 
 #include "scheduler.h"
+#ifdef WIN32
+	#include <conio.h>
+	#include "qem.h"
+	extern int* sigint_pipe;
+#endif
 
 extern AtomTable *atoms;
 extern IOManager *iom;
@@ -110,6 +115,7 @@ static const	int32	OBJECT_VARIABLE_TOKEN	=10;	// LOWER8 implicit object_variable
 static const	int32	OBJECT_VARIABLE_ESC_TOKEN	=11;	// !
 static const	int32	QUANT_ESC_TOKEN	=12;	// !!
 static const	int32	NEWLINE_TOKEN	=13;	// newlines
+static const	int32	DOUBLE_TOKEN	=14;	// double 
 
 //
 // Error code:
@@ -343,7 +349,20 @@ Thread::Get(QPStream *InStrm)
     {
       InStrm->newline();
     }
-
+#ifdef WIN32
+    //We read from the pipe here instead of in scheduler.cc
+    //and change the eof (-1 to a newline (10)
+    if (c == -1)
+    {
+        char buff[128];
+        if (!_eof(sigint_pipe[0]))
+        {
+              read(sigint_pipe[0], buff, 120);
+              if (buff[0] == 'a')
+              	c = 10;
+	}
+    }		    
+#endif
   return(c);
 }
 
@@ -440,7 +459,7 @@ BACK:
   if (c == EOF) 
     {
 DOERR:
-      DEBUG_ASSERT(q == QUOTE || q == DOUBLE_QUOTE);
+      assert(q == QUOTE || q == DOUBLE_QUOTE);
       
       InStrm->clear();
       SyntaxError(Integer, EOF_IN_QUOTE);
@@ -637,11 +656,13 @@ DOERR:
 // variables: Integer, Simple, String.
 //
 int32
-Thread::GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String)
+Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple, Object*& String)
 {
   int32		digit, base, BaseMax, BaseDigit, n, i;
   int d, e;
   char		*s = Simple;
+  char          number[128];
+  char*          numptr;
   bool		flag; 
   
   int c = Get(InStrm);
@@ -656,7 +677,6 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String
       // 2. positive based integers: base'number.
       //
       Integer = 0;
-      
       do 
 	{
 	  digit = DigVal(c);
@@ -680,6 +700,66 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String
 	  c = Get(InStrm);
 	} while (InType(c) == DIGIT);
       
+      if (c == TERMIN)
+        {
+	   sprintf(number, "%d", Integer);
+	   size_t len = strlen(number);
+           numptr = number + len;
+           *numptr++ = c;
+	   c = Get(InStrm);
+           if (InType(c) != DIGIT)
+             {
+               Putback(InStrm, c);
+               Putback(InStrm, TERMIN);
+               return(NUMBER_TOKEN); 
+             }
+           while (InType(c) == DIGIT)
+             {
+               *numptr++ = c;
+	       c = Get(InStrm);
+             }
+	   if (c == 'e')
+             {
+               *numptr++ = c;
+	       c = Get(InStrm);
+               if ((c == '-') || (c == '+'))
+                 {
+                   *numptr++ = c;
+	           c = Get(InStrm);
+                 }
+              while (InType(c) == DIGIT)
+                 {
+                   *numptr++ = c;
+	           c = Get(InStrm);
+                 }
+              }
+           *numptr = '\0';
+           Putback(InStrm, c);
+           sscanf(number, "%lf" , &Double);
+           return(DOUBLE_TOKEN);
+        }
+      if (c == 'e')
+        {
+	   sprintf(number, "%d", Integer);
+	   size_t len = strlen(number);
+           numptr = number + len;
+           *numptr++ = c;
+	   c = Get(InStrm);
+           if ((c == '-') || (c == '+'))
+             {
+               *numptr++ = c;
+	       c = Get(InStrm);
+             }
+           while (InType(c) == DIGIT)
+             {
+               *numptr++ = c;
+	       c = Get(InStrm);
+             }
+           *numptr = '\0';
+           Putback(InStrm, c);
+           sscanf(number, "%lf" , &Double);
+           return(DOUBLE_TOKEN);
+        }
       if (c == QUOTE)  
 	{
 	  //
@@ -939,7 +1019,7 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String
 	    }
 	  else
 	    {
-	      *s++ = i;
+	      *s++ = static_cast<char>(i);
 	    }
 	  i = ReadCharacter(InStrm, QUOTE, Integer);
 	}
@@ -1037,7 +1117,7 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, char *Simple, Object*& String
       break;
       
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
   return(EOF_TOKEN);
@@ -1062,8 +1142,9 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
 
   int32	Integer;
   Object* String;
+  double Double;
 	
-  int32 i = GetToken(stream, Integer, atom_buf1, String);
+  int32 i = GetToken(stream, Integer, Double, atom_buf1, String);
 
   if (errno == EINTR)
     {
@@ -1076,6 +1157,9 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
     case ERROR_TOKEN:
     case NUMBER_TOKEN:
       value_arg = heap.newNumber(Integer);
+      break;
+    case DOUBLE_TOKEN:
+      value_arg = heap.newDouble(Double);
       break;
       
     case USCORE_TOKEN:
@@ -1101,7 +1185,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
       break;
       
     default:
-      DEBUG_ASSERT(false); 
+      assert(false); 
     }
   
   type_arg = heap.newNumber(i); 

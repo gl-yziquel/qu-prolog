@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: copy_term.cc,v 1.6 2002/11/08 00:44:15 qp Exp $
+// $Id: copy_term.cc,v 1.8 2005/11/26 23:34:29 qp Exp $
 
 #include "heap_qp.h"
 
@@ -96,7 +96,7 @@ Heap::copy_var(Object* source_var,
     }
   else
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(target_loc)->isVariable());
+      assert(reinterpret_cast<Object*>(target_loc)->isVariable());
       return(reinterpret_cast<Object*>(target_loc));
     }
 }
@@ -136,7 +136,7 @@ Heap::copy_object_variable(Object* source_object_variable,
     }
   else
     {
-      DEBUG_ASSERT(reinterpret_cast<Object*>(target_loc)->isObjectVariable());
+      assert(reinterpret_cast<Object*>(target_loc)->isObjectVariable());
       return(reinterpret_cast<Object*>(target_loc));
     }
 }
@@ -147,7 +147,7 @@ Heap::copy_subblock(Object* source_term, Heap& target_heap,
 		    list<VarRec *>& var_rec_list,
 		    list<VarRec *>& object_variable_rec_list)
 {
-  DEBUG_ASSERT(source_term->isSubstitutionBlock());
+  assert(source_term->isSubstitutionBlock());
   
   SubstitutionBlock* source_block = OBJECT_CAST(SubstitutionBlock*,
 						source_term);
@@ -176,7 +176,7 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 		list<VarRec *>& object_variable_rec_list)
 {
 
-  DEBUG_ASSERT(source_term->variableDereference()->hasLegalSub());
+  assert(source_term->variableDereference()->hasLegalSub());
   source_term = dereference(source_term);
 
   switch(source_term->utag())
@@ -220,7 +220,7 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 		*tail_ref = cons;
 		tail_ref = cons->getTailAddress();
 	      }
-	    DEBUG_ASSERT(source_term == AtomTable::nil);
+	    assert(source_term == AtomTable::nil);
 	    *tail_ref = AtomTable::nil;
 	    return(target_term);
 	  }
@@ -308,10 +308,14 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 	  {
 	    return(source_term);
 	  }
-	else
+	else if (source_term->isInteger())
 	  {
-	    DEBUG_ASSERT(source_term->isNumber());
 	    return(target_heap.newNumber(source_term->getNumber()));
+	  }
+        else
+	  {
+	    assert(source_term->isDouble());
+	    return(target_heap.newDouble(source_term->getDouble()));
 	  }
 	break;
       }
@@ -328,7 +332,7 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 				 target_heap,
 				 var_rec_list,
 				 object_variable_rec_list);
-        DEBUG_ASSERT(temp->isCons());
+        assert(temp->isCons());
 	target_term->setSubstitutionBlockList(temp);
 
 	return(target_term);
@@ -336,7 +340,7 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
       }
 
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return source_term;
       break;
     }
@@ -347,7 +351,7 @@ Object*
 Heap::copy_share_subblock(Object* source_term, Heap& target_heap,
 		    const heapobject* low, const heapobject* high)
 {
-  DEBUG_ASSERT(source_term->isSubstitutionBlock());
+  assert(source_term->isSubstitutionBlock());
   
   SubstitutionBlock* source_block = OBJECT_CAST(SubstitutionBlock*,
 						source_term);
@@ -381,7 +385,7 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
 		      const heapobject* low, const heapobject* high)
 {
 
-  DEBUG_ASSERT(source_term->variableDereference()->hasLegalSub());
+  assert(source_term->variableDereference()->hasLegalSub());
   source_term = dereference(source_term);
 
 #ifndef DEBUG
@@ -399,7 +403,7 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
     {
     case Object::uVar:
     case Object::uObjVar:
-      DEBUG_ASSERT(reinterpret_cast<heapobject*>(source_term) < high &&
+      assert(reinterpret_cast<heapobject*>(source_term) < high &&
                    reinterpret_cast<heapobject*>(source_term) >= low);
       return(source_term);
       break;
@@ -422,11 +426,11 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
 	    target_term->setHead(copy_share_subblock(OBJECT_CAST(Cons*,  source_term)->getHead(),
 					       target_heap,
 					       low, high));
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, source_term)->getTail()->variableDereference()->hasLegalSub());
+  assert(OBJECT_CAST(Cons*, source_term)->getTail()->variableDereference()->hasLegalSub());
 	    source_term 
 		   = dereference(OBJECT_CAST(Cons*, source_term)->getTail());
 		
-	    DEBUG_ASSERT(source_term == AtomTable::nil);
+	    assert(source_term == AtomTable::nil);
 	    target_term->setTail(AtomTable::nil);
 	    return(target_term);
 	  }
@@ -509,7 +513,7 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
 	Object* temp = copy_share_term(source_sub->getSubstitutionBlockList(), 
 				       target_heap, low, high);
 
-        DEBUG_ASSERT(temp->isCons());
+        assert(temp->isCons());
 	target_term->setSubstitutionBlockList(temp);
 
 	return(target_term);
@@ -517,7 +521,7 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
       }
 
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return source_term;
       break;
     }

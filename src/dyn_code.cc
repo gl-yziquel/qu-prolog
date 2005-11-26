@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dyn_code.cc,v 1.8 2001/12/10 03:56:39 qp Exp $
+// $Id: dyn_code.cc,v 1.12 2005/11/26 23:34:29 qp Exp $
 
 #include "config.h"
 #include "global.h"
@@ -64,7 +64,7 @@
 extern Code *code;
 extern PredTab *predicates;
 
-#include "dynamic_hash_table.cc"
+//#include "dynamic_hash_table.cc"
 
 CodeLoc getFirstUnretractedClause(CodeLoc code)
 {
@@ -111,8 +111,8 @@ Thread::psi_get_opcode(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
   
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
   
@@ -133,8 +133,8 @@ Thread::psi_get_const(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
   
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
   
@@ -156,8 +156,8 @@ Thread::psi_get_integer(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
     
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
 
@@ -165,6 +165,30 @@ Thread::psi_get_integer(Object*& object1, Object*& object2, Object*& object3)
   
   return(RV_SUCCESS);
 }
+
+//
+// psi_get_double(constant, buffer, offset)
+// Get a double from the code area at offset from buffer.
+// mode(out,in,in)
+//
+Thread::ReturnValue
+Thread::psi_get_double(Object*& object1, Object*& object2, Object*& object3)
+{
+  CodeLoc	offset;
+  
+  Object* val2 = object2->variableDereference();
+  Object* val3 = object3->variableDereference();  
+    
+  assert(val2->isNumber());
+  assert(val3->isNumber());
+  
+  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+
+  object1 = heap.newDouble(getDouble(offset));
+  
+  return(RV_SUCCESS);
+}
+
 
 //
 // psi_get_number(number, buffer, offset)
@@ -178,8 +202,8 @@ Thread::psi_get_number(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
     
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
    
@@ -201,8 +225,8 @@ Thread::psi_get_address(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
     
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
 
@@ -223,8 +247,8 @@ Thread::psi_get_offset(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
     
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
 
@@ -245,8 +269,8 @@ Thread::psi_get_pred(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   Object* val3 = object3->variableDereference();  
     
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val2->isNumber());
+  assert(val3->isNumber());
   
   offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
 
@@ -264,10 +288,10 @@ Thread::ReturnValue
 Thread::psi_get_entry(Object*& object1, Object*& object2, Object*& object3)
 {
   Object* val2 = object2->variableDereference();
-  DEBUG_ASSERT(val2->isNumber());
-  DEBUG_ASSERT(val2->getNumber() != 0);
-  CodeLoc code = (CodeLoc)(val2->getNumber()) +
-    Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS; 
+  assert(val2->isNumber());
+  assert(val2->getNumber() != 0);
+  CodeLoc code = reinterpret_cast<CodeLoc>((val2->getNumber()) +
+    Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS); 
   
   object1 = heap.newNumber(reinterpret_cast<word32>(getCodeLoc(code)));
   object3 = heap.newNumber(0);
@@ -285,8 +309,8 @@ Thread::psi_reset_entry(Object*& object1, Object*& object2)
   Object* val1 = object1->variableDereference();
   Object* val2 = object2->variableDereference();  
   
-  DEBUG_ASSERT(val1->isAtom());
-  DEBUG_ASSERT(val2->isNumber());
+  assert(val1->isAtom());
+  assert(val2->isNumber());
   
   predicates->resetEp(OBJECT_CAST(Atom*, val1), val2->getNumber(), atoms, code);
   
@@ -326,11 +350,11 @@ Thread::psi_assert(Object*& object1, Object*& object2,
     }
   else 
     {
-      DEBUG_ASSERT(val1->isStructure());
+      assert(val1->isStructure());
       Structure* str = OBJECT_CAST(Structure*, val1);
-      arity = str->getArity();
+      arity = static_cast<int>(str->getArity());
       pred = heap.dereference(str->getFunctor());
-      DEBUG_ASSERT(pred->isAtom());
+      assert(pred->isAtom());
       loc = predicates->lookUp(OBJECT_CAST(Atom*, pred), arity, atoms, code);
       if (loc == EMPTY_LOC)
 	{
@@ -340,9 +364,10 @@ Thread::psi_assert(Object*& object1, Object*& object2,
 						arity, dp, code);
 	}
     }
-  DEBUG_ASSERT(val3->isNumber());
+  assert(val3->isNumber());
   bool asserta = (val3->getNumber() == 0);
   DynamicPredicate* dp =  predicates->getCode(loc).getDynamicPred();
+  dp->Stamp();
   if (arity != 0)
     {
          indexarg = 
@@ -370,16 +395,48 @@ Thread::psi_retract(Object*& object1)
 {
   code->Stamp();
   Object* val1 = object1->variableDereference();
-  DEBUG_ASSERT(val1->isNumber());
-  CodeLoc code = (CodeLoc)(val1->getNumber()) + Code::SIZE_OF_INSTRUCTION + 
-    Code::SIZE_OF_NUMBER;
+  assert(val1->isNumber());
+  CodeLoc code = reinterpret_cast<CodeLoc>((val1->getNumber()) 
+    + Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER);
   DynamicPredicate* pred = 
     reinterpret_cast<DynamicPredicate*>(getAddress(code));
   pred->makeDirty();
+  pred->Stamp();
   CodeLoc first = getCodeLoc(code);
   updateInstruction(first, FAIL);
   
   return(RV_SUCCESS);
+}
+
+// Get the timestamp for a predicate
+// mode psi_predicate_stamp(in,in,out)
+//
+Thread::ReturnValue
+Thread::psi_predicate_stamp(Object*& object1, Object*& object2,
+                            Object*& object3)
+{
+  Object* pred = object1->variableDereference();
+  Object* arityObject = object2->variableDereference();
+  
+  int arity = arityObject->getNumber();
+  
+  PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, pred), arity,
+				   atoms, code);
+  if (loc == EMPTY_LOC)
+    {
+      return(RV_FAIL);
+    }
+  else if ((predicates->getCode(loc)).type() == PredCode::DYNAMIC_PRED)
+    {
+      DynamicPredicate* dp =  predicates->getCode(loc).getDynamicPred();
+      object3 = heap.newNumber(dp->GetStamp());
+      return(RV_SUCCESS);
+    }
+  else
+    {
+      return(RV_FAIL);
+    }
+
 }
 
 //
@@ -498,7 +555,7 @@ Thread::psi_get_dynamic_chain(Object*& object1, Object*& object2)
     }
   else
     {
-      DEBUG_ASSERT(val1->isStructure());
+      assert(val1->isStructure());
       Structure* str = OBJECT_CAST(Structure*, val1);
       arity = str->getArity();
       predObject = str->getFunctor();
@@ -520,7 +577,7 @@ Thread::psi_get_dynamic_chain(Object*& object1, Object*& object2)
   Object* argObject;
   
   const word8 arg = pred.getDynamicPred()->getIndexedArg();
-  DEBUG_ASSERT(arity == 0 || arg < arity);
+  assert(arity == 0 || arg < arity);
   if (arity == 0)
     {
       argObject = AtomTable::nil; 
@@ -569,9 +626,9 @@ Thread::psi_get_first_clause(Object*& object1, Object*& object2,
     }
   else
     {
-      DEBUG_ASSERT(val1->isStructure());
+      assert(val1->isStructure());
       Structure* str = OBJECT_CAST(Structure*, val1);
-      arity = str->getArity();
+      arity = static_cast<int>(str->getArity());
       predObject = str->getFunctor();
     }
   
@@ -591,7 +648,7 @@ Thread::psi_get_first_clause(Object*& object1, Object*& object2,
   Object* argObject;
   
   const word8 arg = pred.getDynamicPred()->getIndexedArg();
-  DEBUG_ASSERT(arity == 0 || arg < arity);
+  assert(arity == 0 || arg < arity);
   if (arity == 0)
     {
       argObject = AtomTable::nil; 
@@ -640,10 +697,10 @@ Thread::psi_get_next_clause(Object*& object1, Object*& object2,
 {
   Object* val1 = object1->variableDereference();
 
-  DEBUG_ASSERT(val1->isNumber());
-  DEBUG_ASSERT(val1->getNumber() != 0);
+  assert(val1->isNumber());
+  assert(val1->getNumber() != 0);
 
-  CodeLoc code = (CodeLoc)(val1->getNumber()) + OFFSET_TO_LAST_ADDRESS;
+  CodeLoc code = reinterpret_cast<CodeLoc>((val1->getNumber()) + OFFSET_TO_LAST_ADDRESS);
 
   CodeLoc next = getFirstUnretractedClause(getCodeLoc(code));
 

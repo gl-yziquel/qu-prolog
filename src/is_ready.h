@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: is_ready.h,v 1.14 2003/04/21 06:11:14 qp Exp $
+// $Id: is_ready.h,v 1.15 2005/03/08 00:35:09 qp Exp $
 
 #ifndef	IS_READY_H
 #define	IS_READY_H
@@ -179,12 +179,12 @@ do {                                                                        \
 do {                                                                        \
       if (scheduler->Status().testEnableTimeslice())                        \
         {                                                                   \
-           if (is_ready((socket)->getFD(), SOCKET))                         \
+           if (is_ready((socket)->getFD(), QPSOCKET))                         \
              {                                                              \
              }                                                              \
            else /* Block */						\
              {								\
-               BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (socket)->getFD(), SOCKET, iom);							\
+               BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (socket)->getFD(), QPSOCKET, iom);							\
                scheduler->blockedQueue().push_back(blockobj); 	       	\
                block_status.setBlocked();                                    \
                return RV_BLOCK;                                             \

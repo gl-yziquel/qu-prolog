@@ -53,13 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_hash_table.h,v 1.3 2004/12/23 22:40:35 qp Exp $    
+// $Id: dynamic_hash_table.h,v 1.5 2005/11/26 23:34:29 qp Exp $    
 //
 
 #ifndef DYNAMIC_HASH_TABLE_H
 #define DYNAMIC_HASH_TABLE_H
 
-#include <iostream>
+#include <stdlib.h>
+
 //
 // HashType is the data type stored in the hash table.
 // The size of the table must be a power of 2.
@@ -135,7 +136,7 @@ public:
 			   if ((loc < 0) || (loc >= tableSize))
 			   {
 			     // cerr << "Out of bounds " << loc << endl;
-			       abort();
+			     abort();
 			   }
 			   return(table[loc]); 
 			}
@@ -165,6 +166,206 @@ public:
 	DynamicHashTable(int TabSize);
 virtual	~DynamicHashTable(void);
 };
+
+
+//
+// Constructor:
+//	Allocate the hash table.
+//
+template <class HashType>
+DynamicHashTable<HashType>::DynamicHashTable(int TabSize)
+{
+  tableSize = next_2power(TabSize);
+  table = new HashType[tableSize];
+  tableSizeMask = tableSize-1;
+  used = 0;
+}
+
+//
+// Destructor:
+//	Clean up the table.
+//
+template <class HashType>
+DynamicHashTable<HashType>::~DynamicHashTable(void)
+{
+  delete [] table;
+}
+
+//
+// Search through the hash table.  
+// If the entry is found then the position is returned else -1.
+//
+template <class HashType>
+int
+DynamicHashTable<HashType>::search(const HashType item) const
+{
+  int	hashValue, increment;
+  HashType* entry;
+  
+  for (hashValue = hashFunction(item) & tableSizeMask, 
+	 increment = 1, entry = &table[hashValue];
+       ! entry->isEmpty(); )
+    {
+      if (!entry->isRemoved() && (item == *entry))
+	{
+	  return(hashValue);
+	}
+      else if (increment  == tableSize)
+	{
+	  return(-1);
+	}
+      hashValue = (hashValue + increment++) & tableSizeMask;
+      entry = &table[hashValue];
+    }
+  //
+  // No matching entry is found.  
+  //
+  return(-1);
+}
+
+//
+// Insert entry in table.  
+// The table is resized if it becomes more than half full.
+// Returns 1 if already there otherwise 0.
+//
+template <class HashType>
+bool
+DynamicHashTable<HashType>::insert(const HashType item, int &hashValue)
+{
+  int	increment;
+  HashType* entry;
+  
+  for (hashValue = hashFunction(item) & tableSizeMask, 
+	 increment = 1, entry = &table[hashValue];
+       ! (entry->isEmpty() || entry->isRemoved()); )
+    {
+      if (item == *entry)
+	{
+	  return(true);
+	}
+      else if (increment  == tableSize)
+	{
+	  // cerr << "Table cycled through" << endl;
+	  abort();
+	}
+      hashValue = (hashValue + increment++) & tableSizeMask;
+      entry = &table[hashValue];
+    }
+  //
+  // Empty or removed slot found.   
+  //
+  if ((used << 1) > tableSize)
+    {
+      // Check if there is a removed slot
+      bool is_removed = false;
+      for (int i = 0; i < tableSize; i++)
+	{
+	  if (!table[i].isEmpty() && table[i].isRemoved())
+	    {
+	      is_removed = true;
+	      break;
+	    }
+	}
+      int newTableSize;
+      if (is_removed)
+	{
+	  newTableSize = tableSize;
+	}
+      else
+	{
+	  newTableSize = next_2power(tableSize);
+	}
+      resize(newTableSize);
+      insert(item, hashValue);
+    }
+  else
+    {
+      used++;
+      table[hashValue] = item;
+    }
+  assert(hashValue == search(item));
+  return(false);
+}
+
+//
+// Remove entry from table.  
+// Returns 1 if found -1 if out of range otherwise 0.
+//
+template <class HashType>
+int
+DynamicHashTable<HashType>::remove(const int position) 
+{
+  if ((position < 0) || (position >= tableSize))
+    {
+      return(-1);
+    }
+  if (table[position].isEmpty() || table[position].isRemoved())
+    {
+      return(0);
+    }
+  used--;
+  table[position].makeRemoved();
+  return(1);
+}
+
+//
+// Resize the table
+//
+template <class HashType>
+void
+DynamicHashTable<HashType>::resize(const int newsize) 
+{
+  HashType *oldtable = table;
+  int oldtableSize = tableSize;
+  
+  tableSize = newsize;
+  table = new HashType[tableSize]; 
+  tableSizeMask = tableSize-1;
+  used = 0;
+  
+  for (int j = 0; j < oldtableSize; j++)
+    {
+      if (!oldtable[j].isEmpty())
+	{
+	  if(oldtable[j].isRemoved())
+	    {
+	      oldtable[j].clearEntry();
+	    }
+	  else
+	    {
+	      int dummy;
+	      insert(oldtable[j], dummy);
+	    }
+	}
+    }  
+  delete [] oldtable;
+}
+
+//
+// Position of next entry for iterator
+// Return -1 if none left.
+//
+template <class HashType>
+int		
+DynamicHashTable<HashType>::iter_next(void)      
+{
+  while (iter_pos < tableSize)
+    {
+      if (!table[iter_pos].isEmpty() 
+	  && !table[iter_pos].isRemoved())
+	{
+	  return(iter_pos++);
+	}
+      iter_pos++;
+    }
+  return(-1);
+}
+
+
+
+
+
+
 
 #endif	// DYNAMIC_HASH_TABLE_H
 

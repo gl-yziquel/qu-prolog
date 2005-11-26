@@ -53,8 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.h,v 1.8 2004/02/12 23:53:47 qp Exp $
+// $Id: icm_environment.h,v 1.10 2005/11/26 23:34:30 qp Exp $
 
+#ifdef ICM_DEF
 #ifndef	ICM_ENVIRONMENT_H
 #define	ICM_ENVIRONMENT_H
 
@@ -76,7 +77,7 @@ class ICMEnvironment
   int comm_fd;
   
  public:  
-  ICMEnvironment(icmConn ic)
+  explicit ICMEnvironment(icmConn ic)
     : conn(ic),
     handle(NULL),
     message_no(-LONG_MAX),
@@ -149,4 +150,5 @@ public:
 
 #endif	// ICM_ENVIRONMENT_H
 
+#endif // ICM_DEF
 

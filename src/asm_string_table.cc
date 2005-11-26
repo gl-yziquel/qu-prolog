@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.cc,v 1.5 2004/12/23 22:40:34 qp Exp $
+// $Id: asm_string_table.cc,v 1.6 2005/03/08 00:34:59 qp Exp $
 
 #include "asm_string_table.h"
 #include "code.h"
@@ -83,7 +83,7 @@ ASMStringTable::save(ostream& ostrm) const
   for (ASMLoc i = 0; i < tableNumEntries(); i++)
     {
       // Number of characters + 1 for null byte
-      num_bytes += (getEntry(i).value)->length() + 1;
+      num_bytes += static_cast<Code::AddressSizedType>((getEntry(i).value)->length() + 1);
     }
   
   // Write out the number of bytes

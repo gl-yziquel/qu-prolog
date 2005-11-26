@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: structure.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: structure.cc,v 1.4 2005/11/26 23:34:31 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -66,7 +66,7 @@
 Thread::ReturnValue
 Thread::psi_compound(Object *& object1)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue	pval1(object1);
   
   heap.prologValueDereference(pval1);
@@ -82,9 +82,9 @@ Thread::psi_functor(Object *& object1, Object *& object2, Object *& object3)
 {
   int 		arity = 0, i;
 
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object3->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
+  assert(object3->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   Object* val3 = heap.dereference(object3);
@@ -92,7 +92,7 @@ Thread::psi_functor(Object *& object1, Object *& object2, Object *& object3)
   if (val1->isStructure())
     {
       Structure* str = OBJECT_CAST(Structure*, val1);
-      Object* arity_object = heap.newNumber(str->getArity());
+      Object* arity_object = heap.newNumber(static_cast<long>(str->getArity()));
       return BOOL_TO_RV(unify(val2, str->getFunctor()) && 
 		        unify(val3, arity_object));
     }   
@@ -156,14 +156,14 @@ Thread::psi_functor(Object *& object1, Object *& object2, Object *& object3)
     }   
   else if (val1->isSubstitution())
     {
-      DEBUG_ASSERT(val1->hasLegalSub());
+      assert(val1->hasLegalSub());
       PrologValue pval(val1);
       heap.prologValueDereference(pval);
       if (pval.getTerm()->isStructure())
 	{     
 	  Structure* str = OBJECT_CAST(Structure*, pval.getTerm());
-	  Object* arity_object = heap.newNumber(str->getArity());
-          DEBUG_ASSERT(pval.getSubstitutionBlockList()->isCons());
+	  Object* arity_object = heap.newNumber(static_cast<long>(str->getArity()));
+          assert(pval.getSubstitutionBlockList()->isCons());
 	  Object* funct 
 	    = heap.newSubstitution(pval.getSubstitutionBlockList(),
 				   str->getFunctor());
@@ -209,8 +209,8 @@ Thread::ReturnValue
 Thread::psi_arg(Object *& object1, Object *& object2, Object *& object3)
 {
   int32 arity, i;
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
@@ -220,7 +220,7 @@ Thread::psi_arg(Object *& object1, Object *& object2, Object *& object3)
       if (val2->isStructure())
 	{
 	  Structure* str = OBJECT_CAST(Structure*, val2);
-	  arity = str->getArity();
+	  arity = static_cast<int32>(str->getArity());
 	  if ((i <= 0) || (i > arity))
 	    {
 	      PSI_ERROR_RETURN(EV_RANGE, 1);
@@ -248,18 +248,18 @@ Thread::psi_arg(Object *& object1, Object *& object2, Object *& object3)
 	}
       else if (val2->isSubstitution())
 	{
-          DEBUG_ASSERT(val2->hasLegalSub());
+          assert(val2->hasLegalSub());
 	  PrologValue pval(val2);
 	  heap.prologValueDereference(pval);
 	  if (pval.getTerm()->isStructure())
 	    {
 	      Structure* str = OBJECT_CAST(Structure*, pval.getTerm());
-	      arity = str->getArity();
+	      arity = static_cast<int32>(str->getArity());
 	      if ((i <= 0) || (i > arity))
 		{
 		  PSI_ERROR_RETURN(EV_RANGE, 1);
 		}
-              DEBUG_ASSERT(pval.getSubstitutionBlockList()->isCons());
+              assert(pval.getSubstitutionBlockList()->isCons());
 	      object3 = heap.newSubstitution(pval.getSubstitutionBlockList(),
 					     str->getArgument(i));
 	      return RV_SUCCESS;
@@ -269,7 +269,7 @@ Thread::psi_arg(Object *& object1, Object *& object2, Object *& object3)
 	      Cons* list = OBJECT_CAST(Cons*, pval.getTerm());
 	      if (i == 1) 
 		{
-                  DEBUG_ASSERT(pval.getSubstitutionBlockList()->isCons());
+                  assert(pval.getSubstitutionBlockList()->isCons());
 		  object3
 		    = heap.newSubstitution(pval.getSubstitutionBlockList(),
 					   list->getHead());
@@ -277,7 +277,7 @@ Thread::psi_arg(Object *& object1, Object *& object2, Object *& object3)
 		}
 	      else if (i == 2)
 		{
-                  DEBUG_ASSERT(pval.getSubstitutionBlockList()->isCons());
+                  assert(pval.getSubstitutionBlockList()->isCons());
 		  object3 
 		    = heap.newSubstitution(pval.getSubstitutionBlockList(),
 					   list->getTail());
@@ -332,8 +332,8 @@ Thread::psi_put_structure(Object *& object1, Object *& object2,
 			  Object *& object3)
 {
   int32 		arity, i;
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   
@@ -389,23 +389,23 @@ Thread::ReturnValue
 Thread::psi_set_argument(Object *& object1, Object *& object2, Object *& object3)
 {
   int32 		arity, i;
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object3->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
+  assert(object3->variableDereference()->hasLegalSub());
   Object* funct = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   Object* val3 = heap.dereference(object3);
 
-  DEBUG_ASSERT(val2->isShort());
+  assert(val2->isShort());
   
   i = val2->getNumber();
 
   if (funct->isStructure())
     {
       Structure* str = OBJECT_CAST(Structure*, funct);
-      arity = str->getArity();
+      arity = static_cast<int32>(str->getArity());
       
-      DEBUG_ASSERT((i > 0) && (i <= arity));
+      assert((i > 0) && (i <= arity));
       
       if(val3->isVariable())
 	{
@@ -416,7 +416,7 @@ Thread::psi_set_argument(Object *& object1, Object *& object2, Object *& object3
   else if (funct->isCons())
     {
       Cons* list = OBJECT_CAST(Cons*, funct);
-      DEBUG_ASSERT((i > 0) && (i <= 2));
+      assert((i > 0) && (i <= 2));
       if (i == 1)
 	{
 	  if(val3->isVariable())
@@ -436,7 +436,7 @@ Thread::psi_set_argument(Object *& object1, Object *& object2, Object *& object3
     }
   else
     {
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   return(RV_SUCCESS);
 }

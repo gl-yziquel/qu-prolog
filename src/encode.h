@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: encode.h,v 1.9 2004/02/12 23:53:47 qp Exp $
+// $Id: encode.h,v 1.11 2005/03/27 22:07:39 qp Exp $
 
 #ifndef ENCODE_H
 #define ENCODE_H
@@ -82,7 +82,11 @@ private:
 
   static const int TABLE_MAX	= 256;
   
-  vector<Object**>	vector_of_tables;
+#ifdef WIN32
+  vector<Object**, allocator<Object**> >        vector_of_tables;
+#else
+  vector<Object**>      vector_of_tables;
+#endif
   int top_table_entry;
   int top_vector_entry;
   
@@ -103,6 +107,7 @@ public:
   static const word8 ENCODE_SUBSTITUTION_END = 11;
   static const word8 ENCODE_NAME =             12;
   static const word8 ENCODE_REF_OFFSET =       13;
+  static const word8 ENCODE_DOUBLE =          14;
 
   //
   // Add.
@@ -160,7 +165,11 @@ public:
   
   EncodeMap(void)
     {
-      vector_of_tables.push_back(new Object* [TABLE_MAX]);
+#ifdef WIN32
+      //Or windows will die
+          vector_of_tables.reserve(1);
+#endif
+      vector_of_tables.push_back(new Object*[TABLE_MAX]);
       top_table_entry = 0;
       top_vector_entry = 1;
     }
@@ -206,6 +215,10 @@ private:
   // Encode write a number
   //
   bool writeEncodeNumber(QPStream&, const int32);
+  //
+  // Encode write a double
+  //
+  bool writeEncodeDouble(QPStream&, const double);
     
   //
   // Encode the string and write the result to the stream.
@@ -253,6 +266,10 @@ private:
   // Read a number.
   //
   bool encodeReadNumber(QPStream&, int32&);
+  //
+  // Read a double.
+  //
+  bool encodeReadDouble(QPStream&, double&);
 
   //
   // Read from a stream and decode back to the substitution.

@@ -56,23 +56,77 @@
 // 
 // ##Copyright##
 //
-// $Id: system_support.cc,v 1.1 2004/03/19 04:54:20 qp Exp $
+// $Id: system_support.cc,v 1.2 2005/03/08 00:35:16 qp Exp $
 
+// PORT
 #include "system_support.h"
+#include <iostream>
+using namespace std;
 
-string wordexp(string str)
+void wordexp(string& str)
 {
+
+// TODO
+#ifdef WIN32
+   bool hasChanged = false;
+
+  /* Windows is stupid - we know this already. So...
+   * What we have to do here is a few things:
+   *	1. Change those bloody slashes to backslashes.
+   *	2. Replace environment variables.
+   *	3. Remove special chars such as ~.
+   */
+
+	//Temp var
+	string newstr;
+
+	// Lets remove ./
+	int pos = str.find("./");
+	if (pos == 0) 
+	{
+		// It appears that there is a bug here.
+		// Doing: str = str.substr(....) doesn't work
+		// So we waste some more memory...
+		newstr = str.substr(2,str.length() - 2);
+		//Yes, we have changed the string
+		hasChanged = true;
+	}
+
+	// Lets replace all slashes with backslashes
+	int posn = 0;
+	posn = newstr.find("/",posn);
+	while (posn != -1) 
+	{
+		str.replace(posn,posn,"\\");
+		posn = newstr.find("/",posn);
+		//Yes, we have changed the string
+		hasChanged = true;
+	}
+
+	//We're not going to do environment vars yet. TODO!
+	//Nor will we handle special unix chars, since there's
+	//hopefully never that these will get passed to us.
+	if (hasChanged)
+	{
+		return newstr;
+	} else
+	{
+		return str;
+	}
+
+#else //UNIX STUFF HERE
+
   // expand leading ~ to home dir
-  int pos = str.find("~/");
+  int pos = static_cast<int>(str.find("~/"));
   if (pos == 0)
     {
       str.replace(0,1, getenv("HOME"));
     }
   // expand (single) environment variable
-  pos = str.find("$");
+  pos = static_cast<int>(str.find("$"));
   if (pos >= 0)
     {
-      int end = str.find("/", pos);
+      int end = static_cast<int>(str.find("/", pos));
       string env = string(str, pos+1, end-pos-1);
       char* expenv = getenv(env.c_str());
       if (expenv == NULL)
@@ -84,5 +138,5 @@ string wordexp(string str)
 	  str.replace(pos, end-pos, expenv);
         }
     }
-  return str;
+#endif
 }

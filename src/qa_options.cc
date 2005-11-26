@@ -53,12 +53,19 @@
 // 
 // ##Copyright##
 //
-// $Id: qa_options.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: qa_options.cc,v 1.2 2005/03/08 00:35:12 qp Exp $
 
+#ifdef WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #include <stdlib.h>
 
+#ifdef WIN32
+#include "../win32/src/XGetopt.h"
+#endif
 #include "qa_options.h"
 
 #include "defaults.h"
@@ -83,7 +90,11 @@ QaOptions::QaOptions(int argc, char **argv)
   while ((c = getopt(argc, argv, opts)),
 	 (c != -1 && c != '?'))
 #else	// LINUX
+#ifdef WIN32
+  while ((c = getopt(argc, argv, const_cast<TCHAR*>(opts))) != -1)
+#else
   while ((c = getopt(argc, argv, opts)) != -1)
+#endif
 #endif // LINUX
     {
       switch ((char) c)

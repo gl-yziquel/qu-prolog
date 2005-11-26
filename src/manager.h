@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: manager.h,v 1.3 2002/12/05 03:39:31 qp Exp $
+// $Id: manager.h,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	MANAGER_H
 #define	MANAGER_H
@@ -70,16 +70,16 @@ protected:
   Type **elems;
 
 public:
-  Manager(const word32 size)
+  explicit Manager(const word32 size)
     {
-      DEBUG_ASSERT(size > 0);
+      assert(size > 0);
 
       MAX = size;
 
       typedef Type *TypePtr;	// For the benefit of ANSI C++
       elems = new TypePtr[MAX];
      
-      DEBUG_ASSERT(elems != NULL);
+      assert(elems != NULL);
 
       for (word32 index = 0; index < MAX; index++)
 	{

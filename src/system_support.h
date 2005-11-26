@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system_support.h,v 1.1 2004/03/19 04:54:20 qp Exp $
+// $Id: system_support.h,v 1.2 2005/03/08 00:35:16 qp Exp $
 
 #ifndef SYSTEM_SUPPORT_H
 #define SYSTEM_SUPPORT_H
@@ -69,6 +69,6 @@ using namespace std;
 // wordexp(string) - a simplified wordexp(3) that expands ~ and environment
 // variables
 
-string wordexp(string);
+void wordexp(string&);
 
 #endif // SYSTEM_SUPPORT_H

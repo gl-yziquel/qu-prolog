@@ -53,13 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: yield.h,v 1.2 2000/12/12 03:36:21 qp Exp $
+// $Id: yield.h,v 1.3 2005/06/29 22:05:35 qp Exp $
 
 #ifndef	YIELD_H
 #define	YIELD_H
 
 private:
-typedef bool (*Heap::YieldCond)(Heap*, PrologValue&, Object *);
+typedef bool (*YieldCond)(Heap*, PrologValue&, Object *);
 
 //
 // Check whether the substitution list yields the term.

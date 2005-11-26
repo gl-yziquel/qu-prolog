@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: global.h,v 1.3 2002/12/03 04:54:53 qp Exp $
+// $Id: global.h,v 1.4 2005/03/08 00:35:06 qp Exp $
 
 #ifndef	GLOBAL_H
 #define	GLOBAL_H
@@ -61,8 +61,10 @@
 #include "atom_table.h"
 #include "objects.h"
 #include "code.h"
+#ifdef ICM_DEF
 #include "icm_environment.h"
 #include "icm_message.h"
+#endif
 #include "pred_table.h"
 #include "qem_options.h"
 #include "record_ref_table.h"
@@ -78,7 +80,9 @@
 extern AtomTable *atoms;
 extern Object** lib_path;
 extern Code *code;
+#ifdef ICM_DEF
 extern ICMEnvironment *icm_environment;
+#endif
 extern IOManager *iom;
 extern SocketManager *sockm;
 extern PredTab *predicates;
@@ -89,6 +93,11 @@ extern SchedulerStatus *scheduler_status;
 extern Signals *signals;
 extern ThreadOptions *thread_options;
 extern ThreadTable *thread_table;
+#ifdef WIN32
+#define ELVIN_DEF
+#else
 extern pthread_t *interrupt_handler_thread;
+#endif
+
 
 #endif	// GLOBAL_H

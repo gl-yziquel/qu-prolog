@@ -33,16 +33,94 @@ end('thread_fork'/2):
 
 
 $1:
-	allocate(3)
+	allocate(4)
 	get_y_variable(2, 0)
 	get_y_variable(1, 1)
-	get_x_variable(0, 2)
-	put_y_variable(0, 1)
+	get_y_variable(3, 2)
+	put_y_variable(0, 19)
+	call_predicate('$thread_fork_ok', 1, 4)
+	put_y_value(3, 0)
+	put_y_value(0, 1)
 	call_predicate('$thread_decode_sizes', 2, 3)
 	pseudo_instr3(56, 22, 21, 20)
 	deallocate
 	proceed
 end('thread_fork'/3):
+
+
+
+'$thread_fork_ok/1$0'/1:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'self':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('self', 1)
+	get_x_value(0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('$thread_fork_ok/1$0'/1):
+
+
+
+'$thread_fork_ok/1$1'/1:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'elvin':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('elvin', 1)
+	get_x_value(0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('$thread_fork_ok/1$1'/1):
+
+
+
+'$thread_fork_ok'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(1, 0)
+	neck_cut
+	proceed
+
+$2:
+	allocate(1)
+	get_y_variable(0, 0)
+	call_predicate('$thread_fork_ok/1$0', 1, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('$thread_fork_ok/1$1', 1)
+end('$thread_fork_ok'/1):
 
 
 
@@ -301,6 +379,133 @@ $1:
 	deallocate
 	proceed
 end('thread_wait_on_goal'/1):
+
+
+
+'thread_wait_on_goal/2$0'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_variable(1, 2)
+	get_y_level(0)
+	call_predicate('$check_pred_stamps', 2, 2)
+	put_y_value(1, 0)
+	call_predicate('call', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	put_structure(1, 0)
+	set_constant('record_db')
+	set_constant('true')
+	put_list(1)
+	set_x_value(0)
+	set_constant('[]')
+	put_structure(1, 2)
+	set_constant('db')
+	set_constant('true')
+	put_list(0)
+	set_x_value(2)
+	set_x_value(1)
+	allocate(0)
+	call_predicate('thread_wait', 1, 0)
+	fail
+end('thread_wait_on_goal/2$0'/3):
+
+
+
+'thread_wait_on_goal'/2:
+
+
+$1:
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_level(0)
+	put_y_value(2, 0)
+	put_y_variable(1, 1)
+	call_predicate('$get_pred_stamps', 2, 4)
+	call_predicate('repeat', 0, 4)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(3, 2)
+	call_predicate('thread_wait_on_goal/2$0', 3, 1)
+	cut(0)
+	deallocate
+	proceed
+end('thread_wait_on_goal'/2):
+
+
+
+'$get_pred_stamps'/2:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('/', 2, 2)
+	unify_x_variable(2)
+	unify_x_variable(3)
+	get_list(1)
+	unify_x_variable(4)
+	unify_x_variable(1)
+	pseudo_instr1(2, 2)
+	pseudo_instr1(3, 3)
+	pseudo_instr3(72, 2, 3, 5)
+	get_x_value(4, 5)
+	execute_predicate('$get_pred_stamps', 2)
+end('$get_pred_stamps'/2):
+
+
+
+'$check_pred_stamps'/2:
+
+	switch_on_term(0, $3, 'fail', $3, 'fail', 'fail', 'fail')
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_list(0)
+	unify_x_ref(0)
+	unify_void(1)
+	get_structure('/', 2, 0)
+	unify_x_variable(0)
+	unify_x_variable(2)
+	get_list(1)
+	unify_x_variable(1)
+	unify_void(1)
+	pseudo_instr3(72, 0, 2, 3)
+	get_x_variable(0, 3)
+	pseudo_instr2(1, 1, 0)
+	neck_cut
+	proceed
+
+$2:
+	get_list(0)
+	unify_void(1)
+	unify_x_variable(0)
+	get_list(1)
+	unify_void(1)
+	unify_x_variable(1)
+	execute_predicate('$check_pred_stamps', 2)
+end('$check_pred_stamps'/2):
 
 
 

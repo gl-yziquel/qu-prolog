@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_escapes.cc,v 1.18 2003/09/28 07:53:37 qp Exp $
+// $Id: thread_escapes.cc,v 1.21 2005/11/26 23:34:31 qp Exp $
 
 #include <errno.h>
 
@@ -220,7 +220,7 @@ Thread::psi_thread_fork(Object *& name_arg,
   thread_table->IncLive();
 
 #ifdef DEBUG_MT
-  cerr.form("%s Thread %ld, %ld now live\n",
+  printf("%s Thread %ld, %ld now live\n",
 	    __FUNCTION__, thread->TInfo().ID(), thread_table->Live());
   //      heap.DisplayTerm(cerr, *atoms, argG);
 #endif
@@ -296,6 +296,11 @@ Thread::psi_thread_set_symbol(Object *& name_arg)
   else if (!argN->isAtom())
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  if ((argN == atoms->add("self")) || (argN == atoms->add("elvin")))
+    {
+      PSI_ERROR_RETURN(EV_VALUE, 1);
     }
 
   const string new_symbol(atoms->getAtomString(OBJECT_CAST(Atom*, argN)));
@@ -529,7 +534,7 @@ Thread::ReturnValue
 Thread::psi_thread_exit(void)
 {
   refTrail.backtrackTo(0);
-  DEBUG_ASSERT(Condition() == RUNNABLE);
+  assert(Condition() == RUNNABLE);
 
   // If the thread is the initial thread then exit the application.
   if (TInfo().Initial())
@@ -630,7 +635,7 @@ Thread::psi_thread_suspend(Object *& thread_id_cell)
       break;
     }
 
-  DEBUG_ASSERT(false);
+  assert(false);
   return RV_FAIL;
 #else
   PSI_ERROR_RETURN(EV_UNSUPPORTED, 0);
@@ -713,7 +718,7 @@ Thread::psi_thread_resume(Object *& thread_id_cell)
       break;
     } 
 
-  DEBUG_ASSERT(false);
+  assert(false);
   return RV_FAIL;
 #else
   PSI_ERROR_RETURN(EV_UNSUPPORTED, 0);
@@ -949,7 +954,7 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
   Thread *thread;
   DECODE_THREAD_ARG(heap, thread_id_arg, *thread_table, 1, thread);
 
-  DEBUG_ASSERT(thread->Condition() == RUNNABLE);
+  assert(thread->Condition() == RUNNABLE);
 
   thread->refTrail.backtrackTo(0);
   //

@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: examine_term.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: examine_term.h,v 1.2 2005/03/27 22:07:40 qp Exp $
 
 #ifndef EXAMINE_TERM_H
 #define EXAMINE_TERM_H
@@ -86,6 +86,13 @@ ReturnValue 	psi_atom(Object *& );
 // mode(in)
 //
 ReturnValue psi_integer(Object *& );
+
+//
+// psi_float(term)
+// True if term is a float, false otherwise
+// mode(in)
+//
+ReturnValue psi_float(Object *& );
 
 //
 // psi_atomic(term)

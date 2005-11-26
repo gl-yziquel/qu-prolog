@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: equal_escape.cc,v 1.4 2002/03/27 23:23:47 qp Exp $
+// $Id: equal_escape.cc,v 1.5 2005/11/26 23:34:29 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -68,8 +68,8 @@ Thread::ReturnValue
 Thread::psi_fast_equal(Object *& object1, Object *& object2, Object *& object3)
 {
   truth3		res;
-  DEBUG_ASSERT(object1->hasLegalSub());
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object1->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue  pval1(object1);
   PrologValue  pval2(object2);
 

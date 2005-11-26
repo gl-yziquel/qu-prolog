@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dyn_code_block.h,v 1.3 2002/11/03 08:37:25 qp Exp $  
+// $Id: dyn_code_block.h,v 1.5 2005/11/26 23:34:29 qp Exp $  
 
 #ifndef DYN_CODE_BLOCK_H
 #define DYN_CODE_BLOCK_H
@@ -76,7 +76,7 @@ private:
 public:
   // When a new code block is created (by assert) refcount is set to 1
   // because asserting produces a reference.
-  DynCodeBlock(CodeLoc c):refcount(1)
+  explicit DynCodeBlock(CodeLoc c):refcount(1)
   {
     code = c;
   }
@@ -140,7 +140,7 @@ public:
     return code;
   }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(void)
   {
     cerr << "----DynCodeBlock-----" << endl;

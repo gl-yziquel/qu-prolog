@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: obj_index.cc,v 1.8 2003/06/18 04:33:36 qp Exp $
+// $Id: obj_index.cc,v 1.9 2005/03/08 00:35:10 qp Exp $
 
 //
 // Format of a .qo file
@@ -140,7 +140,7 @@ ObjectIndex::loadObjectFile(const char *file, word32& NumQuery,
   //
   // Open the file for reading.
   //
-  ifstream istrm(file);
+  ifstream istrm(file, ifstream::binary);
   if (istrm.fail())
     {
       //

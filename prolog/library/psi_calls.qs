@@ -1305,6 +1305,48 @@ end('getcwd'/1):
 
 
 
+'float'/1:
+
+
+$1:
+	pseudo_instr1(113, 0)
+	proceed
+end('float'/1):
+
+
+
+'srandom'/1:
+
+
+$1:
+	pseudo_instr1(114, 0)
+	proceed
+end('srandom'/1):
+
+
+
+'random'/1:
+
+
+$1:
+	pseudo_instr1(115, 1)
+	get_x_value(0, 1)
+	proceed
+end('random'/1):
+
+
+
+'irandom'/1:
+
+
+$1:
+	pseudo_instr1(116, 1)
+	get_x_value(0, 1)
+	proceed
+end('irandom'/1):
+
+
+
 'is'/2:
 
 
@@ -2527,6 +2569,27 @@ end('$symbolic_address_to_icm_handle'/2):
 
 
 
+'$write_float'/2:
+
+
+$1:
+	pseudo_instr2(115, 0, 1)
+	proceed
+end('$write_float'/2):
+
+
+
+'$hash_double'/2:
+
+
+$1:
+	pseudo_instr2(116, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$hash_double'/2):
+
+
+
 'functor'/3:
 
 
@@ -3304,6 +3367,39 @@ $1:
 	get_x_value(2, 4)
 	proceed
 end('simplify_term'/3):
+
+
+
+'$get_double'/3:
+
+
+$1:
+	pseudo_instr3(70, 3, 1, 2)
+	get_x_value(0, 3)
+	proceed
+end('$get_double'/3):
+
+
+
+'random'/3:
+
+
+$1:
+	pseudo_instr3(71, 0, 1, 3)
+	get_x_value(2, 3)
+	proceed
+end('random'/3):
+
+
+
+'$predicate_stamp'/3:
+
+
+$1:
+	pseudo_instr3(72, 0, 1, 3)
+	get_x_value(2, 3)
+	proceed
+end('$predicate_stamp'/3):
 
 
 

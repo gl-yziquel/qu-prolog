@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code.h,v 1.5 2002/11/03 08:37:24 qp Exp $ 
+// $Id: code.h,v 1.8 2005/11/26 23:34:29 qp Exp $ 
 
 #ifndef	CODE_H
 #define	CODE_H
@@ -131,10 +131,10 @@ inline void	update4Bytes(CodeLoc loc, word32 data)
 {
   //Stamp();
 
-  *loc++ = (data & 0xff000000) >> 24;
-  *loc++ = (data & 0x00ff0000) >> 16;
-  *loc++ = (data & 0x0000ff00) >> 8;
-  *loc   =  data & 0x000000ff;
+  *loc++ = static_cast<word8>((data & 0xff000000) >> 24);
+  *loc++ = static_cast<word8>((data & 0x00ff0000) >> 16);
+  *loc++ = static_cast<word8>((data & 0x0000ff00) >> 8);
+  *loc   =  static_cast<word8>(data & 0x000000ff);
 }
 //
 // Fetch different kinds of data from the code area.  The pointer to
@@ -150,13 +150,20 @@ inline word8 getRegister(CodeLoc& loc) { return(get1Byte(loc)); }
 inline word8 getNumber(CodeLoc& loc)  { return(get1Byte(loc)); }
 inline word32 getAddress(CodeLoc& loc)  { return(get4Bytes(loc)); }
 inline int32 getInteger(CodeLoc& loc)  { return((int32)(get4Bytes(loc))); }
+inline double getDouble(CodeLoc& loc)
+{
+  double d;
+  memcpy(&d, loc, sizeof(double));
+  loc += sizeof(double);
+  return d;
+}
 inline CodeLoc getCodeLoc(CodeLoc& loc)  
-{ return((CodeLoc)get4Bytes(loc)); }
+{ return(reinterpret_cast<CodeLoc>(get4Bytes(loc))); }
 inline word16 getOffset(CodeLoc& loc)  { return(get2Bytes(loc)); }
 inline Atom* getPredAtom(CodeLoc& loc)  
 { 
   Object* a = reinterpret_cast<Object*>(get4Bytes(loc));
-  DEBUG_ASSERT(a->isAtom());
+  assert(a->isAtom());
   return(reinterpret_cast<Atom*>(a));
 }
 inline word16 getTableSize(CodeLoc& loc)  { return(get2Bytes(loc)); }
@@ -170,6 +177,10 @@ inline void	updateConstant(const CodeLoc loc, Object* data)
 { update4Bytes(loc, reinterpret_cast<word32>(data)); }
 inline void	updateInteger(const CodeLoc loc, int32 data)
 { update4Bytes(loc, (word32)(data)); }
+inline void     updateDouble(const CodeLoc loc, double data)
+{
+  memcpy(loc, &data, sizeof(double));
+}
 inline void	updateRegister(const CodeLoc loc, const word8 data)
 { update1Byte(loc, data); }
 inline void	updateNumber(const CodeLoc loc, const word8 data)
@@ -177,7 +188,7 @@ inline void	updateNumber(const CodeLoc loc, const word8 data)
 inline void	updateAddress(const CodeLoc loc, const word32 data)
 { update4Bytes(loc, data); }
 inline void	updateCodeLoc(const CodeLoc loc, const CodeLoc data)
-{ update4Bytes(loc, (word32)data); }
+{ update4Bytes(loc, reinterpret_cast<word32>(data)); }
 inline void	updateOffset(const CodeLoc loc, const word16 data)
 { update2Bytes(loc, data); }
 inline void	updatePredAtom(const CodeLoc loc, const Atom* data)
@@ -200,7 +211,7 @@ protected:
   virtual       const char      *getAreaName(void) const = 0;
 
 public:
-  StaticCodeArea(word32 size);
+  explicit StaticCodeArea(word32 size);
   virtual ~StaticCodeArea(void);
 
   CodeLoc getTopOfStack(void) const       { return(top); }
@@ -288,6 +299,9 @@ public:
   static const	size_t	SIZE_OF_INTEGER	        = 4;
   typedef word32 IntegerSizedType;
 
+  static const	size_t	SIZE_OF_DOUBLE	        = sizeof(double);
+  typedef double DoubleSizedType;
+
   static const	size_t	SIZE_OF_REGISTER	= 1;
   typedef word8 RegisterSizedType;
 
@@ -315,7 +329,7 @@ public:
   // XXX This is very probably broken.
   static const	word32	FAIL			= 65535;
   
-  Code(word32 CodeSize)
+  explicit Code(word32 CodeSize)
     : StaticCodeArea (CodeSize)
     {}
   
@@ -333,7 +347,7 @@ public:
   void	pushRegister(const word8 data) { push1Byte(data); }
   void	pushNumber(const word8 data) { push1Byte(data); }
   void	pushAddress(const word32 data) { push4Bytes(data); }
-  void	pushCodeLoc(const CodeLoc data) { push4Bytes((word32)data); }
+  void	pushCodeLoc(const CodeLoc data) { push4Bytes(reinterpret_cast<word32>(data)); }
   void	pushOffset(const word16 data) { push2Bytes(data); }
   void	pushPredAtom(const Atom* data) 
     { 

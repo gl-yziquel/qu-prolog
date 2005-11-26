@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: exception.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: exception.cc,v 1.3 2005/11/26 23:34:29 qp Exp $
 
 #include "thread_qp.h"
 
@@ -81,7 +81,7 @@ Thread::psi_set_catch(Object *& object1)
 {
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   catchPoint = val1->getNumber();
   return(RV_SUCCESS);
@@ -140,8 +140,8 @@ Thread::psi_psi_resume(Object *& object1)
   
   Object* state = heap.dereference(object1);
 
-  DEBUG_ASSERT(state->isStructure());
-  DEBUG_ASSERT(OBJECT_CAST(Structure*, state)->getArity() 
+  assert(state->isStructure());
+  assert(OBJECT_CAST(Structure*, state)->getArity() 
 	       == NUMBER_X_REGISTERS+1);
   
   for (u_int i = 0; i < NUMBER_X_REGISTERS; i++)
@@ -150,7 +150,7 @@ Thread::psi_psi_resume(Object *& object1)
     }
   Object* pc = 
     OBJECT_CAST(Structure*, state)->getArgument(NUMBER_X_REGISTERS+1);
-  DEBUG_ASSERT(pc->isNumber());
+  assert(pc->isNumber());
   programCounter = reinterpret_cast<CodeLoc>(pc->getNumber());
   return(RV_SUCCESS);
 }

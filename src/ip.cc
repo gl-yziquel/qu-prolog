@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ip.cc,v 1.8 2003/05/16 01:22:32 qp Exp $
+// $Id: ip.cc,v 1.10 2005/11/26 23:34:30 qp Exp $
 
 
 #include "atom_table.h"
@@ -151,7 +151,7 @@ Thread::psi_ip_set(Object *& object1, Object *& object2)
     }
   else
     {
-      DEBUG_ASSERT(current_value->isVariable());
+      assert(current_value->isVariable());
       OBJECT_CAST(Variable*, current_value)->setReference(new_value);
     }
 
@@ -218,9 +218,9 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
     }
   
   const long offset = 1 +
-    (hash_val->isNumber() ?
+    static_cast<long>((hash_val->isNumber() ?
       (hash_val->getNumber() & (array_size-1))
-    : ((reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
+    : ((reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1))));
 
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
@@ -232,7 +232,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
        array_ptr = OBJECT_CAST(Cons *, array_ptr)->getTail()
        )
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, array_ptr)->getHead()->isStructure());
+      assert(OBJECT_CAST(Cons *, array_ptr)->getHead()->isStructure());
       
       Structure *array_val_head = 
 	OBJECT_CAST(Structure *, OBJECT_CAST(Cons *, array_ptr)->getHead());
@@ -263,13 +263,13 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
       Object *new_array_val_list = heap.newCons(new_array_val_head,
 						array_val_list);
 
-      DEBUG_ASSERT(current_value->isStructure());
+      assert(current_value->isStructure());
       updateAndTrailIP(reinterpret_cast<heapobject*>(current_value), 
 		       new_array_val_list, offset+1);
     }
   else
     {
-      DEBUG_ASSERT(array_ptr->isCons());
+      assert(array_ptr->isCons());
       Structure *array_val_head = 
 	OBJECT_CAST(Structure *, 
 		    OBJECT_CAST(Cons *, array_ptr)->getHead());
@@ -286,7 +286,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
       else
 	{
 	  Object* old = array_val_head->getArgument(1);
-	  DEBUG_ASSERT(old->isVariable());
+	  assert(old->isVariable());
 	  OBJECT_CAST(Variable*, old)->setReference(new_value);
 	}
     }
@@ -398,15 +398,15 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
     }
   
   const int32 offset = 1 +
-    (hash_val->isNumber()
+    static_cast<int32>((hash_val->isNumber()
      ? hash_val->getNumber() & (array_size-1) 
-     : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1));
+     : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
   
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
   Object *array_ptr = array_val_list;
 
-  DEBUG_ASSERT(array_ptr->isList());
+  assert(array_ptr->isList());
 
   for (;
        array_ptr->isCons();
@@ -415,7 +415,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
       Object *array_val_head =  
 	OBJECT_CAST(Cons*, array_ptr)->getHead()->variableDereference();
 
-      DEBUG_ASSERT(array_val_head->isStructure());
+      assert(array_val_head->isStructure());
 
       Object *list_hash = 
 	OBJECT_CAST(Structure*, array_val_head)->getArgument(2)->variableDereference();
@@ -429,7 +429,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
 	}
     }
 
-  DEBUG_ASSERT(array_ptr->isNil());
+  assert(array_ptr->isNil());
 
   // no value for this offset
   Structure* array_val_head = heap.newStructure(2);
@@ -445,7 +445,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
   
   Cons *new_array_val_list = heap.newCons(array_val_head, array_val_list);
   
-  DEBUG_ASSERT(current_value->isStructure());
+  assert(current_value->isStructure());
 
   updateAndTrailIP(reinterpret_cast<heapobject*>(current_value), 
 		   new_array_val_list, offset+1);

@@ -51,12 +51,16 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_objects.h,v 1.7 2004/12/23 22:40:34 qp Exp $
+// $Id: asm_objects.h,v 1.8 2005/03/08 00:34:59 qp Exp $
 
 #ifndef	ASM_OBJECTS_H
 #define	ASM_OBJECTS_H
 
 #include <vector>
+#ifdef WIN32
+#include <list>
+#endif
+
 
 #include "asm_int.h"
 #include "code.h"
@@ -107,7 +111,7 @@ public:
   
   u_int SizeOf(void) const
     {
-      return atom->SizeOf() + arity->SizeOf() + Code::SIZE_OF_OFFSET;
+      return static_cast<u_int>(atom->SizeOf() + arity->SizeOf() + Code::SIZE_OF_OFFSET);
     }
 
   void operator=(const AtomArityLabel& aal)
@@ -149,7 +153,7 @@ public:
   void Put(CodeBlock& code, LabelTable& labels,
 	   const u_int jump_offset_base) const
     {
-      ASMInt<Code::NumberSizedType> type(constant->Type());
+      ASMInt<Code::NumberSizedType> type(static_cast<Code::NumberSizedType>(constant->Type()));
       constant->Put(code);
       type.Put(code);
       labels.AddReference(*label, code, jump_offset_base);
@@ -157,7 +161,7 @@ public:
   
   u_int SizeOf(void) const
     {
-      return constant->SizeOf() + Code::SIZE_OF_OFFSET;
+      return static_cast<u_int>(constant->SizeOf() + Code::SIZE_OF_OFFSET);
     }
 
   void operator=(const ConstantLabel& c)

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.h,v 1.11 2003/04/21 06:11:14 qp Exp $
+// $Id: scheduler.h,v 1.12 2005/03/08 00:35:13 qp Exp $
 
 #ifndef	SCHEDULER_H
 #define	SCHEDULER_H
@@ -64,7 +64,9 @@
 #include "block.h"
 #include "code.h"
 #include "defs.h"
+#ifdef ICM_DEF
 #include "icm_message.h"
+#endif
 #include "manager.h"
 #include "pred_table.h"
 //#include "sched_rec.h"
@@ -102,6 +104,10 @@ private:
   Signals& signals;
 
   PredTab& predicates;
+
+#ifdef WIN32
+  UINT_PTR timerptr;
+#endif
 
   int theTimeouts;              // Calculated in IterQuantum to determine of 
 	                         // Sleep is a block or a timeout
@@ -150,6 +156,12 @@ public:
 
   void resetThread(Thread*);
 };
+
+#ifdef WIN32
+void CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
+
+                           UINT_PTR nIDEvent, DWORD dwTime);
+#endif
 
 #endif	// SCHEDULER_H
 

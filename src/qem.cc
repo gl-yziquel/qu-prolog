@@ -53,13 +53,22 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.27 2004/12/01 04:23:49 qp Exp $
+// $Id: qem.cc,v 1.30 2005/11/26 23:34:30 qp Exp $
 
 #include <typeinfo>
 
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/utsname.h>
+#ifdef WIN32
+        #include <io.h>
+        #include <fcntl.h>
+        #include <signal.h>
+        #define _WINSOCKAPI_
+        #include <windows.h>
+#else
+        #include <unistd.h>
+        #include <sys/utsname.h>
+#endif
+
 #include <fcntl.h>
 
 #include <sys/types.h>
@@ -74,8 +83,10 @@
 #include "defs.h"
 #include "elvin_env.h"
 #include "executable.h"
+#ifdef ICM_DEF
 #include "icm_aux.h"
 #include "icm_environment.h"
+#endif
 #include "interrupt_handler.h"
 #include "io_qp.h"
 #include "pred_table.h"
@@ -118,7 +129,9 @@ Signals *signals = NULL;
 ThreadTable *thread_table = NULL;
 ThreadOptions *thread_options = NULL;
 char *process_symbol = NULL;
+#ifdef ICM_DEF
 char *icm_address = NULL;
+#endif
 int icm_port = 0;
 
 ICMMessageChannel* icm_channel = NULL;
@@ -143,12 +156,18 @@ handle_sigint(int)
   if (signals != NULL)
     {
       char buff[128];
-//      read(sigint_pipe[0], buff, 120);
       buff[0] = 'a';
       write(sigint_pipe[1], buff, 1);
       signals->Increment(SIGINT);
       signals->Status().setSignals();
+    } else {
+      cerr << "Signals are null" << endl;
     }
+#ifdef WIN32
+//Otherwise we can only use the handler once - yet another undoc'd windows oddity
+     (void)signal(SIGINT, handle_sigint);
+#endif
+
 }
 
 
@@ -161,13 +180,24 @@ main(int32 argc, char** argv)
   // set the out-of-memory handler
   std::set_new_handler(noMoreMemory);
 
+  //http://www.codersource.net/win32_createnamedpipe.html
+  //http://www-106.ibm.com/developerworks/linux/library/l-rt4/?open&t=grl,l=252,p=pipes
+  //Pipes in windows are 1000x more complex and painful than this.
   sigint_pipe = new int[2];
+#ifdef WIN32
+  _pipe(sigint_pipe, 256, _O_BINARY);
+//  SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_LINE_INPUT|ENABLE_ECHO_INPUT);
+#else
   pipe(sigint_pipe);
   fcntl(sigint_pipe[0], F_SETFL, O_NONBLOCK);
+#endif
 
   // Signal communication structure
   signals = new Signals;
 
+#ifdef WIN32
+(void) signal(SIGINT, handle_sigint);
+#else
   // SIGINT signal handler
   //  
   sigset_t sigs;
@@ -184,6 +214,7 @@ main(int32 argc, char** argv)
   SYSTEM_CALL_LESS_ZERO(sigaction(SIGINT, &sa, NULL));
   //
   // End of SIGINT signal handler
+#endif
 
   // Parse the options.
   qem_options = new QemOptions(argc, argv);
@@ -221,13 +252,21 @@ main(int32 argc, char** argv)
   // I/O management.
 
   // Set standard in to be non-blocking.
+#ifdef WIN32
+  setvbuf(stdin, NULL, _IONBF, 0);
+#else
   setbuf(stdin, NULL);
+#endif
 //  fflush(stdout);
   setvbuf(stdout, NULL, _IOLBF, 0);
 //  fflush(stderr);
   setvbuf(stderr, NULL, _IONBF, 0);
 
+#ifdef WIN32
+  QPifdstream *current_input_stream = new QPifdstream(_fileno(stdin));
+#else
   QPifdstream *current_input_stream = new QPifdstream(fileno(stdin));
+#endif
   QPostream *current_output_stream = new QPostream(&cout);
   QPostream *current_error_stream = new QPostream(&cerr);
 
@@ -288,32 +327,32 @@ main(int32 argc, char** argv)
 
       // Add ICM channel to scheduler channels
       scheduler->getChannels().push_back(icm_channel);
-      DEBUG_ASSERT(process_symbol != NULL);
+      assert(process_symbol != NULL);
     }
 #endif // ICM_DEF
     
 #ifdef DEBUG_SCHED
-  cerr.form("%s Before scheduler->Scheduler()\n", Program);
+  printf("%s Before scheduler->Scheduler()\n", Program);
 #endif
 
   // Run threads.
   scheduler->Schedule();
 
 #ifdef DEBUG_SCHED
-  cerr.form("%s After scheduler->Scheduler()\n", Program);
+  printf("%s After scheduler->Scheduler()\n", Program);
 #endif
   
 #ifdef ICM_DEF
   if (process_symbol != NULL)
     {
 #ifdef DEBUG_ICM
-      cerr.form("%s Before shutting down ICM\n", Program);
+      printf("%s Before shutting down ICM\n", Program);
 #endif
       
       icm_environment->Unregister();
       
 #ifdef DEBUG_ICM
-      cerr.form("%s After shutting down ICM\n", Program);
+      printf("%s After shutting down ICM\n", Program);
 #endif
     }
 #endif // ICM_DEF

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dyn_code.h,v 1.2 2001/11/21 00:21:12 qp Exp $
+// $Id: dyn_code.h,v 1.4 2005/11/06 22:59:16 qp Exp $
 
 #ifndef	DYN_CODE_H
 #define	DYN_CODE_H
@@ -88,6 +88,14 @@ ReturnValue psi_get_const(Object*& object1, Object*& object2,
 //
 ReturnValue psi_get_integer(Object*& object1, Object*& object2, 
 			    Object*& object3);
+
+//
+// psi_get_double(constant, buffer, offset)
+// Get a double from the code area at offset from buffer.
+// mode(out,in,in)
+//
+ReturnValue psi_get_double(Object*& object1, Object*& object2, 
+                           Object*& object3);
 
 
 //
@@ -148,6 +156,11 @@ ReturnValue psi_assert(Object*& object1, Object*& object2,
 //
 ReturnValue psi_retract(Object*& object1);
 
+// Get the timestamp for a predicate
+// mode psi_predicate_stamp(in,in,out)
+//
+ReturnValue psi_predicate_stamp(Object*& object1, Object*& object2,
+                            Object*& object3);
 //
 // psi_dynamic(pred, arity, indexArg, hashtablesize)
 // Declare pred/arity as a dynamic predicate with indexArg (default = 1)

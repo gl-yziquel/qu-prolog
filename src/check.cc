@@ -53,14 +53,19 @@
 // 
 // ##Copyright##
 //
-// $Id: check.cc,v 1.11 2004/12/23 22:40:35 qp Exp $
+// $Id: check.cc,v 1.13 2005/11/26 23:34:29 qp Exp $
 
-// #include "atom_table.h"
+#include "atom_table.h"
 //#include "dereference.h"
 #include "error_value.h"
 #include "heap_qp.h"
 #include "icm.h"
 #include "icm_handle.h"
+
+/* This stupid thing is for VC++ - it has trouble
+ * with parens around pointers: eg (char*)
+ */
+typedef char* charptr;
 
 extern AtomTable *atoms;
 
@@ -70,7 +75,7 @@ Heap::decode_stream(IOManager& iom,
 		    QPStream **stream_handle,
 		    const IODirection dir)
 {
-  DEBUG_ASSERT(dir == INPUT || dir == OUTPUT);
+  assert(dir == INPUT || dir == OUTPUT);
 
   QPStream *strmptr = NULL;
 
@@ -146,7 +151,7 @@ Heap::decode_stream(IOManager& iom,
     {
       return EV_VALUE;
     }
-  else if (strmptr->Type() == SOCKET)
+  else if (strmptr->Type() == QPSOCKET)
     {
       return EV_TYPE;
     }
@@ -381,12 +386,13 @@ Heap::decode_recv_options(Object* options_object,
     }
 }
 
+
+#ifdef ICM_DEF
 bool
 Heap::decode_icm_handle(AtomTable& atoms,
 			Object*& handle_object,
 			icmHandle& handle)
 {
-#ifdef ICM_DEF
   if (!handle_object->isStructure())
     {
       return false;
@@ -428,7 +434,6 @@ Heap::decode_icm_handle(AtomTable& atoms,
   const char *name = atoms.getAtomString(OBJECT_CAST(Atom*, name_object));
   const char *home = atoms.getAtomString(OBJECT_CAST(Atom*, home_object));
 
-  typedef char* charptr;
   char **locations = new charptr[length + 1];
   
   for (size_t i = 0;
@@ -436,7 +441,7 @@ Heap::decode_icm_handle(AtomTable& atoms,
        i++,
 	 locations_object = OBJECT_CAST(Cons*, locations_object)->getTail()->variableDereference())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, locations_object)->getHead()->variableDereference()->isAtom());
+      assert(OBJECT_CAST(Cons*, locations_object)->getHead()->variableDereference()->isAtom());
       locations[i] = 
 	atoms.getAtomString(OBJECT_CAST(Cons*, 
 					locations_object)->getHead()->variableDereference());
@@ -450,15 +455,14 @@ Heap::decode_icm_handle(AtomTable& atoms,
 			 length, locations);
   
   delete [] locations;
+// PORT ISSUE
 #if 0
   icmKeepHandle(handle);
 #endif
 
   return true;
-#else // ICM_DEF
-  return false;
-#endif // ICM_DEF
 }
+#endif // ICM_DEF
 
 bool
 Heap::check_atom_list(Object* atom_list_object,

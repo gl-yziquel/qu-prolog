@@ -612,20 +612,26 @@ end('$consult_close'/1):
 
 
 
-'$read_assert_clauses/3$0'/3:
+'$read_assert_clauses/3$0'/4:
 
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	put_structure(1, 3)
+	put_structure(1, 4)
+	set_constant('singletons')
+	set_x_value(3)
+	put_list(3)
+	set_x_value(4)
+	set_constant('[]')
+	put_structure(1, 4)
 	set_constant('variable_names')
 	set_x_value(2)
 	put_list(2)
+	set_x_value(4)
 	set_x_value(3)
-	set_constant('[]')
 	call_predicate('encoded_read_term', 3, 1)
 	cut(0)
 	deallocate
@@ -635,7 +641,7 @@ $2:
 	put_constant('end_of_file', 0)
 	get_x_value(1, 0)
 	proceed
-end('$read_assert_clauses/3$0'/3):
+end('$read_assert_clauses/3$0'/4):
 
 
 
@@ -663,15 +669,20 @@ end('$read_assert_clauses/3$1'/3):
 
 
 
-'$read_assert_clauses/3$2'/2:
+'$read_assert_clauses/3$2'/3:
 
-	try(2, $1)
+	try(3, $1)
 	trust($2)
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	put_constant('[]', 2)
+	put_structure(1, 3)
+	set_constant('singletons')
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
 	call_predicate('encoded_read_term', 3, 1)
 	cut(0)
 	deallocate
@@ -681,7 +692,7 @@ $2:
 	put_constant('end_of_file', 0)
 	get_x_value(1, 0)
 	proceed
-end('$read_assert_clauses/3$2'/2):
+end('$read_assert_clauses/3$2'/3):
 
 
 
@@ -772,18 +783,22 @@ $6:
 
 $1:
 	get_constant('encoded', 0)
-	allocate(5)
+	allocate(6)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	put_y_variable(0, 19)
 	put_y_value(2, 0)
-	put_y_variable(4, 1)
-	put_y_variable(3, 2)
-	call_predicate('$read_assert_clauses/3$0', 3, 5)
-	put_y_value(4, 0)
+	put_y_variable(5, 1)
+	put_y_variable(4, 2)
+	put_y_variable(3, 3)
+	call_predicate('$read_assert_clauses/3$0', 4, 6)
+	put_y_value(5, 0)
 	put_y_value(0, 1)
-	put_y_value(3, 2)
-	call_predicate('expand_term', 3, 3)
+	put_y_value(4, 2)
+	call_predicate('expand_term', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(0, 1)
+	call_predicate('$check_singletons', 2, 3)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
 	put_y_value(2, 2)
@@ -792,12 +807,16 @@ $1:
 
 $2:
 	get_constant('encoded_expanded', 0)
-	allocate(3)
+	allocate(4)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	put_y_value(2, 0)
 	put_y_variable(0, 1)
-	call_predicate('$read_assert_clauses/3$2', 2, 3)
+	put_y_variable(3, 2)
+	call_predicate('$read_assert_clauses/3$2', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(0, 1)
+	call_predicate('$check_singletons', 2, 3)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
 	put_y_value(2, 2)
@@ -806,13 +825,27 @@ $2:
 
 $3:
 	get_constant('normal_expanded', 0)
-	allocate(3)
+	allocate(4)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	put_y_value(2, 0)
 	put_y_variable(0, 1)
-	put_x_variable(2, 2)
-	call_predicate('read_1_term', 3, 3)
+	put_structure(1, 2)
+	set_constant('singletons')
+	set_y_variable(3)
+	put_list(3)
+	set_x_value(2)
+	set_constant('[]')
+	put_structure(1, 4)
+	set_constant('variable_names')
+	set_void(1)
+	put_list(2)
+	set_x_value(4)
+	set_x_value(3)
+	call_predicate('read_term', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(0, 1)
+	call_predicate('$check_singletons', 2, 3)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
 	put_y_value(2, 2)
@@ -821,24 +854,158 @@ $3:
 
 $4:
 	get_constant('normal', 0)
-	allocate(5)
+	allocate(6)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
 	put_y_variable(0, 19)
 	put_y_value(2, 0)
-	put_y_variable(4, 1)
-	put_y_variable(3, 2)
-	call_predicate('read_1_term', 3, 5)
-	put_y_value(4, 0)
+	put_y_variable(5, 1)
+	put_structure(1, 2)
+	set_constant('singletons')
+	set_y_variable(3)
+	put_list(3)
+	set_x_value(2)
+	set_constant('[]')
+	put_structure(1, 4)
+	set_constant('variable_names')
+	set_y_variable(4)
+	put_list(2)
+	set_x_value(4)
+	set_x_value(3)
+	call_predicate('read_term', 3, 6)
+	put_y_value(5, 0)
 	put_y_value(0, 1)
-	put_y_value(3, 2)
-	call_predicate('expand_term', 3, 3)
+	put_y_value(4, 2)
+	call_predicate('expand_term', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(0, 1)
+	call_predicate('$check_singletons', 2, 3)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
 	put_y_value(2, 2)
 	deallocate
 	execute_predicate('$read_assert_clauses/3$5', 3)
 end('$read_assert_clauses'/3):
+
+
+
+'$check_singletons'/2:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	neck_cut
+	proceed
+
+$2:
+	allocate(4)
+	get_y_variable(3, 1)
+	put_y_variable(1, 19)
+	put_y_variable(0, 19)
+	put_y_variable(2, 1)
+	call_predicate('$extract_singletons', 2, 4)
+	put_y_value(3, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	call_predicate('$extract_pn', 3, 3)
+	put_list(0)
+	set_constant('nl')
+	set_constant('[]')
+	put_list(1)
+	set_y_value(2)
+	set_x_value(0)
+	put_list(0)
+	set_constant(' Singleton Variables: ')
+	set_x_value(1)
+	put_structure(2, 1)
+	set_constant('/')
+	set_y_value(1)
+	set_y_value(0)
+	put_list(2)
+	set_x_value(1)
+	set_x_value(0)
+	put_list(1)
+	set_constant('Warning: ')
+	set_x_value(2)
+	put_constant('stderr', 0)
+	deallocate
+	execute_predicate('write_term_list', 2)
+end('$check_singletons'/2):
+
+
+
+'$extract_pn'/3:
+
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, ':-'/2:$5])
+
+$4:
+	try(3, $1)
+	trust($2)
+
+$5:
+	try(3, $1)
+	trust($2)
+
+$6:
+	try(3, $1)
+	trust($2)
+
+$1:
+	get_structure(':-', 2, 0)
+	unify_x_variable(0)
+	unify_void(1)
+	neck_cut
+	pseudo_instr3(0, 0, 1, 2)
+	proceed
+
+$2:
+	neck_cut
+	pseudo_instr3(0, 0, 1, 2)
+	proceed
+end('$extract_pn'/3):
+
+
+
+'$extract_singletons'/2:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('=', 2, 2)
+	unify_void(1)
+	unify_x_variable(2)
+	get_list(1)
+	unify_x_value(2)
+	unify_x_variable(1)
+	execute_predicate('$extract_singletons', 2)
+end('$extract_singletons'/2):
 
 
 

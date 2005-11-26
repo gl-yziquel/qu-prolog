@@ -59,7 +59,7 @@
 // 
 // ##Copyright##
 //
-// $Id: yield.cc,v 1.3 2000/12/13 23:10:03 qp Exp $
+// $Id: yield.cc,v 1.4 2005/11/26 23:34:31 qp Exp $
 
 #include        "heap_qp.h"
 
@@ -72,7 +72,7 @@ Heap::yield(Object *term,
 	    YieldCond cond,
 	    ThreadStatus& status)
 {
-  DEBUG_ASSERT(sub_block_list->isNil() ||
+  assert(sub_block_list->isNil() ||
 	       (sub_block_list->isCons() && 
 		OBJECT_CAST(Cons *,sub_block_list)->isSubstitutionBlockList()));
 
@@ -80,7 +80,7 @@ Heap::yield(Object *term,
        s->isCons();
        s = OBJECT_CAST(Cons *, s)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub_block = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, s)->getHead());
 
@@ -94,11 +94,11 @@ Heap::yield(Object *term,
 	}
       else
 	{
-	  DEBUG_ASSERT(sub_block->getSize() > 0);
+	  assert(sub_block->getSize() > 0);
 
 	  for (size_t i = 1; i <= sub_block->getSize(); i++)
 	    {
-              DEBUG_ASSERT(sub_block->getRange(i)->hasLegalSub());
+              assert(sub_block->getRange(i)->hasLegalSub());
 	      PrologValue range(sub_block->getRange(i));
 	      prologValueDereference(range);
 
@@ -132,7 +132,7 @@ bool
 Heap::yieldStructureCond(Heap* heapPtr, PrologValue& range,
 			 Object *str)
 {
-  DEBUG_ASSERT(str->isStructure());
+  assert(str->isStructure());
   Structure* structure = OBJECT_CAST(Structure*, str);
   if (! (range.getTerm()->isStructure() &&
 	 OBJECT_CAST(Structure *, range.getTerm())->getArity() == structure->getArity())) 
@@ -162,7 +162,7 @@ bool
 Heap::yieldQuantifierCond(Heap* heapPtr, PrologValue& range,
 			  Object *q)
 {
-  DEBUG_ASSERT(q->isQuantifiedTerm());
+  assert(q->isQuantifiedTerm());
   QuantifiedTerm* quantified_term = OBJECT_CAST(QuantifiedTerm*, q);
   if (! range.getTerm()->isQuantifiedTerm())
     {
@@ -193,19 +193,19 @@ Heap::yieldObjectVariable(Object *object_variable,
 			  Object *sub_block_list,
 			  ThreadStatus& status)
 {
-  DEBUG_ASSERT(object_variable->isObjectVariable());
+  assert(object_variable->isObjectVariable());
   for (Object *s = sub_block_list;
        s->isCons();
        s = OBJECT_CAST(Cons *, s)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, s)->getHead());
-      DEBUG_ASSERT(sub->getSize() > 0);
+      assert(sub->getSize() > 0);
 
       for (size_t i = 1; i <= sub->getSize(); i++)
 	{
-          DEBUG_ASSERT(sub->getRange(i)->variableDereference()->hasLegalSub());
+          assert(sub->getRange(i)->variableDereference()->hasLegalSub());
 	  PrologValue range(dereference(sub->getRange(i)));
 
 	  if ((range.getTerm()->isVariable() && 

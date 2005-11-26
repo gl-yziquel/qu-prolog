@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: objects.cc,v 1.3 2002/11/03 08:37:29 qp Exp $
+// $Id: objects.cc,v 1.5 2005/11/26 23:34:30 qp Exp $
 
 #include "objects.h"
 
@@ -92,13 +92,11 @@ size_t Object::size_dispatch(void)
 	return Short::size();
       else if (isLong ())
 	return Long::size();
-#if 0
-      else if (isFloat())
-	return Float::size();
-#endif
+      else if (isDouble())
+	return Double::size();
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  return 0;
 	}
       break;
@@ -110,7 +108,7 @@ size_t Object::size_dispatch(void)
       break;
     default:
       // Not all uTags considered!
-      DEBUG_ASSERT(false);
+      assert(false);
       return 0;
     }
 }
@@ -123,8 +121,8 @@ size_t Object::size_dispatch(void)
 bool
 Object::isObjectVariableInDistinctList(const ObjectVariable *objvar) const
 {
-  DEBUG_ASSERT(this->isObjectVariable());
-  DEBUG_ASSERT(OBJECT_CAST(const Reference*, this)->getReference() == 
+  assert(this->isObjectVariable());
+  assert(OBJECT_CAST(const Reference*, this)->getReference() == 
 	       OBJECT_CAST(const Object*, this));
 
   for (Object *distinct = objvar->getDistinctness(); 
@@ -152,10 +150,10 @@ Object::isObjectVariableInDistinctList(const ObjectVariable *objvar) const
 bool
 Object::distinctFrom(const Object *objvar) const 
 {
-  DEBUG_ASSERT(this->isObjectVariable());
-  DEBUG_ASSERT(OBJECT_CAST(const Reference*, this)->getReference() == this);
-  DEBUG_ASSERT(objvar->isObjectVariable());
-  DEBUG_ASSERT(OBJECT_CAST(const Reference*, objvar)->getReference() == objvar);
+  assert(this->isObjectVariable());
+  assert(OBJECT_CAST(const Reference*, this)->getReference() == this);
+  assert(objvar->isObjectVariable());
+  assert(OBJECT_CAST(const Reference*, objvar)->getReference() == objvar);
 
   if (this == objvar)
     {
@@ -180,12 +178,12 @@ Object::distinctFrom(const Object *objvar) const
 bool
 Object::distinctFromDomains(const SubstitutionBlock *sub_block, size_t i)
 {
-  DEBUG_ASSERT(this->isObjectVariable());
-  DEBUG_ASSERT(this == this->variableDereference());
+  assert(this->isObjectVariable());
+  assert(this == this->variableDereference());
 
   for ( ; i <= sub_block->getSize(); i++)
     {
-      DEBUG_ASSERT(sub_block->getDomain(i)->isObjectVariable());
+      assert(sub_block->getDomain(i)->isObjectVariable());
 
       ObjectVariable *domain 
 	= OBJECT_CAST(ObjectVariable*, 
@@ -231,7 +229,7 @@ ObjectVariable::isObjectVariableInDomain(SubstitutionBlock *sub_block)
 {
   for (size_t i = sub_block->getSize(); i > 0; i--)
     {
-      DEBUG_ASSERT(sub_block->getDomain(i)->isObjectVariable());
+      assert(sub_block->getDomain(i)->isObjectVariable());
       
       ObjectVariable *dom = 
 	OBJECT_CAST(ObjectVariable*, sub_block->getDomain(i)->variableDereference());
@@ -257,8 +255,8 @@ bool
 Object::containLocalObjectVariable(Object* sub, Object*& domElem, 
 				   Object*& newEnd)
 {
-  DEBUG_ASSERT(this->isLocalObjectVariable());
-  DEBUG_ASSERT(sub->isNil() || 
+  assert(this->isLocalObjectVariable());
+  assert(sub->isNil() || 
 	       (sub->isCons() && 
 	       OBJECT_CAST(Cons *, sub)->isSubstitutionBlockList()));
   
@@ -270,7 +268,7 @@ Object::containLocalObjectVariable(Object* sub, Object*& domElem,
        s->isCons(); 
        s = OBJECT_CAST(Cons *, s)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, s)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *subblock = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, s)->getHead());
       if (subblock->containsLocal())

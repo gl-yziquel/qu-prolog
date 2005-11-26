@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_aux.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: icm_aux.cc,v 1.2 2005/03/08 00:35:07 qp Exp $
 
 #include <iostream>
 
@@ -65,12 +65,12 @@ dump_icm_conn(icmConn conn)
 {
   if (conn == NULL)
     {
-      cerr.form("%s NULL icmConn?\n", __FUNCTION__);
+      printf("%s NULL icmConn?\n", __FUNCTION__);
       exit(1);
     }
   else
     {
-     cerr.form("%s host=%s port=%ld socket=%ld seqNo=%ld loopGoing=%s\n",
+     printf("%s host=%s port=%ld socket=%ld seqNo=%ld loopGoing=%s\n",
 	       __FUNCTION__,
 	       conn->host,
 	       conn->port,

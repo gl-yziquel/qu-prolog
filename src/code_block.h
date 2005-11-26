@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code_block.h,v 1.3 2002/11/08 00:44:14 qp Exp $
+// $Id: code_block.h,v 1.4 2005/11/26 23:34:29 qp Exp $
 
 #ifndef	CODE_BLOCK_H
 #define	CODE_BLOCK_H
@@ -116,7 +116,7 @@ public:
 
   char operator[](const CodeBlockLoc loc) const
   {
-    DEBUG_ASSERT(loc <= current);
+    assert(loc <= current);
     return code[loc];
   }
 
@@ -158,7 +158,7 @@ public:
   // we abort if p > current.
   void Put(u_long p, char c)
     {
-      DEBUG_ASSERT(p <= current);
+      assert(p <= current);
 
       code[p] = c;
     }

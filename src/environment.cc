@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: environment.cc,v 1.3 2002/11/03 08:37:26 qp Exp $
+// $Id: environment.cc,v 1.4 2005/03/08 00:35:04 qp Exp $
 
 #include "area_offsets.h"
 #include "objects.h"
@@ -108,7 +108,7 @@ EnvironmentStack::Display(ostream& ostrm, const EnvLoc index,
 }
 
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 void 
 EnvironmentStack::printMe(AtomTable& atoms, EnvLoc env)
 {  

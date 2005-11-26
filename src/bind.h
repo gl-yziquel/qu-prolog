@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: bind.h,v 1.2 2002/03/24 05:58:30 qp Exp $
+// $Id: bind.h,v 1.3 2005/11/26 23:34:28 qp Exp $
 
 //#include "thread.h"
 //#include "trail.h"
@@ -79,9 +79,9 @@ void bindObjectVariables(ObjectVariable *, ObjectVariable *);
 
 inline void bindAndTrail(Object* var, Object* value)
 {
-  DEBUG_ASSERT(var != NULL);
-  DEBUG_ASSERT(value != NULL);
-  DEBUG_ASSERT(var->isAnyVariable());
+  assert(var != NULL);
+  assert(value != NULL);
+  assert(var->isAnyVariable());
   //
   // Trail only if var is before saved top
   //
@@ -97,8 +97,8 @@ inline void bindAndTrail(Object* var, Object* value)
 
 inline void updateAndTrailObject(heapobject* ptr, Object* value, u_int offset)
 {
-  DEBUG_ASSERT(ptr != NULL);
-  DEBUG_ASSERT(value != NULL);
+  assert(ptr != NULL);
+  assert(value != NULL);
   //
   // Don't trail only if ptr is after saved top on the heap
   //
@@ -116,8 +116,8 @@ inline void updateAndTrailObject(heapobject* ptr, Object* value, u_int offset)
 inline void Thread::updateAndTrailIP(heapobject* ptr, Object* value,
                                      u_int offset = 0)
 {
-  DEBUG_ASSERT(ptr != NULL);
-  DEBUG_ASSERT(value != NULL);
+  assert(ptr != NULL);
+  assert(value != NULL);
   //
   // Don't trail only if ptr is after saved top on the heap
   //
@@ -131,7 +131,7 @@ inline void Thread::updateAndTrailIP(heapobject* ptr, Object* value,
 
 inline void trailTag(Object* o)
 {
-  DEBUG_ASSERT(o != NULL);
+  assert(o != NULL);
   //
   // Don't trail only if o is after saved top on the heap
   //
@@ -150,7 +150,7 @@ inline void trailTag(Object* o)
 //
 inline void bind(Variable *var , Object *object)
 {
-  DEBUG_ASSERT(var == var->variableDereference());
+  assert(var == var->variableDereference());
   
   //
   // Wake up any delayed problems associated with cell1.
@@ -171,7 +171,7 @@ inline void bind(Variable *var , Object *object)
 //
 inline Variable* addExtraInfo(Variable* oldvar)
 {
-  DEBUG_ASSERT(oldvar == oldvar->variableDereference());
+  assert(oldvar == oldvar->variableDereference());
   if (!oldvar->hasExtraInfo())
     {
       Variable* newvar = heap.newVariable(true);

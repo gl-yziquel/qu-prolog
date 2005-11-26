@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: name.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: name.cc,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -70,15 +70,15 @@ extern AtomTable *atoms;
 Thread::ReturnValue
 Thread::psi_atom_codes(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
  
   Object* tail = AtomTable::nil;
   const char *string = atoms->getAtomString(val1);
 
-  for (int i = strlen(string) - 1; i >= 0; i--)
+  for (int i = static_cast<int>(strlen(string)) - 1; i >= 0; i--)
     {
       Object* head = heap.newNumber(string[i]);
       Cons* temp = heap.newCons(head, tail);
@@ -105,7 +105,7 @@ Thread::psi_codes_atom(Object *& object1, Object *& object2)
       Cons* clist = OBJECT_CAST(Cons*, list);
       Object* head = clist->getHead()->variableDereference();
       list = clist->getTail()->variableDereference();
-      DEBUG_ASSERT(head->isShort());
+      assert(head->isShort());
       *s = head->getNumber();
     }
   *s = '\0';
@@ -121,10 +121,10 @@ Thread::psi_codes_atom(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_char_code(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
   
   const char *string = atoms->getAtomString(val1);
   if (string[1] != '\0')
@@ -147,10 +147,10 @@ Thread::ReturnValue
 Thread::psi_code_char(Object *& object1, Object *& object2)
 {
   char string[2];
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isShort());
+  assert(val1->isShort());
   
   string[0] = val1->getNumber();
   string[1] = '\0';

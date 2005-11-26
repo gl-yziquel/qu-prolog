@@ -54,15 +54,24 @@
 // 
 // ##Copyright##
 //
-// $Id: process.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: process.cc,v 1.3 2005/03/08 00:35:12 qp Exp $
 
 #include "atom_table.h"
+#ifndef WIN32
 #include "icm_environment.h"
+#endif
 #include "thread_qp.h"
 
 extern AtomTable *atoms;
+#ifdef ICM_DEF
 extern ICMEnvironment *icm_environment;
+#endif
 extern char *process_symbol;
+
+#ifdef WIN32
+#define _WINSOCKAPI_
+#include <windows.h>
+#endif
 
 // @doc
 // @pred process_pid(ProcessID)
@@ -75,8 +84,11 @@ extern char *process_symbol;
 Thread::ReturnValue
 Thread::psi_process_pid(Object *& pid_arg)
 {
+#ifdef WIN32
+  pid_arg = heap.newNumber(reinterpret_cast<long>(GetCurrentProcess()));
+#else 
   pid_arg = heap.newNumber(getpid());
-
+#endif
   return RV_SUCCESS;
 }
 

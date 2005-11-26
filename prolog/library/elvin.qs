@@ -1,6 +1,12 @@
-'sub'/3:
+'$elvin_sub'/3:
 
-	switch_on_term(0, $8, 'fail', $7, 'fail', 'fail', $6)
+	switch_on_term(0, $7, 'fail', $6, 'fail', 'fail', $5)
+
+$6:
+	try(3, $1)
+	retry($2)
+	retry($3)
+	trust($4)
 
 $7:
 	try(3, $1)
@@ -9,51 +15,7 @@ $7:
 	retry($4)
 	trust($5)
 
-$8:
-	try(3, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	trust($6)
-
 $1:
-	get_list(0)
-	unify_integer(34)
-	allocate(8)
-	unify_y_variable(2)
-	get_x_variable(0, 1)
-	get_y_variable(4, 2)
-	get_y_level(5)
-	put_y_variable(6, 19)
-	put_y_variable(3, 19)
-	put_y_variable(1, 19)
-	put_y_variable(0, 19)
-	put_y_variable(7, 2)
-	put_integer(91, 1)
-	call_predicate('C', 3, 8)
-	put_y_value(1, 0)
-	put_y_value(7, 1)
-	put_y_value(6, 2)
-	call_predicate('string', 3, 7)
-	put_y_value(6, 0)
-	put_y_value(3, 2)
-	put_integer(93, 1)
-	call_predicate('C', 3, 6)
-	cut(5)
-	put_y_value(0, 0)
-	put_y_value(3, 1)
-	put_y_value(4, 2)
-	call_predicate('sub', 3, 3)
-	put_y_value(1, 0)
-	put_list(1)
-	set_integer(34)
-	set_y_value(0)
-	put_y_value(2, 2)
-	deallocate
-	execute_predicate('append', 3)
-
-$2:
 	get_list(0)
 	unify_integer(33)
 	unify_x_ref(0)
@@ -77,9 +39,9 @@ $2:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('sub', 3)
+	execute_predicate('$elvin_sub', 3)
 
-$3:
+$2:
 	get_list(0)
 	unify_integer(33)
 	allocate(5)
@@ -100,9 +62,9 @@ $3:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('sub', 3)
+	execute_predicate('$elvin_sub', 3)
 
-$4:
+$3:
 	get_list(0)
 	unify_integer(37)
 	allocate(6)
@@ -128,9 +90,9 @@ $4:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('sub', 3)
+	execute_predicate('$elvin_sub', 3)
 
-$5:
+$4:
 	get_list(0)
 	unify_x_variable(3)
 	allocate(4)
@@ -146,104 +108,13 @@ $5:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('sub', 3)
+	execute_predicate('$elvin_sub', 3)
 
-$6:
+$5:
 	get_constant('[]', 0)
 	get_x_value(1, 2)
 	proceed
-end('sub'/3):
-
-
-
-'string'/3:
-
-	switch_on_term(0, $3, 'fail', $3, 'fail', 'fail', 'fail')
-
-$3:
-	try(3, $1)
-	trust($2)
-
-$1:
-	get_list(0)
-	allocate(8)
-	unify_y_variable(7)
-	unify_y_variable(2)
-	get_y_variable(1, 2)
-	get_y_level(3)
-	put_y_variable(4, 19)
-	put_y_variable(0, 19)
-	put_y_variable(6, 0)
-	put_y_variable(5, 2)
-	call_predicate('digits', 3, 8)
-	put_y_value(7, 0)
-	put_y_value(6, 1)
-	call_predicate('name', 2, 6)
-	put_y_value(5, 0)
-	put_y_value(4, 2)
-	put_integer(44, 1)
-	call_predicate('C', 3, 5)
-	put_y_value(4, 0)
-	put_y_value(0, 2)
-	put_integer(32, 1)
-	call_predicate('C', 3, 4)
-	cut(3)
-	put_y_value(2, 0)
-	put_y_value(0, 1)
-	put_y_value(1, 2)
-	deallocate
-	execute_predicate('string', 3)
-
-$2:
-	get_list(0)
-	allocate(2)
-	unify_y_variable(1)
-	unify_constant('[]')
-	put_y_variable(0, 0)
-	call_predicate('digits', 3, 2)
-	put_y_value(1, 0)
-	put_y_value(0, 1)
-	deallocate
-	execute_predicate('name', 2)
-end('string'/3):
-
-
-
-'digits'/3:
-
-	switch_on_term(0, $3, 'fail', $1, 'fail', 'fail', $2)
-
-$3:
-	try(3, $1)
-	trust($2)
-
-$1:
-	get_list(0)
-	allocate(5)
-	unify_y_variable(4)
-	unify_y_variable(2)
-	get_x_variable(0, 1)
-	get_y_variable(1, 2)
-	get_y_level(3)
-	put_y_value(4, 1)
-	put_y_variable(0, 2)
-	call_predicate('C', 3, 5)
-	put_integer(48, 0)
-	pseudo_instr2(2, 0, 24)
-	put_integer(57, 0)
-	pseudo_instr2(2, 24, 0)
-	cut(3)
-	put_y_value(2, 0)
-	put_y_value(0, 1)
-	put_y_value(1, 2)
-	deallocate
-	execute_predicate('digits', 3)
-
-$2:
-	get_constant('[]', 0)
-	get_x_value(1, 2)
-	proceed
-end('digits'/3):
+end('$elvin_sub'/3):
 
 
 
@@ -259,7 +130,7 @@ $1:
 	put_y_variable(4, 1)
 	call_predicate('name', 2, 5)
 	put_structure(1, 0)
-	set_constant('term')
+	set_constant('$elvin_term')
 	set_y_value(3)
 	put_y_value(4, 1)
 	call_predicate('phrase', 2, 4)
@@ -284,15 +155,9 @@ end('elvin_sub_to_term'/2):
 
 
 
-'term'/3:
+'$elvin_term'/3:
 
-	switch_on_term(0, $7, 'fail', $6, 'fail', 'fail', $5)
-
-$6:
-	try(3, $1)
-	retry($2)
-	retry($3)
-	trust($4)
+	switch_on_term(0, $10, $4, $7, $4, $4, $8)
 
 $7:
 	try(3, $1)
@@ -300,6 +165,21 @@ $7:
 	retry($3)
 	retry($4)
 	trust($5)
+
+$8:
+	switch_on_constant(0, 4, ['$default':$4, '[]':$9])
+
+$9:
+	try(3, $4)
+	trust($6)
+
+$10:
+	try(3, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	trust($6)
 
 $1:
 	get_list(0)
@@ -325,7 +205,7 @@ $1:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('term', 3)
+	execute_predicate('$elvin_term', 3)
 
 $2:
 	get_list(0)
@@ -346,7 +226,7 @@ $2:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('term', 3)
+	execute_predicate('$elvin_term', 3)
 
 $3:
 	get_list(0)
@@ -380,9 +260,25 @@ $3:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('term', 3)
+	execute_predicate('$elvin_term', 3)
 
 $4:
+	allocate(4)
+	get_y_variable(2, 0)
+	get_x_variable(0, 1)
+	get_y_variable(1, 2)
+	get_y_level(3)
+	put_y_variable(0, 2)
+	put_integer(34, 1)
+	call_predicate('C', 3, 4)
+	cut(3)
+	put_y_value(2, 0)
+	put_y_value(0, 1)
+	put_y_value(1, 2)
+	deallocate
+	execute_predicate('$elvin_term', 3)
+
+$5:
 	get_list(0)
 	unify_x_variable(3)
 	allocate(4)
@@ -398,13 +294,13 @@ $4:
 	put_y_value(0, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('term', 3)
+	execute_predicate('$elvin_term', 3)
 
-$5:
+$6:
 	get_constant('[]', 0)
 	get_x_value(1, 2)
 	proceed
-end('term'/3):
+end('$elvin_term'/3):
 
 
 
@@ -531,13 +427,17 @@ $2:
 	proceed
 
 $3:
+	get_x_variable(1, 0)
 	allocate(6)
-	get_y_variable(5, 0)
 	get_y_level(1)
+	put_y_variable(4, 19)
 	put_y_variable(3, 19)
 	put_y_variable(2, 19)
 	put_y_variable(0, 19)
-	put_y_variable(4, 1)
+	put_y_variable(5, 2)
+	put_constant('$elvin_subterm_transform', 0)
+	call_predicate('transform_subterms', 3, 6)
+	put_y_value(4, 1)
 	put_constant('write', 0)
 	call_predicate('open_string', 2, 6)
 	put_y_value(4, 0)
@@ -547,7 +447,7 @@ $3:
 	put_y_value(3, 1)
 	call_predicate('stream_to_chars', 2, 4)
 	put_structure(1, 0)
-	set_constant('sub')
+	set_constant('$elvin_sub')
 	set_y_value(2)
 	put_y_value(3, 1)
 	call_predicate('phrase', 2, 3)
@@ -576,6 +476,98 @@ $4:
 	put_integer(1, 1)
 	execute_predicate('type_exception', 3)
 end('elvin_add_subscription'/1):
+
+
+
+'$elvin_subterm_transform'/2:
+
+	switch_on_term(0, $8, $3, $3, $4, $3, $3)
+
+$4:
+	switch_on_structure(0, 8, ['$default':$3, '$'/0:$5, '=='/2:$6, '\\='/2:$7])
+
+$5:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$6:
+	try(2, $1)
+	trust($3)
+
+$7:
+	try(2, $2)
+	trust($3)
+
+$8:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_structure('==', 2, 0)
+	allocate(5)
+	unify_y_variable(2)
+	unify_x_variable(0)
+	get_y_variable(1, 1)
+	pseudo_instr1(2, 0)
+	neck_cut
+	put_y_variable(3, 19)
+	put_y_variable(0, 19)
+	put_y_variable(4, 1)
+	call_predicate('name', 2, 5)
+	put_list(0)
+	set_integer(34)
+	set_y_value(4)
+	put_list(1)
+	set_integer(34)
+	set_constant('[]')
+	put_y_value(3, 2)
+	call_predicate('append', 3, 4)
+	put_y_value(0, 0)
+	put_y_value(3, 1)
+	call_predicate('name', 2, 3)
+	put_y_value(1, 0)
+	get_structure('==', 2, 0)
+	unify_y_value(2)
+	unify_y_value(0)
+	deallocate
+	proceed
+
+$2:
+	get_structure('\\=', 2, 0)
+	allocate(5)
+	unify_y_variable(2)
+	unify_x_variable(0)
+	get_y_variable(1, 1)
+	pseudo_instr1(2, 0)
+	neck_cut
+	put_y_variable(3, 19)
+	put_y_variable(0, 19)
+	put_y_variable(4, 1)
+	call_predicate('name', 2, 5)
+	put_list(0)
+	set_integer(34)
+	set_y_value(4)
+	put_list(1)
+	set_integer(34)
+	set_constant('[]')
+	put_y_value(3, 2)
+	call_predicate('append', 3, 4)
+	put_y_value(0, 0)
+	put_y_value(3, 1)
+	call_predicate('name', 2, 3)
+	put_y_value(1, 0)
+	get_structure('\\=', 2, 0)
+	unify_y_value(2)
+	unify_y_value(0)
+	deallocate
+	proceed
+
+$3:
+	get_x_value(0, 1)
+	proceed
+end('$elvin_subterm_transform'/2):
 
 
 
@@ -610,42 +602,46 @@ end('$check_parts'/1):
 
 '$check_value'/1:
 
-	switch_on_term(0, $14, $13, $13, $7, $13, $13)
-
-$7:
-	switch_on_structure(0, 16, ['$default':$13, '$'/0:$8, 'int64'/1:$9, 'real64'/1:$10, 'opaque'/1:$11, 'qpterm'/1:$12])
+	switch_on_term(0, $14, $13, $13, $8, $13, $13)
 
 $8:
+	switch_on_structure(0, 8, ['$default':$13, '$'/0:$9, 'int64'/1:$10, 'opaque'/1:$11, 'qpterm'/1:$12])
+
+$9:
 	try(1, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
-	trust($6)
-
-$9:
-	try(1, $1)
-	retry($2)
-	trust($3)
+	retry($6)
+	trust($7)
 
 $10:
 	try(1, $1)
 	retry($2)
-	trust($4)
+	retry($3)
+	retry($4)
+	trust($5)
 
 $11:
 	try(1, $1)
 	retry($2)
-	trust($5)
+	retry($3)
+	retry($4)
+	trust($6)
 
 $12:
 	try(1, $1)
 	retry($2)
-	trust($6)
+	retry($3)
+	retry($4)
+	trust($7)
 
 $13:
 	try(1, $1)
-	trust($2)
+	retry($2)
+	retry($3)
+	trust($4)
 
 $14:
 	try(1, $1)
@@ -653,7 +649,8 @@ $14:
 	retry($3)
 	retry($4)
 	retry($5)
-	trust($6)
+	retry($6)
+	trust($7)
 
 $1:
 	pseudo_instr1(3, 0)
@@ -661,6 +658,16 @@ $1:
 	proceed
 
 $2:
+	pseudo_instr1(113, 0)
+	neck_cut
+	proceed
+
+$3:
+	pseudo_instr1(2, 0)
+	neck_cut
+	proceed
+
+$4:
 	allocate(1)
 	get_y_level(0)
 	call_predicate('$check_char_list', 1, 1)
@@ -668,21 +675,14 @@ $2:
 	deallocate
 	proceed
 
-$3:
+$5:
 	get_structure('int64', 1, 0)
 	unify_x_variable(0)
 	pseudo_instr1(2, 0)
 	neck_cut
 	proceed
 
-$4:
-	get_structure('real64', 1, 0)
-	unify_x_variable(0)
-	pseudo_instr1(2, 0)
-	neck_cut
-	proceed
-
-$5:
+$6:
 	get_structure('opaque', 1, 0)
 	unify_void(1)
 	allocate(1)
@@ -693,7 +693,7 @@ $5:
 	deallocate
 	proceed
 
-$6:
+$7:
 	get_structure('qpterm', 1, 0)
 	unify_void(1)
 	proceed
@@ -730,7 +730,8 @@ end('$check_char_list'/1):
 'elvin_delete_subscription'/1:
 
 	try(1, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
 	get_x_variable(1, 0)
@@ -754,9 +755,44 @@ $1:
 $2:
 	allocate(2)
 	get_y_variable(0, 0)
+	pseudo_instr1(2, 20)
+	neck_cut
+	get_y_level(1)
 	pseudo_instr1(108, 0)
 	get_x_variable(1, 0)
+	put_y_value(0, 0)
+	call_predicate('member', 2, 2)
+	cut(1)
+	pseudo_instr1(107, 20)
+	deallocate
+	proceed
+
+$3:
+	allocate(6)
+	get_y_variable(5, 0)
 	get_y_level(1)
+	put_y_variable(3, 19)
+	put_y_variable(2, 19)
+	put_y_variable(0, 19)
+	put_y_variable(4, 1)
+	put_constant('write', 0)
+	call_predicate('open_string', 2, 6)
+	put_y_value(4, 0)
+	put_y_value(5, 1)
+	call_predicate('write', 2, 5)
+	put_y_value(4, 0)
+	put_y_value(3, 1)
+	call_predicate('stream_to_chars', 2, 4)
+	put_structure(1, 0)
+	set_constant('sub')
+	set_y_value(2)
+	put_y_value(3, 1)
+	call_predicate('phrase', 2, 3)
+	put_y_value(0, 0)
+	put_y_value(2, 1)
+	call_predicate('name', 2, 2)
+	pseudo_instr1(108, 0)
+	get_x_variable(1, 0)
 	put_y_value(0, 0)
 	call_predicate('member', 2, 2)
 	cut(1)
@@ -767,7 +803,7 @@ end('elvin_delete_subscription'/1):
 
 
 
-'delete_all_subscriptions'/0:
+'elvin_delete_all_subscriptions'/0:
 
 	try(0, $1)
 	trust($2)
@@ -784,7 +820,7 @@ $1:
 
 $2:
 	proceed
-end('delete_all_subscriptions'/0):
+end('elvin_delete_all_subscriptions'/0):
 
 
 
@@ -795,11 +831,12 @@ end('delete_all_subscriptions'/0):
 	trust($3)
 
 $1:
-	pseudo_instr1(1, 0)
+	get_x_variable(1, 0)
+	pseudo_instr1(1, 1)
 	neck_cut
 	put_structure(1, 0)
 	set_constant('elvin_add_notification')
-	set_void(1)
+	set_x_value(1)
 	put_structure(1, 1)
 	set_constant('list')
 	set_constant('compound')
@@ -826,9 +863,10 @@ $2:
 	proceed
 
 $3:
+	get_x_variable(1, 0)
 	put_structure(1, 0)
 	set_constant('elvin_add_notification')
-	set_void(1)
+	set_x_value(1)
 	put_structure(1, 1)
 	set_constant('list')
 	set_constant('compound')
@@ -847,7 +885,7 @@ end('elvin_add_notification'/1):
 
 
 
-'$query_elvin2004_12_24_8_55_11_457/0$0'/0:
+'$query_elvin2005_11_27_9_44_7_496/0$0'/0:
 
 
 $1:
@@ -860,11 +898,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_elvin2004_12_24_8_55_11_457/0$0'/0):
+end('$query_elvin2005_11_27_9_44_7_496/0$0'/0):
 
 
 
-'$query_elvin2004_12_24_8_55_11_457/0$1'/0:
+'$query_elvin2005_11_27_9_44_7_496/0$1'/0:
 
 
 $1:
@@ -877,11 +915,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_elvin2004_12_24_8_55_11_457/0$1'/0):
+end('$query_elvin2005_11_27_9_44_7_496/0$1'/0):
 
 
 
-'$query_elvin2004_12_24_8_55_11_457'/0:
+'$query_elvin2005_11_27_9_44_7_496'/0:
 
 	try(0, $1)
 	retry($2)
@@ -889,17 +927,17 @@ end('$query_elvin2004_12_24_8_55_11_457/0$1'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_elvin2004_12_24_8_55_11_457/0$0', 0, 0)
+	call_predicate('$query_elvin2005_11_27_9_44_7_496/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_elvin2004_12_24_8_55_11_457/0$1', 0, 0)
+	call_predicate('$query_elvin2005_11_27_9_44_7_496/0$1', 0, 0)
 	fail
 
 $3:
 	proceed
-end('$query_elvin2004_12_24_8_55_11_457'/0):
+end('$query_elvin2005_11_27_9_44_7_496'/0):
 
 
 
@@ -907,7 +945,7 @@ end('$query_elvin2004_12_24_8_55_11_457'/0):
 
 
 $1:
-	execute_predicate('$query_elvin2004_12_24_8_55_11_457', 0)
+	execute_predicate('$query_elvin2005_11_27_9_44_7_496', 0)
 end('$query'/0):
 
 

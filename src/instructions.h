@@ -3,7 +3,7 @@
 //
 //##Qu-Prolog Copyright.abst##
 //
-// $Id: MkInstructions.in,v 1.2 2001/11/21 00:21:19 qp Exp n
+// $Id: MkInstructions.in,v 1.3 2005/04/12 04:02:48 qp Exp n
 
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
@@ -102,6 +102,10 @@ const word8 DB_JUMP = 87;
 const word8 DB_TRY = 88;
 const word8 DB_RETRY = 89;
 const word8 DB_TRY_DEC_REF = 90;
+const word8 PUT_DOUBLE = 91;
+const word8 GET_DOUBLE = 92;
+const word8 SET_DOUBLE = 93;
+const word8 UNIFY_DOUBLE = 94;
 
 // Opcode names
 extern const char *opnames[];

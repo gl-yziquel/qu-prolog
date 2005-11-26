@@ -53,14 +53,14 @@
 // 
 // ##Copyright##
 //
-// $Id: bool.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: bool.cc,v 1.2 2005/03/08 00:34:59 qp Exp $
 
 #include "bool.h"
 
 ostream&
-operator<<(ostream& ostrm, const Bool& bool)
+operator<<(ostream& ostrm, const Bool& qpbool)
 {
-  switch ((bool) bool.Value())
+  switch ((bool) qpbool.Value())
     {
     case false:
       ostrm << "false";

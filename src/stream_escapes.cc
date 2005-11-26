@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stream_escapes.cc,v 1.12 2004/03/19 04:54:19 qp Exp $
+// $Id: stream_escapes.cc,v 1.14 2005/11/26 23:34:31 qp Exp $
 
 #include <errno.h>
 #include <iostream>
@@ -66,11 +66,13 @@
 #include "thread_qp.h"
 #include "unify.h"
 
+#ifdef ICM_DEF
 #include "icm_handle.h"
+extern ICMEnvironment *icm_environment;
+#endif
 
 extern AtomTable *atoms;
 extern IOManager *iom;
-extern ICMEnvironment *icm_environment;
 
 //
 // psi_get_open_streams(StreamList)
@@ -132,7 +134,19 @@ Thread::psi_open(Object *& filename_arg,
   //
   // Open the file.
   //
-  const char *file = wordexp(atoms->getAtomString(OBJECT_CAST(Atom*, argF))).c_str();
+//PORT
+//#ifdef WIN32
+  // See comments in io.cc
+//  string tempstr = wordexp(atoms->getAtomString(OBJECT_CAST(Atom*, argF)));
+//  const char *file = tempstr.c_str();
+//#else
+//  const char *file = wordexp(atoms->getAtomString(OBJECT_CAST(Atom*, argF))).c_str();
+//#endif
+  string filename = atoms->getAtomString(OBJECT_CAST(Atom*, argF));
+  wordexp(filename);
+  char file[1024];
+  strcpy(file, filename.c_str());
+
 
   switch (mode)
     {
@@ -288,7 +302,7 @@ Thread::psi_open_string(Object *& string_arg,
 		argS = heap.dereference(list->getTail());
 	      }
 	    
-	    DEBUG_ASSERT(argS->isNil());
+	    assert(argS->isNil());
 	    
 	    QPistringstream *stream = new QPistringstream(strstr->str());
 	    delete strstr;
@@ -651,7 +665,7 @@ Thread::psi_line_number(Object *& stream_arg, Object *& line_num_arg)
 Thread::ReturnValue 
 Thread::psi_stdin(Object *& stream_object)
 {
-  stream_object = heap.newNumber((word32) iom->StdIn());
+  stream_object = heap.newNumber(reinterpret_cast<word32>(iom->StdIn()));
 
   return RV_SUCCESS;
 }
@@ -663,7 +677,7 @@ Thread::psi_stdin(Object *& stream_object)
 Thread::ReturnValue 
 Thread::psi_stdout(Object *& stream_object)
 {
-  stream_object = heap.newNumber((word32) iom->StdOut());
+  stream_object = heap.newNumber(reinterpret_cast<word32>(iom->StdOut()));
 
   return RV_SUCCESS;
 }
@@ -675,7 +689,7 @@ Thread::psi_stdout(Object *& stream_object)
 Thread::ReturnValue 
 Thread::psi_stderr(Object *& stream_object)
 {
-  stream_object = heap.newNumber((word32) iom->StdErr());
+  stream_object = heap.newNumber(reinterpret_cast<word32>(iom->StdErr()));
 
   return RV_SUCCESS;
 }
@@ -757,14 +771,14 @@ Thread::psi_set_stream_properties(Object *& stream_num, Object *& prop)
   DECODE_STREAM_ARG(heap, *iom, strnum, 1, stream, dir);
   Object* props = heap.dereference(prop);
 
-  DEBUG_ASSERT(props->isStructure() && 
+  assert(props->isStructure() && 
 	       OBJECT_CAST(Structure*, props)->getArity() == 7);
-  DEBUG_CODE({
+#ifndef NDEBUG
     for (u_int i = 1; i <= 7; i++)
       {
-	DEBUG_ASSERT(OBJECT_CAST(Structure*, props)->getArgument(i)->variableDereference()->isConstant());
+	assert(OBJECT_CAST(Structure*, props)->getArgument(i)->variableDereference()->isConstant());
       }
-  });
+#endif
   stream->setProperties(props);
   return RV_SUCCESS;
 }
@@ -779,7 +793,7 @@ Thread::psi_get_stream_properties(Object *& stream_num, Object *& prop)
 {
   Object* strnum = heap.dereference(stream_num);
 
-  DEBUG_ASSERT(strnum->isNumber());
+  assert(strnum->isNumber());
 
   u_int snum = strnum->getNumber();
 

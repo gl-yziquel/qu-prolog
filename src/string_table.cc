@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: string_table.cc,v 1.2 2002/11/08 00:44:21 qp Exp $
+// $Id: string_table.cc,v 1.3 2005/03/08 00:35:15 qp Exp $
 
 #include <string.h>
 
@@ -69,7 +69,7 @@
 StringLoc
 StringTab::add(const char *string)
 {
-	StringLoc	start = allocateBlock(strlen(string) + 1);
+	StringLoc	start = allocateBlock(static_cast<word32>(strlen(string) + 1));
 
 	if (start == EMPTY_LOC)
 	{

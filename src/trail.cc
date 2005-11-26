@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: trail.cc,v 1.5 2001/12/10 03:56:40 qp Exp $
+// $Id: trail.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
 
 #include "area_offsets.h"
 #include "heap_qp.h"
@@ -96,27 +96,27 @@ RefTrail::tryDecRef(const TrailLoc loc)
 
   TrailLoc iter = getTop() - 1;
   RefObject* ptr = fetchAddr(iter);
-  DEBUG_ASSERT(ptr != NULL);
+  assert(ptr != NULL);
 
   while (!ptr->isClause())
     {
-      DEBUG_ASSERT(!ptr->isEmpty());
+      assert(!ptr->isEmpty());
       if (ptr->isAlt())
 	{
 	  iter--;
 	}
       else
 	{
-	  DEBUG_ASSERT(ptr->isEndLink());
+	  assert(ptr->isEndLink());
 	  iter = ptr->getLink() - 1;
 	}
       ptr = fetchAddr(iter);
-      DEBUG_ASSERT(ptr != NULL);
+      assert(ptr != NULL);
     }
   if ((loc < getTop()) && (iter == getTop() - 1))
     {
       DynamicPredicate* pred = ptr->getPred();
-      DEBUG_ASSERT(pred != NULL);
+      assert(pred != NULL);
       pred->release();
       setTopOfStack(iter);
     }

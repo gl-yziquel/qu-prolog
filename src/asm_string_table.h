@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.h,v 1.7 2004/12/23 22:40:35 qp Exp $
+// $Id: asm_string_table.h,v 1.8 2005/11/26 23:34:28 qp Exp $
 
 #ifndef	ASM_STRING_TABLE_H
 #define	ASM_STRING_TABLE_H
@@ -105,7 +105,7 @@ public:
   
   const EntryType& getEntry(const ASMLoc i) const
   {
-    DEBUG_ASSERT(i < table_num_entries);
+    assert(i < table_num_entries);
     
     return table[i];
   }
@@ -181,7 +181,7 @@ public:
 
   const string& operator[](const ASMLoc i) const
   {
-    DEBUG_ASSERT(i < tableNumEntries());
+    assert(i < tableNumEntries());
     
     return *(getEntry(i).value);
   }

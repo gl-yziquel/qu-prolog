@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.h,v 1.4 2004/02/25 21:25:31 qp Exp $
+// $Id: gc.h,v 1.5 2005/03/08 00:35:06 qp Exp $
 
 #ifndef	GC_H
 #define	GC_H
@@ -61,9 +61,9 @@
 #include "heap_qp.h"
 #include "objects.h"
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 bool check_heap2(Heap&);
-#endif // DEBUG
+#endif // QP_DEBUG
 //
 // In the "upward" phase of compression an entry in the heap
 // with the F bit set can be found. This happens when the object
@@ -105,7 +105,7 @@ void gc_mark_pointer(Object*, int32&, Heap&);
 
 void gc_compact_heap(int32, Heap&);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 bool check_term(Object* term);
-#endif //DEBUG
+#endif //QP_DEBUG
 #endif	// GC_H

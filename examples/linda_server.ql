@@ -22,6 +22,7 @@ linda :-
 linda_loop :-
 	repeat,
 	connect <<- RtAddr,		% wait for a connect message
+errornl(RtAddr),
 	thread_fork(_, linda_thread(RtAddr)),
 	fail.
 
@@ -40,6 +41,7 @@ linda_thread(A) :-
 %
 thread_loop(A) :-
 	repeat,
+errornl(aaaaa),
 	message_choice
 	(
 	    out(T) <<- A ->  % an out message is received from the client

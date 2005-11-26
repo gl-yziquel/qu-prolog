@@ -53,10 +53,18 @@
 // 
 // ##Copyright##
 //
-// $Id: ql_options.cc,v 1.2 2001/11/21 00:21:16 qp Exp $
+// $Id: ql_options.cc,v 1.3 2005/03/08 00:35:13 qp Exp $
 
+#ifdef WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
+
+#ifdef WIN32
+#include "../win32/src/XGetopt.h"
+#endif
 #include "ql_options.h"
 
 #include "defaults.h"
@@ -89,8 +97,12 @@ QlOptions::QlOptions(int argc, char **argv)
   while ((c = getopt(argc, argv, opts)),
 	 (c != -1 && c != '?'))
 #else	// LINUX
+#ifdef WIN32
+  while ((c = getopt(argc, argv, const_cast<TCHAR*>(opts))) != -1)
+#else
   while ((c = getopt(argc, argv, opts)) != -1)
 #endif	// LINUX
+#endif
     {
       switch ((char) c)
 	{

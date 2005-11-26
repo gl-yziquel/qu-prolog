@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr.cc,v 1.4 2003/07/03 04:45:45 qp Exp $
+// $Id: pseudo_instr.cc,v 1.5 2005/11/26 23:34:30 qp Exp $
 
 #include "global.h"
 #include "atom_table.h"
@@ -178,7 +178,7 @@ Thread::psiSaveState(void)
 
   for (u_int i = 0; i < NUMBER_X_REGISTERS; i++)
     {
-      DEBUG_ASSERT(X[i] != NULL);
+      assert(X[i] != NULL);
       if (X[i] == NULL) 
 	{
 	  //X[i] = heap.newVariable();

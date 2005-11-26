@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: write.cc,v 1.9 2004/04/28 00:49:30 qp Exp $
+// $Id: write.cc,v 1.12 2005/11/26 23:34:31 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -82,8 +82,8 @@ extern IOManager *iom;
 Thread::ReturnValue
 Thread::psi_write_atom(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   
@@ -232,8 +232,8 @@ writeqAtom(const char *s, QPStream *stream)
 Thread::ReturnValue
 Thread::psi_writeq_atom(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
@@ -274,7 +274,7 @@ Thread::psi_write_integer(Object *& object1, Object *& object2)
     {
       PSI_ERROR_RETURN(EV_INST, 2);
     }
-  if (!val2->isNumber())
+  if (!val2->isInteger())
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -282,6 +282,36 @@ Thread::psi_write_integer(Object *& object1, Object *& object2)
   // IS_READY_STREAM(stream, -1);
 
   *(stream) << val2->getNumber();
+
+  return(RV_SUCCESS);
+}
+//
+// psi_write_float(stream_index, float)
+// Write for floats.
+// mode(in,in)
+//
+Thread::ReturnValue
+Thread::psi_write_float(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  Object* val2 = heap.dereference(object2);
+
+  QPStream *stream;
+  DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
+
+  if (val2->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 2);
+    }
+  if (!val2->isDouble())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 2);
+    }
+
+  // IS_READY_STREAM(stream, -1);
+  double d = val2->getDouble();
+
+  *(stream) << d;
 
   return(RV_SUCCESS);
 }
@@ -300,9 +330,9 @@ Thread::psi_write_integer(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_write_var(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
@@ -322,7 +352,7 @@ Thread::psi_write_var(Object *& object1, Object *& object2)
 
   // IS_READY_STREAM(stream, -1);
 
-  DEBUG_ASSERT(pval2.getTerm()->isVariable());
+  assert(pval2.getTerm()->isVariable());
   Variable* var = OBJECT_CAST(Variable*, pval2.getTerm());
 
   if (var->hasExtraInfo() && var->getName() != NULL)
@@ -351,11 +381,11 @@ void
 Thread::writeVarName(Object* ref, NameGen gen,
 		     word32& counter, QPStream *stream)
 {
-  DEBUG_ASSERT(ref->isAnyVariable());
+  assert(ref->isAnyVariable());
 
   Reference* var = OBJECT_CAST(Reference*, ref);
 
-  DEBUG_ASSERT(var->hasExtraInfo());
+  assert(var->hasExtraInfo());
   
   Atom* varName = var->getName();
   if (varName == NULL)
@@ -386,9 +416,9 @@ Thread::writeVarName(Object* ref, NameGen gen,
 Thread::ReturnValue
 Thread::psi_writeR_var(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
@@ -408,7 +438,7 @@ Thread::psi_writeR_var(Object *& object1, Object *& object2)
 
   // IS_READY_STREAM(stream, -1);
 
-  DEBUG_ASSERT(pval2.getTerm()->isVariable());
+  assert(pval2.getTerm()->isVariable());
   Variable* var = OBJECT_CAST(Variable*, pval2.getTerm());
 
   var = addExtraInfo(var);
@@ -432,9 +462,9 @@ Thread::psi_writeR_var(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_write_object_variable(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
@@ -457,7 +487,7 @@ Thread::psi_write_object_variable(Object *& object1, Object *& object2)
 
   ObjectVariable* obvar = OBJECT_CAST(ObjectVariable*, pval2.getTerm());
 
-  DEBUG_ASSERT(obvar->hasExtraInfo());
+  assert(obvar->hasExtraInfo());
 
   if (obvar->getName() != NULL)
     {
@@ -486,9 +516,9 @@ Thread::psi_write_object_variable(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_writeR_object_variable(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
@@ -546,9 +576,9 @@ Thread::psi_writeR_object_variable(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_writeq_object_variable(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
 
@@ -596,7 +626,7 @@ Thread::psi_writeq_object_variable(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_debug_write(Object *& object1)
 {
-  #ifdef DEBUG
+  #ifdef QP_DEBUG
   object1->printMe_dispatch(*atoms,false);
   #endif
   return(RV_SUCCESS);

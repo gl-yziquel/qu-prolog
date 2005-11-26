@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_buffer.cc,v 1.3 2002/12/05 03:39:29 qp Exp $
+// $Id: heap_buffer.cc,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #include	<stdio.h>
 #include	<string.h>
@@ -81,7 +81,7 @@ HeapBufferManager::allocate(heapobject* heapTop, heapobject* scratchTop)
 void 
 HeapBufferManager::deallocate(word32 bindex)
 {
-  DEBUG_ASSERT(bindex == (top - 1));
+  assert(bindex == (top - 1));
   buffers[bindex].init(NULL, NULL);
   top--;
 }

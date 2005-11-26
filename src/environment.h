@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: environment.h,v 1.3 2002/11/03 08:37:27 qp Exp $
+// $Id: environment.h,v 1.5 2005/11/26 23:34:29 qp Exp $
 
 #ifndef	ENVIRONMENT_H
 #define	ENVIRONMENT_H
@@ -85,7 +85,11 @@ private:
     EnvLoc	previousEnvironment;
     CodeLoc	continuationInstruction;
     word32  NumYRegs;
-    Object*	y[1] __attribute__ ((aligned));
+#ifdef WIN32
+    Object*     y[1];
+#else
+        Object* y[1] __attribute__ ((aligned));
+#endif
     
     Environment(void) : NumYRegs(0) { }
 
@@ -155,7 +159,7 @@ private:
 
 public:
 
-  EnvironmentStack(word32 size)
+  explicit EnvironmentStack(word32 size)
     : RecordStack(size, size / 10) { }
 
   EnvLoc firstEnv(void)	const { return(0); }
@@ -228,7 +232,7 @@ public:
   //
   void trim(const EnvLoc env, const word32 NumYs)
   {
-    DEBUG_ASSERT(previousTop(getTop()) == env);
+    assert(previousTop(getTop()) == env);
 
     if(fetchEnv(env)->NumYRegs != NumYs)
       {
@@ -305,9 +309,9 @@ public:
   //
   ostream& Display(ostream& strm, EnvLoc index, const size_t = 0);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 void printMe(AtomTable&, EnvLoc);
-#endif //DEBUG
+#endif //QP_DEBUG
 
 };
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: delink.cc,v 1.5 2002/12/05 03:39:27 qp Exp $
+// $Id: delink.cc,v 1.7 2005/03/27 22:07:38 qp Exp $
 
 #include "atom_table.h"
 #include "code.h"
@@ -77,9 +77,13 @@ constants(Object* cell, AtomTable& atoms)
     {
       cout << "\'" << atoms.getAtomString(cell) << "\'";
     }
-  if (cell->isNumber())
+  if (cell->isInteger())
     {
       cout << cell->getNumber();
+    }
+  if (cell->isDouble())
+    {
+      cout << cell->getDouble();
     }
 }
 //
@@ -201,6 +205,10 @@ outputParams(int length, int commaflag, char coded_array[],
 	  cout << (word32)getNumber(pc);
 	  break;
 	  
+	case 'd':        // double parameters   
+	  cout << getDouble(pc);
+	  break;
+	  
 	case 'c':      	// constant parameters
 	  cell = getConstant(pc);
 	  constants(cell,atoms);
@@ -315,6 +323,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 		// offset	'o'
 		// constant     'c'
 		// integer      'i'
+		// double       'd'
 		// register	'r'
 		// address	'a'
 		// predatom	'p'
@@ -373,7 +382,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 	
 			    default:   // The other instructions.
 				commaflag = 0;	
-				length = strlen(coded_inst);
+				length = static_cast<int>(strlen(coded_inst));
 				if (length != 0 ) 
 				{
 					//

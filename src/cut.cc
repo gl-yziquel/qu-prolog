@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: cut.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: cut.cc,v 1.3 2005/11/26 23:34:29 qp Exp $
 
 #include "thread_qp.h"
 
@@ -82,7 +82,7 @@ Thread::psi_delayneckcut(Object *& object1)
   ChoiceLoc	cut;
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   cut = (ChoiceLoc)(val1->getNumber()); 
   if (currentChoicePoint > cut)
@@ -108,7 +108,7 @@ Thread::psi_cut(Object *& object1)
 {
   ChoiceLoc	cut;
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   cut = (ChoiceLoc)(val1->getNumber());  
   if (currentChoicePoint > cut)

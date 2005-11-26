@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: objects.h,v 1.7 2003/07/03 04:45:45 qp Exp $
+// $Id: objects.h,v 1.11 2005/11/26 23:34:30 qp Exp $
 
 #ifndef OBJECTS_H
 #define OBJECTS_H
@@ -71,7 +71,7 @@
 #include "truth3.h"
 
 // Dynamic cast doesn't work the way it should.
-#define OBJECT_CAST(type, expr) static_cast<type>(expr)
+#define OBJECT_CAST(type, expr) reinterpret_cast<type>(expr)
 
 // Forward references for all the subclasses of Object, inserted so
 // that ordering of the subclasses is not important (and also to
@@ -82,9 +82,7 @@ class Constant; // abstract
 class Atom;
 class Short;
 class Long;
-#if 0
-class Float;
-#endif
+class Double;
 class Reference; // abstract
 class Variable;
 class ObjectVariable;
@@ -139,7 +137,7 @@ protected:
   // +-----------------+------------+----------------+----------+----+
   // | Long            :      0...0 :    1,   0,   1 :   1 0 1  : 00 |
   // +-----------------+------------+----------------+----------+----+
-  // | Float           :      0...0 :    1,   1,   0 :   1 0 1  : 00 |
+  // | Double          :      0...0 :    1,   1,   0 :   1 0 1  : 00 |
   // +-----------------+------------+----------------+----------+----+
   // |   Any Constant  :      x...x :    x,   x,   x :   1 0 1  : 00 |
   // +-----------------+------------+----------------+----------+----+
@@ -161,8 +159,8 @@ protected:
   //         TAG : | 0                  | occurs info blk temp 000 00 |
   //
   //   REFERENCE : ptr to refered Object (unbound, ptr to TAG)
-  // [      NAME : extra_info[0] = pointer to Atom        | extra info block
-  // |    DELAYS : extra_info[0] = pointer to delays List ] (optional)
+  // [      NAME : info[1] = pointer to Atom        | extra info block
+  // |    DELAYS : info[2] = pointer to delays List ] (optional)
   //
   //
   // ObjectVariable
@@ -170,9 +168,9 @@ protected:
   //             : | byte | byte | byte | x     x        x    ttt gc |
   //         TAG : | 0                  | local info blk temp 001 00 |
   //   REFERENCE : ptr to refered ObjectVariable (unbound, ptr to TAG)
-  // [      NAME = extra_info[0] = pointer to Atom          | extra info block
-  // |    DELAYS : extra_info[1] = pointer to delays List   | (optional)
-  // |  DISTINCT : extra_info[2] = pointer to distinct List ]
+  // [      NAME = info[1] = pointer to Atom          | extra info block
+  // |    DELAYS : info[2] = pointer to delays List   | (optional)
+  // |  DISTINCT : info[3] = pointer to distinct List ]
   //
   //
   // Cons
@@ -252,14 +250,12 @@ protected:
   // [4] A Long is stored as a C long int, which is at least 32-bits in
   // size.  It is, however, implementation dependent.
   //
-#if 0
-  // Float
+  // Double
   // ~~~~~
   //             : | byte | byte | byte | xxx TTT GC |
   //         TAG : | 0                  | 110 101 00 |
-  //       FLOAT : pointer to double
+  //      DOUBLE : val[2]
   //
-#endif
   //
   // Substitution
   // ~~~~~~~~~~~~
@@ -348,17 +344,17 @@ public:
 
   inline bool isConstant(void) const;
   inline bool isNumber(void) const;
+  inline bool isInteger(void) const;
   inline bool isAtom(void) const;
   inline bool isShort(void) const;
   inline bool isLong(void) const;
-#if 0
-  inline bool isFloat(void) const;
-#endif
+  inline bool isDouble(void) const;
   inline bool isSubstitution(void) const;
   inline bool isSubstitutionBlock(void) const;
   
   // Returns the value of a Short or Long.
   inline int getNumber(void);
+  inline double getDouble(void);
 
   inline heapobject* last(void);
 
@@ -377,7 +373,7 @@ public:
   // the Object being pointed to
   size_t size_dispatch(void);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   // Testing substitution block lists to see if they are legal
   inline bool isLegalSub(void);
@@ -454,19 +450,23 @@ protected:
   static const heapobject ConstAtom =	0x00000000UL;
   static const heapobject ConstShort =	0x00000080UL;
   static const heapobject ConstLong =	0x000000a0UL;
-  // The high 2 bits of the tag are used fo rhte high two bits of
+  static const heapobject ConstDouble =	0x000000c0UL;
+  // The high 2 bits of the tag are used for the high two bits of
   // The long - the long is shifted up by 2 bits to free the bottom
   // two bits for garbage collection bits.
   static const heapobject LongBits =    0xc0000000UL;
-#if 0
-  static const heapobject ConstFloat =	0x000000c0UL;
-#endif
+  // The bottom 2 bits of a double (each word) is stored in the top
+  // 4 bits of the tag
+  static const heapobject DoubleBits1   = 0xc0000000UL;
+  static const heapobject DoubleBits2   = 0x30000000UL;
+  static const heapobject DoubleLowbits = 0x00000003UL;
+ 
   
 public:
   // Dummy constructor - needed for atom constructor
   Constant(void):Object() {}
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -542,7 +542,7 @@ public:
 public:
   static inline size_t size(void);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -564,7 +564,7 @@ public:
 public:
   static inline size_t size(void);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -572,15 +572,14 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////
-// The Float class specification
+// The Double class specification
 
-#if 0
-class Float : public Constant
+class Double : public Constant
 {
 protected:
-  // The value of the Float, stored as a pointer to a double in C
+  // The value of the Double, stored as a pointer to a double in C
   // memory
-  heapobject floatptr;
+  heapobject x[2];
   
 public:
   // Accessor (no mutator)
@@ -589,12 +588,11 @@ public:
 public:
   static inline size_t size(void);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
 };
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // The Long class specification
@@ -612,7 +610,7 @@ public:
 public:
   static inline size_t size(void);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -626,7 +624,7 @@ class Structure : public Object
 {
 protected:
   // Arity is encoded in the tag
-  Object *argument[0]; // arity + 1 arguments (argument[0] is functor)
+  Object *argument[1]; // arity + 1 arguments (argument[0] is functor)
   
 public:
   // Accessor for arity (there is no mutator to avoid realloc() type
@@ -650,7 +648,7 @@ public:
   // Does the real work of figuring out the size.
   static inline size_t size(size_t arity);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -703,7 +701,7 @@ public:
   inline void setTail(Object * const);
   inline Object *getTail(void) const;
   inline Object **getTailAddress(void);
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -734,7 +732,7 @@ public:
 public:
   static inline size_t size(void);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -761,7 +759,7 @@ public:
 public:
   static inline size_t size(void);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -779,7 +777,7 @@ protected:
   struct {
     ObjectVariable *dom;
     Object *ran;
-  } substitution[0];
+  } substitution[1];
 
 public:
   // Buckybits
@@ -822,7 +820,7 @@ public:
   // Does the real work of figuring out the size.
   static inline size_t size(size_t sub_size);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -835,17 +833,18 @@ public:
 class Reference : public Object
 {
 protected:
-  Object *reference;
-  Object *extra_info[0];
+  Object *info[1];
 
   // In a Variable that has extra information:
-  // extra_info[0] = name (Atom *)
-  // extra_info[1] = delayed problem list (Object *)
+  // info[0] = reference
+  // info[1] = name (Atom *)
+  // info[2] = delayed problem list (Object *)
 
   // In an ObjectVariable that has extra information:
-  // extra_info[0] = name (Atom *)
-  // extra_info[1] = delayed problem list (Object *)
-  // extra_info[2] = distinctness information (Object *)
+  // info[0] = reference
+  // info[1] = name (Atom *)
+  // info[2] = delayed problem list (Object *)
+  // info[3] = distinctness information (Object *)
 
 public:
   static const u_int NameOffset = 2;
@@ -936,7 +935,7 @@ public:
 
   inline void copyTag(Object*);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
     inline void printMe(AtomTable&, bool);
 #endif
@@ -974,7 +973,7 @@ public:
 
   inline void makeLocalObjectVariable(void);
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 public:
   inline void printMe(AtomTable&, bool);
 #endif
@@ -1004,7 +1003,7 @@ public:
 inline Object::uTag
 Object::utag(void) const
 {
-  return reinterpret_cast<uTag>((tag & TypeMask) >> 2);
+  return static_cast<uTag>((tag & TypeMask) >> 2);
 }
 
 inline heapobject 
@@ -1016,7 +1015,7 @@ Object::getTag(void) const
 inline heapobject *
 Object::storage(void)
 {
-  DEBUG_ASSERT(isCons() ||
+  assert(isCons() ||
 	       isAnyVariable() ||
 	       isStructure() ||
 	       isQuantifiedTerm() ||
@@ -1127,13 +1126,21 @@ inline bool Object::isLong(void) const
     == (TypeConst | Constant::ConstLong);
 }
 
-#if 0
-inline bool Object::isFloat(void) const
+inline bool Object::isInteger(void) const
+{
+  return 
+    ((tag & (TypeMask | Constant::ConstMask))
+      == (TypeConst | Constant::ConstShort))
+    ||
+    ((tag & (TypeMask | Constant::ConstMask))
+      == (TypeConst | Constant::ConstLong));
+}
+
+inline bool Object::isDouble(void) const
 {
   return (tag & (TypeMask | Constant::ConstMask))
-    == (TypeConst | Constant::ConstFloat);
+    == (TypeConst | Constant::ConstDouble);
 }
-#endif
 
 inline bool Object::isSubstitution(void) const
 {
@@ -1147,8 +1154,8 @@ inline bool Object::isSubstitutionBlock(void) const
 
 inline heapobject* Object::last(void)
 {
-  DEBUG_ASSERT(!isNumber());
-  DEBUG_ASSERT(size_dispatch() > 1);
+  assert(!isNumber());
+  assert(size_dispatch() > 1);
   return (reinterpret_cast<heapobject*>(this) + size_dispatch() - 1);
 }
 
@@ -1166,8 +1173,8 @@ inline void Object::gc_mark(void)
 // object.
 inline void Object::gc_setfs(void)
 {
-  DEBUG_ASSERT(!isNumber());
-  DEBUG_ASSERT(size_dispatch() > 1);
+  assert(!isNumber());
+  assert(size_dispatch() > 1);
   heapobject* x = reinterpret_cast<heapobject*>(this);
   for (u_int i = 1; i < size_dispatch(); i++)
     {
@@ -1185,7 +1192,7 @@ inline void Object::gc_unsetf(void)
   tag &= ~GC_F;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 
 inline bool Object::isLegalSub(void)
 {
@@ -1261,15 +1268,13 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
 	OBJECT_CAST(Short *, this)->printMe(atoms, all);
       else if (isLong())
 	OBJECT_CAST(Long *, this)->printMe(atoms, all);
-#if 0
-      else if (isFloat())
-	OBJECT_CAST(Float *, this)->printMe(atoms, all);
-#endif
+      else if (isDouble())
+	OBJECT_CAST(Double *, this)->printMe(atoms, all);
       else
 	{
 		std::cerr << "Bogus const type" << std::endl;
 		std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  return;
 	}
       break;
@@ -1283,7 +1288,7 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
       // Not all uTags considered!
       std::cerr << "Bogus type" << std::endl;
       std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
-      DEBUG_ASSERT(false);
+      assert(false);
     }
 }
 
@@ -1295,22 +1300,22 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
 
 inline StringLoc Atom::getStringTableLoc(void) const
 {
-  DEBUG_ASSERT(sizeof(StringLoc) == sizeof(heapobject));
+  assert(sizeof(StringLoc) == sizeof(heapobject));
 
   return string_table_loc;
 }
 
 inline void Atom::setStringTableLoc(const StringLoc stl)
 {
-  DEBUG_ASSERT(sizeof(StringLoc) == sizeof(heapobject));
-  DEBUG_ASSERT(string_table_loc == EMPTY_LOC);
+  assert(sizeof(StringLoc) == sizeof(heapobject));
+  assert(string_table_loc == EMPTY_LOC);
 
   string_table_loc = stl;
 }
 
 inline bool Atom::isEmpty(void) const
 {
-  DEBUG_ASSERT(sizeof(StringLoc) == sizeof(heapobject));
+  assert(sizeof(StringLoc) == sizeof(heapobject));
 
   return string_table_loc == EMPTY_LOC;
 }
@@ -1352,16 +1357,16 @@ inline void Atom::associateAtom(Atom *atm)
 
 inline Atom *Atom::getAssociatedAtom(void) const
 {
-  DEBUG_ASSERT(sizeof(void *) == sizeof(heapobject));
-  DEBUG_ASSERT(hasAssociatedAtom());
+  assert(sizeof(void *) == sizeof(heapobject));
+  assert(hasAssociatedAtom());
 
   return reinterpret_cast<Atom *>(associatedval);
 }
 
 inline int Atom::getAssociatedInteger (void) const
 {
-  DEBUG_ASSERT(sizeof(void *) == sizeof(heapobject));
-  DEBUG_ASSERT(hasAssociatedInteger());
+  assert(sizeof(void *) == sizeof(heapobject));
+  assert(hasAssociatedInteger());
 
   return associatedval;
 }
@@ -1390,12 +1395,13 @@ inline size_t Atom::size(void)
   return sizeof(Atom) / BYTES_PER_WORD;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Atom::printMe(AtomTable& atoms, bool)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Atom: \""
        << atoms.getAtomString(this) << "\" ";
   
+#ifndef WIN32
   switch (hasAssociatedItem())
     {
     case AssociatedNone:
@@ -1408,6 +1414,7 @@ inline void Atom::printMe(AtomTable& atoms, bool)
       std::cerr << "atom: [" << std::hex << (word32) getAssociatedAtom() << std::dec << "]";
       break;
     }
+#endif
 }
 #endif
 
@@ -1426,7 +1433,7 @@ inline size_t Short::size(void)
   return sizeof(Short) / BYTES_PER_WORD;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Short::printMe(AtomTable& atoms, bool)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Short[" 
@@ -1436,33 +1443,36 @@ inline void Short::printMe(AtomTable& atoms, bool)
 #endif
 
 //////////////////////////////////////////////////////////////////////
-// Inline functions for the Float class
-#if 0
-inline double Float::getValue(void) const
+// Inline functions for the Double class
+inline double Double::getValue(void) const
 {
-  return *(double *) floatptr;
+  double res;
+  word32 d[2];
+  d[0] = x[0] | ((tag & DoubleBits1) >> 30);
+  d[1] = x[1] | ((tag & DoubleBits2) >> 28);
+  memcpy(&res, d, sizeof(double));
+  return res;
 }
 
-#ifdef DEBUG
-inline void Float::printMe(AtomTable& atoms, bool)
+#ifdef QP_DEBUG
+inline void Double::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << hex << (word32) this << dec << "] Float: \""
+	std::cerr << "[" << hex << (word32) this << dec << "] Double: \""
        << getValue() << "\" ";
 }
 #endif
 
-inline size_t Float::size(void) const
+inline size_t Double::size(void) 
 {
-  return sizeof(Float) / BYTES_PER_WORD;
+  return sizeof(Double) / BYTES_PER_WORD;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Inline functions for the Long class
 
 inline long Long::getValue(void) const
 {
-  DEBUG_ASSERT(sizeof(long) == sizeof(heapobject));
+  assert(sizeof(long) == sizeof(heapobject));
 
   return (long)(((value >> 2) & ~LongBits) | (tag & LongBits));
 }
@@ -1472,7 +1482,7 @@ inline size_t Long::size(void)
   return sizeof(Long) / BYTES_PER_WORD;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Long::printMe(AtomTable& atoms, bool)
 {
 	std::cerr << "[" << std::hex << (int32) this << std::dec << "] Long:[" 
@@ -1495,17 +1505,17 @@ inline size_t Structure::getArity(void) const
 
 inline Object *Structure::getArgument(const size_t n) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   // Can only access valid arguments
-  DEBUG_ASSERT(0 <= n && n <= getArity());
+  assert(0 <= n && n <= getArity());
   
   return argument[n];
 }
 
 inline Object *Structure::getFunctor(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return getArgument(0);
 }
@@ -1514,10 +1524,10 @@ inline Object *Structure::getFunctor(void) const
 // 0 being considered the functor.
 inline void Structure::setArgument(const size_t n, Object * plobj)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   // Can only set valid arguments
-  DEBUG_ASSERT(0 <= n && n <= getArity ());
+  assert(0 <= n && n <= getArity ());
   
   argument[n] = plobj;
 }
@@ -1534,10 +1544,10 @@ inline size_t Structure::size(void) const
 
 inline size_t Structure::size(size_t arity)
 {
-  return 1 + arity + sizeof(Structure) / BYTES_PER_WORD;
+  return arity + sizeof(Structure) / BYTES_PER_WORD;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Structure::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Structure:[" 
@@ -1564,7 +1574,7 @@ inline size_t Cons::size(void)
 inline void 
 Cons::makeSubstitutionBlockList(void)
 {
-  DEBUG_ASSERT(isAnyList());
+  assert(isAnyList());
 
   tag |= FlagSubstitutionBlockList;
 }
@@ -1572,7 +1582,7 @@ Cons::makeSubstitutionBlockList(void)
 inline void
 Cons::makeObjectVariableList(void)
 {
-  DEBUG_ASSERT(isAnyList());
+  assert(isAnyList());
 
   tag |= FlagObjectVariableList;
 }
@@ -1580,7 +1590,7 @@ Cons::makeObjectVariableList(void)
 inline void
 Cons::makeDelayedProblemList(void)
 {
-  DEBUG_ASSERT(isAnyList());
+  assert(isAnyList());
 
   tag |= FlagDelayedProblemList;
 }
@@ -1607,7 +1617,7 @@ Cons::isDelayedProblemList(void) const
 inline void
 Cons::makeInvertible(void)
 {
-  DEBUG_ASSERT(isSubstitutionBlockList());
+  assert(isSubstitutionBlockList());
 
   tag |= FlagInvertible;
 }
@@ -1615,7 +1625,7 @@ Cons::makeInvertible(void)
 inline bool
 Cons::isInvertible(void) const
 {
-  DEBUG_ASSERT(isSubstitutionBlockList());
+  assert(isSubstitutionBlockList());
 
   return (tag & FlagInvertibleMask) == FlagInvertible;
 }
@@ -1623,7 +1633,7 @@ Cons::isInvertible(void) const
 inline void
 Cons::setHead(Object* const plobj)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   head = plobj;
 }
@@ -1631,7 +1641,7 @@ Cons::setHead(Object* const plobj)
 inline Object *
 Cons::getHead(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return head;
 }
@@ -1639,7 +1649,7 @@ Cons::getHead(void) const
 inline void 
 Cons::setTail(Object* const plobj)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   tail = plobj;
 }
@@ -1647,7 +1657,7 @@ Cons::setTail(Object* const plobj)
 inline Object *
 Cons::getTail(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return tail;
 }
@@ -1655,12 +1665,12 @@ Cons::getTail(void) const
 inline Object **
 Cons::getTailAddress(void)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return &tail;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Cons::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Cons:[" 
@@ -1688,48 +1698,48 @@ inline size_t QuantifiedTerm::size(void)
 
 inline Object *QuantifiedTerm::getQuantifier(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return quantifier;
 }
 
 inline Object *QuantifiedTerm::getBoundVars(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return boundvars;
 }
 
 inline Object *QuantifiedTerm::getBody(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return body;
 }
 
 inline void QuantifiedTerm::setQuantifier(Object *o)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   quantifier = o;
 }
 
 inline void QuantifiedTerm::setBoundVars(Object *l)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
-  DEBUG_ASSERT(l->isList() || l->isVariable());
+  assert(sizeof(Object *) == sizeof(heapobject));
+  assert(l->isList() || l->isVariable());
 
   boundvars = l;
 }
 
 inline void QuantifiedTerm::setBody(Object *o)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   body = o;
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void QuantifiedTerm::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] QuantifiedTerm: quantifier:[" 
@@ -1753,36 +1763,36 @@ inline size_t Substitution::size(void)
 
 inline Object *Substitution::getSubstitutionBlockList(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return sub_block_list;
 }
 
 inline Object *Substitution::getTerm(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   return term;
 }
 
 inline void Substitution::setSubstitutionBlockList(Object *l)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
-  DEBUG_ASSERT(l->isList());
+  assert(sizeof(Object *) == sizeof(heapobject));
+  assert(l->isList());
 
   sub_block_list = l;
 }
 
 inline void Substitution::setTerm(Object *o)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   term = o;
 }
 
 
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Substitution::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Substitution: subst:[" 
@@ -1804,7 +1814,7 @@ inline size_t SubstitutionBlock::size(void) const
 
 inline size_t SubstitutionBlock::size(size_t sub_size)
 {
-  return sizeof(SubstitutionBlock) / BYTES_PER_WORD + sub_size * 2;
+  return sizeof(SubstitutionBlock) / BYTES_PER_WORD + (sub_size - 1) * 2;
 }
 
 inline bool
@@ -1826,7 +1836,7 @@ inline size_t SubstitutionBlock::getSize(void) const
 inline ObjectVariable *SubstitutionBlock::getDomain(const size_t n) const
 {
   // Can only access valid pairs
-  DEBUG_ASSERT(1 <= n && n <= getSize());
+  assert(1 <= n && n <= getSize());
   
   return substitution[n-1].dom;
 }
@@ -1836,14 +1846,14 @@ inline ObjectVariable *SubstitutionBlock::getDomain(const size_t n) const
 inline Object *SubstitutionBlock::getRange(const size_t n) const
 {
   // Can only access valid pairs
-  DEBUG_ASSERT(1 <= n && n <= getSize());
+  assert(1 <= n && n <= getSize());
   
   return substitution[n-1].ran;
 }
 
 inline void SubstitutionBlock::decrementSize(void)
 {
-  DEBUG_ASSERT(getSize() > 0);
+  assert(getSize() > 0);
 
   const size_t new_size = getSize() - 1;
 
@@ -1852,21 +1862,21 @@ inline void SubstitutionBlock::decrementSize(void)
 
 inline void SubstitutionBlock::setDomain(const size_t n, Object *dom)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   // Can only set valid pairs
-//  DEBUG_ASSERT(1 <= n && n <= getSize());
-//  DEBUG_ASSERT(dom->isObjectVariable());
+//  assert(1 <= n && n <= getSize());
+//  assert(dom->isObjectVariable());
 
   substitution[n-1].dom = OBJECT_CAST(ObjectVariable*, dom);
 }
 
 inline void SubstitutionBlock::setRange(const size_t n, Object *ran)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   // Can only set valid pairs
-//  DEBUG_ASSERT(1 <= n && n <= getSize());
+//  assert(1 <= n && n <= getSize());
 
   substitution[n-1].ran = ran;
 }
@@ -1875,12 +1885,12 @@ inline void SubstitutionBlock::setSubstitutionPair(const size_t n,
 						   Object *dom,
 						   Object *ran)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   // Can only set valid pairs
-  DEBUG_ASSERT(1 <= n && n <= getSize());
+  assert(1 <= n && n <= getSize());
 
-  DEBUG_ASSERT(dom->isObjectVariable());
+  assert(dom->isObjectVariable());
 
   substitution[n-1].dom = OBJECT_CAST(ObjectVariable*, dom);
   substitution[n-1].ran = ran;
@@ -1893,13 +1903,13 @@ inline void SubstitutionBlock::setSubstitutionPair(const size_t n,
 //
 inline bool SubstitutionBlock::containsLocal(void) const
 {
-  DEBUG_ASSERT(getSize() > 0);
+  assert(getSize() > 0);
 
   return getDomain(1)->isLocalObjectVariable() ||
     getRange(1)->isLocalObjectVariable();
 }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void SubstitutionBlock::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] SubstitutionBlock:[" 
@@ -1977,16 +1987,16 @@ inline void Reference::setPermFlag(void)
 
 inline Object *Reference::getReference(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
-  return reference;
+  return info[0];
 }
 
 inline void Reference::setReference(Object *plobj)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
-  reference = plobj;
+  info[0] = plobj;
 }
 
 
@@ -2003,11 +2013,11 @@ inline void Reference::setExtraInfo(void)
 inline Atom *
 Reference::getName(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   if(hasExtraInfo())
     {
-      return OBJECT_CAST(Atom *, extra_info[0]);
+      return OBJECT_CAST(Atom *, info[1]);
     }
   else
     {
@@ -2018,29 +2028,29 @@ Reference::getName(void) const
 inline heapobject*
 Reference::getNameAddress(void)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   // Only a valid operation if Reference has extra information
-  DEBUG_ASSERT(hasExtraInfo());
+  assert(hasExtraInfo());
   
-  return reinterpret_cast<heapobject*>(&extra_info[0]);
+  return reinterpret_cast<heapobject*>(&info[1]);
 }
 
 inline void
 Reference::setName(Object* name)
 {
-  DEBUG_ASSERT(name->isAtom());
-  DEBUG_ASSERT(hasExtraInfo());
-  extra_info[0] = name;
+  assert(name->isAtom());
+  assert(hasExtraInfo());
+  info[1] = name;
 }
 
 inline Object *Reference::getDelays(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
   if (hasExtraInfo())
     {
-      return extra_info[1];
+      return info[2];
     }
   else
     {
@@ -2051,19 +2061,19 @@ inline Object *Reference::getDelays(void) const
 inline void
 Reference::setDelays(Object *delays)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
-  DEBUG_ASSERT(hasExtraInfo());
-  DEBUG_ASSERT(delays->isList() || delays->isVariable());
+  assert(hasExtraInfo());
+  assert(delays->isList() || delays->isVariable());
 
-  extra_info[1] = delays;
+  info[2] = delays;
 }
 
 inline heapobject*
 Reference::getDelaysAddress(void)
 {
-  DEBUG_ASSERT(hasExtraInfo());
-  return (reinterpret_cast<heapobject*>(&extra_info[1]));
+  assert(hasExtraInfo());
+  return (reinterpret_cast<heapobject*>(&info[2]));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -2096,13 +2106,13 @@ inline void Variable::setLife(u_int i)
 
 inline void Variable::copyTag(Object* other)
 {
-  DEBUG_ASSERT(hasExtraInfo());
-  DEBUG_ASSERT(other->isVariable());
-  DEBUG_ASSERT(!OBJECT_CAST(Variable*, other)->hasExtraInfo());
+  assert(hasExtraInfo());
+  assert(other->isVariable());
+  assert(!OBJECT_CAST(Variable*, other)->hasExtraInfo());
   tag = other->getTag() | FlagExtraInfo;
 }
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void Variable::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Variable:[" 
@@ -2138,31 +2148,31 @@ inline void Variable::printMe(AtomTable& atoms, bool all)
 
 inline Object *ObjectVariable::getDistinctness(void) const
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
-  DEBUG_ASSERT(hasExtraInfo());
+  assert(hasExtraInfo());
 
-  return extra_info[2];
+  return info[3];
 }
 
 inline heapobject*
 ObjectVariable::getDistinctnessAddress(void)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
-  DEBUG_ASSERT(hasExtraInfo());
+  assert(hasExtraInfo());
 
-  return reinterpret_cast<heapobject*>(&extra_info[2]);
+  return reinterpret_cast<heapobject*>(&info[3]);
 }
 
 inline void ObjectVariable::setDistinctness(Object *distinctness)
 {
-  DEBUG_ASSERT(sizeof(Object *) == sizeof(heapobject));
+  assert(sizeof(Object *) == sizeof(heapobject));
 
-  DEBUG_ASSERT(hasExtraInfo());
-  DEBUG_ASSERT(distinctness->isList() || distinctness->isVariable());
+  assert(hasExtraInfo());
+  assert(distinctness->isList() || distinctness->isVariable());
 
-  extra_info[2] = distinctness;
+  info[3] = distinctness;
 }
 
 inline size_t ObjectVariable::size(void) const
@@ -2185,7 +2195,7 @@ inline void ObjectVariable::makeLocalObjectVariable(void)
 
 inline int Object::getNumber(void)
 {
-  DEBUG_ASSERT(isShort() || isLong());
+  assert(isShort() || isLong());
 
   if (isShort())
     {
@@ -2197,9 +2207,13 @@ inline int Object::getNumber(void)
     }
 }
 
+inline double Object::getDouble(void)
+{ 
+  assert(isDouble());
+  return OBJECT_CAST(Double *, this)->getValue();
+}
 
-
-#ifdef DEBUG
+#ifdef QP_DEBUG
 inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] ObjVar:[" 
@@ -2229,7 +2243,7 @@ inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 	}
     }
 }
-#endif // DEBUG
+#endif // QP_DEBUG
 
 //
 // variableDereference() follows the (ob)variable-reference chain from
@@ -2243,7 +2257,7 @@ Object::variableDereference()
   //
   // Ensure we're not about to dereference a NULL pointer
   //
-  DEBUG_ASSERT(o != NULL);
+  assert(o != NULL);
   
   while (o->isAnyVariable()) 
     {
@@ -2252,7 +2266,7 @@ Object::variableDereference()
       // move to what it's referring to
       //
       Object* n = OBJECT_CAST(Reference*, o)->getReference();
-      DEBUG_ASSERT(n != NULL);
+      assert(n != NULL);
       if ( n == o ) 
           {
 	    break; // An unbound (ob)variable
@@ -2283,13 +2297,15 @@ inline bool Object::inList(Object* o)
 //
 inline bool Object::equalConstants(Object* const2)
 {
-  DEBUG_ASSERT(this->isConstant());
-  DEBUG_ASSERT(const2->isConstant());
+  assert(this->isConstant());
+  assert(const2->isConstant());
 
   return(this == const2 ||
-	 (this->isNumber() && const2->isNumber() &&
-	  this->getNumber() == const2->getNumber()
-	  ));
+	 (this->isInteger() && const2->isInteger() &&
+	  this->getNumber() == const2->getNumber())
+	 || (this->isDouble() && const2->isDouble() &&
+	  this->getDouble() == const2->getDouble())
+        );
 }
 
 

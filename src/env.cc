@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: env.cc,v 1.7 2002/11/03 08:37:26 qp Exp $
+// $Id: env.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 #include	<stdlib.h>
 #include	<sstream>
@@ -118,7 +118,7 @@ Thread::call_predicate(int32 noargs, ...)
       functor = callTerm;
       do
 	{
-	  arity += OBJECT_CAST(Structure*, functor)->getArity();
+	  arity += static_cast<word32>(OBJECT_CAST(Structure*, functor)->getArity());
 	  functor = OBJECT_CAST(Structure*, functor)->getFunctor()->variableDereference();
 	} while (functor->isStructure());
       
@@ -179,7 +179,7 @@ Thread::call_predicate(int32 noargs, ...)
       Structure* shorten = heap.newStructure(j);
       shorten->setFunctor(AtomTable::qup_shorten);  // "$qup_shorten"
       
-      int i = OBJECT_CAST(Structure*, functor)->getArity();
+      int i = static_cast<int>(OBJECT_CAST(Structure*, functor)->getArity());
       while(j > 0)
 	{
 	  shorten->setArgument(j--, OBJECT_CAST(Structure*, 
@@ -188,7 +188,7 @@ Thread::call_predicate(int32 noargs, ...)
 	  if (i == 0)
 	    {
 	      functor = OBJECT_CAST(Structure*, functor)->getFunctor()->variableDereference();
-	      i = OBJECT_CAST(Structure*, functor)->getArity();
+	      i = static_cast<int>(OBJECT_CAST(Structure*, functor)->getArity());
 	    }
 	}
       X[NUMBER_X_REGISTERS - 2] = shorten;
@@ -203,7 +203,7 @@ Thread::call_predicate(int32 noargs, ...)
     }
   while (arity > 0)
     {
-      for (int i = OBJECT_CAST(Structure*, functor)->getArity(); i > 0; i--)
+      for (int i = static_cast<int>(OBJECT_CAST(Structure*, functor)->getArity()); i > 0; i--)
 	{
 	  arity--;
 	  X[arity] = OBJECT_CAST(Structure*, functor)->getArgument(i);
@@ -250,9 +250,9 @@ Thread::psi_set_flag(Object *& object1, Object *& object2)
   Object* val1 = object1->variableDereference();
   Object* val2 = object2->variableDereference();
 
-  DEBUG_ASSERT(val1->isShort());
-  DEBUG_ASSERT(val2->isShort());
-  DEBUG_ASSERT((val2->getNumber() == 1) || (val2->getNumber() == 0));
+  assert(val1->isShort());
+  assert(val2->isShort());
+  assert((val2->getNumber() == 1) || (val2->getNumber() == 0));
 
   switch (val1->getNumber())
     {
@@ -314,7 +314,7 @@ Thread::psi_set_flag(Object *& object1, Object *& object2)
       break;
       
     default: 
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   return(RV_SUCCESS);
 }
@@ -330,7 +330,7 @@ Thread::psi_get_flag(Object *& object1, Object *& object2)
   int32	state = 0;
   Object* val1 = object1->variableDereference();
 
-  DEBUG_ASSERT(val1->isShort());
+  assert(val1->isShort());
 
   switch (val1->getNumber())
     {
@@ -353,7 +353,7 @@ Thread::psi_get_flag(Object *& object1, Object *& object2)
       state	= status.testTimeslicing() ? 1 : 0;
       break;
     default: 
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   object2 = heap.newNumber(state);
   return(RV_SUCCESS);
@@ -445,7 +445,7 @@ Thread::psi_call_clause(Object *& object1, Object *& object2)
   heap.Dereference(pval2);
   query = pval2.term;
 
-  DEBUG_ASSERT(pval1.getTerm()->isNumber());
+  assert(pval1.getTerm()->isNumber());
 
   arity = ((query.isAtom()) ? (0) : (heap.StructArity(query)));
   for (i = 0; i < arity; i++)
@@ -512,10 +512,10 @@ Thread::psi_uncurry(Object *& object1, Object *& object2)
         //
 	PrologValue hi_func(pval1.getSubstitutionBlockList(), pval1.getTerm());
 
-	DEBUG_ASSERT(hi_func.getTerm()->isStructure());
+	assert(hi_func.getTerm()->isStructure());
         do
         {
-	  arity += OBJECT_CAST(Structure*, hi_func.getTerm())->getArity();
+	  arity += static_cast<word32>(OBJECT_CAST(Structure*, hi_func.getTerm())->getArity());
 	  hi_func.setTerm(OBJECT_CAST(Structure*,
 				       hi_func.getTerm())->getFunctor());
 	  heap.prologValueDereference(hi_func);
@@ -528,7 +528,7 @@ Thread::psi_uncurry(Object *& object1, Object *& object2)
         while (arity > 0)
         {
                 heap.prologValueDereference(term);
-                for (i = OBJECT_CAST(Structure*, term.getTerm())->getArity() 
+                for (i = static_cast<int32>(OBJECT_CAST(Structure*, term.getTerm())->getArity()) 
 		       ; i > 0; i--)
                 {
 		  PrologValue arg(term.getSubstitutionBlockList(),

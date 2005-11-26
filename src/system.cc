@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system.cc,v 1.16 2004/11/24 00:12:35 qp Exp $
+// $Id: system.cc,v 1.18 2005/11/26 23:34:31 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -62,7 +62,12 @@
 
 #include	<stdlib.h>
 #include	<string.h>
-#include	<unistd.h>
+#ifdef WIN32
+#include <io.h>
+#include <direct.h>
+#else
+#include        <unistd.h>
+#endif
 #if defined(FREEBSD) || defined(MACOSX)
 #include        <pthread.h>
 #include        <signal.h>
@@ -115,7 +120,7 @@ Thread::psi_system(Object *& object1, Object *& object2)
 {
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
 
 #if defined(FREEBSD) || defined(MACOSX)
   object2 = 
@@ -139,12 +144,27 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
-  DEBUG_ASSERT(val1->isAtom());
-  DEBUG_ASSERT(val2->isShort());
+  assert(val1->isAtom());
+  assert(val2->isShort());
   
-  object3 = 
-    heap.newNumber(access(wordexp(atoms->getAtomString(val1)).c_str(),
-			   val2->getNumber()));
+// PORT
+//#ifdef WIN32
+//  string tmpstr = wordexp(atoms->getAtomString(val1));
+//  const char* tmpcharptr = tmpstr.c_str();
+//  object3 = heap.newNumber(access(tmpcharptr,val2->getNumber()));
+//#else
+//  object3 =
+//    heap.newNumber(access(wordexp(atoms->getAtomString(val1)).c_str(),
+//                           val2->getNumber()));
+//#endif
+  string filename = atoms->getAtomString(val1);
+  wordexp(filename);
+  char file[1024];
+  strcpy(file, filename.c_str());
+
+  object3 =
+    heap.newNumber(access(file, val2->getNumber()));
+
   return(RV_SUCCESS);
 } 
 
@@ -161,7 +181,16 @@ Thread::psi_chdir(Object *& object1)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  return (BOOL_TO_RV(chdir(wordexp(atoms->getAtomString(val1)).c_str()) == 0));
+  string dirname = atoms->getAtomString(val1);
+  wordexp(dirname);
+  char dir[1024];
+  strcpy(dir, dirname.c_str());
+
+#ifdef WIN32
+  return (BOOL_TO_RV(_chdir(dir) == 0));
+#else
+  return (BOOL_TO_RV(chdir(dir) == 0));
+#endif
 }
 
 //
@@ -172,7 +201,11 @@ Thread::psi_chdir(Object *& object1)
 Thread::ReturnValue	
 Thread::psi_getcwd(Object *& object1)
 {
+#ifdef WIN32
+  if (_getcwd(atom_buf1, 255) == NULL) return RV_FAIL;
+#else
   if (getcwd(atom_buf1, 255) == NULL) return RV_FAIL;
+#endif
   object1 = atoms->add(atom_buf1);
   return RV_SUCCESS;
 }
@@ -187,10 +220,14 @@ Thread::psi_mktemp(Object *& object1, Object *& object2)
 {
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
   
   strcpy(atom_buf1, atoms->getAtomString(val1));
+#ifdef WIN32
+  (void)(_mktemp(atom_buf1));
+#else
   (void)(mkstemp(atom_buf1));
+#endif
   object2 = atoms->add(atom_buf1);
   
   return(RV_SUCCESS);
@@ -204,7 +241,7 @@ Thread::psi_mktemp(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_realtime(Object *& time_arg)
 {
-  time_arg = heap.newNumber(time((time_t *) NULL));
+  time_arg = heap.newNumber(static_cast<long>(time((time_t *) NULL)));
   return RV_SUCCESS;
 }
 
@@ -307,7 +344,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
         {
           PSI_ERROR_RETURN(EV_TYPE, 2);
         }
-      Object* timet = heap.newNumber(etime);
+      Object* timet = heap.newNumber(static_cast<long>(etime));
 
       return BOOL_TO_RV(unify(time_arg, timet));
     }
@@ -415,7 +452,7 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      Object* timet = heap.newNumber(etime);
+      Object* timet = heap.newNumber(static_cast<long>(etime));
       return BOOL_TO_RV(unify(time_arg, timet));
     }
 }

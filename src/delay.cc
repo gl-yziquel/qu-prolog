@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: delay.cc,v 1.11 2002/11/03 08:37:25 qp Exp $
+// $Id: delay.cc,v 1.13 2005/11/26 23:34:29 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -109,20 +109,20 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
   for ( ; sub_list->isCons();
 	sub_list = OBJECT_CAST(Cons *, sub_list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub 
 	= OBJECT_CAST(SubstitutionBlock*,
 		      OBJECT_CAST(Cons *, sub_list)->getHead());
       size += sub->getSize();
     }
-  Object* doms[size];
-  Object* rans[size];
+  Object** doms = new Object*[size];
+  Object** rans = new Object*[size];
   size_t position = 0;
   sub_list = var1.getSubstitutionBlockList();
   for ( ; sub_list->isCons();
 	sub_list = OBJECT_CAST(Cons *, sub_list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub 
 	= OBJECT_CAST(SubstitutionBlock*,
 		      OBJECT_CAST(Cons *, sub_list)->getHead());
@@ -161,10 +161,10 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
 	    }
 	}
     }
-  DEBUG_ASSERT(size > 0);
+  assert(size > 0);
   bool found = false;
   
-  int finalsize = size;
+  int finalsize = static_cast<int>(size);
   for (int i = 0; i < (int)size; i++)
     {
       PrologValue sub_t(rans[i]);
@@ -224,13 +224,13 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
                   count++;
                 }
             }
-          DEBUG_ASSERT(doms[i]->isObjectVariable());
+          assert(doms[i]->isObjectVariable());
           ObjectVariable* objdom = OBJECT_CAST(ObjectVariable*, doms[i]);
           if (count == 0)
             {
 	      PrologValue temp_term(var1.getTerm());
-#ifdef DEBUG
-	      DEBUG_ASSERT(notFreeIn(objdom, temp_term));
+#ifdef QP_DEBUG
+	      assert(notFreeIn(objdom, temp_term));
 #else
 	      (void)notFreeIn(objdom, temp_term);
 #endif
@@ -250,8 +250,8 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
                 }
 	      Object* new_sub_list = heap.newSubstitutionBlockList(newsub, AtomTable::nil);
 	      PrologValue temp_term(new_sub_list, var1.getTerm());
-#ifdef DEBUG
-	      DEBUG_ASSERT(notFreeIn(objdom, temp_term));
+#ifdef QP_DEBUG
+	      assert(notFreeIn(objdom, temp_term));
 #else
 	      (void)notFreeIn(objdom, temp_term);
 #endif
@@ -262,7 +262,7 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
     }
   if (found)
     {
-      DEBUG_CODE({
+#ifndef NDEBUG
 	int count = 0;
 	for (int j = 0; j < (int)size; j++)
 	  {
@@ -271,8 +271,8 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
 		count++;
 	      }
 	  }
-	DEBUG_ASSERT(count == finalsize);
-      });
+	assert(count == finalsize);
+#endif
       
       if (finalsize == 0)
 	{
@@ -295,6 +295,8 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
 	  var1.setSubstitutionBlockList(new_sub_list);
 	} 
     }
+  delete doms;
+  delete rans;
   return (found);
 }
 
@@ -327,8 +329,8 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
       size2++;
     }
   // arrays for storing blocks - double the size to cope with added subs
-  SubstitutionBlock* sub1array[size1 * 2];
-  SubstitutionBlock* sub2array[size2 * 2];
+  SubstitutionBlock** sub1array = new SubstitutionBlock*[size1 * 2];
+  SubstitutionBlock** sub2array = new SubstitutionBlock*[size2 * 2];
 
   // Fill in sub1array
   int index = 0;
@@ -336,22 +338,22 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
        sub1->isCons();
        sub1 = OBJECT_CAST(Cons *, sub1)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub1)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub1)->getHead()->isSubstitutionBlock());
       sub1array[index++] = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, sub1)->getHead());
     }
-  DEBUG_ASSERT(index == size1);
+  assert(index == size1);
   // Fill in sub2array
   index = 0;
   for (;
        sub2->isCons();
        sub2 = OBJECT_CAST(Cons *, sub2)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub2)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub2)->getHead()->isSubstitutionBlock());
       sub2array[index++] = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, sub2)->getHead());
     }
-  DEBUG_ASSERT(index == size2);
+  assert(index == size2);
 
   bool changed1 = false;
   bool changed2 = false;
@@ -453,6 +455,8 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 		  if (! internalNotFreeIn(domain, tmp))
 		    {
 		      // Free locals can't be removed.
+                      delete sub1array;
+                      delete sub2array;
 		      return false;
 		    }
 		}
@@ -501,7 +505,7 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 		}
 #endif // DEBUG
 	    }
-	  DEBUG_ASSERT(!found);
+	  assert(!found);
 	  // remove sub and add appropriate NFI constraints
 	  for (size_t k = 1; k <= sub2array[i]->getSize(); k++)
 	    {
@@ -518,6 +522,8 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 	      if (! internalNotFreeIn(domain, tmp))
 		{
 		  // Free locals can't be removed.
+                  delete sub1array;
+                  delete sub2array;
 		  return false;
 		}
 	    }
@@ -549,6 +555,8 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 	}
       term2.setSubstitutionBlockList(subst);
     }  
+  delete sub1array;
+  delete sub2array;
   return true; 
 }
 
@@ -605,7 +613,7 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
       }
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 
@@ -615,11 +623,11 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
        sub_list->isCons();
        sub_list = OBJECT_CAST(Cons *, sub_list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub 
 	= OBJECT_CAST(SubstitutionBlock*, 
 		      OBJECT_CAST(Cons *, sub_list)->getHead());
-      DEBUG_ASSERT(sub->getSize() > 0);
+      assert(sub->getSize() > 0);
 
       for (size_t i = 1; i <= sub->getSize(); i++)
         {
@@ -647,9 +655,9 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
 void
 Thread::delayProblem(Object *problem, Object *var)
 {
-  DEBUG_ASSERT(var->isAnyVariable());
+  assert(var->isAnyVariable());
 
-  DEBUG_ASSERT(! problem->isAnyVariable());
+  assert(! problem->isAnyVariable());
 
   // If the delay problems list for the variable is empty, then
   // we have to add the variable to the $delay_problem implicit 
@@ -673,7 +681,7 @@ Thread::delayProblem(Object *problem, Object *var)
 	}
       else
 	{
-	  DEBUG_ASSERT(current_value->isVariable());
+	  assert(current_value->isVariable());
 	  OBJECT_CAST(Variable*, current_value)->setReference(delay_prob);
 	}  
     }
@@ -685,9 +693,9 @@ Thread::delayProblem(Object *problem, Object *var)
        new_prob = OBJECT_CAST(Cons*, new_prob)->getTail())
     {
       Object* headProblem = OBJECT_CAST(Cons*, new_prob)->getHead();
-      DEBUG_ASSERT(headProblem->isStructure());
-      DEBUG_ASSERT(OBJECT_CAST(Structure*, headProblem)->getArity() == 2);
-      DEBUG_ASSERT(OBJECT_CAST(Structure*, headProblem)->getFunctor() == AtomTable::comma);
+      assert(headProblem->isStructure());
+      assert(OBJECT_CAST(Structure*, headProblem)->getArity() == 2);
+      assert(OBJECT_CAST(Structure*, headProblem)->getFunctor() == AtomTable::comma);
 
       PrologValue t1(OBJECT_CAST(Structure*, headProblem)->getArgument(2));
       PrologValue t2(problem);
@@ -695,7 +703,7 @@ Thread::delayProblem(Object *problem, Object *var)
       if (heap.fastEqual(t1, t2) == true)
 	{
 	  // The problem exists already.
-	  DEBUG_ASSERT(OBJECT_CAST(Structure*, headProblem)->getArgument(1)->isVariable());
+	  assert(OBJECT_CAST(Structure*, headProblem)->getArgument(1)->isVariable());
 	  Variable *dstatus 
 	    = OBJECT_CAST(Variable*,
 			  OBJECT_CAST(Structure*, headProblem)->getArgument(1));
@@ -729,7 +737,7 @@ Thread::delayProblem(Object *problem, Object *var)
 bool
 Thread::isDelayProblem(Object *problem, Object *var)
 {
-  DEBUG_ASSERT(var->isAnyVariable());
+  assert(var->isAnyVariable());
   Object *delays = OBJECT_CAST(Reference*, var)->getDelays();
   if (delays->isNil())
     {
@@ -745,7 +753,7 @@ Thread::isDelayProblem(Object *problem, Object *var)
       Structure *delay = 
 	OBJECT_CAST(Structure *, OBJECT_CAST(Cons *, delays)->getHead());
 
-      DEBUG_ASSERT(delay->getArity() == 2);
+      assert(delay->getArity() == 2);
 
       PrologValue t1(delay->getArgument(2));
       PrologValue t2(problem);
@@ -775,7 +783,7 @@ void
 Thread::delayUnify(PrologValue& term1, PrologValue& term2,
 		   Object *variable)
 {
-  DEBUG_ASSERT(variable->isAnyVariable());
+  assert(variable->isAnyVariable());
   Structure *problem = heap.newStructure(2);
   problem->setFunctor(AtomTable::equal);
   problem->setArgument(1, heap.prologValueToObject(term1));
@@ -797,7 +805,7 @@ Thread::delayNFI(ObjectVariable *object_variable,
 		 PrologValue& term,
 		 Object *variable)
 {
-  DEBUG_ASSERT(variable->isAnyVariable());
+  assert(variable->isAnyVariable());
   addExtraInfoToVars(term.getSubstitutionBlockList());
   Structure *problem = heap.newStructure(2);
   problem->setFunctor(AtomTable::nfi);
@@ -818,8 +826,8 @@ bool
 Thread::isDelayNFI(Object * object_variable,
 		   Object * variable)
 {
-  DEBUG_ASSERT(object_variable->isObjectVariable());
-  DEBUG_ASSERT(variable->isAnyVariable());
+  assert(object_variable->isObjectVariable());
+  assert(variable->isAnyVariable());
   Structure *problem = heap.newStructure(2);
 
   problem->setFunctor(AtomTable::nfi);
@@ -839,10 +847,10 @@ Thread::isDelayNFI(Object * object_variable,
 void
 Thread::wakeUpDelayedProblems(Object *ref)
 {
-  DEBUG_ASSERT(ref->isAnyVariable());
-  DEBUG_ASSERT(ref == ref->variableDereference());
+  assert(ref->isAnyVariable());
+  assert(ref == ref->variableDereference());
 
-  DEBUG_ASSERT(! OBJECT_CAST(Reference*, ref)->getDelays()->isNil());
+  assert(! OBJECT_CAST(Reference*, ref)->getDelays()->isNil());
 
   //
   // Mark the variable that has woken delayed problems.
@@ -853,12 +861,12 @@ Thread::wakeUpDelayedProblems(Object *ref)
        global_delays->isCons();
        global_delays = OBJECT_CAST(Cons *, global_delays)->getTail()->variableDereference())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
+      assert(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
 
       Structure *delay
 	= OBJECT_CAST(Structure*, OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference());
 
-      DEBUG_ASSERT(delay->getArity() == 2);
+      assert(delay->getArity() == 2);
 
       if (delay->getArgument(2)->variableDereference() == ref)
 	{
@@ -899,11 +907,11 @@ Thread::retry_delays(delaytype type)
 	   global_delays->isCons();
 	   global_delays = OBJECT_CAST(Cons *, global_delays)->getTail()->variableDereference())
 	{
-	  DEBUG_ASSERT(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
+	  assert(OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference()->isStructure());
       
 	  Structure *delay = OBJECT_CAST(Structure*, OBJECT_CAST(Cons *, global_delays)->getHead()->variableDereference());
       
-	  DEBUG_ASSERT(delay->getArity() == 2);
+	  assert(delay->getArity() == 2);
 	  Object* status = delay->getArgument(1)->variableDereference();
 	  if (!status->isVariable()) 
 	    {
@@ -918,19 +926,19 @@ Thread::retry_delays(delaytype type)
 	    {
 	      Object* vd = 
 		OBJECT_CAST(Cons*, var_delays)->getHead()->variableDereference();
-	      DEBUG_ASSERT(vd->isStructure());
+	      assert(vd->isStructure());
 	      Structure* vdstruct = OBJECT_CAST(Structure *, vd);
-	      DEBUG_ASSERT(vdstruct->getArity() == 2);
+	      assert(vdstruct->getArity() == 2);
 	      Object* vdstatus = 
 		vdstruct->getArgument(1)->variableDereference();
-	      DEBUG_ASSERT(vdstatus->isVariable());
+	      assert(vdstatus->isVariable());
 	      if (!OBJECT_CAST(Variable*,vdstatus)->isFrozen())
 		{
 		  continue;
 		}
 	      Object* problem = 
 		vdstruct->getArgument(2)->variableDereference();
-	      DEBUG_ASSERT(problem->isStructure());
+	      assert(problem->isStructure());
 	      Structure* pstruct = OBJECT_CAST(Structure*, problem);
 	      if (pstruct->getArity() != 2 ||
 		  (!both && (pstruct->getFunctor() != AtomTable::nfi)) ||
@@ -1008,7 +1016,7 @@ Thread::retry_delays(delaytype type)
 		  SubstitutionBlock* block =
 		    heap.copySubstitutionBlock(OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons *, sub)->getHead()));
 		  Cons* newsub = heap.newSubstitutionBlockList(block, AtomTable::nil);
-		  DEBUG_ASSERT(newsub->isLegalSub());
+		  assert(newsub->isLegalSub());
 		  PrologValue pvalcopy(newsub, pval.getTerm());
 		  trailTag(vdstatus);
 		  OBJECT_CAST(Reference*, vdstatus)->thaw();

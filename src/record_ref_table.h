@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: record_ref_table.h,v 1.3 2002/11/03 08:37:31 qp Exp $
+// $Id: record_ref_table.h,v 1.4 2005/03/08 00:35:13 qp Exp $
 
 #ifndef RECORD_REF_TABLE_H
 #define RECORD_REF_TABLE_H
@@ -80,7 +80,11 @@ private:
   StackLoc next;	// next elements in the chain
 
   word32 len;
+#ifdef WIN32
+  char s[1];
+#else
   char s[1] __attribute__ ((aligned));
+#endif
 
 public:
   RecordRefInfo(void)

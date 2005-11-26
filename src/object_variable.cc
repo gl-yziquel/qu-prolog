@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: object_variable.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: object_variable.cc,v 1.4 2005/11/26 23:34:30 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -68,7 +68,7 @@ extern AtomTable *atoms;
 Thread::ReturnValue
 Thread::psi_object_variable(Object *& object)
 {
-  DEBUG_ASSERT(object->hasLegalSub());
+  assert(object->hasLegalSub());
   PrologValue pval(object);
 
   heap.prologValueDereference(pval);
@@ -84,7 +84,7 @@ Thread::psi_object_variable(Object *& object)
 Thread::ReturnValue
 Thread::psi_local_object_variable(Object *& object)
 {
-  DEBUG_ASSERT(object->variableDereference()->hasLegalSub());
+  assert(object->variableDereference()->hasLegalSub());
   Object* term = heap.dereference(object);
 
   return BOOL_TO_RV(term->isLocalObjectVariable());
@@ -111,8 +111,8 @@ Thread::psi_new_object_variable(Object *& object)
 Thread::ReturnValue
 Thread::psi_is_distinct(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
@@ -129,7 +129,7 @@ Thread::psi_is_distinct(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_get_distinct(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
   if (! val1->isObjectVariable())
@@ -138,7 +138,7 @@ Thread::psi_get_distinct(Object *& object1, Object *& object2)
     }
   else
     {
-      DEBUG_ASSERT(val1->isObjectVariable());
+      assert(val1->isObjectVariable());
 
       ObjectVariable *object_variable =
 	OBJECT_CAST(ObjectVariable *, val1);
@@ -164,10 +164,10 @@ Thread::ReturnValue
 Thread::psi_object_variable_name_to_prefix(Object *& object1,
 					   Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
 
   const char *s = atoms->getAtomString(val1);
 
@@ -179,7 +179,7 @@ Thread::psi_object_variable_name_to_prefix(Object *& object1,
     }
 
   // Search backwards for first non-suffix character
-  for (i = strlen(s) - 1;
+  for (i = static_cast<int>(strlen(s) - 1);
        i >= 0 && object_variable_suffix_char(s[i]);
        i--)
     ;
@@ -219,10 +219,10 @@ Thread::psi_object_variable_name_to_prefix(Object *& object1,
 Thread::ReturnValue
 Thread::psi_valid_object_variable_prefix(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
  
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
   
   const char *s = atoms->getAtomString(val1);
 

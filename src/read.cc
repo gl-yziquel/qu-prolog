@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: read.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: read.cc,v 1.3 2005/11/26 23:34:30 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -72,7 +72,7 @@ Thread::psi_readR_var(Object *& object1, Object *& object2)
 {
   Object* val2 = heap.dereference(object2);
 
-  DEBUG_ASSERT(val2->isAtom());
+  assert(val2->isAtom());
   
   if (*(atoms->getAtomString(val2)) == '_')
     {
@@ -119,7 +119,7 @@ Thread::psi_readR_object_variable(Object *& object1, Object *& object2)
 {
   Object* val2 = heap.dereference(object2);
 
-  DEBUG_ASSERT(val2->isAtom());
+  assert(val2->isAtom());
   
   //
   // Obtain existing variable associates with the name.

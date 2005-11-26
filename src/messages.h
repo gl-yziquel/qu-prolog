@@ -53,12 +53,19 @@
 // 
 // ##Copyright##
 //
-// $Id: messages.h,v 1.4 2004/02/12 23:53:47 qp Exp $
+// $Id: messages.h,v 1.6 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	MESSAGES_H
 #define	MESSAGES_H
 
 #include "thread_table.h"
+
+#ifdef WIN32
+#define _WINSOCKAPI_
+#include <windows.h>
+#include <winsock2.h>
+#endif
+
 class Thread;
 
 //
@@ -102,7 +109,7 @@ class MessageChannel
 private:
   ThreadTable& thread_table;
 public:
-  MessageChannel(ThreadTable& t) : thread_table(t) {}
+  explicit MessageChannel(ThreadTable& t) : thread_table(t) {}
 
   virtual ~MessageChannel() {}
 

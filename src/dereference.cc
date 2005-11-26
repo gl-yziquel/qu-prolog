@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dereference.cc,v 1.3 2000/12/13 23:10:01 qp Exp $
+// $Id: dereference.cc,v 1.4 2005/11/26 23:34:29 qp Exp $
 
 #include "heap_qp.h"
 
@@ -66,8 +66,8 @@
 Object*
 Heap::subDereference(Object* o)
 {
-  DEBUG_ASSERT(o->isSubstitution());
-  DEBUG_ASSERT(o->hasLegalSub());
+  assert(o->isSubstitution());
+  assert(o->hasLegalSub());
   Substitution *osub = OBJECT_CAST(Substitution *, o);
   Object* term = osub->getTerm();
   Object* sub  = osub->getSubstitutionBlockList();
@@ -117,7 +117,7 @@ Heap::substitutionDereference(Object *& sublist, Object *& term)
       // At this point all the top-level substitutions have been moved out 
       // of term and into sublist
       //
-      DEBUG_ASSERT(! term->isSubstitution()); // implied by while(...)
+      assert(! term->isSubstitution()); // implied by while(...)
 
       if (term->isObjectVariable())
 	{
@@ -125,12 +125,12 @@ Heap::substitutionDereference(Object *& sublist, Object *& term)
 	    {
 	      return;
 	    }
-          DEBUG_ASSERT(OBJECT_CAST(Cons*, sublist)->getHead()->isSubstitutionBlock());
+          assert(OBJECT_CAST(Cons*, sublist)->getHead()->isSubstitutionBlock());
 	  SubstitutionBlock* subblock =
 	    OBJECT_CAST(SubstitutionBlock*, 
 			OBJECT_CAST(Cons*, sublist)->getHead());
 
-	  DEBUG_ASSERT(subblock->getSize() > 0);
+	  assert(subblock->getSize() > 0);
 
 	  if (term->isLocalObjectVariable()) 
 	    {

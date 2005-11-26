@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_hash_table.cc,v 1.5 2004/12/23 22:40:35 qp Exp $    
+// $Id: dynamic_hash_table.cc,v 1.7 2005/11/26 23:34:29 qp Exp $    
 //
 
 #include "dynamic_hash_table.h"
@@ -78,10 +78,7 @@ DynamicHashTable<HashType>::DynamicHashTable(int TabSize)
 template <class HashType>
 DynamicHashTable<HashType>::~DynamicHashTable(void)
 {
-  if (table != NULL)
-    {
-      delete [] table;
-    }
+  delete [] table;
 }
 
 //
@@ -176,7 +173,7 @@ DynamicHashTable<HashType>::insert(const HashType item, int &hashValue)
       used++;
       table[hashValue] = item;
     }
-  DEBUG_ASSERT(hashValue == search(item));
+  assert(hashValue == search(item));
   return(false);
 }
 

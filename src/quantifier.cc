@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: quantifier.cc,v 1.2 2000/12/13 23:10:02 qp Exp $
+// $Id: quantifier.cc,v 1.3 2005/11/26 23:34:30 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -69,7 +69,7 @@
 Thread::ReturnValue
 Thread::psi_quant(Object *& object1)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
   return BOOL_TO_RV(pval1.getTerm()->isQuantifiedTerm());
@@ -83,7 +83,7 @@ Thread::psi_quant(Object *& object1)
 Thread::ReturnValue
 Thread::psi_quantifier(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
 
@@ -117,7 +117,7 @@ Thread::psi_quantifier(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_bound_var(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
 
@@ -151,7 +151,7 @@ Thread::psi_bound_var(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_body(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
 
@@ -189,7 +189,7 @@ Thread::psi_quantify(Object *& object1,
 		     Object *& object3,
 		     Object *& object4)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   if (val1->isQuantifiedTerm())
     {
@@ -205,9 +205,9 @@ Thread::psi_quantify(Object *& object1,
     }
   else
     {
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object3->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object4->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
+  assert(object3->variableDereference()->hasLegalSub());
+  assert(object4->variableDereference()->hasLegalSub());
       Object* val2 = heap.dereference(object2);
       Object* val3 = heap.dereference(object3);
       Object* val4 = heap.dereference(object4);
@@ -254,8 +254,8 @@ Thread::psi_quantify(Object *& object1,
 Thread::ReturnValue
 Thread::psi_check_binder(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* ovlist1 = heap.dereference(object1);
   Object* ovlist2 = heap.dereference(object2);
 

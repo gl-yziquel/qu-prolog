@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: substitution.h,v 1.3 2002/03/13 01:38:25 qp Exp $
+// $Id: substitution.h,v 1.4 2005/11/26 23:34:31 qp Exp $
 
 #ifndef	SUBSTITUTION_H
 #define	SUBSTITUTION_H
@@ -90,9 +90,9 @@ Object *copySubSpine(Object *sub_block_list1,
 // 
 inline Object *splitSubstitution(Object *sub_list, Object *split_point)
 {
-  DEBUG_ASSERT(sub_list->isList() && split_point->isList());
-  DEBUG_ASSERT(sub_list->isNil() || OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList());
-  DEBUG_ASSERT(split_point->isNil() || OBJECT_CAST(Cons*, split_point)->isSubstitutionBlockList());
+  assert(sub_list->isList() && split_point->isList());
+  assert(sub_list->isNil() || OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList());
+  assert(split_point->isNil() || OBJECT_CAST(Cons*, split_point)->isSubstitutionBlockList());
 
   return copySubSpine(sub_list, split_point, AtomTable::nil);
 }
@@ -106,9 +106,9 @@ inline Object *splitSubstitution(Object *sub_list, Object *split_point)
 // 
 inline Object* removeSubstitution(Object *sub_list, Object *unwanted)
 {
-  DEBUG_ASSERT(sub_list->isList() && unwanted->isCons());
-  DEBUG_ASSERT(sub_list->isNil() || OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList());
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, unwanted)->isSubstitutionBlockList());
+  assert(sub_list->isList() && unwanted->isCons());
+  assert(sub_list->isNil() || OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList());
+  assert(OBJECT_CAST(Cons*, unwanted)->isSubstitutionBlockList());
 
   return copySubSpine(sub_list, unwanted, OBJECT_CAST(Cons*,unwanted)->getTail());
 }

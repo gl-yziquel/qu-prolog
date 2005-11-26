@@ -53,17 +53,20 @@
 // 
 // ##Copyright##
 //
-// $Id: arithmetic.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: arithmetic.h,v 1.2 2005/03/27 22:07:37 qp Exp $
 
 #ifndef ARITHMETIC_H
 #define ARITHMETIC_H
+
+
+
 
 private:
 //
 // arithEvaluate is an auxilary function used by arithmetical pseudo
 //instructions to carry out the evaluation of expressions.
 //
-int32 arithEvaluate(PrologValue& pval);
+//number arithEvaluate(PrologValue& pval);
 
 public:
 //
@@ -113,6 +116,13 @@ ReturnValue psi_increment(Object *& , Object *& );
 // B = A - 1
 //
 ReturnValue psi_decrement(Object *& , Object *& );
+
+//
+// psi_hash_double(A,B)
+// mode(in,out)
+//
+//
+ReturnValue psi_hash_double(Object *& , Object *& );
 
 #endif // ARITHMETIC_H
 

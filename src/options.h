@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: options.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: options.h,v 1.2 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	OPTIONS_H
 #define	OPTIONS_H
@@ -68,7 +68,7 @@ public:
   const char *Usage(void) const { return usage; }
   bool Valid(void) const { return valid; }
 
-  Options(char *u) : usage(u), valid(false) {}
+  explicit Options(char *u) : usage(u), valid(false) {}
 };
 
 #endif	// OPTIONS_H

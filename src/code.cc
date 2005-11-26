@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code.cc,v 1.12 2004/05/26 22:59:44 qp Exp $
+// $Id: code.cc,v 1.15 2005/11/26 23:34:29 qp Exp $
 
 #include "config.h"
 #include <iostream>
@@ -116,12 +116,12 @@ StaticCodeArea::saveArea(ostream& ostrm, const u_long magic) const
   //
   // Write out the size.
   //
-  IntSave<word32>(ostrm, size);
+  IntSave<word32>(ostrm, static_cast<word32>(size));
 
   //
   // Write out the code.
   //
-  ostrm.write((char*)base, size);
+  ostrm.write((char*)base, static_cast<std::streamsize>(size));
   if (ostrm.fail())
     {
       SaveFailure(__FUNCTION__, "data segment", getAreaName());
@@ -164,7 +164,7 @@ StaticCodeArea::loadArea(istream& istrm)
       FatalS(__FUNCTION__, "wrong size for", getAreaName());
     }
 
-  readData(istrm, readSize);
+  readData(istrm, static_cast<word32>(readSize));
 }
 
 
@@ -256,7 +256,7 @@ Code::updateCallInstruction(const CodeLoc loc,
       }
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }
@@ -281,14 +281,14 @@ Code::resolveCallInstruction(const CodeLoc loc, const PredLoc pred,
       //
       // Convert to escape call.
       //
-      updateCallInstruction(loc - SIZE_OF_INSTRUCTION, EscInst, (CodeLoc)pred);
+      updateCallInstruction(loc - SIZE_OF_INSTRUCTION, EscInst, reinterpret_cast<CodeLoc>(pred));
     }
   else
     {
       //
       // Convert to address call.
       //
-      DEBUG_ASSERT(code.type() == PredCode::STATIC_PRED);
+      assert(code.type() == PredCode::STATIC_PRED);
       updateCallInstruction(loc - SIZE_OF_INSTRUCTION, AddrInst,
 			    code.getPredicate(codePtr));
     }
@@ -566,9 +566,17 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case GET_INTEGER:
 	  pc += SIZE_OF_REGISTER + SIZE_OF_INTEGER;
 	  break;
+	case PUT_DOUBLE:
+	case GET_DOUBLE:
+	  pc += SIZE_OF_REGISTER + SIZE_OF_DOUBLE;
+	  break;
 	case SET_INTEGER:
 	case UNIFY_INTEGER:
 	  pc += SIZE_OF_INTEGER;
+	  break;
+	case SET_DOUBLE:
+	case UNIFY_DOUBLE:
+	  pc += SIZE_OF_DOUBLE;
 	  break;
 	case PUT_X_VARIABLE:		// put_x_variable i, j
 	case PUT_Y_VARIABLE:		// put_y_variable i, j
@@ -679,7 +687,7 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	default:
 	  loc = pc - SIZE_OF_INSTRUCTION;
 	  cerr << "illegal opcode " <<  getInstruction(loc) << endl;
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  break;
 	}
     }
@@ -703,7 +711,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    Object* c = getConstant(pc);
-	    DEBUG_ASSERT(c->isAtom());
+	    assert(c->isAtom());
 	    updateAddress(loc, atoms.getOffset(OBJECT_CAST(Atom*, c)));
 	    pc += SIZE_OF_REGISTER;
 	    break;
@@ -712,7 +720,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    Object* c = getConstant(pc);
-	    DEBUG_ASSERT(c->isAtom());
+	    assert(c->isAtom());
 	    updateAddress(loc, atoms.getOffset(OBJECT_CAST(Atom*, c)));
 	    pc += SIZE_OF_NUMBER + SIZE_OF_REGISTER;
 	    break;
@@ -722,7 +730,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    Object* c = getConstant(pc);
-	    DEBUG_ASSERT(c->isAtom());
+	    assert(c->isAtom());
 		updateAddress(loc, atoms.getOffset(OBJECT_CAST(Atom*, c)));
 	    break;
 	  }
@@ -730,7 +738,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    Object* c = getConstant(pc);
-	    DEBUG_ASSERT(c->isAtom());
+	    assert(c->isAtom());
 	    updateAddress(loc, atoms.getOffset(OBJECT_CAST(Atom*, c)));
 	    pc += 2*SIZE_OF_NUMBER;
 	    break;
@@ -739,7 +747,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    Object* c = getConstant(pc);
-	    DEBUG_ASSERT(c->isAtom());
+	    assert(c->isAtom());
 	    updateAddress(loc, atoms.getOffset(OBJECT_CAST(Atom*, c)));
 	  }
 	  pc += SIZE_OF_NUMBER;
@@ -748,7 +756,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    CodeLoc cloc = getCodeLoc(pc);
-	    updateAddress(loc, cloc - getBaseOfStack());
+	    updateAddress(loc, static_cast<word32>(cloc - getBaseOfStack()));
 	  }
 	  pc += SIZE_OF_NUMBER;
 	  break;
@@ -756,7 +764,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  {
 	    loc = pc;
 	    CodeLoc cloc = getCodeLoc(pc);
-	    updateAddress(loc, cloc - getBaseOfStack());
+	    updateAddress(loc, static_cast<word32>(cloc - getBaseOfStack()));
 	  }
 	  break;
 
@@ -823,9 +831,17 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
         case GET_INTEGER:
 	  pc += SIZE_OF_REGISTER + SIZE_OF_INTEGER;
 	  break;
+        case PUT_DOUBLE:
+        case GET_DOUBLE:
+	  pc += SIZE_OF_REGISTER + SIZE_OF_DOUBLE;
+	  break;
 	case UNIFY_INTEGER:
 	case SET_INTEGER:
 	  pc += SIZE_OF_INTEGER;
+	  break;
+	case UNIFY_DOUBLE:
+	case SET_DOUBLE:
+	  pc += SIZE_OF_DOUBLE;
 	  break;
 	case PUT_X_VARIABLE:		// put_x_variable i, j
 	case PUT_Y_VARIABLE:		// put_y_variable i, j
@@ -896,7 +912,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  break;
 	case JUMP:			// jump address
 	  pc += SIZE_OF_ADDRESS;
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  break;
 	case TRY_ME_ELSE:		// try_me_else n, label
 	case TRY:			// try n, label
@@ -931,7 +947,7 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	default:
 	  loc = pc - SIZE_OF_INSTRUCTION;
 	  cerr << "illegal opcode " << getInstruction(loc) << endl;
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  break;
 	}
     }
@@ -1049,8 +1065,8 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
                   }
                 i++;
               }
-	    DEBUG_ASSERT(found);
-	    DEBUG_ASSERT(empty.isEmpty());
+	    assert(found);
+	    assert(empty.isEmpty());
 	    // Clean out table
 	    pc = loc;
             for (word32 count = 0; count < size; count++)
@@ -1111,8 +1127,8 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
                 StructTable[i].offsetToPointer(atoms);
 		i++;
               }
-	    DEBUG_ASSERT(found);
-	    DEBUG_ASSERT(empty.isEmpty());
+	    assert(found);
+	    assert(empty.isEmpty());
 	    // Clean out table
 	    pc = loc;
             for (word32 count = 0; count < size; count++)
@@ -1126,7 +1142,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	    while (i > 0)
               {
                 i--;
-		DEBUG_ASSERT(!StructTable[i].isEmpty());
+		assert(!StructTable[i].isEmpty());
                 CodeStructTable.add(StructTable[i]);
               }
 
@@ -1177,8 +1193,8 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
                 i++;
               }
 
- 	    DEBUG_ASSERT(found);
-	    DEBUG_ASSERT(empty.isEmpty());
+ 	    assert(found);
+	    assert(empty.isEmpty());
 	    // Clean out table
 	    pc = loc;
             for (word32 count = 0; count < size; count++)
@@ -1213,6 +1229,14 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case UNIFY_INTEGER:
 	case SET_INTEGER:
 	  pc += SIZE_OF_INTEGER;
+	  break;
+        case PUT_DOUBLE:
+        case GET_DOUBLE:
+	  pc += SIZE_OF_REGISTER + SIZE_OF_DOUBLE;
+	  break;
+	case UNIFY_DOUBLE:
+	case SET_DOUBLE:
+	  pc += SIZE_OF_DOUBLE;
 	  break;
 	case PUT_X_VARIABLE:		// put_x_variable i, j
 	case PUT_Y_VARIABLE:		// put_y_variable i, j
@@ -1283,7 +1307,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	  break;
 	case JUMP:			// jump address
 	  pc += SIZE_OF_ADDRESS;
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  break;
 	case TRY_ME_ELSE:		// try_me_else n, label
 	case TRY:			// try n, label
@@ -1318,7 +1342,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	default:
 	  loc = pc - SIZE_OF_INSTRUCTION;
 	  cerr << "illegal opcode " << getInstruction(loc) << endl;
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	  break;
 	}
     }
@@ -1338,6 +1362,9 @@ Code::argSize(const char c) const
       break;
     case 'i':
       arg_size = SIZE_OF_INTEGER;
+      break;
+    case 'd':
+      arg_size = SIZE_OF_DOUBLE;
       break;
     case 'n':
       arg_size = SIZE_OF_NUMBER;

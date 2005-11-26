@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: defs.h,v 1.7 2003/11/05 21:33:30 qp Exp $
+// $Id: defs.h,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 #ifndef	DEFS_H
 #define	DEFS_H
@@ -128,13 +128,13 @@ const u_short PORT_NONE = 0;
 //
 inline bool streq(const char *x, const char *y)
 {
-  DEBUG_ASSERT(x != NULL && y != NULL);
+  assert(x != NULL && y != NULL);
   return strcmp(x, y) == 0;
 }
 
 inline bool streqn(const char *x, const char *y, const size_t len)
 {
-  DEBUG_ASSERT(x != NULL && y != NULL);
+  assert(x != NULL && y != NULL);
   return strncmp(x, y, len) == 0;
 }
 
@@ -148,7 +148,7 @@ enum IOType {
   OFDSTREAM,
   IMSTREAM,
   OMSTREAM,
-  SOCKET
+  QPSOCKET
 };
 
 enum IODirection {

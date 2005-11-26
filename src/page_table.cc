@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: page_table.cc,v 1.6 2002/12/23 00:22:10 qp Exp $
+// $Id: page_table.cc,v 1.8 2005/11/26 23:34:30 qp Exp $
 
 #ifndef PAGE_TABLE_CC
 #define PAGE_TABLE_CC
@@ -64,6 +64,7 @@
 #include "defs.h"
 #include "int.h"
 #include "magic.h"
+#include "page_table.h"
 
 //
 // Constructor:
@@ -106,7 +107,7 @@ void
 PageTable<StoredType>::saveArea(ostream& ostrm, const u_long magic,
 				const PageLoc begin, const PageLoc end) const
 {
-  DEBUG_ASSERT(end >= begin);
+  assert(end >= begin);
 
   const size_t size = end - begin;
 
@@ -118,12 +119,12 @@ PageTable<StoredType>::saveArea(ostream& ostrm, const u_long magic,
   //
   // Write out the size (i.e. the number of entries of "StoredType").
   //
-  IntSave<word32>(ostrm, size);
+  IntSave<word32>(ostrm, static_cast<word32>(size));
 
   //
   // Write out the page.
   //
-  ostrm.write((char*)(offsetToAddress(begin)), size * sizeof(StoredType));
+  ostrm.write((char*)(offsetToAddress(begin)), static_cast<std::streamsize>(size * sizeof(StoredType)));
   if (ostrm.fail())
     {
       SaveFailure(__FUNCTION__, "data segment", getAreaName());
@@ -170,7 +171,7 @@ PageTable<StoredType>::loadArea(istream& istrm, const PageLoc start)
       FatalS(__FUNCTION__, "wrong size for ", getAreaName());
     }
 
-  readData(istrm, getAreaName(), ReadSize, start);
+  readData(istrm, getAreaName(), static_cast<word32>(ReadSize), start);
 }
 
 #endif	// PAGE_TABLE_CC

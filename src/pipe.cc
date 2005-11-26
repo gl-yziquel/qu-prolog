@@ -53,9 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: pipe.cc,v 1.4 2002/11/13 04:04:15 qp Exp $
+// $Id: pipe.cc,v 1.5 2005/03/08 00:35:11 qp Exp $
 
 #include <errno.h>
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 #include "thread_qp.h"
 
@@ -65,7 +69,11 @@ Thread::psi_pipe(Object *& input_stream_arg,
 {
   int fdes[2];
 
+#ifdef WIN32
+  int res = _pipe(fdes, 256, _O_BINARY);
+#else
   int res = pipe(fdes);
+#endif
   if (res == -1)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, 0);

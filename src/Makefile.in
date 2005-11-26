@@ -3,8 +3,7 @@ export QP_LIBRARIES = \
 	ipc \
 	library \
 	psi \
-	thread \
-	template
+	thread 
 
 export BIG_LIBRARY=qp.a
 export LIBRARIES=$(addsuffix .a,$(QP_LIBRARIES))
@@ -30,7 +29,7 @@ export GENERATED = $(addprefix GENERATED.,$(DEPEND_TARGETS))
 export OPTIMISATION=-O3
 
 # Debugging options:
-#	DEBUG		: General debugging of system
+#	QP_DEBUG	: General debugging of system
 #	DEBUG_SCHED	: Debugging information about scheduler
 #	DEBUG_BLOCK	: Debugging information about blocking behaviour
 #	DEBUG_IO	: Debugging information about IO behaviour
@@ -52,7 +51,6 @@ include Makefile.heap
 include Makefile.ipc
 include Makefile.library
 include Makefile.psi
-include Makefile.template
 include Makefile.thread
 
 export LIBRARY_OBJECTS = \
@@ -60,7 +58,6 @@ export LIBRARY_OBJECTS = \
 	$(OBJECTS.ipc) \
 	$(OBJECTS.library) \
 	$(OBJECTS.psi) \
-	$(OBJECTS.template) \
 	$(OBJECTS.thread)
 
 # Commands
@@ -75,7 +72,6 @@ export GENERATED = \
 	$(GENERATED.ipc) \
 	$(GENERATED.library) \
 	$(GENERATED.psi) \
-	$(GENERATED.template) \
 	$(GENERATED.thread) \
 	$(GENERATED.qa) \
 	$(GENERATED.qdeal) \

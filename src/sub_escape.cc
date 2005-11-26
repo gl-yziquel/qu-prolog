@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: sub_escape.cc,v 1.5 2003/06/26 00:10:40 qp Exp $
+// $Id: sub_escape.cc,v 1.7 2005/11/26 23:34:31 qp Exp $
 
 #include "thread_qp.h"
 
@@ -70,7 +70,7 @@ Thread::psi_sub(Object *& object1)
     {
       return RV_FAIL;
     }
-  DEBUG_ASSERT(val->hasLegalSub());
+  assert(val->hasLegalSub());
   PrologValue pval1(val);
   heap.prologValueDereference(pval1);
 
@@ -90,11 +90,11 @@ Thread::psi_sub(Object *& object1)
 Thread::ReturnValue
 Thread::psi_get_substitution(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
 
-  DEBUG_ASSERT(pval1.getSubstitutionBlockList()->isLegalSub());
+  assert(pval1.getSubstitutionBlockList()->isLegalSub());
   if (pval1.getSubstitutionBlockList()->isCons())
     {
       heap.dropSubFromTerm(*this, pval1);
@@ -113,7 +113,7 @@ Thread::psi_get_substitution(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_sub_term(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
 
@@ -130,8 +130,8 @@ Thread::psi_sub_term(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_build_sub_term(Object *& object1, Object *& object2, Object *& object3)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
@@ -145,7 +145,7 @@ Thread::psi_build_sub_term(Object *& object1, Object *& object2, Object *& objec
     }
   else
     {
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   
   return RV_SUCCESS;
@@ -176,18 +176,18 @@ Thread::psi_new_sub(Object *& object1,
                          Object *& object3,
                          Object *& object4)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   Object* val3 = heap.dereference(object3);
 
-  DEBUG_ASSERT(val1->isShort());
-  DEBUG_ASSERT(0 <= val1->getNumber() &&
+  assert(val1->isShort());
+  assert(0 <= val1->getNumber() &&
                (u_int)(val1->getNumber()) <= ARITY_MAX);
-  DEBUG_ASSERT(val2->isNil() || val2->isCons() && OBJECT_CAST(Cons*, val2)->isSubstitutionBlockList());
+  assert(val2->isNil() || val2->isCons() && OBJECT_CAST(Cons*, val2)->isSubstitutionBlockList());
 
-  DEBUG_ASSERT(val3->isCons());
+  assert(val3->isCons());
   //
   // Link the new substitution to the existing substitutions.
   //
@@ -198,7 +198,7 @@ Thread::psi_new_sub(Object *& object1,
   Object* list = val3;
   for (int i = size; i != 0; i--)
     {
-      DEBUG_ASSERT(list->isCons());
+      assert(list->isCons());
       Object* entry = OBJECT_CAST(Cons*, list)->getHead()->variableDereference();
       list = OBJECT_CAST(Cons*, list)->getTail()->variableDereference();
       if (!entry->isStructure())
@@ -232,14 +232,14 @@ Thread::psi_new_sub(Object *& object1,
 Thread::ReturnValue
 Thread::psi_next_sub(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isCons());
+  assert(val1->isCons());
 
   Cons* list = OBJECT_CAST(Cons*, val1);
 
-  DEBUG_ASSERT(list->isSubstitutionBlockList());
+  assert(list->isSubstitutionBlockList());
 
   object2 = list->getTail();
 
@@ -256,14 +256,14 @@ Thread::psi_next_sub(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_sub_table_size(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isCons());
+  assert(val1->isCons());
 
   Cons *sub_block_list = OBJECT_CAST(Cons *, val1);
 
-  DEBUG_ASSERT(sub_block_list->getHead()->isSubstitutionBlock());
+  assert(sub_block_list->getHead()->isSubstitutionBlock());
 
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
@@ -271,7 +271,7 @@ Thread::psi_sub_table_size(Object *& object1, Object *& object2)
   //
   // Get the size and return it.
   //
-  object2 = heap.newNumber(sub_block->getSize());
+  object2 = heap.newNumber(static_cast<long>(sub_block->getSize()));
   
   return RV_SUCCESS;
 }
@@ -285,29 +285,29 @@ Thread::psi_sub_table_size(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_set_domain(Object *& object1, Object *& object2, Object *& object3)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object3->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
+  assert(object3->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2); 
   Object* val3 = heap.dereference(object3);
 
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   u_int index = (u_int)(val1->getNumber());
 
-  DEBUG_ASSERT(val2->isCons());
+  assert(val2->isCons());
 
   Cons *sub_block_list = OBJECT_CAST(Cons *, val2);
 
-  DEBUG_ASSERT(sub_block_list->getHead()->isSubstitutionBlock());
+  assert(sub_block_list->getHead()->isSubstitutionBlock());
 
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
 
-  DEBUG_ASSERT(1 <= index && index <= sub_block->getSize());
+  assert(1 <= index && index <= sub_block->getSize());
 
-  DEBUG_ASSERT(val3->isObjectVariable());
+  assert(val3->isObjectVariable());
 
   sub_block->setDomain(index, val3);
 
@@ -322,27 +322,27 @@ Thread::psi_set_domain(Object *& object1, Object *& object2, Object *& object3)
 Thread::ReturnValue
 Thread::psi_set_range(Object *& object1, Object *& object2, Object *& object3)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object3->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
+  assert(object3->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2); 
   Object* val3 = heap.dereference(object3);
 
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   u_int index = (u_int)(val1->getNumber());
 
-  DEBUG_ASSERT(val2->isCons());
+  assert(val2->isCons());
 
   Cons *sub_block_list = OBJECT_CAST(Cons *, val2);
 
-  DEBUG_ASSERT(sub_block_list->getHead()->isSubstitutionBlock());
+  assert(sub_block_list->getHead()->isSubstitutionBlock());
 
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
 
-  DEBUG_ASSERT(1 <= index && index <= sub_block->getSize());
+  assert(1 <= index && index <= sub_block->getSize());
 
   //
   // Assign the term into the specified range.
@@ -361,20 +361,20 @@ Thread::psi_set_range(Object *& object1, Object *& object2, Object *& object3)
 Thread::ReturnValue
 Thread::psi_get_domain(Object *& object1, Object *& object2, Object *& object3)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2); 
 
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   u_int index = (u_int)(val1->getNumber());
 
-  DEBUG_ASSERT(val2->isCons());
+  assert(val2->isCons());
 
   Cons *sub_block_list = OBJECT_CAST(Cons *, val2);
 
-  DEBUG_ASSERT(sub_block_list->getHead()->isSubstitutionBlock());
+  assert(sub_block_list->getHead()->isSubstitutionBlock());
 
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
@@ -400,20 +400,20 @@ Thread::psi_get_domain(Object *& object1, Object *& object2, Object *& object3)
 Thread::ReturnValue
 Thread::psi_get_range(Object *& object1, Object *& object2, Object *& object3)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2); 
 
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   u_int index = (u_int)(val1->getNumber());
 
-  DEBUG_ASSERT(val2->isCons());
+  assert(val2->isCons());
 
   Cons *sub_block_list = OBJECT_CAST(Cons *, val2);
 
-  DEBUG_ASSERT(sub_block_list->getHead()->isSubstitutionBlock());
+  assert(sub_block_list->getHead()->isSubstitutionBlock());
 
   SubstitutionBlock *sub_block = 
     OBJECT_CAST(SubstitutionBlock *, sub_block_list->getHead());
@@ -443,11 +443,11 @@ Thread::ReturnValue
 Thread::psi_compress_sub_object_variable(Object *& object1, Object *& object2)
 
 {
-  DEBUG_ASSERT(object1->hasLegalSub());
+  assert(object1->hasLegalSub());
   PrologValue pval1(object1);
 
   heap.prologValueDereference(pval1);
-  DEBUG_ASSERT(pval1.getTerm()->isObjectVariable());
+  assert(pval1.getTerm()->isObjectVariable());
   
   if (pval1.getSubstitutionBlockList()->isCons())
     {
@@ -467,18 +467,18 @@ Thread::psi_compress_sub_object_variable(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_copy_substitution(Object *& object1, Object *& object2)
 {
-  DEBUG_ASSERT(object1->variableDereference()->isSubstitution());
+  assert(object1->variableDereference()->isSubstitution());
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
   
-  DEBUG_ASSERT(pval1.getSubstitutionBlockList()->isCons());
+  assert(pval1.getSubstitutionBlockList()->isCons());
 
   Object* newsub;
   Object** newsubptr = &newsub;
   Object* sub = pval1.getSubstitutionBlockList();
   for( ; sub->isCons() ; sub = OBJECT_CAST(Cons *, sub)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, sub)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, sub)->getHead()->isSubstitutionBlock());
       SubstitutionBlock* block =
 	heap.copySubstitutionBlock(OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons *, sub)->getHead()));
 
@@ -487,9 +487,9 @@ Thread::psi_copy_substitution(Object *& object1, Object *& object2)
       OBJECT_CAST(Cons *, *newsubptr)->setHead(block);
       newsubptr = OBJECT_CAST(Cons *, *newsubptr)->getTailAddress();
     }
-  DEBUG_ASSERT(sub->isNil());
+  assert(sub->isNil());
   *newsubptr = AtomTable::nil;
-  DEBUG_ASSERT(newsub->isCons());
+  assert(newsub->isCons());
   object2 = heap.newSubstitution(newsub, pval1.getTerm());
   return RV_SUCCESS;
 }
@@ -503,7 +503,7 @@ Thread::psi_copy_substitution(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_single_sub(Object *& object1)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
   Object* t = heap.dereference(object1);
 
   if (!t->isSubstitution())
@@ -511,7 +511,7 @@ Thread::psi_single_sub(Object *& object1)
       return RV_FAIL;
     }
 
-  DEBUG_ASSERT(OBJECT_CAST(Substitution*, t)->getSubstitutionBlockList()->isCons());
+  assert(OBJECT_CAST(Substitution*, t)->getSubstitutionBlockList()->isCons());
 
   Object* sub = OBJECT_CAST(Substitution*, t)->getSubstitutionBlockList();
   if (OBJECT_CAST(Cons *, sub)->getTail()->isNil())
@@ -535,9 +535,9 @@ Thread::ReturnValue
 Thread::psi_require_nfi_simp(Object *& object1, Object *& object2)
 {
   Object* obvar = object1->variableDereference();
-  DEBUG_ASSERT(obvar->isObjectVariable());
+  assert(obvar->isObjectVariable());
 
-  DEBUG_ASSERT(object2->hasLegalSub());
+  assert(object2->hasLegalSub());
   PrologValue term(object2);
   heap.prologValueDereference(term);
   if (!term.getTerm()->isAnyVariable())
@@ -562,7 +562,7 @@ Thread::psi_require_nfi_simp(Object *& object1, Object *& object2)
       return RV_SUCCESS;
     }
 
-  DEBUG_ASSERT(sub->getHead()->isSubstitutionBlock());
+  assert(sub->getHead()->isSubstitutionBlock());
   SubstitutionBlock *sub_block =
     OBJECT_CAST(SubstitutionBlock *, sub->getHead()); 
 
@@ -586,30 +586,30 @@ Thread::psi_set_domains_apart(Object *& object1, Object *& object2,
                               Object *& object3, Object *& object4)
 {
    Object* ov = object1->variableDereference();
-   DEBUG_ASSERT(ov->isObjectVariable());
+   assert(ov->isObjectVariable());
    Object* sub = object2->variableDereference();
-   DEBUG_ASSERT(sub->isNil() ||
+   assert(sub->isNil() ||
                 OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList());
    Object* pos = object3->variableDereference();
-   DEBUG_ASSERT(pos->isNumber());
+   assert(pos->isNumber());
    int dompos = pos->getNumber();
    Object* subpos = object4->variableDereference();
-   DEBUG_ASSERT(OBJECT_CAST(Cons*, subpos)->isSubstitutionBlockList() ||
+   assert(OBJECT_CAST(Cons*, subpos)->isSubstitutionBlockList() ||
                 ((dompos == 1) && subpos->isNil()));
 
    ObjectVariable* objvar = OBJECT_CAST(ObjectVariable*, ov);
    for ( ; sub->isCons() ; sub = OBJECT_CAST(Cons*, sub)->getTail())
      {
-       DEBUG_ASSERT(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
+       assert(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
        SubstitutionBlock* subblock = OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons*, sub)->getHead());
 
        if (sub == subpos)
          {
-           DEBUG_ASSERT(dompos <= (int)(subblock->getSize()));
+           assert(dompos <= (int)(subblock->getSize()));
            for (int i = 1; i < dompos; i++)
              {
                 Object* dom = subblock->getDomain(i)->variableDereference();
-                DEBUG_ASSERT(dom->isObjectVariable());
+                assert(dom->isObjectVariable());
                 if (dom == objvar)
                   {
                     return RV_FAIL;
@@ -627,8 +627,8 @@ Thread::psi_set_domains_apart(Object *& object1, Object *& object2,
              {
                 Object* dom = subblock->getDomain(i)->variableDereference();
           
-		DEBUG_ASSERT(dom->isObjectVariable());
-                DEBUG_ASSERT(objvar == objvar->variableDereference());
+		assert(dom->isObjectVariable());
+                assert(objvar == objvar->variableDereference());
 		if (dom == objvar)
                   {
                     return RV_FAIL;
@@ -640,6 +640,6 @@ Thread::psi_set_domains_apart(Object *& object1, Object *& object2,
              } 
          }
      }
-   DEBUG_ASSERT(sub == subpos);
+   assert(sub == subpos);
    return RV_SUCCESS;
 }

@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// $Id: occurs_check.cc,v 1.5 2002/08/25 23:35:09 qp Exp $
+// $Id: occurs_check.cc,v 1.7 2005/11/26 23:34:30 qp Exp $
 
-// #include "atom_table.h"
+#include "atom_table.h"
 #include "thread_qp.h" 
 #include "truth3.h"
 
@@ -67,8 +67,8 @@ Thread::occursCheckSubAndSimplify(const CheckType type,
 				  Object *sub_block_list,
 				  Object*& simp_list, Object* var)
 {
-  DEBUG_ASSERT(sub_block_list != NULL);
-  DEBUG_ASSERT(sub_block_list->isNil() ||
+  assert(sub_block_list != NULL);
+  assert(sub_block_list->isNil() ||
 	       (sub_block_list->isCons() && 
 		OBJECT_CAST(Cons *, 
 			    sub_block_list)->isSubstitutionBlockList()));
@@ -82,7 +82,7 @@ Thread::occursCheckSubAndSimplify(const CheckType type,
 	 new_sub_block_list = 
 	 OBJECT_CAST(Cons *, new_sub_block_list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
       
       SubstitutionBlock *sub_block = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, list)->getHead());
@@ -98,13 +98,13 @@ Thread::occursCheckSubAndSimplify(const CheckType type,
 	  Object* newt;
 	  if (occursCheckAndSimplify(type, t, newt, var) != false)
 	    {
-#ifdef DEBUG
+#ifdef QP_DEBUG
 for (size_t j = i; j <= sub_block->getSize(); j++)
 {
   new_sub_block->setDomain(i, sub_block->getDomain(i));
   new_sub_block->setRange(i, sub_block->getRange(i));
 }
-#endif // DEBUG
+#endif // QP_DEBUG
 	      return(truth3::UNSURE);
 	    }
 	  new_sub_block->setDomain(i, sub_block->getDomain(i));
@@ -122,7 +122,7 @@ for (size_t j = i; j <= sub_block->getSize(); j++)
 bool
 Thread::simpleOccursCheckSub(Object* subblock, Object* var) 
 {
-  DEBUG_ASSERT(subblock->isSubstitutionBlock());
+  assert(subblock->isSubstitutionBlock());
   SubstitutionBlock *sub = OBJECT_CAST(SubstitutionBlock*, subblock);
   for (size_t i = 1; i <= sub->getSize(); i++)
     {
@@ -141,8 +141,8 @@ Thread::simpleOccursCheckSub(Object* subblock, Object* var)
 truth3
 Thread::simpleOccursCheck(Object* term, Object* var)
 {
-  DEBUG_ASSERT(var == var->variableDereference());
-  DEBUG_ASSERT(var->isVariable());
+  assert(var == var->variableDereference());
+  assert(var->isVariable());
 
   Object* t = term->variableDereference();
 
@@ -215,19 +215,19 @@ Thread::simpleOccursCheck(Object* term, Object* var)
 	Object* sub = s->getSubstitutionBlockList();
 	for ( ; sub->isCons(); sub = OBJECT_CAST(Cons*, sub)->getTail())
 	  {
-	    DEBUG_ASSERT(sub == sub->variableDereference());
+	    assert(sub == sub->variableDereference());
 	    if (simpleOccursCheckSub(OBJECT_CAST(Cons*, sub)->getHead(), var)
 		!= false)
 	      {
 		return truth3::UNSURE;
 	      }
 	  }
-	DEBUG_ASSERT(sub->isNil());
+	assert(sub->isNil());
 	return false;
       }
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return false;
     }
 }
@@ -313,7 +313,7 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	    occursCheckSubAndSimplify(type, 
 				      tmpterm.getSubstitutionBlockList(),
 				      simpsub, var);
-          DEBUG_ASSERT(simpsub->isCons());
+          assert(simpsub->isCons());
 	  simpterm = heap.newSubstitution(simpsub, tmpterm.getTerm());
 	  return flag;
 	}
@@ -344,7 +344,7 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	    occursCheckSubAndSimplify(type, 
 				      tmpterm.getSubstitutionBlockList(),
 				      simpsub, var);
-          DEBUG_ASSERT(simpsub->isCons());
+          assert(simpsub->isCons());
 	  simpterm = heap.newSubstitution(simpsub, tmpterm.getTerm());
 	  return flag;
 	}
@@ -384,13 +384,13 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	      occursCheckSubAndSimplify(type, 
 					tmpterm.getSubstitutionBlockList(),
 					simpsub, var);
-            DEBUG_ASSERT(simpsub->isCons());
+            assert(simpsub->isCons());
 	    simpterm = heap.newSubstitution(simpsub, newt);
 	  }
 	return flag; 
       }
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       return true;
     }
 }

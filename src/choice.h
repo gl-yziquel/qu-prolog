@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: choice.h,v 1.7 2004/07/23 00:52:34 qp Exp $
+// $Id: choice.h,v 1.9 2005/11/26 23:34:29 qp Exp $
 
 #ifndef	CHOICE_H
 #define	CHOICE_H
@@ -138,7 +138,11 @@ public:
   word32		metaCounter;
   word32		objectCounter;
   word32		NumArgs;
-  Object*		X[1] __attribute__ ((aligned));
+#ifdef WIN32
+  Object*               X[1];
+#else
+  Object*               X[1] __attribute__ ((aligned));
+#endif
   
 public:
   //
@@ -227,7 +231,7 @@ public:
   //
   Object* getXreg(word32 i) const 
   {
-    DEBUG_ASSERT((i >= 0) && (i < NumArgs));
+    assert((i >= 0) && (i < NumArgs));
     return(X[i]); 
   }
   // 
@@ -235,7 +239,7 @@ public:
   //
   heapobject* getXregAddr(word32 i) 
   {
-    DEBUG_ASSERT((i >= 0) && (i < NumArgs));
+    assert((i >= 0) && (i < NumArgs));
     return(reinterpret_cast<heapobject*>(X) + i); 
   }
   
@@ -280,7 +284,7 @@ private:
   
 public:
   
-  ChoiceStack(word32 size) : RecordStack(size, size / 10) 
+  explicit ChoiceStack(word32 size) : RecordStack(size, size / 10) 
   { 
       fetchChoice(0)->envStackTop = 0;
   }

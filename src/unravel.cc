@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: unravel.cc,v 1.3 2001/11/21 00:21:18 qp Exp $
+// $Id: unravel.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
 
 #include "atom_table.h"
 #include "heap_qp.h"
@@ -81,10 +81,10 @@ Heap::setyregs(WordArray& perms, int num)
 	}
       else
 	{
-	  DEBUG_ASSERT(head->isObjectVariable());
-	  DEBUG_ASSERT(OBJECT_CAST(Reference*, head)->getName() != NULL);
+	  assert(head->isObjectVariable());
+	  assert(OBJECT_CAST(Reference*, head)->getName() != NULL);
 	  Object* ref = reinterpret_cast<Object*>(*(OBJECT_CAST(Reference*, head)->getNameAddress()));
-	  DEBUG_ASSERT(ref->isVariable());
+	  assert(ref->isVariable());
 	  *(ref->storage()) = reinterpret_cast<heapobject>(yreg(num));
 	}
       num--;
@@ -297,7 +297,7 @@ Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 	}
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
   else
@@ -307,7 +307,7 @@ Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 	  s->setFunctor(AtomTable::put);
 	  s->setArgument(1, AtomTable::constant);
 	  s->setArgument(2, AtomTable::noarg);
-	  DEBUG_ASSERT(t2->isVariable());
+	  assert(t2->isVariable());
 	  OBJECT_CAST(Reference*, t2)->setCollectedFlag();
 	  s->setArgument(3, t1);
 	  s->setArgument(4, t2);
@@ -315,7 +315,7 @@ Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 	}
       else if (t1->isVariable())
 	{
-	  DEBUG_ASSERT(t2->isVariable());
+	  assert(t2->isVariable());
 	  if (OBJECT_CAST(Reference*, t1)->isCollected())
 	    {
 	      s->setFunctor(AtomTable::put);
@@ -337,7 +337,7 @@ Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 	}
       else if (t1->isObjectVariable())
 	{
-	  DEBUG_ASSERT(t2->isVariable());
+	  assert(t2->isVariable());
 	  if (OBJECT_CAST(Reference*, t1)->getName() == NULL)
 	    {	     
 	      s->setFunctor(AtomTable::put);
@@ -366,7 +366,7 @@ Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 	}
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
   return(reinterpret_cast<word32>(s));
@@ -433,7 +433,7 @@ Heap::unifyset(Object* t1, bool get, WordArray& life)
 	}
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
   else
@@ -488,7 +488,7 @@ Heap::unifyset(Object* t1, bool get, WordArray& life)
 	}
       else
 	{
-	  DEBUG_ASSERT(false);
+	  assert(false);
 	}
     }
   return(reinterpret_cast<word32>(s));
@@ -511,7 +511,7 @@ Heap::getputlist(Object* t1, bool get, WordArray& life)
     }
   else
     {
-      DEBUG_ASSERT(t1->isVariable());
+      assert(t1->isVariable());
       OBJECT_CAST(Reference*, t1)->setCollectedFlag();
       s->setFunctor(AtomTable::put);
       s->setArgument(1, AtomTable::list);
@@ -548,7 +548,7 @@ Heap::getputstruct(Object* t1, int arity, Object* t2, bool get, WordArray& life)
       s->setArgument(2, AtomTable::noarg);
       s->setArgument(3, newNumber(arity));
       s->setArgument(4, t2);
-      DEBUG_ASSERT(t2->isVariable());
+      assert(t2->isVariable());
       OBJECT_CAST(Reference*, t2)->setCollectedFlag();
       updateLife(life, t2);
       return(reinterpret_cast<word32>(s));
@@ -583,7 +583,7 @@ Heap::putquant(Object* t1, WordArray& life)
   s->setArgument(2, AtomTable::noarg);
   s->setArgument(3, AtomTable::noarg);
   s->setArgument(4, t1);
-  DEBUG_ASSERT(t1->isVariable());
+  assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
   updateLife(life, t1);
   return(reinterpret_cast<word32>(s));
@@ -601,7 +601,7 @@ Heap::putsub(Object* t1, int size, WordArray& life)
   s->setArgument(2, AtomTable::noarg);
   s->setArgument(3, newNumber(size));
   s->setArgument(4, t1);
-  DEBUG_ASSERT(t1->isVariable());
+  assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
   updateLife(life, t1);
   return(reinterpret_cast<word32>(s));
@@ -619,7 +619,7 @@ Heap::putemptysub(Object* t1, WordArray& life)
   s->setArgument(2, AtomTable::noarg);
   s->setArgument(3, AtomTable::noarg);
   s->setArgument(4, t1);
-  DEBUG_ASSERT(t1->isVariable());
+  assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
   updateLife(life, t1);
   return(reinterpret_cast<word32>(s));
@@ -637,9 +637,9 @@ Heap::putsubterm(Object* t1, Object* t2, WordArray& life)
   s->setArgument(2, AtomTable::noarg);
   s->setArgument(3, t2);
   s->setArgument(4, t1);
-  DEBUG_ASSERT(t1->isVariable());
+  assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
-  DEBUG_ASSERT(t2->isVariable());
+  assert(t2->isVariable());
   OBJECT_CAST(Reference*, t2)->setCollectedFlag();
   updateLife(life, t2);
   updateLife(life, t1);
@@ -735,7 +735,7 @@ escape_builtin(Object* goal, WordArray& life)
 	  functor == AtomTable::psi_life)
 	{
 	  Object* t = OBJECT_CAST(Structure*, goal)->getArgument(1)->variableDereference();
-	    DEBUG_ASSERT(t->isVariable());
+	    assert(t->isVariable());
 	    OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	    updateLife(life, t);
 	    return true;
@@ -751,7 +751,7 @@ escape_builtin(Object* goal, WordArray& life)
       if (functor == AtomTable::cpseudo_instr1)
 	{
 	  Object* t = OBJECT_CAST(Structure*, goal)->getArgument(2)->variableDereference();
-	  DEBUG_ASSERT(t->isVariable());
+	  assert(t->isVariable());
 	  OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	  return true;
 	}
@@ -763,7 +763,7 @@ escape_builtin(Object* goal, WordArray& life)
       for (int i = 2; i < 4; i++)
 	{
       	  Object* t = OBJECT_CAST(Structure*, goal)->getArgument(i)->variableDereference();
-	  DEBUG_ASSERT(t->isVariable());
+	  assert(t->isVariable());
 	  OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	}	 
       return true;
@@ -774,7 +774,7 @@ escape_builtin(Object* goal, WordArray& life)
       for (int i = 2; i < 5; i++)
 	{
       	  Object* t = OBJECT_CAST(Structure*, goal)->getArgument(i)->variableDereference();
-	  DEBUG_ASSERT(t->isVariable());
+	  assert(t->isVariable());
 	  OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	}	 
       return true;
@@ -786,7 +786,7 @@ escape_builtin(Object* goal, WordArray& life)
       for (int i = 2; i < 6; i++)
 	{
       	  Object* t = OBJECT_CAST(Structure*, goal)->getArgument(i)->variableDereference();
-	  DEBUG_ASSERT(t->isVariable());
+	  assert(t->isVariable());
 	  OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	}	 
       return true;
@@ -797,7 +797,7 @@ escape_builtin(Object* goal, WordArray& life)
       for (int i = 2; i < 7; i++)
 	{
       	  Object* t = OBJECT_CAST(Structure*, goal)->getArgument(i)->variableDereference();
-	  DEBUG_ASSERT(t->isVariable());
+	  assert(t->isVariable());
 	  OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	}	 
       return true;
@@ -910,7 +910,7 @@ Heap::varunify(Object* a, Object* b, WordArray& unravelArray, WordArray& life)
       Structure* bstruct = OBJECT_CAST(Structure*, b);
       Object* afun = astruct->getFunctor()->variableDereference();
       Object* bfun = bstruct->getFunctor()->variableDereference();
-      u_int arity = astruct->getArity();
+      u_int arity = static_cast<u_int>(astruct->getArity());
       if (arity != bstruct->getArity() ||
 	  afun->isAtom() && bfun->isAtom() && afun != bfun)
 	{
@@ -958,11 +958,11 @@ Heap::goalSubSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, Wor
   for(;sub->isCons();
       sub = OBJECT_CAST(Cons*, sub->getTail()->variableDereference()))
     {
-      DEBUG_ASSERT(sub->getHead()->isSubstitutionBlock());
+      assert(sub->getHead()->isSubstitutionBlock());
       SubstitutionBlock* sblock = 
 	OBJECT_CAST(SubstitutionBlock*, sub->getHead());
-      int size = sblock->getSize();
-      Object* args[2*size+1];
+      int size = (int)(sblock->getSize());
+      Object** args = new Object*[2*size+1];
       for (int i = 1; i <= size; i++)
 	{
 	  Object* newdom = newVariable();
@@ -983,6 +983,7 @@ Heap::goalSubSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, Wor
 	  unravelArray.addEntry(unifyset(args[2*i-1], false, life));
 	  unravelArray.addEntry(unifyset(args[2*i], false, life));
 	}
+      delete args;
     }
   if (term->isConstant() || term->isAnyVariable())
     {
@@ -1028,12 +1029,12 @@ Heap::goalStructSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, 
     case Object::uStruct:
       {
 	Structure* oldstr = OBJECT_CAST(Structure*, oldarg);
-	u_int arity = oldstr->getArity();
+	u_int arity = static_cast<u_int>(oldstr->getArity());
 	Object* newf = newVariable();
 	Object* functor = oldstr->getFunctor()->variableDereference();
 	
 	goalStructSpread(functor, newf, unravelArray, life);
-	Object* args[arity];
+	Object** args = new Object*[arity];
 	for (u_int i = 1; i <= arity; i++)
 	  {
 	    args[i-1] = newVariable();
@@ -1047,6 +1048,7 @@ Heap::goalStructSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, 
 	  {
 	    unravelArray.addEntry(unifyset(args[i-1], false, life));
 	  }
+        delete args;
       }
       break;
     case Object::uQuant:
@@ -1092,7 +1094,7 @@ Heap::goalStructSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, 
       goalSubSpread(oldarg, newarg, unravelArray, life);
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }
@@ -1122,7 +1124,7 @@ Heap::goalArgSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, Wor
       goalSubSpread(oldarg, newarg, unravelArray, life);
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }
@@ -1230,9 +1232,9 @@ Heap::headStructSpread(Object* oldarg, Object* newarg,
 	    *(newarg->storage()) =
 	      reinterpret_cast<heapobject>(ur);
 	  }
-	int arity = oldstruct->getArity();
+	int arity = static_cast<int>(oldstruct->getArity());
 	Object* functor = oldstruct->getFunctor()->variableDereference();
-	Object* args[arity];
+	Object** args = new Object*[arity];
 	Object* newf = newVariable();
 	if (functor->isAtom())
 	  {
@@ -1272,10 +1274,11 @@ Heap::headStructSpread(Object* oldarg, Object* newarg,
 	  {
 	    headStructSpread(oldstruct->getArgument(i+1)->variableDereference(), args[i], unravelArray, false, life);
 	  }
+        delete args;
       }
       break;
     default:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
 }
@@ -1312,11 +1315,11 @@ Heap::unravelHead(Object* head, WordArray& unravelArray, WordArray& life)
       return;
     }
 
-  DEBUG_ASSERT(head->isStructure());
+  assert(head->isStructure());
 
   Structure* headStr = OBJECT_CAST(Structure*, head);
 
-  int arity = headStr->getArity();
+  int arity = static_cast<int>(headStr->getArity());
   Structure* start = newStructure(1);
   start->setFunctor(AtomTable::start);
   start->setArgument(1, newNumber(arity));
@@ -1379,9 +1382,9 @@ Heap::goalSpread(Object* goal, WordArray& unravelArray, WordArray& life)
     }
   else
     {
-      DEBUG_ASSERT(goal->isStructure());
+      assert(goal->isStructure());
       Structure* goalstr = OBJECT_CAST(Structure*, goal);
-      int arity = goalstr->getArity();
+      int arity = static_cast<int>(goalstr->getArity());
       for (int i = 1; i <= arity; i++)
 	{
 	  Object* oldarg = goalstr->getArgument(i)->variableDereference();
@@ -1470,7 +1473,7 @@ Heap::unravel(Object* clause, WordArray& unravelArray, WordArray& life,
 	      int& bodystart)
 {
   clause = clause->variableDereference();
-  DEBUG_ASSERT(clause->isCons());
+  assert(clause->isCons());
   Object* head = OBJECT_CAST(Cons*, clause)->getHead()->variableDereference();
   unravelHead(head, unravelArray, life);
   Object* body = OBJECT_CAST(Cons*, clause)->getTail()->variableDereference();

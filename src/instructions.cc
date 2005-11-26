@@ -3,7 +3,7 @@
 //
 //##Qu-Prolog Copyright.abst##
 //
-// $Id: MkInstructions.in,v 1.2 2001/11/21 00:21:19 qp Exp n
+// $Id: MkInstructions.in,v 1.3 2005/04/12 04:02:48 qp Exp n
 
 #include "code.h"
 #include "defs.h"
@@ -102,6 +102,10 @@ const char *opnames[] = {
 	"db_try",
 	"db_retry",
 	"db_try_dec_ref",
+	"put_double",
+	"get_double",
+	"set_double",
+	"unify_double",
 };
 
 // Operand types
@@ -197,6 +201,10 @@ const char *operands[] = {
 	/* DB_TRY */ "naaa",
 	/* DB_RETRY */ "naaa",
 	/* DB_TRY_DEC_REF */ "",
+	/* PUT_DOUBLE */ "dr",
+	/* GET_DOUBLE */ "dr",
+	/* SET_DOUBLE */ "d",
+	/* UNIFY_DOUBLE */ "d",
 };
 
 // Instruction sizes
@@ -292,5 +300,9 @@ const word32 opsizes[] = {
 	/* DB_TRY */ Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_INSTRUCTION, 
 	/* DB_RETRY */ Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_INSTRUCTION, 
 	/* DB_TRY_DEC_REF */ Code::SIZE_OF_INSTRUCTION, 
+	/* PUT_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_REGISTER + Code::SIZE_OF_INSTRUCTION, 
+	/* GET_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_REGISTER + Code::SIZE_OF_INSTRUCTION, 
+	/* SET_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_INSTRUCTION, 
+	/* UNIFY_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_INSTRUCTION, 
 };
 

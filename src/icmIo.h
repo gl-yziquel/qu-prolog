@@ -25,24 +25,33 @@ Contact: fgm@fla.fujitsu.com
 #ifndef _ICM_IO_H_
 #define _ICM_IO_H_
 
-#include "icm.h"
-#include "icmLocal.h"			/* Localization header */
+#ifdef __cplusplus
+extern "C" {
+#endif 
 
 typedef struct _file_rec_ *filePo;	/* Our file pointer */
 typedef enum {turnOffBlocking, turnOnBlocking, enableAsynch,disableAsynch
              }icmIoConfigOpt;
 typedef enum {ioFile, ioChar, ioBlock, ioDir, ioPipe, ioString, ioLog } ioType;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "icm.h"
+#include "icmLocal.h"			/* Localization header */
 
 void initICMIo(void);			/* Initialise the IO table */
 void closeICMIo(void);		/* Close down all io */
 
 long fileNo(filePo f);
 filePo filePtr(long n);
-void *fileData(filePo f);
+int icmFileData(filePo f);
+void *icmFileClient(filePo f);
+void icmSetFileClient(filePo f,void *c);
+char *icmFileName(filePo f);
+ioType icmFileType(filePo f);	/* Indicates the type of file */
+long icmFilePos(filePo f);
+long icmFileOutPos(filePo f);
+long icmFileLineNo(filePo f);
+
+int fileData(filePo f);
 void *fileClient(filePo f);
 void setFileClient(filePo f,void *c);
 char *fileName(filePo f);
@@ -51,16 +60,57 @@ long filePos(filePo f);
 long fileOutPos(filePo f);
 long fileLineNo(filePo f);
 
+icmStatus icmIsOpenFile(filePo f);	/* True if file is open */
+icmStatus icmIsReadingFile(filePo f); /* True if a read-enabled file */
+icmStatus icmIsWritingFile(filePo f); /* True if a write-enabled file */
+icmStatus icmIsInReady(filePo fe);
+icmStatus icmIsOutReady(filePo fe);
+icmStatus icmIsFileOpen(filePo f);	/* True if the file is open */
+filePo icmCloneIo(filePo f,icmTruth mode);	/* clone a file descriptor */
+
 icmStatus openFile(filePo f);	/* True if file is open */
 icmStatus readingFile(filePo f); /* True if a read-enabled file */
 icmStatus writingFile(filePo f); /* True if a write-enabled file */
 icmStatus inReady(filePo fe);
 icmStatus outReady(filePo fe);
 icmStatus fileOpen(filePo f);	/* True if the file is open */
+
+void icmFlushOutChannels(void);
+icmStatus icmConfigureIo(filePo io,icmIoConfigOpt mode);
+
+icmStatus configureIo(filePo io,icmIoConfigOpt mode);
 void flushOutChannels(void);
+
 int filePrintDepth(filePo f);	/* Current print depth */
 int setFilePrintDepth(filePo f,int depth);/* Current print depth */
-icmStatus configureIo(filePo io,icmIoConfigOpt mode);
+
+int icmInCh(filePo f);		/* read character from a file */
+icmStatus icmInChar(filePo f,char *chP); /* Read a char and return result */
+icmStatus icmUnGetCh(filePo f,int ch); /* put a single character back */
+icmStatus icmIsCharsWaiting(filePo f); /* true if data available */
+icmStatus icmSkipBlanks(filePo f);
+icmStatus icmInBlock(filePo in,char *where,long count); /* Read a block */
+icmStatus icmInBlck(filePo f,char *buffer,long len,long *ret);
+icmStatus icmInLine(filePo f,char *buffer,long len,char *term);
+icmStatus icmIsFileAtEof(filePo f);		/* True if at end of file */
+
+icmStatus icmOutCh(filePo cl,int ch);	/* Write a character to output */
+icmStatus icmOutChar(filePo f,int ch); /* Non-blocking version */
+icmStatus icmUnOutCh(filePo f,long i); /* `unwrite' if possible */
+icmStatus icmOutStr(filePo cl,char *str); /* write a C string to a file */
+icmStatus icmOutString(filePo f,char *str,int len,int width,int precision,
+			      char pad,icmTruth leftPad,char *prefix);
+icmStatus icmOutInt(filePo f,llong i);	/* Write an integer to a file */
+icmStatus icmOutInteger(filePo f,llong i,int base,int width,int precision,
+			char pad,icmTruth left,char *prefix,icmTruth sign);
+icmStatus icmOutFloat(filePo out,double x);	/* Write a floating point value */
+icmStatus icmOutDouble(filePo out,double x,char mode,int width,int precision,
+		    char pad,icmTruth left,char *prefix,icmTruth sign);
+icmStatus icmOutBlock(filePo f,char *data,long len);
+icmStatus icmOutBlck(filePo f,char *data,long len,long *actual);
+icmStatus icmOutMsg(filePo f,char *fmt,...);
+icmStatus icmFlushFile(filePo f);		/* Flush a file */
+
 
 int inCh(filePo f);			/* read character from a file */
 icmStatus inChar(filePo f,char *chP); /* Read a char and return result */
@@ -88,19 +138,19 @@ icmStatus outBlock(filePo f,char *data,long len);
 icmStatus outBlck(filePo f,char *data,long len,long *actual);
 icmStatus outMsg(filePo f,char *fmt,...);
 icmStatus flushFile(filePo f);		/* Flush a file */
+
 icmStatus int2Str(llong i,char *buff,long len);
 
-char *strMsg(char *buffer,long len,char *fmt,...); /* Special string handling */
 icmStatus icmInitLogfile(char *name);
 void icmLogMsg(char *fmt,...);
 void logMsg(filePo out,char *fmt,...);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
+#ifndef EOF
+#define EOF (-1)
 #endif
 
-#ifndef EOF
-#define EOF -1
+#ifdef __cplusplus
+}; /* end of extern "C" */
 #endif
 
 #endif

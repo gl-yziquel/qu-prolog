@@ -1,13 +1,14 @@
 '$write_type'/1:
 
-	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
+	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
+	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'atom':$3])
+
+$5:
 	try(1, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
 	get_constant('integer', 0)
@@ -15,6 +16,11 @@ $1:
 	execute_predicate('$foreign_write', 1)
 
 $2:
+	get_constant('float', 0)
+	put_constant('double', 0)
+	execute_predicate('$foreign_write', 1)
+
+$3:
 	get_constant('atom', 0)
 	put_constant('char *', 0)
 	execute_predicate('$foreign_write', 1)
@@ -24,21 +30,27 @@ end('$write_type'/1):
 
 '$type_check'/1:
 
-	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
+	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
 
 $4:
+	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'atom':$3])
+
+$5:
 	try(1, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
 	get_constant('integer', 0)
-	put_constant('isNumber()', 0)
+	put_constant('isInteger()', 0)
 	execute_predicate('$foreign_write', 1)
 
 $2:
+	get_constant('float', 0)
+	put_constant('isNumber()', 0)
+	execute_predicate('$foreign_write', 1)
+
+$3:
 	get_constant('atom', 0)
 	put_constant('isAtom()', 0)
 	execute_predicate('$foreign_write', 1)
@@ -48,14 +60,16 @@ end('$type_check'/1):
 
 '$extract_value'/2:
 
-	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
 
-$3:
-	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
+$5:
+	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'double':$3, 'atom':$4])
 
-$4:
+$6:
 	try(2, $1)
-	trust($2)
+	retry($2)
+	retry($3)
+	trust($4)
 
 $1:
 	get_constant('integer', 0)
@@ -67,6 +81,24 @@ $1:
 	execute_predicate('$foreign_write', 1)
 
 $2:
+	get_constant('float', 0)
+	get_x_variable(0, 1)
+	allocate(0)
+	call_predicate('$write_pval', 1, 0)
+	put_constant('->getDouble()', 0)
+	deallocate
+	execute_predicate('$foreign_write', 1)
+
+$3:
+	get_constant('double', 0)
+	get_x_variable(0, 1)
+	allocate(0)
+	call_predicate('$write_pval', 1, 0)
+	put_constant('->getDouble()', 0)
+	deallocate
+	execute_predicate('$foreign_write', 1)
+
+$4:
 	get_constant('atom', 0)
 	allocate(1)
 	get_y_variable(0, 1)
@@ -83,14 +115,16 @@ end('$extract_value'/2):
 
 '$make_term'/2:
 
-	switch_on_term(0, $4, 'fail', 'fail', 'fail', 'fail', $3)
+	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
 
-$3:
-	switch_on_constant(0, 4, ['$default':'fail', 'integer':$1, 'atom':$2])
+$5:
+	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'double':$3, 'atom':$4])
 
-$4:
+$6:
 	try(2, $1)
-	trust($2)
+	retry($2)
+	retry($3)
+	trust($4)
 
 $1:
 	get_constant('integer', 0)
@@ -106,6 +140,32 @@ $1:
 	execute_predicate('$write_foreign_val', 2)
 
 $2:
+	get_constant('float', 0)
+	allocate(1)
+	get_y_variable(0, 1)
+	put_y_value(0, 0)
+	call_predicate('$write_output_val', 1, 1)
+	put_constant(' = th.TheHeap().newDouble(', 0)
+	call_predicate('$foreign_write', 1, 1)
+	put_y_value(0, 1)
+	put_constant('float', 0)
+	deallocate
+	execute_predicate('$write_foreign_val', 2)
+
+$3:
+	get_constant('double', 0)
+	allocate(1)
+	get_y_variable(0, 1)
+	put_y_value(0, 0)
+	call_predicate('$write_output_val', 1, 1)
+	put_constant(' = th.TheHeap().newDouble(', 0)
+	call_predicate('$foreign_write', 1, 1)
+	put_y_value(0, 1)
+	put_constant('float', 0)
+	deallocate
+	execute_predicate('$write_foreign_val', 2)
+
+$4:
 	get_constant('atom', 0)
 	allocate(1)
 	get_y_variable(0, 1)
@@ -495,6 +555,375 @@ end('$load_foreign_files'/2):
 
 
 
+'generate_foreign_interface'/2:
+
+
+$1:
+	get_x_variable(3, 0)
+	get_x_variable(2, 1)
+	pseudo_instr1(2, 3)
+	neck_cut
+	put_list(0)
+	set_x_value(3)
+	set_constant('[]')
+	put_constant('[]', 1)
+	execute_predicate('generate_foreign_interface', 3)
+end('generate_foreign_interface'/2):
+
+
+
+'generate_foreign_interface/3$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	get_x_variable(1, 0)
+	allocate(1)
+	get_y_level(0)
+	put_constant('atom', 0)
+	call_predicate('application', 2, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('generate_foreign_interface/3$0'/1):
+
+
+
+'generate_foreign_interface/3$1'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	get_x_variable(1, 0)
+	allocate(1)
+	get_y_level(0)
+	put_constant('atom', 0)
+	call_predicate('application', 2, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('generate_foreign_interface/3$1'/1):
+
+
+
+'generate_foreign_interface'/3:
+
+	try(3, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	trust($9)
+
+$1:
+	get_x_variable(3, 0)
+	pseudo_instr1(1, 3)
+	neck_cut
+	put_structure(3, 0)
+	set_constant('generate_foreign_interface')
+	set_x_value(3)
+	set_x_value(1)
+	set_x_value(2)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(3, 4)
+	set_constant('generate_foreign_interface')
+	set_x_value(2)
+	set_x_value(3)
+	set_x_value(1)
+	put_list(2)
+	set_x_value(4)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$2:
+	get_x_variable(3, 0)
+	pseudo_instr1(1, 1)
+	neck_cut
+	put_structure(3, 0)
+	set_constant('generate_foreign_interface')
+	set_x_value(3)
+	set_x_value(1)
+	set_x_value(2)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(3, 4)
+	set_constant('generate_foreign_interface')
+	set_x_value(2)
+	set_x_value(3)
+	set_x_value(1)
+	put_list(2)
+	set_x_value(4)
+	set_constant('[]')
+	put_integer(2, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$3:
+	get_x_variable(3, 0)
+	pseudo_instr1(1, 2)
+	neck_cut
+	put_structure(3, 0)
+	set_constant('generate_foreign_interface')
+	set_x_value(3)
+	set_x_value(1)
+	set_x_value(2)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(3, 4)
+	set_constant('generate_foreign_interface')
+	set_x_value(2)
+	set_x_value(3)
+	set_x_value(1)
+	put_list(2)
+	set_x_value(4)
+	set_constant('[]')
+	put_integer(3, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$4:
+	allocate(3)
+	get_y_variable(2, 0)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
+	put_y_value(2, 1)
+	put_constant('atom', 0)
+	call_predicate('application', 2, 3)
+	put_y_value(1, 1)
+	put_constant('atom', 0)
+	call_predicate('application', 2, 3)
+	pseudo_instr1(2, 20)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	deallocate
+	execute_predicate('$convert_foreign', 3)
+
+$5:
+	put_x_variable(1, 1)
+	pseudo_instr1(1, 1)
+	neck_cut
+	put_structure(1, 0)
+	set_constant('generate_foreign_interface')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('generate_foreign_interface')
+	set_x_value(1)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$6:
+	execute_predicate('$convert_foreign', 3)
+
+$7:
+	allocate(2)
+	get_y_variable(0, 0)
+	get_y_level(1)
+	call_predicate('generate_foreign_interface/3$0', 1, 2)
+	cut(1)
+	put_structure(2, 0)
+	set_constant('generate_foreign_interface')
+	set_y_value(0)
+	set_void(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(2, 1)
+	set_constant('generate_foreign_interface')
+	set_x_value(2)
+	set_x_value(3)
+	put_list(3)
+	set_x_value(1)
+	set_constant('[]')
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 4)
+	set_constant('@')
+	set_x_value(2)
+	put_structure(2, 5)
+	set_constant('generate_foreign_interface')
+	set_x_value(1)
+	set_x_value(4)
+	put_list(2)
+	set_x_value(5)
+	set_x_value(3)
+	put_structure(1, 3)
+	set_constant('list')
+	set_constant('gcomp')
+	put_integer(1, 1)
+	deallocate
+	execute_predicate('type_exception', 4)
+
+$8:
+	allocate(2)
+	get_y_variable(0, 0)
+	get_x_variable(0, 1)
+	get_y_level(1)
+	call_predicate('generate_foreign_interface/3$1', 1, 2)
+	cut(1)
+	put_structure(2, 0)
+	set_constant('generate_foreign_interface')
+	set_y_value(0)
+	set_void(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(2, 1)
+	set_constant('generate_foreign_interface')
+	set_x_value(2)
+	set_x_value(3)
+	put_list(3)
+	set_x_value(1)
+	set_constant('[]')
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 4)
+	set_constant('@')
+	set_x_value(2)
+	put_structure(2, 5)
+	set_constant('generate_foreign_interface')
+	set_x_value(1)
+	set_x_value(4)
+	put_list(2)
+	set_x_value(5)
+	set_x_value(3)
+	put_structure(1, 3)
+	set_constant('list')
+	set_constant('gcomp')
+	put_integer(2, 1)
+	deallocate
+	execute_predicate('type_exception', 4)
+
+$9:
+	get_x_variable(3, 0)
+	put_structure(2, 0)
+	set_constant('generate_foreign_interface')
+	set_x_value(3)
+	set_void(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('@')
+	set_x_value(1)
+	put_structure(2, 1)
+	set_constant('generate_foreign_interface')
+	set_x_value(2)
+	set_x_value(3)
+	put_list(3)
+	set_x_value(1)
+	set_constant('[]')
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('list')
+	set_constant('atom')
+	put_structure(1, 4)
+	set_constant('@')
+	set_x_value(2)
+	put_structure(2, 5)
+	set_constant('generate_foreign_interface')
+	set_x_value(1)
+	set_x_value(4)
+	put_list(2)
+	set_x_value(5)
+	set_x_value(3)
+	put_structure(1, 3)
+	set_constant('list')
+	set_constant('gcomp')
+	put_integer(3, 1)
+	execute_predicate('type_exception', 4)
+end('generate_foreign_interface'/3):
+
+
+
 '$foreign_functions'/4:
 
 	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
@@ -861,7 +1290,8 @@ end('$gen_foreign_file'/5):
 
 	try(1, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($4)
 
 $1:
 	get_x_variable(1, 0)
@@ -880,6 +1310,14 @@ $2:
 	proceed
 
 $3:
+	pseudo_instr1(113, 0)
+	neck_cut
+	put_constant('$foreign_stream', 2)
+	pseudo_instr2(73, 2, 1)
+	pseudo_instr2(115, 1, 0)
+	proceed
+
+$4:
 	put_structure(2, 1)
 	set_constant(':')
 	set_constant('fail to write out')
@@ -1373,7 +1811,7 @@ $2:
 	unify_void(1)
 	unify_y_variable(2)
 	unify_y_variable(1)
-	put_constant('	', 0)
+	put_constant(' ', 0)
 	call_predicate('$foreign_write', 1, 3)
 	put_y_value(2, 0)
 	call_predicate('$write_type', 1, 3)
@@ -1457,7 +1895,7 @@ $1:
 	allocate(1)
 	unify_y_variable(0)
 	neck_cut
-	put_constant('	Object* ', 0)
+	put_constant(' Object* ', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_output_val', 1, 0)
@@ -1523,7 +1961,7 @@ $1:
 	allocate(1)
 	unify_y_variable(0)
 	neck_cut
-	put_constant('	Object* ', 0)
+	put_constant(' Object* ', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 0)
@@ -1603,7 +2041,7 @@ $1:
 	unify_y_variable(1)
 	unify_y_variable(0)
 	neck_cut
-	put_constant('	', 0)
+	put_constant(' ', 0)
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 2)
@@ -1628,16 +2066,8 @@ $1:
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
-	call_predicate('$write_foreign_val', 2, 2)
-	put_constant(' = ', 0)
-	call_predicate('$foreign_write', 1, 2)
-	put_y_value(1, 0)
-	put_y_value(0, 1)
-	call_predicate('$extract_value', 2, 0)
-	put_constant(';
-', 0)
 	deallocate
-	execute_predicate('$foreign_write', 1)
+	execute_predicate('$get_foreign_val', 2)
 
 $2:
 	get_structure('arg', 3, 0)
@@ -1646,7 +2076,7 @@ $2:
 	allocate(1)
 	unify_y_variable(0)
 	neck_cut
-	put_constant('	', 0)
+	put_constant(' ', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 1)
@@ -1659,6 +2089,85 @@ $2:
 	deallocate
 	execute_predicate('$foreign_write', 1)
 end('$get_foreign_value'/1):
+
+
+
+'$get_foreign_val'/2:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'float':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_variable(1, 0)
+	get_y_variable(0, 1)
+	get_constant('float', 0)
+	neck_cut
+	put_constant('if (', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_y_value(0, 0)
+	call_predicate('$write_pval', 1, 2)
+	put_constant('->', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_constant('integer', 0)
+	call_predicate('$type_check', 1, 2)
+	put_constant(')
+ {
+  ', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	call_predicate('$write_foreign_val', 2, 2)
+	put_constant(' = ', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_y_value(0, 1)
+	put_constant('integer', 0)
+	call_predicate('$extract_value', 2, 2)
+	put_constant(';
+ }
+ else
+ {
+  ', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	call_predicate('$write_foreign_val', 2, 2)
+	put_constant(' = ', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	call_predicate('$extract_value', 2, 0)
+	put_constant(';
+ }
+', 0)
+	deallocate
+	execute_predicate('$foreign_write', 1)
+
+$2:
+	allocate(2)
+	get_y_variable(1, 0)
+	get_y_variable(0, 1)
+	call_predicate('$write_foreign_val', 2, 2)
+	put_constant(' = ', 0)
+	call_predicate('$foreign_write', 1, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	call_predicate('$extract_value', 2, 0)
+	put_constant(';
+', 0)
+	deallocate
+	execute_predicate('$foreign_write', 1)
+end('$get_foreign_val'/2):
 
 
 
@@ -1687,7 +2196,7 @@ $1:
 	get_y_variable(2, 0)
 	get_y_variable(0, 1)
 	get_y_variable(1, 2)
-	put_constant('	', 0)
+	put_constant(' ', 0)
 	call_predicate('$foreign_write', 1, 3)
 	put_y_value(2, 0)
 	call_predicate('$write_return_val', 1, 2)
@@ -1866,7 +2375,7 @@ $1:
 	unify_y_variable(1)
 	unify_y_variable(0)
 	neck_cut
-	put_constant('	', 0)
+	put_constant(' ', 0)
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
@@ -2758,7 +3267,7 @@ $2:
 	unify_y_variable(0)
 	unify_constant('[]')
 	neck_cut
-	put_constant('	', 1)
+	put_constant(' ', 1)
 	call_predicate('write_atom', 2, 2)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
@@ -2771,7 +3280,7 @@ $3:
 	get_list(1)
 	unify_y_variable(2)
 	unify_y_variable(0)
-	put_constant('	', 1)
+	put_constant(' ', 1)
 	call_predicate('write_atom', 2, 3)
 	put_y_value(1, 0)
 	put_y_value(2, 1)
@@ -2810,7 +3319,7 @@ $1:
 	put_y_variable(2, 19)
 	pseudo_instr3(0, 0, 23, 22)
 	put_y_value(0, 0)
-	put_constant('	', 1)
+	put_constant(' ', 1)
 	call_predicate('write_atom', 2, 4)
 	put_y_value(0, 0)
 	put_y_value(3, 1)
@@ -2846,7 +3355,7 @@ $2:
 	put_y_variable(4, 19)
 	pseudo_instr3(0, 0, 25, 24)
 	put_y_value(2, 0)
-	put_constant('	', 1)
+	put_constant(' ', 1)
 	call_predicate('write_atom', 2, 6)
 	put_y_value(2, 0)
 	put_y_value(5, 1)

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: truth3.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: truth3.h,v 1.2 2005/06/29 22:05:34 qp Exp $
 
 #ifndef	TRUTH3_H
 #define	TRUTH3_H
@@ -87,6 +87,7 @@ public:
       {
 	return(UNSURE);
       }
+    return(NO);
   }
   truth3 operator||(const truth3& other) const
   {
@@ -102,6 +103,7 @@ public:
       {
 	return(UNSURE);
       }
+    return(NO);
   }
   truth3 operator!(void) const
   {

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code_block.cc,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: code_block.cc,v 1.2 2005/03/08 00:35:01 qp Exp $
 
 #include "code.h"
 #include "code_block.h"
@@ -68,12 +68,12 @@ CodeBlock::Save(ostream& ostrm) const
     case PREDICATE_BLOCK:
       {
 	IntSave<Code::AddressSizedType>(ostrm, Atom());
-	IntSave<Code::NumberSizedType>(ostrm, Arity());
+	IntSave<Code::NumberSizedType>(ostrm, static_cast<Code::NumberSizedType>(Arity()));
       }
     break;
     }
   
-  IntSave<Code::OffsetSizedType>(ostrm, Current());
+  IntSave<Code::OffsetSizedType>(ostrm, static_cast<const Code::OffsetSizedType>(Current()));
   
   for (CodeBlockLoc loc = 0; loc < Current(); loc++)
     {

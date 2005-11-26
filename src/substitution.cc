@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: substitution.cc,v 1.10 2002/07/26 00:39:58 qp Exp $
+// $Id: substitution.cc,v 1.12 2005/11/26 23:34:31 qp Exp $
 
 //#include "atom_table.h"
 #include "heap_qp.h"
@@ -69,16 +69,16 @@ Heap::copySubSpine(Object *input_list,
 		   Object *stop_list,
 		   Object *tail_list)
 {
-  DEBUG_ASSERT(input_list != NULL);
-  DEBUG_ASSERT(stop_list != NULL);
-  DEBUG_ASSERT(tail_list != NULL);
-  DEBUG_ASSERT(input_list->isNil() ||
+  assert(input_list != NULL);
+  assert(stop_list != NULL);
+  assert(tail_list != NULL);
+  assert(input_list->isNil() ||
 	       (input_list->isCons() && 
 		OBJECT_CAST(Cons*, input_list)->isSubstitutionBlockList()));
-  DEBUG_ASSERT(stop_list->isNil() ||
+  assert(stop_list->isNil() ||
 	       (stop_list->isCons() && 
 		OBJECT_CAST(Cons*,stop_list)->isSubstitutionBlockList()));
-  DEBUG_ASSERT(tail_list->isNil() ||
+  assert(tail_list->isNil() ||
 	       (tail_list->isCons() && 
 		OBJECT_CAST(Cons*, tail_list)->isSubstitutionBlockList()));
 
@@ -92,7 +92,7 @@ Heap::copySubSpine(Object *input_list,
   else if (input_list->isNil())
     {
       // Should not really get here if stop_list is there
-      DEBUG_ASSERT(false);
+      assert(false);
       return AtomTable::nil;
     }
   else
@@ -103,7 +103,7 @@ Heap::copySubSpine(Object *input_list,
 		     stop_list,
 		     tail_list);
       
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, input_list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, input_list)->getHead()->isSubstitutionBlock());
       return newSubstitutionBlockList(OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons *, input_list)->getHead()), copy_list);
     }
 }
@@ -145,7 +145,7 @@ Heap::copySubSpine(Object *input_list,
 bool
 Heap::invert(Thread& th, Object *sub_list, PrologValue& term)
 {
-  DEBUG_ASSERT(sub_list->isNil() ||
+  assert(sub_list->isNil() ||
 	       (sub_list->isCons() && 
 		OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList() &&
 		OBJECT_CAST(Cons*, sub_list)->isInvertible()));
@@ -157,11 +157,11 @@ Heap::invert(Thread& th, Object *sub_list, PrologValue& term)
        list->isCons();
        list = OBJECT_CAST(Cons *, list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, list)->getHead());
       
-      DEBUG_ASSERT(sub->getSize() > 0);
+      assert(sub->getSize() > 0);
       
       // Set up the inverted substitution block
       SubstitutionBlock *inverted_sub = 
@@ -176,7 +176,7 @@ Heap::invert(Thread& th, Object *sub_list, PrologValue& term)
       for (size_t i = 1; i <= sub->getSize(); i++)
 	{
 	  // Invert domains and ranges.
-          DEBUG_ASSERT(sub->getRange(i)->isObjectVariable());
+          assert(sub->getRange(i)->isObjectVariable());
 	  inverted_sub->setDomain(i, sub->getRange(i));
 	  inverted_sub->setRange(i, sub->getDomain(i));
 	  if (do_freeness)
@@ -209,7 +209,7 @@ Heap::invert(Thread& th, Object *sub_list, PrologValue& term)
 void
 Heap::invertWithoutNFI(Object *sub, PrologValue& term)
 {
-  DEBUG_ASSERT(sub->isNil() ||
+  assert(sub->isNil() ||
 	       (sub->isCons() && 
 		OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList()));
 
@@ -220,11 +220,11 @@ Heap::invertWithoutNFI(Object *sub, PrologValue& term)
        list->isCons();
        list = OBJECT_CAST(Cons *, list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, list)->getHead());
       
-      DEBUG_ASSERT(sub->getSize() > 0);
+      assert(sub->getSize() > 0);
       
       // Set up the inverted substitution block
       SubstitutionBlock *inverted_sub = newSubstitutionBlock(sub->getSize());
@@ -233,7 +233,7 @@ Heap::invertWithoutNFI(Object *sub, PrologValue& term)
       for (size_t i = 1; i <= sub->getSize(); i++) 
 	{
 	  // Invert domains and ranges.
-          DEBUG_ASSERT(sub->getRange(i)->isObjectVariable());
+          assert(sub->getRange(i)->isObjectVariable());
 	  inverted_sub->setDomain(i, sub->getRange(i));
 	  inverted_sub->setRange(i, sub->getDomain(i));
 	}
@@ -278,8 +278,8 @@ bool
 Heap::isLocalInRange(Object *local_object_variable,
 		     Object *sub_list)
 {
-  DEBUG_ASSERT(local_object_variable->isLocalObjectVariable());
-  DEBUG_ASSERT(sub_list->isNil() ||
+  assert(local_object_variable->isLocalObjectVariable());
+  assert(sub_list->isNil() ||
 	       (sub_list->isCons() && 
 		OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList()));
   
@@ -287,10 +287,10 @@ Heap::isLocalInRange(Object *local_object_variable,
        list->isCons();
        list = OBJECT_CAST(Cons *, list)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons *, list)->getHead()->isSubstitutionBlock());
       SubstitutionBlock *sub = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, list)->getHead());
-      DEBUG_ASSERT(sub->getSize() > 0);
+      assert(sub->getSize() > 0);
       
       // Check whether the first range is a local object variable.
       // If it is the case then all the other ranges are local
@@ -319,7 +319,7 @@ Heap::isLocalInRange(Object *local_object_variable,
 Object *
 Heap::copySubstitutionBlockWithDollars(Object *sub_list, size_t size)
 {
-  DEBUG_ASSERT(sub_list->isNil() ||
+  assert(sub_list->isNil() ||
 	       (sub_list->isCons() &&
 		OBJECT_CAST(Cons*, sub_list)->isSubstitutionBlockList()));
   
@@ -327,7 +327,7 @@ Heap::copySubstitutionBlockWithDollars(Object *sub_list, size_t size)
     {
       return (OBJECT_CAST(Cons*, sub_list)->getTail());
     }
-  DEBUG_ASSERT(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
+  assert(OBJECT_CAST(Cons*, sub_list)->getHead()->isSubstitutionBlock());
   SubstitutionBlock *sub = OBJECT_CAST(SubstitutionBlock*,
 				       OBJECT_CAST(Cons*, sub_list)->getHead());
   
@@ -354,7 +354,7 @@ Heap::canRemove(Thread& th, Object* obvar, int index,
 		SubstitutionBlock** subarray, Object* term)
 {
   obvar = obvar->variableDereference();
-  DEBUG_ASSERT(obvar->isObjectVariable());
+  assert(obvar->isObjectVariable());
   ObjectVariable* ov = OBJECT_CAST(ObjectVariable*, obvar);
   for (int i = index; i >= 0; i--)
     {
@@ -391,20 +391,19 @@ Heap::canRemove(Thread& th, Object* obvar, int index,
 void
 Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 {
-  DEBUG_CODE({
+#ifndef NDEBUG
     Object* remterm = pterm.getTerm();
     Object* remsub = pterm.getSubstitutionBlockList();
     prologValueDereference(pterm);
-    DEBUG_ASSERT(remterm == pterm.getTerm());
-    DEBUG_ASSERT(remsub == pterm.getSubstitutionBlockList());
-  }
-	     );
+    assert(remterm == pterm.getTerm());
+    assert(remsub == pterm.getSubstitutionBlockList());
+#endif
   Object* term = pterm.getTerm();
   Object *sub = pterm.getSubstitutionBlockList();
 
   bool changed = false;
 
-  DEBUG_ASSERT(!sub->isNil());
+  assert(!sub->isNil());
 
   // get the number of sub blocks
   int size = 0;
@@ -415,7 +414,7 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
       size++;
     }
 
-  SubstitutionBlock* subarray[size];
+  SubstitutionBlock** subarray = new SubstitutionBlock*[size];
 
   // Fill subarray with blocks
   int index = 0;
@@ -423,7 +422,7 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
        sub->isCons();
        sub = OBJECT_CAST(Cons *, sub)->getTail())
     {
-      DEBUG_ASSERT(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
+      assert(OBJECT_CAST(Cons*, sub)->getHead()->isSubstitutionBlock());
       subarray[index++] = 
 	OBJECT_CAST(SubstitutionBlock *, OBJECT_CAST(Cons *, sub)->getHead());
     }
@@ -463,7 +462,7 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 	  //
 	  
 	  bool remove = true;
-	  for (int k = subarray[i]->getSize(); k > 0; k--)
+	  for (int k = static_cast<int>(subarray[i]->getSize()); k > 0; k--)
 	    {
 	      if (!canRemove(th, subarray[i]->getDomain(k), i-1, 
 			     subarray, term))
@@ -481,9 +480,9 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
       else
 	{
 	  // try to remove individual components of a sub
-	  int blocksize = subarray[i]->getSize();
-	  Object* doms[blocksize];
-	  Object* rans[blocksize];
+	  int blocksize = static_cast<int>(subarray[i]->getSize());
+          Object** doms = new Object*[blocksize];
+          Object** rans = new Object*[blocksize];
 	  for (int k = 0; k < blocksize; k++)
 	    {
 	      doms[k] = subarray[i]->getDomain(k+1)->variableDereference();
@@ -506,11 +505,11 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 	    {
 	      if (doms[k] == rans[k])
 		{
-		  DEBUG_ASSERT(doms[k] != NULL);
+		  assert(doms[k] != NULL);
 		  bool del = true;
 		  for (int p = k-1; p >= 0; p--)
 		    {
-		      DEBUG_ASSERT(doms[k] == doms[k]->variableDereference());
+		      assert(doms[k] == doms[k]->variableDereference());
 		      if (doms[p] == NULL)
 			{
 			  continue;
@@ -535,7 +534,7 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 	    }
 	  else
 	    {
-	      DEBUG_ASSERT(finalsize > 0);
+	      assert(finalsize > 0);
 	      subarray[i] = newSubstitutionBlock(finalsize);
 	      int pos = 1;
 	      for (int k = 0; k < blocksize; k++)
@@ -548,6 +547,8 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 		    }
 		}
 	    }
+          delete doms;
+          delete rans;
 	}
     }
 	  
@@ -569,7 +570,8 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 	{
 	  dropSubFromTerm(th, pterm);
 	}
-      DEBUG_ASSERT(pterm.getTerm() == pterm.getTerm()->variableDereference());
+      assert(pterm.getTerm() == pterm.getTerm()->variableDereference());
     }
+  delete subarray;
 }
 

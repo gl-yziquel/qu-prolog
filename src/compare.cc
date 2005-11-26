@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compare.cc,v 1.2 2000/12/13 23:10:01 qp Exp $
+// $Id: compare.cc,v 1.3 2005/11/26 23:34:29 qp Exp $
 
 #include <string.h>
 
@@ -73,14 +73,14 @@ Thread::ReturnValue
 Thread::psi_compare_var(Object *& object1, Object *& object2, Object *& object3)
 {
   int32		res = 1;
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   
-  DEBUG_ASSERT(val1->isAnyVariable());
-  DEBUG_ASSERT(val2->isAnyVariable());
-  DEBUG_ASSERT(val1->utag() == val2->utag());
+  assert(val1->isAnyVariable());
+  assert(val2->isAnyVariable());
+  assert(val1->utag() == val2->utag());
   
   if (reinterpret_cast<void*>(val1) < reinterpret_cast<void*>(val2))
     {
@@ -98,13 +98,13 @@ Thread::psi_compare_var(Object *& object1, Object *& object2, Object *& object3)
 Thread::ReturnValue
 Thread::psi_compare_atom(Object *& object1, Object *& object2, Object *& object3)
 {
-  DEBUG_ASSERT(object1->variableDereference()->hasLegalSub());
-  DEBUG_ASSERT(object2->variableDereference()->hasLegalSub());
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
 
-  DEBUG_ASSERT(val1->isAtom());
-  DEBUG_ASSERT(val2->isAtom());
+  assert(val1->isAtom());
+  assert(val2->isAtom());
 
   object3 = 
     heap.newShort(strcmp(atoms->getAtomString(OBJECT_CAST(Atom*, val1)),

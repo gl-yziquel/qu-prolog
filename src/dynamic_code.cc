@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_code.cc,v 1.10 2002/02/27 21:27:59 qp Exp $  
+// $Id: dynamic_code.cc,v 1.13 2005/11/26 23:34:29 qp Exp $  
 
 #include "objects.h"
 #include "thread_qp.h"
 #include "dynamic_code.h"
-#include "dynamic_hash_table.cc"
+//#include "dynamic_hash_table.cc"
 
 extern AtomTable* atoms;
 //
@@ -110,13 +110,13 @@ ChainEnds::addToChainStart(CodeLoc block)
 {
   if (firstPtr == NULL)
     {
-      DEBUG_ASSERT(lastPtr == NULL);
+      assert(lastPtr == NULL);
       firstPtr = block;
       lastPtr = block;
     }
   else
     {
-      DEBUG_ASSERT(lastPtr != NULL);
+      assert(lastPtr != NULL);
       CodeLoc pc = firstPtr;
       updateInstruction(pc, DB_RETRY);
       pc = block;
@@ -134,7 +134,7 @@ void ChainEnds::addToChainEnd(CodeLoc block)
 {
   if (firstPtr == NULL)
     {
-      DEBUG_ASSERT(lastPtr == NULL);
+      assert(lastPtr == NULL);
       firstPtr = block;
       lastPtr = block;
       return;
@@ -273,7 +273,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
     case Object::uObjVar:
       {
 	// cannot discriminate between obvars
-	t = reinterpret_cast<word32>(argTag); 
+	t = static_cast<word32>(argTag); 
 	v = 0;  
       }
       break;
@@ -319,9 +319,16 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
     case Object::uConst:
       {
         t = argTag;
-        if (pterm->isNumber())
+        if (pterm->isInteger())
           {
             v = pterm->getNumber();
+          }
+        else if (pterm->isDouble())
+          {
+            double d = pterm->getDouble();
+            u_int x[2];
+            memcpy(x, &d, sizeof(double));
+            v = (x[0] | x[1]) & ~(x[0] & x[1]);
           }
         else
           {
@@ -399,7 +406,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
       
     default:
       t = 0;v=0;
-      DEBUG_ASSERT(false);
+      assert(false);
     }
   DynamicClauseHashEntry *entry = new DynamicClauseHashEntry(t, v); 
   return entry;
@@ -460,7 +467,7 @@ void DynamicPredicate::gcPredicate(void)
   CodeLoc clauseGarbage = NULL;
 
   CodeLoc clauseLink = allChain.first();
-  DEBUG_ASSERT(clauseLink != NULL);
+  assert(clauseLink != NULL);
 
   // First go through the allChain chain looking for retracted clauses.
   // Reset the first instruction to NULL_INSTR and follow this with the address
@@ -482,7 +489,7 @@ void DynamicPredicate::gcPredicate(void)
 	}
       clauseLink = getNextBlock(clauseLink);
     }
-  DEBUG_ASSERT(clauseGarbage != NULL);
+  assert(clauseGarbage != NULL);
   // Delete the required linking blocks of allChain,varChain and all the
   // indexed chains.
   allChain.gcChain();
@@ -523,7 +530,7 @@ DynamicPredicate::assertClause(Thread &th, Object* indexarg,
 {
   instrs = instrs->variableDereference();
   
-  CodeLoc code = (CodeLoc)(instrs->getNumber());
+  CodeLoc code = reinterpret_cast<CodeLoc>(instrs->getNumber());
 
   if (clauseArity == 0)
     {
@@ -589,10 +596,10 @@ DynamicPredicate::assertClause(Thread &th, Object* indexarg,
 	}
       delete entry;
       ChainEnds* chainPtr = indexedClauses.getEntry(index).getChainEnds();
-      DEBUG_ASSERT(chainPtr != NULL);
+      assert(chainPtr != NULL);
       if (chainPtr->first() == NULL)
 	{
-	  DEBUG_ASSERT(chainPtr->last() == NULL);
+	  assert(chainPtr->last() == NULL);
 	  //
 	  // New entry so copy var clauses into this chain.
 	  //

@@ -3,18 +3,18 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000, 20001
-// Software Verification Research Centre
+// Copyright (C) 2000-2004
+// School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
 // 
-// email: svrc@it.uq.edu.au
+// email: pjr@itee.uq.edu.au
 // 
-// The Qu-Prolog 6.0 System and Documentation  
+// The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
 // 
-// Copyright 2000,2001 by The University of Queensland, 
+// Copyright 2000-2004 by The University of Queensland, 
 // Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
@@ -35,7 +35,7 @@
 // 
 // 4. 	that no changes to the system or documentation are subsequently 
 // 	made available to third parties or redistributed without prior 
-// 	written consent from the SVRC; and
+// 	written consent from the ITEE; and
 // 
 // The University of Queensland disclaims all warranties with regard to this
 // software, including all implied warranties of merchantability and fitness
@@ -50,11 +50,13 @@
 // WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
 // 
 // 
-// For information on commercial use of this software contact the SVRC.
+// For information on commercial use of this software contact ITEE.
+// 
+// ##Copyright##
 // 
 // ##Copyright##
 //
-// $Id: int.h,v 1.9 2004/05/26 22:59:44 qp Exp $
+// $Id: int.h,v 1.12 2005/06/29 22:05:30 qp Exp $
 
 #ifndef	INT_H
 #define	INT_H
@@ -69,6 +71,9 @@
 //#include <netinet/in.h>
 
 #include "errors.h"
+#ifdef WIN32
+#define __PRETTY_FUNCTION__ __FUNCDNAME__
+#endif
 
 using namespace std;
 
@@ -77,7 +82,7 @@ class Int
 {
 protected:
   IntType value;
-  IntType type;
+  int type;
 
 public:
   virtual size_t SizeOf(void) const { return sizeof(IntType); }
@@ -85,52 +90,56 @@ public:
   // v is the value
   // type is an optional type used in the assembler to distinguish
   // between atom ptrs and integers.
-  Int(const IntType v, const IntType m = 0) : value(v), type(m) { }
+  Int(const IntType v, const int m = 0) : value(v), type(m) { }
   
   // Note: If you're passing an istrstream as the istream argument,
   // make sure you've used the istrstream(const char *, int)
   // constructur, otherwise you'll probably get a premature end of stream!
-  Int(istream& istrm, const IntType m = 0) : type(m)
+  Int(istream& istrm, const int m = 0) : type(m)
   {
-    IntType v = 0;
-    
-    for (size_t i = 0; i < sizeof(IntType); i++)
+    if (sizeof(IntType) == sizeof(double))
       {
-	u_char c;
+        u_char w[sizeof(double)];
+        for (size_t i = 0; i < sizeof(IntType); i++)
+          {
+            if (istrm.good())
+              {
+                w[i] = (u_char)istrm.get();
+              }
+            else
+              {
+                ReadFailure("integer", "i/o error");
+              }
+           }
+         memcpy(&value, w, sizeof(double));
+       }
+     else
+       {
+         IntType v = 0;
+    
+         for (size_t i = 0; i < sizeof(IntType); i++)
+           {
+	     u_char c;
 	
-	if (istrm.good())
-	  {
-	    c = (u_char)istrm.get();
-	  }
-	else
-	  {
-	    ReadFailure("integer", "i/o error");
-	  }
+	     if (istrm.good())
+	       {
+	         c = (u_char)istrm.get();
+	       }
+	     else
+	       {
+	         ReadFailure("integer", "i/o error");
+	       }
 
-	v = (v << 8) | c;
-      }
-    value = v;
-    
-#if 0
-    switch (sizeof(IntType))
-      {
-      case 1:
-	value = v;
-	break;
-      case 2:
-	value = ntohs(v);
-	break;
-      case 4:
-	value = ntohl(v);
-	break;
-      }
-#endif
+	     v = (v << 8) | c;
+           }
+         value = v;
+       }
   }
   
   virtual IntType Value(void) const { return value; }
   virtual void Value(const IntType v) { value = v; }
 
-  virtual IntType Type(void) const { return type; }
+  virtual int Type(void) const { return type; }
 
   virtual bool operator==(const Int<IntType>& i) const
   {
@@ -139,30 +148,30 @@ public:
 
   virtual ostream& Save(ostream& ostrm) const
     {
-      IntType v = Value();
+      if (sizeof(IntType) == sizeof(double))
+          {
+            u_char w[sizeof(double)];
+            memcpy(w, &value, sizeof(double));
+            for (size_t i = 0; i < sizeof(IntType); i++)
+              {
+                ostrm << w[i];
+              }
+              return ostrm;
+           }
+         else
+           {
+              IntType v = Value();
       
-#if 0
-      switch (sizeof(IntType))
-	{
-	case 1:
-	  v = masked_value;
-	  break;
-	case 2:
-	  v = htons(masked_value);
-	  break;
-	case 4:
-	  v = htonl(masked_value);
-	  break;
-	}
-#endif
-      for (size_t i = sizeof(IntType); i > 0; i--)
-	{
-	  const u_char c = (u_char) (v >> (8 * (i - 1))) & 0xff;
-	  ostrm << c;
-	}
+              for (size_t i = sizeof(IntType); i > 0; i--)
+	        {
+	          const u_char c = (u_char) ((word32)v >> (8 * (i - 1))) & 0xff;
+	          ostrm << c;
+	        }
       
-      return ostrm;
+              return ostrm;
+            }
     }
+  virtual ~Int() {}
 };
 
 // Print ot an Int in a form that can be read by a person.
@@ -224,6 +233,9 @@ UnsignedMax(const IntType)
       break;
     case 4:
       return (IntType)UINT_MAX;
+      break;
+    default:
+      return 0;
       break;
     }
 }

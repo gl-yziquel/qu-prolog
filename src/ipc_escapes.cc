@@ -53,15 +53,20 @@
 // 
 // ##Copyright##
 //
-// $Id: ipc_escapes.cc,v 1.24 2003/10/05 04:50:46 qp Exp $
+// $Id: ipc_escapes.cc,v 1.27 2005/11/26 23:34:30 qp Exp $
 
 #include <algorithm>
 
 #include <sys/types.h>
+#include <sys/types.h>
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#endif
 
 #include "config.h"
 
@@ -77,8 +82,10 @@
 #include "tcp_qp.h"
 
 extern AtomTable *atoms;
+#ifdef ICM_DEF
 extern ICMMessageChannel* icm_channel;
 extern ICMEnvironment* icm_environment;
+#endif
 extern const char *Program;
 extern char *process_symbol;
 
@@ -170,9 +177,12 @@ Thread::psi_ipc_send(Object *& message_cell,
 
       int size = stream.str().length();
 
-      icmDataRec data = { size, const_cast<char*>(stream.str().data()) };
+      char *msgstr = new char[size+1];
+      memcpy(msgstr, stream.str().data(), size);
+      icmDataRec data = { size, msgstr };
 
       message = icmFormatMsg(NULL, "%(%S%)", &data);
+      delete msgstr;
     }
   else
     {
@@ -201,9 +211,11 @@ Thread::psi_ipc_send(Object *& message_cell,
 
 
       int size = stream.str().length();
-      icmDataRec data = { size, const_cast<char*>(stream.str().data()) };
-
+      char *msgstr = new char[size+1];
+      memcpy(msgstr, stream.str().data(), size);
+      icmDataRec data = { size, msgstr };
       message = icmFormatMsg(NULL, "%S", &data);
+      delete msgstr;
     }
 
   icmHandle sender_handle = icm_thread_handle(*icm_environment,
@@ -252,7 +264,7 @@ Thread::psi_ipc_send(Object *& message_cell,
     }
   else 
     {
-      DEBUG_ASSERT(false);
+      assert(false);
       return RV_FAIL;
     }
 #else // ICM_DEF
@@ -273,7 +285,10 @@ Thread::psi_make_iterator(Object *& reference_cell)
 {
   list<Message *>::iterator *iter = new list<Message *>::iterator;
 
-  reference_cell = heap.newNumber(reinterpret_cast<unsigned> (iter));
+  Structure* iterstr = heap.newStructure(1);
+  iterstr->setFunctor(AtomTable::dollar);
+  iterstr->setArgument(1, heap.newNumber(reinterpret_cast<unsigned> (iter)));
+  reference_cell = iterstr;
 
   return RV_SUCCESS;
 }
@@ -286,9 +301,12 @@ Thread::psi_ipc_first(Object *& reference0_cell,
 		      Object *& timeout_cell,
                       Object *& reference1_cell)
 {
-  Object* reference0_arg = heap.dereference(reference0_cell);
+  Object* reference0_str = heap.dereference(reference0_cell);
   Object* timeout_arg = heap.dereference(timeout_cell);
 
+  assert(reference0_str->isStructure());
+  Object* reference0_arg = 
+     OBJECT_CAST(Structure*, reference0_str)->getArgument(1);
 
   list<Message *>::iterator *iter = NULL;
   DECODE_REFERENCE_ARG(heap, reference0_arg, 1, iter);
@@ -307,7 +325,7 @@ Thread::psi_ipc_first(Object *& reference0_cell,
 
   (**iter)->IncReferences();
 
-  reference1_cell = heap.newNumber(reinterpret_cast<unsigned> (iter));
+  reference1_cell = reference0_str;
   
   return RV_SUCCESS;
 }
@@ -318,9 +336,14 @@ Thread::psi_ipc_next(Object *& reference0_cell,
 		     Object *& reference1_cell,
 		     Object *& timeout_cell)
 {
-  Object* reference0_arg = heap.dereference(reference0_cell);
+  Object* reference0_str = heap.dereference(reference0_cell);
   Object* timeout_arg = heap.dereference(timeout_cell);
  
+  assert(reference0_str->isStructure());
+  Object* reference0_arg = 
+     OBJECT_CAST(Structure*, reference0_str)->getArgument(1);
+  if (reference0_arg == AtomTable::dollar) return RV_FAIL;
+
   list<Message *>::iterator *iter = NULL;
   DECODE_REFERENCE_ARG(heap, reference0_arg, 1, iter);
 
@@ -344,7 +367,7 @@ Thread::psi_ipc_next(Object *& reference0_cell,
   
   (**iter)->IncReferences();
   
-  reference1_cell =  heap.newNumber(reinterpret_cast<unsigned> (iter));
+  reference1_cell =  reference0_str;
   
   return RV_SUCCESS;
 }
@@ -356,8 +379,12 @@ Thread::psi_ipc_get_message(Object *& message_cell,
 			    Object *& replyto_handle_cell,
 			    Object *& remember_names_cell)
 {
-  Object* reference_arg = heap.dereference(reference_cell);
+  Object* reference_str = heap.dereference(reference_cell);
   Object* remember_names_arg = heap.dereference(remember_names_cell);
+
+  assert(reference_str->isStructure());
+  Object* reference_arg = 
+     OBJECT_CAST(Structure*, reference_str)->getArgument(1);
 
   list<Message *>::iterator *iter = NULL;
   DECODE_REFERENCE_ARG(heap, reference_arg, 2, iter);
@@ -382,7 +409,13 @@ Thread::psi_ipc_get_message(Object *& message_cell,
 Thread::ReturnValue
 Thread::psi_ipc_commit(Object *& reference_cell)
 {
-  Object* reference_arg = heap.dereference(reference_cell);
+  Object* reference_str = heap.dereference(reference_cell);
+  assert(reference_str->isStructure());
+  Object* reference_arg = 
+    OBJECT_CAST(Structure*, reference_str)->getArgument(1);
+
+
+  OBJECT_CAST(Structure*, reference_str)->setArgument(1, AtomTable::dollar);
 
   list<Message *>::iterator *iter;
   DECODE_REFERENCE_ARG(heap, reference_arg, 1, iter);

@@ -59,20 +59,38 @@
 
 #include "config.h"
 #include "global.h"                                                             
-#include <sys/time.h>
+#ifdef WIN32
+        #include <time.h>
+        #include <winsock2.h>
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        typedef int socklen_t;
+
+        //We also need to initialise the winsock tcp crud
+        WSADATA wsaData;
+        WORD wVersionRequested = MAKEWORD( 2, 2 );
+        int err = WSAStartup( wVersionRequested, &wsaData );
+
+#else
+        #include <sys/time.h>
+        #include <sys/types.h>
+        #include <netdb.h>
+        #include <sys/socket.h>
+        #include <sys/file.h>
+        #include <sys/ioctl.h>
+        #include <sys/un.h>
+        #include <net/if.h>
+        #include <netdb.h>
+#endif
+
 #include <sys/types.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/file.h>
+
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif	// HAVE_SYS_FILIO_H
-#include <sys/un.h>
 #ifdef HAVE_SYS_SOCKIO_H
 #include <sys/sockio.h>
 #endif	// HAVE_SYS_SOCKIO_H
-#include <sys/ioctl.h>
-#include <net/if.h>
 #include <fcntl.h>
 
 #if defined(HAVE_POLL)
@@ -83,7 +101,6 @@
 #endif // defined(LINUX)
 #endif // defined(HAVE_POLL)
 
-#include <netdb.h>
 #include <time.h>
 #include <errno.h>
 #include <iostream>
@@ -220,15 +237,18 @@ machine_ip_address(Heap& heap,
 	      return 0;
 	    }
 	}
-      hostent *hp;
+      // PORT
+      hostent *hp = NULL;
       if (hp != gethostbyname(hostname))
         {
           struct in_addr in;
           in.s_addr = inet_addr(hostname);
           hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
         }
+#ifndef WIN32
       endhostent();
-      if (hp)
+#endif
+      if (hp != NULL)
         {
           return(*(int *)hp->h_addr_list[0]);
         }
@@ -313,7 +333,7 @@ Thread::ReturnValue
 Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg, 
 			       Object *& stream_arg)
 {
-  DEBUG_ASSERT(mode_arg->variableDereference()->isNumber());
+  assert(mode_arg->variableDereference()->isNumber());
   int mode = mode_arg->variableDereference()->getNumber();
 
   Object* argS = socket_arg->variableDereference();
@@ -352,7 +372,7 @@ Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg,
       }
       break;
     case AM_APPEND:
-      DEBUG_ASSERT(false);
+      assert(false);
       break;
     }
   return RV_FAIL;
@@ -431,7 +451,7 @@ Thread::psi_tcp_socket(
       PSI_ERROR_RETURN(EV_TYPE, 3);
     }
 
-  const int fd = socket(AF_INET, type, protocol);
+  const int fd = static_cast<const int>(socket(AF_INET, type, protocol));
   if (fd < 0)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
@@ -815,9 +835,9 @@ Thread::psi_tcp_accept(Object *& socket_arg,
   struct sockaddr_in add;
   socklen_t length = sizeof(struct sockaddr_in);
   
-  const int newsockfd = accept(socket->getFD(),
+  const int newsockfd = static_cast<const int>(accept(socket->getFD(),
 			       (struct sockaddr *) &add,
-			       &length);
+			       &length));
   if (newsockfd < 0)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
@@ -879,7 +899,11 @@ Thread::psi_tcp_connect1(
     {
       return RV_SUCCESS;
     }
+#ifdef WIN32
+  else if ((errno = WSAGetLastError() == WSAEINPROGRESS) && errno == WSAEWOULDBLOCK)
+#else
   else if (errno == EINPROGRESS)
+#endif
     {
       return RV_SUCCESS;
     }
@@ -913,9 +937,13 @@ Thread::psi_tcp_connect2(Object *& socket_arg)
   FD_ZERO(&fds);
   FD_SET(fd, &fds);
 
+#ifndef NDEBUG
   int result = select(fd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, NULL);
+#else
+  select(fd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, NULL);
+#endif
 
-  DEBUG_ASSERT(result && FD_ISSET(fd, &fds));
+  assert(result && FD_ISSET(fd, &fds));
 		
 
   socket->setConnected();
@@ -1099,14 +1127,16 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
     }
 
   hostent *hp = gethostbyname(hostname);
-  if (!hp)
+  if (hp == NULL)
     {
       struct in_addr in;
       in.s_addr = inet_addr(hostname);
       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
     }
+#ifndef WIN32
   endhostent();
-  if (!hp)
+#endif
+  if (hp == NULL)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
@@ -1138,8 +1168,10 @@ Thread::psi_tcp_host_from_ip_address(Object *& host_arg,
     
   struct hostent *hp =
     gethostbyaddr((char *)&ip_address, sizeof(ip_address), AF_INET);
+#ifndef WIN32
   endhostent();
-  if (!hp)
+#endif
+  if (hp == NULL)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
@@ -1176,7 +1208,9 @@ Thread::psi_tcp_service_to_proto_port(
 
   servent *sp =
     getservbyname(atoms->getAtomString(OBJECT_CAST(Atom*, argS)), proto);
+#ifndef WIN32
   (void) endservent();
+#endif
   if (!sp)
     {
       return RV_FAIL;
@@ -1224,7 +1258,9 @@ Thread::psi_tcp_service_proto_to_port(
   const char *proto = atoms->getAtomString(argPr);
 
   servent *sp = getservbyname(atoms->getAtomString(argS), proto);
+#ifndef WIN32
   (void) endservent();
+#endif
 
   if (!sp)
     {
@@ -1266,7 +1302,9 @@ Thread::psi_tcp_service_from_proto_port(
   const char *proto = atoms->getAtomString(OBJECT_CAST(Atom*, argPr));
   
   servent *sp = getservbyport(port, proto);
+#ifndef WIN32
   (void) endservent();
+#endif
   if (!sp)
     {
       return RV_FAIL;
@@ -1306,7 +1344,9 @@ Thread::psi_tcp_service_proto_from_port(
 
 //  const u_short port = (u_short)argPo->getNumber();
   servent *sp = getservbyport(port, proto);
+#ifndef WIN32
   (void) endservent();
+#endif
   if (!sp)
     {
       return RV_FAIL;

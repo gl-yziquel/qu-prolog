@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: bios.cc,v 1.9 2002/11/13 04:04:13 qp Exp $
+// $Id: bios.cc,v 1.10 2005/03/08 00:34:59 qp Exp $
 
 #include <errno.h>
 #include <iostream>
@@ -61,14 +61,21 @@
 // For lstat(2) call.
 #include <stdio.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#ifdef WIN32
+        #include <io.h>
+#else
+        #include <unistd.h>
+#endif
+
 
 #include "config.h"
 
 #include "atom_table.h"
 #include "is_ready.h"
 #include "thread_qp.h"
+#ifdef ICM_DEF
 #include "icm_message.h"
+#endif
 #include "scheduler.h"
 
 extern AtomTable *atoms;
@@ -241,7 +248,7 @@ Thread::psi_put_code(Object *& stream_arg,
   // Put the byte.
   //
 
-  if (stream->good() && !stream->put(c))
+  if (stream->good() && !stream->put(static_cast<char>(c)))
     {
       return RV_FAIL;
     }
@@ -359,7 +366,7 @@ Thread::psi_put_line(Object *& stream_arg, Object *& code_list)
     }
 
   // Write to stream
-  char buf[size];
+  char* buf = new char[size];
   int i = 0;
   for (Cons* list = OBJECT_CAST(Cons*, chars);
        list->isCons();
@@ -372,5 +379,6 @@ Thread::psi_put_line(Object *& stream_arg, Object *& code_list)
   buf[i++] = '\n';
   buf[i] = '\0';
   *stream << buf;
+  delete buf;
   return RV_SUCCESS;
 }

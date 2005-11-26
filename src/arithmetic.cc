@@ -53,32 +53,103 @@
 // 
 // ##Copyright##
 //
-// $Id: arithmetic.cc,v 1.3 2003/09/28 07:53:35 qp Exp $
+// $Id: arithmetic.cc,v 1.9 2005/11/26 23:34:28 qp Exp $
+
+#include <math.h>
+#ifdef WIN32
+        #define M_PI       3.14159265358979323846
+        #define M_E        2.71828182845904523536
+        //We'll have to use our own function
+        double round(double number)
+        {
+                return number < 0.0 ? ceil(number-0.5) : floor(number+0.5);
+        }
+#endif
 
 #include "atom_table.h"
 #include "thread_qp.h"
 
 extern AtomTable *atoms;
 
+#define ARITH_INTEGER_TYPE    0
+#define ARITH_DOUBLE_TYPE 1
+
+
+typedef struct
+{ int   type;                           /* type of number */
+  union { 
+          long  i;                      /* integer */
+          double d;                     /* double */
+        } value;
+} number;
+
+#define IS_INT(x) (x.type == ARITH_INTEGER_TYPE)
+#define BOTH_INTS(x,y) ((x.type == ARITH_INTEGER_TYPE) && (y.type == ARITH_INTEGER_TYPE)) 
+#define GET_INT_VAL(x) (x.value.i)
+#define GET_DOUBLE_VAL(x) ((x.type == ARITH_INTEGER_TYPE) ? (double)(x.value.i) : x.value.d)
+#define MAKE_INT(x, v) {x.type = ARITH_INTEGER_TYPE; x.value.i = v;}
+#define MAKE_DOUBLE(x, v) {x.type = ARITH_DOUBLE_TYPE; x.value.d = v;}  
+/*
+#define MAKE_DOUBLE(x, v)                                  	\
+do {                                                       	\
+  long n = (long)(v);						\
+  if ((v) == (double)n)						\
+    { x.type = ARITH_INTEGER_TYPE; x.value.i = n; }		\
+  else								\
+    {x.type = ARITH_DOUBLE_TYPE; x.value.d = (v);}		\
+} while (0)
+*/
+
+#define IS_ZERO(x) ((x.type == ARITH_INTEGER_TYPE) && (x.value.i == 0))
+
+number zero = {ARITH_INTEGER_TYPE, 0};
 //
 // arithEvaluate is an auxilary function used by arithmetical pseudo
 //instructions to carry out the evaluation of expressions.
 //
-int32
-Thread::arithEvaluate(PrologValue& val)
+number
+arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 {
-  if (val.getTerm()->isNumber())
+  if (val.getTerm()->isInteger())
     {
-      return (val.getTerm()->getNumber());
+      number y;
+      MAKE_INT(y, val.getTerm()->getNumber());
+      return y;
     }
+  else if (val.getTerm()->isDouble())
+    {
+      number y;
+      MAKE_DOUBLE(y, val.getTerm()->getDouble());
+      return y;
+    }
+  else if (val.getTerm()->isAtom())
+    { 
+      if (val.getTerm() == AtomTable::pi)
+        {
+          number y;
+          MAKE_DOUBLE(y, M_PI); // PI
+          return y;
+        }
+      if (val.getTerm() == AtomTable::e)
+        {
+          number y;
+          MAKE_DOUBLE(y, M_E); // E
+          return y;
+        }
+      else
+	{
+	  error_value = EV_TYPE;
+	  return zero;
+	}
+    }      
   else if (val.getTerm()->isStructure())
     {
-      long res1, res2 = 0;
-
+      number res1, res2;
+      
       Structure *structure = OBJECT_CAST(Structure *, val.getTerm());
-
+      
       size_t arity = structure->getArity();
-
+      
       //
       // calcualte the values of the arguments
       //
@@ -87,11 +158,11 @@ Thread::arithEvaluate(PrologValue& val)
 	  PrologValue val1(val.getSubstitutionBlockList(),
 			   structure->getArgument(1));	  
 	  heap.prologValueDereference(val1);
-	  res1 = arithEvaluate(val1);
-
+	  res1 = arithEvaluate(val1, heap, error_value);
+	  
 	  if (error_value != EV_NO_ERROR)
 	    {
-	      return 0;
+	      return zero;
 	    }
 	}
       else if (arity == 2)
@@ -99,21 +170,21 @@ Thread::arithEvaluate(PrologValue& val)
 	  PrologValue val1(val.getSubstitutionBlockList(),
 			   structure->getArgument(1));	  
 	  heap.prologValueDereference(val1);
-	  res1 = arithEvaluate(val1);
+	  res1 = arithEvaluate(val1, heap, error_value);
 	  PrologValue val2(val.getSubstitutionBlockList(),
 			   structure->getArgument(2));	  
 	  heap.prologValueDereference(val2);
-	  res2 = arithEvaluate(val2);
-
+	  res2 = arithEvaluate(val2, heap, error_value);
+	  
 	  if (error_value != EV_NO_ERROR)
 	    {
-	      return 0;
+	      return zero;
 	    }
 	}
       else // illegal number of arguments
 	{
 	  error_value = EV_TYPE;
-	  return 0;
+	  return zero;
 	}
       
       //
@@ -123,34 +194,67 @@ Thread::arithEvaluate(PrologValue& val)
 			structure->getFunctor());	  
       heap.prologValueDereference(funpv);
       Object* fun = funpv.getTerm();
-   
-      DEBUG_ASSERT(fun->isAtom());
-
+      
+      assert(fun->isAtom());
+      
       Atom *op = OBJECT_CAST(Atom *, fun);
-
+      
       if (op == AtomTable::plus)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-
-	  return res1 + res2;
+	  number res;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) + GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      MAKE_DOUBLE(res, GET_DOUBLE_VAL(res1) + GET_DOUBLE_VAL(res2));
+	      return res;
+            }
 	}
       else if (op == AtomTable::minus)
 	{
 	  if (arity == 1)
 	    {
-	      return -res1;
-	    }
+              if IS_INT(res1)
+                {
+	          number res;
+                  MAKE_INT(res, - GET_INT_VAL(res1));
+	          return res;
+                }
+              else
+                {
+	          number res;
+	          MAKE_DOUBLE(res, - GET_DOUBLE_VAL(res1));
+	          return res;
+                }
+            }
 	  else if (arity == 2)
 	    {
-	      return res1 - res2;
+	      if BOTH_INTS(res1, res2)
+                {
+	          number res;
+                  MAKE_INT(res, GET_INT_VAL(res1) - GET_INT_VAL(res2));
+	          return res;
+                }
+              else
+                {
+	          number res;
+	          MAKE_DOUBLE(res, GET_DOUBLE_VAL(res1) - GET_DOUBLE_VAL(res2));
+	          return res;
+                }
 	    }
 	  else
 	    {
 	      error_value = EV_TYPE;
+	      return zero;
 	    }
 	}
       else if (op == AtomTable::multiply)
@@ -158,136 +262,433 @@ Thread::arithEvaluate(PrologValue& val)
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  return res1 * res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) * GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      number res;
+	      errno = 0;
+	      MAKE_DOUBLE(res, GET_DOUBLE_VAL(res1) * GET_DOUBLE_VAL(res2));
+	      if (errno != 0)
+	        {
+	          error_value = EV_RANGE;
+	          return zero;
+	        }
+	      return res;
+            }
+	}
+      else if (op == AtomTable::abs)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+          if IS_INT(res1)
+            {
+	      number res;
+              MAKE_INT(res, abs(GET_INT_VAL(res1)));
+	      return res;
+            }
+          else
+            {
+	      number res;
+	      MAKE_DOUBLE(res, fabs(GET_DOUBLE_VAL(res1)));
+	      return res;
+            }
+        }
+      else if (op == AtomTable::round)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+          if IS_INT(res1)
+            {
+	      return res1;
+            }
+           else
+            {
+	      number res;
+              MAKE_INT(res, (long)round(GET_DOUBLE_VAL(res1)));
+	      return res;
+            }
+        }
+      else if (op == AtomTable::floor)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+          if IS_INT(res1)
+            {
+	      return res1;
+            }
+           else
+            {
+	      number res;
+              MAKE_INT(res, (long)floor(GET_DOUBLE_VAL(res1)));
+	      return res;
+            }
+        }
+      else if (op == AtomTable::ceiling)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+          if IS_INT(res1)
+            {
+	      return res1;
+            }
+           else
+            {
+	      number res;
+              MAKE_INT(res, (long)ceil(GET_DOUBLE_VAL(res1)));
+	      return res;
+            }
+        }
+      else if (op == AtomTable::sqrt)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  MAKE_DOUBLE(res, sqrt(GET_DOUBLE_VAL(res1)));
+	  return res;
+        }
+      else if (op == AtomTable::sin)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  MAKE_DOUBLE(res, sin(GET_DOUBLE_VAL(res1)));
+	  return res;
+        }
+      else if (op == AtomTable::cos)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  MAKE_DOUBLE(res, cos(GET_DOUBLE_VAL(res1)));
+	  return res;
+        }
+      else if (op == AtomTable::tan)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  errno = 0;
+	  MAKE_DOUBLE(res, tan(GET_DOUBLE_VAL(res1)));
+	  if (errno != 0)
+	    {
+	      error_value = EV_RANGE;
+	      return zero;
+	    }
+	  return res;
+        }
+      else if (op == AtomTable::asin)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  errno = 0;
+	  MAKE_DOUBLE(res, asin(GET_DOUBLE_VAL(res1)));
+	  if (errno != 0)
+	    {
+	      error_value = EV_RANGE;
+	      return zero;
+	    }
+	  return res;
+        }
+      else if (op == AtomTable::acos)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  errno = 0;
+	  MAKE_DOUBLE(res, acos(GET_DOUBLE_VAL(res1)));
+	  if (errno != 0)
+	    {
+	      error_value = EV_RANGE;
+	      return zero;
+	    }
+	  return res;
+        }
+      else if (op == AtomTable::atan)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  errno = 0;
+	  MAKE_DOUBLE(res, atan(GET_DOUBLE_VAL(res1)));
+	  if (errno != 0)
+	    {
+	      error_value = EV_RANGE;
+	      return zero;
+	    }
+	  return res;
+        }
+      else if (op == AtomTable::log)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+	  number res;
+	  errno = 0;
+	  MAKE_DOUBLE(res, log(GET_DOUBLE_VAL(res1)));
+	  if (errno != 0)
+	    {
+	      error_value = EV_RANGE;
+	      return zero;
+	    }
+	  return res;
 	}
       else if (op == AtomTable::divide)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  if (res2 == 0)
+	  if IS_ZERO(res2)
 	    {
 	      error_value = EV_ZERO_DIVIDE;
-	      return 0;
+	      return zero;
 	    }
-	  
-	  return res1 / res2;
+	  number res;
+          errno = 0;
+          MAKE_DOUBLE(res, (double)GET_DOUBLE_VAL(res1) / (double)GET_DOUBLE_VAL(res2));
+          if (errno != 0)
+            {
+	      error_value = EV_RANGE;
+	      return zero;
+            }
+	  return res;
 	}
       else if (op == AtomTable::intdivide)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  if (res2 == 0)
+	  if IS_ZERO(res2)
 	    {
 	      error_value = EV_ZERO_DIVIDE;
-	      return 0;
+	      return zero;
 	    }
-	  
-	  return res1 / res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) / GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	}
       else if (op == AtomTable::mod)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }	      
-	  if (res2 == 0)
+	  if IS_ZERO(res2)
 	    {
 	      error_value = EV_ZERO_DIVIDE;
-	      return 0;
+	      return zero;
 	    }
 
-	  return res1 % res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) % GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	}
       else if (op == AtomTable::power)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  {
-	    long tmp = 1;
-	    
-	    while (res2-- > 0)
-	      {
-		tmp *= res1;
-	      }
-	    return tmp;
-	  }
+	  if (BOTH_INTS(res1, res2) && (GET_INT_VAL(res2) >= 0))
+            {
+	      number res;
+              MAKE_INT(res, (long)pow(GET_INT_VAL(res1), GET_INT_VAL(res2)));
+	      return res;
+            }
+          else
+            {
+	      number res;
+	      double x = GET_DOUBLE_VAL(res1);
+	      double y = GET_DOUBLE_VAL(res2);
+	      errno = 0;
+	      double z = pow(x, y);
+	      if (errno != 0)
+	        {
+	          error_value = EV_RANGE;
+	          return zero;
+	        }
+	  
+	      MAKE_DOUBLE(res, z);
+	      return res;
+            }
 	}
       else if (op == AtomTable::bitwiseand)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-
-	  return res1 & res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) & GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	}
       else if (op == AtomTable::bitwiseor)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  return res1 | res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) | GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	}
       else if (op == AtomTable::shiftl)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  return res1 << res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) << GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	}
       else if (op == AtomTable::shiftr)
 	{
 	  if (arity != 2)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
 	    }
-	  return res1 >> res2;
+	  if BOTH_INTS(res1, res2)
+            {
+	      number res;
+              MAKE_INT(res, GET_INT_VAL(res1) >> GET_INT_VAL(res2));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	}
       else if (op == AtomTable::bitneg)
 	{
 	  if (arity != 1)
 	    {
 	      error_value = EV_TYPE;
-	      return 0;
+	      return zero;
+	  if IS_INT(res1)
+            {
+	      number res;
+              MAKE_INT(res, ~ GET_INT_VAL(res1));
+	      return res;
+            }
+          else
+            {
+	      error_value = EV_TYPE;
+	      return zero;
+            }
 	    }
-	  return ~res1;
 	}
       else 
 	{
 	  error_value = EV_TYPE;
-	  return 0;
+	  return zero;
 	}
     }
   else if (val.getTerm()->isVariable())
     {
       error_value = EV_INST;
-      return 0;
+      return zero;
     }
   else
     {
       error_value = EV_TYPE;
-      return 0;
+      return zero;
     }
 
-  return 0;
+  return zero;
 }
 
 //
@@ -302,7 +703,7 @@ Thread::psi_is(Object *& object1, Object *& object2)
   
   PrologValue val(object2);
   heap.prologValueDereference(val);
-  const long result = arithEvaluate(val);
+  number result = arithEvaluate(val, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -310,7 +711,10 @@ Thread::psi_is(Object *& object1, Object *& object2)
     }
   else
     {
-      object1 = heap.newNumber(result);
+      if IS_INT(result)
+        object1 = heap.newNumber(GET_INT_VAL(result));
+      else
+        object1 = heap.newDouble(GET_DOUBLE_VAL(result));
 
       return RV_SUCCESS;
     }
@@ -329,7 +733,7 @@ Thread::psi_less(Object *& object1, Object *& object2)
 
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
-  const long res1 = arithEvaluate(pval1);
+  number res1 = arithEvaluate(pval1, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -337,7 +741,7 @@ Thread::psi_less(Object *& object1, Object *& object2)
     }
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
-  const long res2 = arithEvaluate(pval2);
+  number res2 = arithEvaluate(pval2, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -347,7 +751,7 @@ Thread::psi_less(Object *& object1, Object *& object2)
   //
   // The two args evaluate correctly so test them
   //
-  return BOOL_TO_RV(res1 < res2);
+  return BOOL_TO_RV(GET_DOUBLE_VAL(res1) < GET_DOUBLE_VAL(res2));
 }
 
 //
@@ -363,7 +767,7 @@ Thread::psi_lesseq(Object *& object1, Object *& object2)
 
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
-  const long res1 = arithEvaluate(pval1);
+  number res1 = arithEvaluate(pval1, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -372,7 +776,7 @@ Thread::psi_lesseq(Object *& object1, Object *& object2)
 
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
-  const long res2 = arithEvaluate(pval2);
+  number res2 = arithEvaluate(pval2, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -382,7 +786,7 @@ Thread::psi_lesseq(Object *& object1, Object *& object2)
   //
   // The two args evaluate correctly so test them
   //
-  return BOOL_TO_RV(res1 <= res2);
+  return BOOL_TO_RV(GET_DOUBLE_VAL(res1) <= GET_DOUBLE_VAL(res2));
 
 }
 
@@ -400,7 +804,7 @@ Thread::psi_add(Object *& object1, Object *& object2, Object *& object3)
 
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
-  const long res1 = arithEvaluate(pval1);
+  number res1 = arithEvaluate(pval1, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -409,7 +813,7 @@ Thread::psi_add(Object *& object1, Object *& object2, Object *& object3)
 
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
-  const long res2 = arithEvaluate(pval2);
+  number res2 = arithEvaluate(pval2, heap, error_value);
  
   if (error_value != EV_NO_ERROR)
     {
@@ -419,7 +823,14 @@ Thread::psi_add(Object *& object1, Object *& object2, Object *& object3)
   //
   // The two args evaluate correctly so add them
   //
-  object3 = heap.newNumber(res1+res2);
+  if BOTH_INTS(res1, res2)
+    {
+      object3 = heap.newNumber(GET_INT_VAL(res1) + GET_INT_VAL(res2));
+     }
+   else
+     {
+      object3 = heap.newDouble(GET_DOUBLE_VAL(res1) + GET_DOUBLE_VAL(res2));
+     }
 
   return RV_SUCCESS;
 }
@@ -436,7 +847,7 @@ Thread::psi_subtract(Object *& object1, Object *& object2, Object *& object3)
 
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
-  const long res1 = arithEvaluate(pval1);
+  number res1 = arithEvaluate(pval1, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -445,7 +856,7 @@ Thread::psi_subtract(Object *& object1, Object *& object2, Object *& object3)
 
   PrologValue pval2(object2);
   heap.prologValueDereference(pval2);
-  const long res2 = arithEvaluate(pval2);
+  number res2 = arithEvaluate(pval2, heap, error_value);
 
   if (error_value != EV_NO_ERROR)
     {
@@ -455,7 +866,14 @@ Thread::psi_subtract(Object *& object1, Object *& object2, Object *& object3)
   //
   // The two args evaluate correctly so subtract them
   //
-  object3 = heap.newNumber(res1 - res2);
+  if BOTH_INTS(res1, res2)
+    {
+      object3 = heap.newNumber(GET_INT_VAL(res1) - GET_INT_VAL(res2));
+     }
+   else
+     {
+      object3 = heap.newDouble(GET_DOUBLE_VAL(res1) - GET_DOUBLE_VAL(res2));
+     }
 
   return RV_SUCCESS;
 }
@@ -473,7 +891,7 @@ Thread::psi_increment(Object *& object1, Object *& object2)
   
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
-  const long res1 = arithEvaluate(pval1);
+  number res1 = arithEvaluate(pval1, heap, error_value);
      
     if (error_value != EV_NO_ERROR)
     {
@@ -483,7 +901,14 @@ Thread::psi_increment(Object *& object1, Object *& object2)
   //
   // The arg evaluate correctly so increment it
   //
-  object2 = heap.newNumber(res1 + 1);
+  if IS_INT(res1)
+    {
+      object2 = heap.newNumber(GET_INT_VAL(res1) + 1);
+     }
+   else
+     {
+      object2 = heap.newDouble(GET_DOUBLE_VAL(res1) + 1);
+     }
 
   return RV_SUCCESS;
 }
@@ -500,7 +925,7 @@ Thread::psi_decrement(Object *& object1, Object *& object2)
 
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
-  const long res1 = arithEvaluate(pval1);
+  number res1 = arithEvaluate(pval1, heap, error_value);
    
   if (error_value != EV_NO_ERROR)
     {
@@ -510,9 +935,39 @@ Thread::psi_decrement(Object *& object1, Object *& object2)
   //
   // The arg evaluate correctly so decrement it
   //
-  object2 = heap.newNumber(res1 - 1);
+  if IS_INT(res1)
+    {
+      object2 = heap.newNumber(GET_INT_VAL(res1) - 1);
+     }
+   else
+     {
+      object2 = heap.newDouble(GET_DOUBLE_VAL(res1) + 1);
+     }
 
   return RV_SUCCESS;
 }
 
+//
+// psi_hash_double(A,B)
+// mode(in,out)
+// 
+//
+Thread::ReturnValue
+Thread::psi_hash_double(Object *& object1, Object *& object2)
+{
+  PrologValue pval1(object1);
+  heap.prologValueDereference(pval1);
+  Object* dval = pval1.getTerm();
 
+  if (!dval->isDouble())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  double d = dval->getDouble();
+  u_int x[2];
+  memcpy(x, &d, sizeof(double));
+  word32 v = (x[0] | x[1]) & ~(x[0] & x[1]);
+  object2 = heap.newNumber(v);
+  return RV_SUCCESS;
+}

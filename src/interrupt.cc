@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: interrupt.cc,v 1.4 2002/11/03 08:37:28 qp Exp $
+// $Id: interrupt.cc,v 1.5 2005/11/26 23:34:30 qp Exp $
 
 #include	<iostream>
 #include	<signal.h>
@@ -112,7 +112,7 @@ Thread::HandleInterrupt(Object* goal)
 Object*
 Thread::BuildCall(Atom* pred, const word32 n)
 {
-  DEBUG_ASSERT(pred != NULL);
+  assert(pred != NULL);
   
   word32  i;
 

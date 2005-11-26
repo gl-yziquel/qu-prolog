@@ -53,14 +53,20 @@
 // 
 // ##Copyright##
 //
-// $Id: hostname.cc,v 1.3 2004/05/26 03:04:39 qp Exp $
+// $Id: hostname.cc,v 1.4 2005/03/08 00:35:07 qp Exp $
 
 #include "config.h"
 
 #include <stdlib.h>
 
 #include <sys/types.h>
+
+#ifdef WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
+
 #ifdef GCC_VERSION_2
 #include <iostream.h>
 #else
@@ -75,7 +81,9 @@ extern const char *Program;
 void
 hostname(char *name, const size_t len)
 {
+#ifndef WIN32
   SYSTEM_CALL_LESS_ZERO(gethostname(name, len));
+#endif
 }
 
 

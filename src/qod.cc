@@ -53,10 +53,11 @@
 // 
 // ##Copyright##
 //
-// $Id: qod.cc,v 1.5 2002/12/05 03:39:33 qp Exp $
+// $Id: qod.cc,v 1.6 2005/03/08 00:35:13 qp Exp $
 
 #include <iostream>
-#include <fstream.h>
+#include <stdio.h>
+#include <fstream>
 
 #include <string.h>
 
@@ -99,7 +100,11 @@ int
 main(int argc, char **argv)
 {
   // set the out-of-memory handler
+#ifdef WIN32
+  std::set_new_handler(noMoreMemory);
+#else
   set_new_handler(noMoreMemory);
+#endif
 
   if (argc != 2)
     {
@@ -109,7 +114,7 @@ main(int argc, char **argv)
   ifstream ifstrm(argv[1]);
   if (ifstrm.bad())
     {
-      FatalS(__FUNCTION__, "Couldn't open ", argv([1]));
+      FatalS(__FUNCTION__, "Couldn't open ", argv[1]);
     }
 
   // Initialise
@@ -119,19 +124,19 @@ main(int argc, char **argv)
   char *strings[1024];
   u_long string_count = 0;
 
-  cout.form("% 8lx: ", byte_count);
+  printf("% 8lx: ", byte_count);
 
   Code::AddressSizedType string_table_size =
     IntLoad<Code::AddressSizedType>(ifstrm);
   byte_count += Code::SIZE_OF_ADDRESS;
 
-  cout.form("String table size = %ld bytes\n", string_table_size);
+  printf("String table size = %ld bytes\n", string_table_size);
 
   while (string_table_size > 0)
     {
       u_long len = 0;
 
-      cout.form("% 8lx: ", byte_count);
+      printf("% 8lx: ", byte_count);
 
       char *str = new char[ATOM_LENGTH];
       
@@ -150,7 +155,7 @@ main(int argc, char **argv)
 	byte_count++;
       }	while (c != '\0');
 
-      cout.form("% 4ld %s\n", string_count, str);
+      printf("% 4ld %s\n", string_count, str);
       strings[string_count] = str;
       string_count++;
 
@@ -165,8 +170,8 @@ main(int argc, char **argv)
       u_long size = query_block_size;
 
       cout << '' << endl;
-      cout.form("% 8lx: ", byte_count);
-      cout.form("Query block size = %ld bytes\n", query_block_size);
+      printf("% 8lx: ", byte_count);
+      printf("Query block size = %ld bytes\n", query_block_size);
 
       while (size > 0)
 	{
@@ -176,8 +181,8 @@ main(int argc, char **argv)
   else
     {
       cout << "--------------------------------------------------" << endl;
-      cout.form("% 8lx: ", byte_count);
-      cout.form("Query block size = %ld bytes\n", query_block_size);
+      printf("% 8lx: ", byte_count);
+      printf("Query block size = %ld bytes\n", query_block_size);
     }
 
   byte_count += Code::SIZE_OF_OFFSET;
@@ -225,7 +230,7 @@ dump_table_label(const Code::OffsetSizedType label, const u_long end_addr)
     }
   else
     {
-      cout.form("%lx=%lx", label, label + end_addr);
+      printf("%lx=%lx", label, label + end_addr);
     }
 }
 
@@ -248,11 +253,11 @@ dump_table_atom_arity(const Code::ConstantSizedType atom,
 	{
 	  const u_long atom_loc = cell.restOfAtomic();
 
-	  cout.form("%ld=%s/%ld", atom_loc, strings[atom_loc], arity);
+	  printf("%ld=%s/%ld", atom_loc, strings[atom_loc], arity);
 	}
       else
 	{
-	  cout.form("%lx=?atom?/%ld", atom, arity);
+	  printf("%lx=?atom?/%ld", atom, arity);
 	}
     }
 }
@@ -262,7 +267,7 @@ dump_constant(const Code::ConstantSizedType constant,
 	      char *strings[],
 	      const size_t string_count)
 {
-  cout.form("%lx=", constant);
+  printf("%lx=", constant);
 
   Cell cell;
 
@@ -270,7 +275,7 @@ dump_constant(const Code::ConstantSizedType constant,
 
   if (cell.isShort())
     {
-      cout.form("%ld short", cell.shortOf());
+      printf("%ld short", cell.shortOf());
     }
   else if (cell.isAtom())
     {
@@ -278,16 +283,16 @@ dump_constant(const Code::ConstantSizedType constant,
 
       if (atom_loc < string_count)
 	{
-	  cout.form("%ld '%s'", atom_loc, strings[atom_loc]);
+	  printf("%ld '%s'", atom_loc, strings[atom_loc]);
 	}
       else
 	{
-	  cout.form("%lx ?atom?", atom_loc);
+	  printf("%lx ?atom?", atom_loc);
 	}
     }
   else
     {
-      cout.form("%lx ?constant?", constant);
+      printf("%lx ?constant?", constant);
     }
 }
 
@@ -300,7 +305,7 @@ dump_instruction(istream& istrm,
 {
   const u_long instr_start = byte_count;
 
-  cout.form("% 8lx: ", byte_count);
+  printf("% 8lx: ", byte_count);
 
   const Code::InstructionSizedType instruction =
     IntLoad<Code::InstructionSizedType>(istrm);
@@ -312,7 +317,7 @@ dump_instruction(istream& istrm,
       Fatal(__FUNCTION, "Bad instruction: ");
     }
 
-  cout.form("%s[%s]", opnames[instruction], operands[instruction]);
+  printf("%s[%s]", opnames[instruction], operands[instruction]);
 
   const char *args = operands[instruction];
   const size_t num_args = strlen(args);
@@ -341,7 +346,7 @@ dump_instruction(istream& istrm,
 		  IntLoad<Code::NumberSizedType>(istrm);
 		advance(Code::SIZE_OF_NUMBER, byte_count, size);
 
-		cout.form("%ld", number);
+		printf("%ld", number);
 	      }
 	      break;
 	    case 'o':
@@ -370,7 +375,7 @@ dump_instruction(istream& istrm,
 		  IntLoad<Code::OffsetSizedType>(istrm);
 		advance(Code::SIZE_OF_OFFSET, byte_count, size);
 
-		cout.form("%lx %lx", offset,
+		printf("%lx %lx", offset,
 			  offset + instr_start + offset_adjust);
 	      }
 	      break;
@@ -380,7 +385,7 @@ dump_instruction(istream& istrm,
 		  IntLoad<Code::PredSizedType>(istrm);
 		advance(Code::SIZE_OF_PRED, byte_count, size);
 
-		cout.form("%ld=%s", predicate, strings[predicate]);
+		printf("%ld=%s", predicate, strings[predicate]);
 	      }
 	      break;
 	    case 'r':
@@ -389,7 +394,7 @@ dump_instruction(istream& istrm,
 		  IntLoad<Code::RegisterSizedType>(istrm);
 		advance(Code::SIZE_OF_REGISTER, byte_count, size);
 
-		cout.form("%ld", reg);
+		printf("%ld", reg);
 	      }
 	      break;
 	    case 't':
@@ -397,7 +402,7 @@ dump_instruction(istream& istrm,
 		table_size = IntLoad<Code::TableSizeSizedType>(istrm);
 		advance(Code::SIZE_OF_TABLE_SIZE, byte_count, size);
 
-		cout.form("%ld", table_size);
+		printf("%ld", table_size);
 	      }
 	      break;
 	    default:
@@ -417,7 +422,7 @@ dump_instruction(istream& istrm,
   const u_long instr_size = byte_count - instr_start;
   const u_long instr_end = byte_count;
 
-  cout.form(" (%ld bytes)", instr_size);
+  printf(" (%ld bytes)", instr_size);
   if (instr_size != opsizes[instruction])
     {
       Fatal(__FUNCTION__, "Wrong instruction size");
@@ -438,7 +443,7 @@ dump_instruction(istream& istrm,
             const u_long table_end = instr_end + table_bytes;
 
 	    cout << endl;
-	    cout.form("% 8lx: ", byte_count);
+	    printf("% 8lx: ", byte_count);
 	    for (u_long i = 0; i < 6; i++)
 	      {
 		const Code::OffsetSizedType label =
@@ -455,7 +460,7 @@ dump_instruction(istream& istrm,
 	      }
 	    
 	    const u_long bytes = byte_count - instr_end;
-	    cout.form(" (%ld bytes)", bytes);
+	    printf(" (%ld bytes)", bytes);
 	    if (bytes != table_bytes)
 	      {
 		Fatal(__FUNCTION__, "Table size: computed=%ld != actual=%ld",
@@ -473,7 +478,7 @@ dump_instruction(istream& istrm,
 		if (entry % 4 == 0)
 		  {
 		    cout << endl;
-		    cout.form("% 8lx: % 4ld ", byte_count, entry);
+		    printf("% 8lx: % 4ld ", byte_count, entry);
 		  }
 
 		const Code::ConstantSizedType constant =
@@ -495,7 +500,7 @@ dump_instruction(istream& istrm,
 	      }
 
 	    const u_long bytes = byte_count - instr_end;
-	    cout.form(" (%ld bytes)", bytes);
+	    printf(" (%ld bytes)", bytes);
 	    if (bytes != table_bytes)
 	      {
 		Fatal(__FUNCTION__, "Table size: computed=%ld != actual=%ld",
@@ -514,7 +519,7 @@ dump_instruction(istream& istrm,
 		if (entry % 4 == 0)
 		  {
 		    cout << endl;
-		    cout.form("% 8lx: % 4ld ", byte_count, entry);
+		    printf("% 8lx: % 4ld ", byte_count, entry);
 		  }
 
 		const Code::ConstantSizedType atom =
@@ -540,7 +545,7 @@ dump_instruction(istream& istrm,
 	      }
 
 	    const u_long bytes = byte_count - instr_end;
-	    cout.form(" (%ld bytes)", bytes);
+	    printf(" (%ld bytes)", bytes);
 	    if (bytes != table_bytes)
 	      {
 		Fatal(__FUNCTION__, "Table size: computed=%ld != actual=%ld",
@@ -558,7 +563,7 @@ dump_instruction(istream& istrm,
 		if (entry % 4 == 0)
 		  {
 		    cout << endl;
-		    cout.form("% 8lx: % 4ld ", byte_count, entry);
+		    printf("% 8lx: % 4ld ", byte_count, entry);
 		  }
 		
 		const Code::ConstantSizedType atom =
@@ -569,7 +574,7 @@ dump_instruction(istream& istrm,
 		  IntLoad<Code::OffsetSizedType>(istrm);
 		advance(Code::SIZE_OF_OFFSET, byte_count, size);
 		
-		cout.form("%ld:", atom);
+		printf("%ld:", atom);
 		dump_table_label(label, instr_end);
 
 		if (entry + 1 < table_size)
@@ -579,7 +584,7 @@ dump_instruction(istream& istrm,
 	      }
 
 	    const u_long bytes = byte_count - instr_end;
-	    cout.form(" (%ld bytes)", bytes);
+	    printf(" (%ld bytes)", bytes);
 	    if (bytes != table_bytes)
 	      {
 		Fatal(__FUNCTION__, "Table size: computed=%ld != actual=%ld",
@@ -599,7 +604,7 @@ dump_predicate(istream& istrm,
 	       char *strings[],
 	       const size_t string_count)
 {
-  cout.form("% 8lx: ", byte_count);
+  printf("% 8lx: ", byte_count);
 
   const Code::AddressSizedType string_num =
     IntLoad<Code::AddressSizedType>(istrm);
@@ -617,7 +622,7 @@ dump_predicate(istream& istrm,
 
   const u_long pred_start = byte_count;
 
-  cout.form("%ld=%s/%ld (%ld bytes, next pred=%lx)\n",
+  printf("%ld=%s/%ld (%ld bytes, next pred=%lx)\n",
 	    string_num, strings[string_num],
 	    arity, pred_size, pred_start + pred_size);
 

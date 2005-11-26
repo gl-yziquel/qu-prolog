@@ -22,10 +22,23 @@ Contact: fgm@fla.fujitsu.com
 #ifndef _ICM_H_
 #define _ICM_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <sys/types.h>
+#ifdef WIN32
+#include <io.h>
+#include <time.h>
+#define _WINSOCKAPI_
+#include <windows.h>
+typedef unsigned long u_long;
+#else
 #include <netinet/in.h>
-#include <pthread.h>		/* We are supposed to be thread-safe */
 #include <sys/time.h>
+#endif
+
+#include <pthread.h> /* We are supposed to be thread-safe */
 
 /* Our version of logical */
 typedef enum {icmNo = 0, icmYes = 1} icmTruth;
@@ -45,11 +58,24 @@ typedef struct _icmConnection_  *icmConn;
 /* Opaque message structure pointer type */
 typedef struct _icmMessage_ *icmMsg;
 
+/* Unicode character types */
+#ifdef WIN32
+typedef unsigned long uniChar;  /* should be 32 bits */
+#else
+typedef u_long uniChar; /* should be 32 bits */
+#endif
+
 /* General message contents structure */
 typedef struct {
   long size;			/* length - in bytes - of data block */
   char *data;			/* pointer to the data block */
 } icmDataRec, *icmDataPo;
+
+typedef struct {
+  char *name;
+  icmDataPo val;
+}  icmOpaqueRec, *icmOpaquePo;
+
 
 /* options enumerated code */
 typedef enum {icmLeaseTime, icmReplyto, icmReceiptRequest, icmAuditTrail } icmOpt;
@@ -71,9 +97,6 @@ typedef icmStatus (*icmMsgProc)(icmConn conn,
 /* termination hook ... called when a handle is deleted */
 typedef icmStatus (*icmTerminProc)(icmHandle h);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* Handle management functions */
 icmHandle icmMakeHandle(char *decoration,char *name,char *home,int count,char **location);
@@ -111,7 +134,7 @@ icmStatus icmRegisterAgent(icmConn conn,icmHandle agent,icmOption opts,
 			   icmHandle *real);
 icmStatus icmDeregisterAgent(icmConn conn,icmHandle handle);
 icmStatus icmDetachAgent(icmConn conn,icmHandle agent,icmOption opts);
-icmStatus icmAttachAgent(icmConn conn,icmHandle agent);
+icmStatus icmAttachAgent(icmConn conn,icmHandle agent, icmOption opts);
 
 /* Message handling and eventloop managment */
 icmStatus icmEventLoop(icmConn conn,icmMsgProc proc,void *client);
@@ -153,18 +176,13 @@ icmStatus icmIsOption(icmOption opts,icmOpt o,...);
 /* Agent status */
 icmStatus icmListAgents(icmConn conn,icmHandle agent,icmHandle *agents,long *max);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
-
 /* Low-level message parsing */
 typedef enum {icmInt=0x10, icmFlt=0x20, icmNegFlt=0x30, icmSym=0x40, icmHdl=0x50,
 	      icmData=0x60, icmCode=0x70, icmNil=0x80, icmList=0x81, 
-              icmTuple=0x90,icmTag=0xa0, icmRef=0xb0, icmShort=0xc0} icmElTag;
+              icmApply=0x82, icmTuple=0x90,icmTag=0xa0, 
+              icmRef=0xb0, icmShort=0xc0,
+              icmSigned=0xd0, icmOpaque=0xe0} icmElTag;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 icmStatus icmMsgElType(icmMsg msg, long index, icmElTag *type);
 icmStatus icmMsgElSize(icmMsg msg,long index,long *size);
@@ -176,11 +194,14 @@ icmStatus icmExpectData(icmMsg msg,long index,long *newx,void *buffer,long *len,
 icmStatus icmExpectCode(icmMsg msg,long index,long *newx,void *buffer,long *len,long max);
 icmStatus icmExpectNil(icmMsg msg, long x, long *newx);
 icmStatus icmExpectList(icmMsg msg, long x, long *newx);
+icmStatus icmExpectApply(icmMsg msg, long x, long *newx);
 icmStatus icmExpectTuple(icmMsg msg, long x, long *newx,long *arity);
+icmStatus icmExpectSigned(icmMsg msg,long x,long *newx,char *sig,long *max);
 icmStatus icmExpectTag(icmMsg msg, long x, long *newx,long *tag);
 icmStatus icmExpectRef(icmMsg msg, long x, long *newx,long *tag);
 icmStatus icmExpectShort(icmMsg msg,long index,long *newx,long *tag);
 icmStatus icmExpectAny(icmMsg msg,long x,long *nx,icmMsg *m);
+icmStatus icmExpectOpaque(icmMsg msg,long index,long *newx);
 icmStatus icmSkipElement(icmMsg msg, long x, long *newx);
 
 /* low-level message formatting */
@@ -193,7 +214,10 @@ icmStatus icmPlaceData(icmMsg msg,void *data, long size);
 icmStatus icmPlaceCode(icmMsg msg,void *code, long size);
 icmStatus icmPlaceNil(icmMsg msg);
 icmStatus icmPlaceList(icmMsg msg);
+icmStatus icmPlaceApply(icmMsg msg);
 icmStatus icmPlaceTuple(icmMsg msg,long arity);
+icmStatus icmPlaceSigned(icmMsg msg,char *sig,long sigLen);
+icmStatus icmPlaceOpaque(icmMsg msg);
 icmStatus icmPlaceTag(icmMsg msg,long tag);
 icmStatus icmPlaceRef(icmMsg msg,long tag);
 icmStatus icmPlaceShort(icmMsg msg,long tag);
@@ -202,58 +226,24 @@ icmStatus icmCopyMsg(icmMsg msg,icmMsg from,long x,long *nx);
 
 icmStatus icmCmpMsg(icmMsg msg1,icmMsg msg2);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
 
 /* Host name management and interface */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+void icmIPToStr(const struct in_addr *ip, char *addr,long len);
 char *icmGetHostname(char *name);
 struct in_addr *icmGetHostIP(char *name);
 char *icmGetNthHostIP(char *name,long i,char *buffer,long len);
 char *icmMachineName(void);
 char *icmMachineIP(void);
-icmStatus icmIsIPofHost(char *name,unsigned long ip);
+icmStatus icmIsIPofHost(char *name,u_long ip);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
 
-/* Hash table interface */
-typedef struct _hashtable_ *icmHashPo;
-
-typedef unsigned long (*icmHashFun)(void *); /* Hashing function */
-typedef long (*icmCompFun)(void *, void *); /* Comparison function */
-typedef icmStatus (*icmDestFun)(void *, void *); /* Destroy function */
-typedef icmStatus (*icmProcFun)(void *n, void *r, void *c); /* Processing func */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* Build a new hash table */
-icmHashPo icmNewHash(long size,icmHashFun hash,icmCompFun cmp,icmDestFun dest);
-icmStatus icmDelHash(icmHashPo hp);
-icmStatus icmProcessTable(icmProcFun pr,icmHashPo tbl,void *c);
-
-icmStatus icmInstall(void *name, void *r,icmHashPo htbl); /* install a new entry */
-void *icmSearch(void *name,icmHashPo htbl); /* search for an entry */
-icmStatus icmUninstall(void *name, icmHashPo htbl); /* remove an entry from the hash table */
-
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
+// PORT
+//#include "icmHash.h"   /* Hash table interface */
 
 /* Data structure pool management */
 typedef struct _poolbase_ *icmPoolBase;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 icmPoolBase icmInitPool(size_t elsize, int initial);
 icmTruth icmEmptyPool(icmPoolBase base);
@@ -262,16 +252,9 @@ void* icmAllocPool(icmPoolBase base); /* allocate an element from the pool */
 void icmFreePool(icmPoolBase base, void *el); /* free an element back to the pool */
 void icmVerifyPool(icmPoolBase base);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
-
 /*
  * mutex and thread management wrappers 
  */
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 void icmCreateMutex(pthread_mutex_t *mutex);
 void icmDestroyMutex(pthread_mutex_t *mutex);
@@ -281,19 +264,11 @@ void icmWaitCond(pthread_cond_t *cond,pthread_mutex_t *mutex);
 void icmSignalCond(pthread_cond_t *cond);
 void icmBroadcastCond(pthread_cond_t *cond);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
-
 /*
  * Reader/Writer locks
  */
 
 typedef struct _rw_lock_ *icmLockPo;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 icmLockPo icmNewLock(void);
 void icmReleaseLock(icmLockPo lock);
@@ -302,15 +277,7 @@ void icmReadUnLock(icmLockPo lock);
 void icmWriteLock(icmLockPo lock);
 void icmWriteUnLock(icmLockPo lock);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
-
 /* Miscelleneous string functions */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 char *icmDataData(icmDataPo str);
 long icmDataLength(icmDataPo str);
@@ -324,32 +291,25 @@ char *icmLowerStr(char *buffer,const char *orig,long count);
 
 char *icmStrMsg(char *buffer,long len,char *fmt,...);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
-
 /*
  * Command line options processing 
  */
 
 typedef icmStatus (*icmOptionCallback)(char opt,char *optarg,void *client);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int icmGetOptions(int argc,char **argv,char *fmt,icmOptionCallback opt,
 		  void *client);
 
-#ifdef __cplusplus
-}; /* end of extern "C" */
-#endif
 
 /*
  * Some default values 
  */
 #ifndef ICM_COMMS_PORT
 #define ICM_COMMS_PORT 4549
+#endif
+
+#ifdef __cplusplus
+}; /* end of extern "C" */
 #endif
 
 #endif

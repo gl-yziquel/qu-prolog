@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: buffers.cc,v 1.4 2002/07/26 00:39:57 qp Exp $
+// $Id: buffers.cc,v 1.5 2005/11/26 23:34:29 qp Exp $
 
 #include	<stdio.h>
 #include	<string.h>
@@ -98,8 +98,8 @@ Thread::psi_dealloc_buffer(Object *& object1)
 {
   Object* buffer = heap.dereference(object1);
 
-  DEBUG_ASSERT(buffer->isNumber());
-  DEBUG_ASSERT(buffer->getNumber() >= 0);
+  assert(buffer->isNumber());
+  assert(buffer->getNumber() >= 0);
 
   word32 bindex = (word32)(buffer->getNumber());
 
@@ -119,19 +119,19 @@ Thread::psi_copy_term_from_buffer(Object *& object1, Object *& object2)
 {
   Object* buffer = heap.dereference(object1);
 
-  DEBUG_ASSERT(buffer->isNumber());
-  DEBUG_ASSERT(buffer->getNumber() >= 0);
+  assert(buffer->isNumber());
+  assert(buffer->getNumber() >= 0);
 
   word32 bindex = (word32)(buffer->getNumber()); 
 
   if (buffers.getCount(bindex) == 0)
     {
-      DEBUG_ASSERT(buffers.getTailAddress(bindex) == NULL);
+      assert(buffers.getTailAddress(bindex) == NULL);
       object2 = AtomTable::nil;
     }
   else
     {
-      DEBUG_ASSERT(buffers.getTailAddress(bindex) != NULL);
+      assert(buffers.getTailAddress(bindex) != NULL);
       *(buffers.getTailAddress(bindex)) = AtomTable::nil;
       object2 = scratchpad.copyTerm(buffers.getTerm(bindex), heap);
     }
@@ -151,10 +151,10 @@ Thread::psi_copy_to_buffer_tail(Object *& object1, Object *& object2,
   Object* share = heap.dereference(object3);
   Object* copy;
 
-  DEBUG_ASSERT(buffer->isNumber());
-  DEBUG_ASSERT(buffer->getNumber() >= 0);
+  assert(buffer->isNumber());
+  assert(buffer->getNumber() >= 0);
 
-  DEBUG_ASSERT(share->isAtom());
+  assert(share->isAtom());
 
   word32 bindex = (word32)(buffer->getNumber()); 
 
@@ -175,7 +175,7 @@ Thread::psi_copy_to_buffer_tail(Object *& object1, Object *& object2,
   cons->setHead(copy);
   if (buffers.getCount(bindex) == 0)
     {
-      DEBUG_ASSERT(reinterpret_cast<heapobject*>(cons) 
+      assert(reinterpret_cast<heapobject*>(cons) 
 		   == buffers.getStart(bindex));
     }
   else
@@ -199,11 +199,11 @@ Thread::psi_copy_obvar_to_buffer_tail(Object *& object1, Object *& object2)
   Object* obvar = object2;
 
   Object* buffer = heap.dereference(object1);
-  DEBUG_ASSERT(buffer->isNumber());
-  DEBUG_ASSERT(buffer->getNumber() >= 0);
+  assert(buffer->isNumber());
+  assert(buffer->getNumber() >= 0);
   word32 bindex = (word32)(buffer->getNumber()); 
 
-  DEBUG_ASSERT(obvar != NULL);
+  assert(obvar != NULL);
   
   // Dereference down to the object variable.
   while (obvar->isVariable()) 
@@ -213,20 +213,20 @@ Thread::psi_copy_obvar_to_buffer_tail(Object *& object1, Object *& object2)
       // move to what it's referring to
       //
       Object* n = OBJECT_CAST(Reference*, obvar)->getReference();
-      DEBUG_ASSERT(n != NULL);
+      assert(n != NULL);
       if ( n == obvar ) 
           {
 	    break; // An unbound (ob)variable
 	  }
       obvar = n;
     }
-  DEBUG_ASSERT(obvar->isObjectVariable());
+  assert(obvar->isObjectVariable());
   
   Cons* cons = scratchpad.newCons();
   cons->setHead(obvar);
   if (buffers.getCount(bindex) == 0)
     {
-      DEBUG_ASSERT(reinterpret_cast<heapobject*>(cons) 
+      assert(reinterpret_cast<heapobject*>(cons) 
 		   == buffers.getStart(bindex));
     }
   else
@@ -253,8 +253,8 @@ Thread::psi_make_sub_from_buffer(Object *& object1, Object *& object2,
 {
   Object* buffer = heap.dereference(object1);
 
-  DEBUG_ASSERT(buffer->isNumber());
-  DEBUG_ASSERT(buffer->getNumber() >= 0);
+  assert(buffer->isNumber());
+  assert(buffer->getNumber() >= 0);
 
   word32 bindex = (word32)(buffer->getNumber()); 
 
@@ -266,10 +266,10 @@ Thread::psi_make_sub_from_buffer(Object *& object1, Object *& object2,
     }
   else
     {
-      DEBUG_ASSERT(count % 2 == 0);
+      assert(count % 2 == 0);
       count = count/2;
 
-      DEBUG_ASSERT(reinterpret_cast<Object*>(buffers.getStart(bindex))->isCons());
+      assert(reinterpret_cast<Object*>(buffers.getStart(bindex))->isCons());
       Cons* cons = reinterpret_cast<Cons*>(buffers.getStart(bindex));
 
       SubstitutionBlock* subblock = heap.newSubstitutionBlock(count);
@@ -278,9 +278,9 @@ Thread::psi_make_sub_from_buffer(Object *& object1, Object *& object2,
 	  //
 	  // Assume the domain element is already on the heap
 	  //
-	  DEBUG_ASSERT(cons->getHead()->isObjectVariable());
+	  assert(cons->getHead()->isObjectVariable());
 	  subblock->setDomain(i, cons->getHead());
-	  DEBUG_ASSERT(cons->getTail()->isCons());
+	  assert(cons->getTail()->isCons());
 	  cons = OBJECT_CAST(Cons*, cons->getTail());
 	  subblock->setRange(i, scratchpad.copyShareTerm(cons->getHead(), 
 							 heap,
@@ -290,7 +290,7 @@ Thread::psi_make_sub_from_buffer(Object *& object1, Object *& object2,
 	    {
 	      break;
 	    }
-	  DEBUG_ASSERT(cons->getTail()->isCons());
+	  assert(cons->getTail()->isCons());
 	  cons = OBJECT_CAST(Cons*, cons->getTail());
 	}
       Cons* sub = heap.newSubstitutionBlockList(subblock, AtomTable::nil);
@@ -309,12 +309,12 @@ Thread::ReturnValue
 Thread::psi_buffer_set_domains_apart(Object *& object1, Object *& object2)
 {
   Object* buffer = heap.dereference(object1);
-  DEBUG_ASSERT(object2->variableDereference()->isObjectVariable());
+  assert(object2->variableDereference()->isObjectVariable());
   ObjectVariable* obvar = 
     OBJECT_CAST(ObjectVariable*, object2->variableDereference());
 
-  DEBUG_ASSERT(buffer->isNumber());
-  DEBUG_ASSERT(buffer->getNumber() >= 0);
+  assert(buffer->isNumber());
+  assert(buffer->getNumber() >= 0);
 
   word32 bindex = (word32)(buffer->getNumber()); 
 
@@ -326,10 +326,10 @@ Thread::psi_buffer_set_domains_apart(Object *& object1, Object *& object2)
     }
   else
     {
-      DEBUG_ASSERT(count % 2 == 0);
+      assert(count % 2 == 0);
       count = count/2;
 
-      DEBUG_ASSERT(reinterpret_cast<Object*>(buffers.getStart(bindex))->isCons());
+      assert(reinterpret_cast<Object*>(buffers.getStart(bindex))->isCons());
       Cons* cons = reinterpret_cast<Cons*>(buffers.getStart(bindex));
 
       for (u_int i = 1; ; i++)
@@ -337,7 +337,7 @@ Thread::psi_buffer_set_domains_apart(Object *& object1, Object *& object2)
 	  //
 	  // Assume the domain element is already on the heap
 	  //
-	  DEBUG_ASSERT(cons->getHead()->isObjectVariable());
+	  assert(cons->getHead()->isObjectVariable());
 	  ObjectVariable* dom = OBJECT_CAST(ObjectVariable*, cons->getHead()->variableDereference());
 	  if (obvar == dom)
 	    {
@@ -352,10 +352,10 @@ Thread::psi_buffer_set_domains_apart(Object *& object1, Object *& object2)
 	    {
 	      break;
 	    }
-	  DEBUG_ASSERT(cons->getTail()->isCons());
+	  assert(cons->getTail()->isCons());
 	  cons = OBJECT_CAST(Cons*, cons->getTail());
 	  
-	  DEBUG_ASSERT(cons->getTail()->isCons());
+	  assert(cons->getTail()->isCons());
 	  cons = OBJECT_CAST(Cons*, cons->getTail());
 	}
     }

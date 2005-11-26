@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: record.cc,v 1.6 2002/11/13 04:04:16 qp Exp $
+// $Id: record.cc,v 1.8 2005/11/26 23:34:30 qp Exp $
 
 #include <sstream>
 
@@ -77,7 +77,7 @@ Thread::psi_record_get_first_ref(Object *& object1, Object *& object2)
   
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
   
   loc = OBJECT_CAST(Atom*, val1)->getFirstRef();
   
@@ -109,7 +109,7 @@ Thread::psi_record_get_next_ref(Object *& object1, Object *& object2)
   StackLoc	loc;
   
   Object* val1 = heap.dereference(object1);
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   loc = val1->getNumber();
   
@@ -150,7 +150,7 @@ Thread::psi_record_get_last_ref(Object *& object1, Object *& object2)
 
   Object* val1 = heap.dereference(object1);
 
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
   
   loc = OBJECT_CAST(Atom*, val1)->getLastRef();
   
@@ -183,7 +183,7 @@ Thread::psi_record_get_term(Object *& object1, Object *& object2)
 
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   loc = val1->getNumber();
   
@@ -224,7 +224,7 @@ Thread::psi_record_record_first(Object *& object1,
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
 
   QPostringstream stream;
 
@@ -234,8 +234,9 @@ Thread::psi_record_record_first(Object *& object1,
       const StackLoc first = OBJECT_CAST(Atom*, val1)->getFirstRef();
 
       const char* buff = stream.str().data();
-      const StackLoc loc = record_db->add(EMPTY_LOC, first,
-					 buff, stream.str().length());
+      const StackLoc loc = 
+          record_db->add(EMPTY_LOC, first,
+	                 buff, static_cast<word32>(stream.str().length()));
       
       OBJECT_CAST(Atom*, val1) ->setFirstRef(loc);
       if (first == EMPTY_LOC) 
@@ -270,7 +271,7 @@ Thread::psi_record_record_last(Object *& object1, Object *& object2, Object *& o
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   
-  DEBUG_ASSERT(val1->isAtom());
+  assert(val1->isAtom());
   
   QPostringstream stream;
 
@@ -279,8 +280,9 @@ Thread::psi_record_record_last(Object *& object1, Object *& object2, Object *& o
     {
       const StackLoc last = OBJECT_CAST(Atom*, val1)->getLastRef();
       const char* buff = stream.str().data();
-      const StackLoc loc = record_db->add(last, EMPTY_LOC,
-				   buff, stream.str().length());
+      const StackLoc loc = 
+               record_db->add(last, EMPTY_LOC,
+		              buff, static_cast<word32>(stream.str().length()));
       
       OBJECT_CAST(Atom*, val1)->setLastRef(loc);
       if (last == EMPTY_LOC) 
@@ -314,7 +316,7 @@ Thread::psi_erase(Object *& object1)
 {
   Object* val1 = heap.dereference(object1);
   
-  DEBUG_ASSERT(val1->isNumber());
+  assert(val1->isNumber());
   
   const StackLoc loc = val1->getNumber();
   

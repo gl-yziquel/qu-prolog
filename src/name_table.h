@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: name_table.h,v 1.3 2002/11/03 08:37:29 qp Exp $
+// $Id: name_table.h,v 1.5 2005/11/26 23:34:30 qp Exp $
 
 #ifndef	NAME_TABLE_H
 #define	NAME_TABLE_H
@@ -156,7 +156,7 @@ private:
   { return("name table"); }
   
 public:
-  NameTable(word32 TableSize)
+  explicit NameTable(word32 TableSize)
     : HashTable <NameEntry, NameEntry> (TableSize)
     {}
   
@@ -188,7 +188,7 @@ public:
 
   void setNameOldVar(Atom* index, Object* var, Thread& th);
   
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(AtomTable& atoms)
     {
       word32 i;
@@ -306,7 +306,7 @@ private:
   { return("IP table"); }
   
 public:
-  IPTable(word32 TableSize)
+  explicit IPTable(word32 TableSize)
     : HashTable <IPEntry, IPEntry> (TableSize)
     {}
   
@@ -328,7 +328,7 @@ public:
 
   inline  Object* getImplicitPara(Object* index)
   {
-    DEBUG_ASSERT(index->isAtom());
+    assert(index->isAtom());
     IPEntry entry;
     
     entry.implicitPara(OBJECT_CAST(Atom*, index));
@@ -340,7 +340,7 @@ public:
   //
   inline  void setImplicitPara(Object* index, Object* ip, Thread& th)
   {
-    DEBUG_ASSERT(index->isAtom());
+    assert(index->isAtom());
     IPEntry	entry;
     
     entry.implicitPara(OBJECT_CAST(Atom*, index), ip);
@@ -348,12 +348,12 @@ public:
   }
 
   void   save(ostream& strm) const
-    { DEBUG_ASSERT(false); }
+    { assert(false); }
 
   void   load(istream& strm)
-    { DEBUG_ASSERT(false); }
+    { assert(false); }
 
-#ifdef DEBUG
+#ifdef QP_DEBUG
   void printMe(AtomTable& atoms)
     {
       word32 i;

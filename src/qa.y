@@ -35,6 +35,7 @@ LabelTable *labels = NULL;
 %}
 %union {
   signed long int number_value;
+  double double_value;
 
   string *label_name;
   string *atom_name;
@@ -43,6 +44,7 @@ LabelTable *labels = NULL;
 
   ASMInt<Code::InstructionSizedType> *instruction;
   ASMInt<Code::ConstantSizedType> *constant;
+  ASMInt<double> *double_num;
   ASMInt<Code::RegisterSizedType> *reg;
   ASMInt<Code::NumberSizedType> *number;
   ASMInt<Code::AddressSizedType> *address;
@@ -63,6 +65,7 @@ LabelTable *labels = NULL;
 %token <instruction> put_y_value
 %token <instruction> put_constant
 %token <instruction> put_integer
+%token <instruction> put_double
 %token <instruction> put_list
 %token <instruction> put_structure
 %token <instruction> put_x_object_variable
@@ -81,6 +84,7 @@ LabelTable *labels = NULL;
 %token <instruction> get_y_value
 %token <instruction> get_constant
 %token <instruction> get_integer
+%token <instruction> get_double
 %token <instruction> get_list
 %token <instruction> get_structure
 %token <instruction> get_structure_frame
@@ -96,6 +100,7 @@ LabelTable *labels = NULL;
 %token <instruction> unify_void
 %token <instruction> unify_constant 
 %token <instruction> unify_integer 
+%token <instruction> unify_double 
 %token <instruction> unify_x_ref 
 %token <instruction> unify_y_ref 
 
@@ -109,6 +114,7 @@ LabelTable *labels = NULL;
 %token <instruction> set_y_object_value
 %token <instruction> set_constant
 %token <instruction> set_integer
+%token <instruction> set_double
 %token <instruction> set_void
 %token <instruction> set_object_void
 
@@ -172,11 +178,13 @@ LabelTable *labels = NULL;
 %type <constant> atom
 %type <address> address
 %type <constant> constant
+%type <double_num> double_num
 %type <number> number
 %type <reg> reg
 %type <table_size> table_size
 
 %token <number_value> NUMBER_TOKEN
+%token <double_value> DOUBLE_TOKEN
 %token <atom_name> ATOM_TOKEN
 %token <label_name> LABEL_TOKEN
 %token END_TOKEN
@@ -306,6 +314,12 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		  $5->Put(*code_block); delete $5;
 		}
+	| put_double '(' double_num ','  reg ')'
+ 		{
+		  $1->Put(*code_block); delete $1;
+		  $3->Put(*code_block); delete $3;
+		  $5->Put(*code_block); delete $5;
+		}
 
 	| put_list '(' reg ')'
 		{
@@ -429,6 +443,13 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $5->Put(*code_block); delete $5;
 		}
 
+	| get_double '(' double_num ',' reg ')'
+		{
+		  $1->Put(*code_block); delete $1;
+		  $3->Put(*code_block); delete $3;
+		  $5->Put(*code_block); delete $5;
+		}
+
 	| get_list '(' reg ')'
 		{
 		  $1->Put(*code_block); delete $1;
@@ -514,6 +535,12 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		}
 
+	| unify_double '(' double_num ')'
+		{
+		  $1->Put(*code_block); delete $1;
+		  $3->Put(*code_block); delete $3;
+		}
+
 	| unify_void '(' number ')'
 		{
 		  $1->Put(*code_block); delete $1;
@@ -587,6 +614,12 @@ instr: put_x_variable '(' reg ',' reg ')'
 		}
 
 	| set_integer '(' constant ')'
+		{
+		  $1->Put(*code_block); delete $1;
+		  $3->Put(*code_block); delete $3;
+		}
+
+	| set_double '(' double_num ')'
 		{
 		  $1->Put(*code_block); delete $1;
 		  $3->Put(*code_block); delete $3;
@@ -1075,6 +1108,22 @@ constant: ATOM_TOKEN
 		}
 	;
 
+double_num: DOUBLE_TOKEN
+		{
+		  $$ = new ASMInt<double>((double)($1), ConstEntry::INTEGER_TYPE);
+
+		}
+	| '+' DOUBLE_TOKEN
+		{
+		  $$ = new ASMInt<double>((double)($2), ConstEntry::INTEGER_TYPE);
+
+		}
+	| '-' DOUBLE_TOKEN
+		{
+		  $$ = new ASMInt<double>((double)(-$2), ConstEntry::INTEGER_TYPE);
+
+		}
+	;
 number: NUMBER_TOKEN
 		{
 		  $$ = new ASMInt<Code::NumberSizedType>($1);
