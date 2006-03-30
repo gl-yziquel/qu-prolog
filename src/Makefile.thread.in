@@ -6,6 +6,7 @@ export SOURCES.thread	= \
 	environment.cc \
 	esc_init.cc \
 	execute.cc \
+	foreign_interface.cc \
 	generate_var_names.cc \
 	instructions.cc \
 	interrupt.cc \

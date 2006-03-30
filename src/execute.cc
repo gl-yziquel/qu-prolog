@@ -53,9 +53,9 @@
 // 
 // ##Copyright##
 //
-// email: svrc@cs.uq.oz.au
-//
-// $Id: execute.cc,v 1.17 2005/11/26 23:34:29 qp Exp $
+// $Id: execute.cc,v 1.22 2006/03/30 22:50:30 qp Exp $
+
+#include "debug.h"
 
 #include <sys/types.h>
 #ifdef WIN32
@@ -88,6 +88,7 @@ extern PredTab *predicates;
 extern QemOptions *qem_options;
 extern Scheduler *scheduler;
 extern Signals *signals;
+extern int errorno;
 
 // Helps to label the opcodes for proceesing via MkOpcodes
 
@@ -932,7 +933,7 @@ Thread::Execute(void)
 		  {
 		    BACKTRACK;
 		  }
-		else if (var->isOccursChecked()) 
+		else if (var->isOccursChecked() && status.testOccursCheck()) 
 		  {
 		    Structure* newstruct = heap.newStructure(n);
 		    Variable* funct = heap.newVariable();
@@ -1169,7 +1170,8 @@ Thread::Execute(void)
 		    BACKTRACK;
 		  }
 		else if (xval->isVariable() && 
-			 !OBJECT_CAST(Variable*, xval)->isOccursChecked())
+			 !OBJECT_CAST(Variable*, xval)->isOccursChecked() && 
+                         status.testOccursCheck())
 		  {
 		    Variable* var = OBJECT_CAST(Variable*, xval);
 		    trailTag(var);
@@ -1211,7 +1213,8 @@ Thread::Execute(void)
 		    BACKTRACK;
 		  }
 		else if (xval->isVariable() &&
-			 !OBJECT_CAST(Variable*, xval)->isOccursChecked())
+			 !OBJECT_CAST(Variable*, xval)->isOccursChecked() &&
+                         status.testOccursCheck())
 		  {
 		    Variable* var = OBJECT_CAST(Variable*, xval);
 		    trailTag(var);
@@ -1305,7 +1308,8 @@ Thread::Execute(void)
 	    //
 	    Object* xval = X[i]->variableDereference();
 	    if(xval->isVariable()&&
-	       !OBJECT_CAST(Variable*, xval)->isOccursChecked())
+	       !OBJECT_CAST(Variable*, xval)->isOccursChecked() &&
+               status.testOccursCheck())
 	      {
 		Variable* var = OBJECT_CAST(Variable*, xval);
 		trailTag(var);
@@ -1315,7 +1319,8 @@ Thread::Execute(void)
 	      { // probably don't need for future Occurs check idea PJR
 		Substitution* sval = OBJECT_CAST(Substitution*, xval);
 		if (sval->getTerm()->isVariable()&&
-		    !OBJECT_CAST(Variable*, sval->getTerm())->isOccursChecked())
+		    !OBJECT_CAST(Variable*, sval->getTerm())->isOccursChecked()
+                    && status.testOccursCheck())
 		  {
 		    Variable* var = OBJECT_CAST(Variable*, sval->getTerm());
 		    trailTag(var);
@@ -1336,7 +1341,8 @@ Thread::Execute(void)
 	    //
 	    Object* xval = envStack.yReg(currentEnvironment, i)->variableDereference();
 	    if(xval->isVariable() &&
-	       !OBJECT_CAST(Variable*, xval)->isOccursChecked())
+	       !OBJECT_CAST(Variable*, xval)->isOccursChecked() &&
+               status.testOccursCheck())
 	      {
 		Variable* var = OBJECT_CAST(Variable*, xval);
 		trailTag(var);
@@ -1346,7 +1352,8 @@ Thread::Execute(void)
 	      { // probably don't need for future Occurs check idea PJR
 		Substitution* sval = OBJECT_CAST(Substitution*, xval);
 		if (sval->getTerm()->isVariable() &&
-		    !OBJECT_CAST(Variable*, sval->getTerm())->isOccursChecked())
+		    !OBJECT_CAST(Variable*, sval->getTerm())->isOccursChecked()
+                    && status.testOccursCheck())
 		  {
 		    Variable* var = OBJECT_CAST(Variable*, sval->getTerm());
 		    trailTag(var);
@@ -1614,7 +1621,7 @@ Thread::Execute(void)
 					       SIZE_OF_CALL_PREDICATE_INSTR,
 					       CALL_ESCAPE, (CodeLoc)start);
 
-		    HANDLE_ESCAPE(PredAddr.getEscape()(*this));
+		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
 		  }
                 else
 		  {
@@ -1748,7 +1755,7 @@ Thread::Execute(void)
 	      }
 	    else
 	      { 
-		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(*this));
+		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(getFInter()));
 	      }
 	  }
 	VMBREAK;
@@ -1833,7 +1840,7 @@ Thread::Execute(void)
 					       SIZE_OF_EXECUTE_PREDICATE_INSTR,
 					       EXECUTE_ESCAPE, (CodeLoc)start);
 
-		    HANDLE_ESCAPE(PredAddr.getEscape()(*this));
+		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
 		  }
 		else
 		  {
@@ -1948,7 +1955,7 @@ Thread::Execute(void)
 	      {
 		PC = continuationInstr; // Simulate PROCEED.
 
-		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(*this));
+		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(getFInter()));
 	      }
 	  }
 	VMBREAK;
@@ -1990,6 +1997,8 @@ Thread::Execute(void)
 	  //
 	  // Halt the execution and exit with 0.
 	  //
+	  assert(X[0]->variableDereference()->isNumber());
+          errorno = X[0]->variableDereference()->getNumber();
 	  return RV_HALT;
 	  VMBREAK;
 	  

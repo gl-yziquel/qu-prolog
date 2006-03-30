@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: name.cc,v 1.4 2005/11/26 23:34:30 qp Exp $
+// $Id: name.cc,v 1.8 2006/02/20 03:18:51 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -158,6 +158,118 @@ Thread::psi_code_char(Object *& object1, Object *& object2)
   return(RV_SUCCESS);
 }
 
+//
+// psi_number_codes(number, list)
+// Convert number to ASCII representation
+// mode(in,out)
+//
+Thread::ReturnValue
+Thread::psi_number_codes(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  assert(val1->isNumber());
 
+  ostringstream strm;
+  if (val1->isDouble())
+    strm << val1->getDouble();
+  else
+    strm << val1->getNumber();
 
+  const char* code_list = strm.str().data();
 
+  if (*code_list == '\0')
+    {
+      object2 = AtomTable::nil;
+      return(RV_SUCCESS);
+    }
+
+  Cons* list = TheHeap().newCons();
+  object2 = list;
+      
+  while (true)
+    {
+      list->setHead(heap.newNumber((int)(*code_list)));
+      code_list++;
+      if (*code_list == '\0')
+        {
+          list->setTail(AtomTable::nil);
+          break;
+        }
+      Cons* list_tmp = heap.newCons();
+      list->setTail(list_tmp);
+      list = list_tmp;
+    }
+   return(RV_SUCCESS);
+}
+
+//
+// psi_codes_number(number, list)
+// Convert a list (an ASCII representation of a number) iinto that number
+// mode(in,out)
+//
+Thread::ReturnValue
+Thread::psi_codes_number(Object *& object1, Object *& object2)
+{
+  Object* arg = heap.dereference(object1);
+
+  ostringstream str;
+  while (arg->isCons())
+    {
+      Cons* list = OBJECT_CAST(Cons*, arg);
+      if (!(list->getHead()->variableDereference()->isInteger()))
+          return(RV_FAIL);
+      str << (char)(list->getHead()->variableDereference()->getNumber());
+      arg = list->getTail()->variableDereference();
+    }
+  if (!arg->isNil())  return(RV_FAIL);
+
+  bool has_dot = false;
+  bool has_e = false;
+  bool has_sign = false;
+  bool has_digit = false;
+  const char* c = str.str().data();
+  const char* numstr = c;
+
+  while (*c != '\0')
+    {
+      if ((*c == '+') || (*c == '-'))
+        {
+          if (has_sign)
+            return(RV_FAIL);
+          else
+            has_sign = true;
+        }
+      else if (*c == 'e')
+        {
+          if (has_e)
+            return(RV_FAIL);
+          else
+            {
+              has_e = true;
+              has_sign = false;
+            }
+        }
+      else if (*c == '.')
+        {
+          if (has_dot)
+            return(RV_FAIL);
+          else
+            has_dot = true;
+        }
+      else if ((*c < '0') || (*c > '9'))
+        {
+          return(RV_FAIL);
+        }
+      else
+        {
+          has_digit = true;
+        }
+      c++;
+    } 
+    if (!has_digit) return(RV_FAIL);
+    if (has_dot || has_e)
+      object2 = TheHeap().newDouble(atof(numstr));
+    else
+      object2 = TheHeap().newNumber(atoi(numstr));
+    return(RV_SUCCESS);
+}

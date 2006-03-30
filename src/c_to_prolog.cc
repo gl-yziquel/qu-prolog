@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: c_to_prolog.cc,v 1.8 2005/11/26 23:34:29 qp Exp $
+// $Id: c_to_prolog.cc,v 1.9 2006/01/31 23:17:49 qp Exp $
 
 #include <stdarg.h>
 

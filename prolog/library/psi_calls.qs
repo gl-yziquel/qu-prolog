@@ -1263,22 +1263,11 @@ end('elvin_subscriptions'/1):
 
 
 
-'elvin_makeID'/1:
-
-
-$1:
-	pseudo_instr1(109, 1)
-	get_x_value(0, 1)
-	proceed
-end('elvin_makeID'/1):
-
-
-
 '$elvin_add_notification'/1:
 
 
 $1:
-	pseudo_instr1(110, 0)
+	pseudo_instr1(109, 0)
 	proceed
 end('$elvin_add_notification'/1):
 
@@ -1288,7 +1277,7 @@ end('$elvin_add_notification'/1):
 
 
 $1:
-	pseudo_instr1(111, 0)
+	pseudo_instr1(110, 0)
 	proceed
 end('chdir'/1):
 
@@ -1298,7 +1287,7 @@ end('chdir'/1):
 
 
 $1:
-	pseudo_instr1(112, 1)
+	pseudo_instr1(111, 1)
 	get_x_value(0, 1)
 	proceed
 end('getcwd'/1):
@@ -1309,7 +1298,7 @@ end('getcwd'/1):
 
 
 $1:
-	pseudo_instr1(113, 0)
+	pseudo_instr1(112, 0)
 	proceed
 end('float'/1):
 
@@ -1319,7 +1308,7 @@ end('float'/1):
 
 
 $1:
-	pseudo_instr1(114, 0)
+	pseudo_instr1(113, 0)
 	proceed
 end('srandom'/1):
 
@@ -1329,7 +1318,7 @@ end('srandom'/1):
 
 
 $1:
-	pseudo_instr1(115, 1)
+	pseudo_instr1(114, 1)
 	get_x_value(0, 1)
 	proceed
 end('random'/1):
@@ -1340,7 +1329,7 @@ end('random'/1):
 
 
 $1:
-	pseudo_instr1(116, 1)
+	pseudo_instr1(115, 1)
 	get_x_value(0, 1)
 	proceed
 end('irandom'/1):
@@ -2590,6 +2579,38 @@ end('$hash_double'/2):
 
 
 
+'hash_table_remove'/2:
+
+
+$1:
+	pseudo_instr2(117, 0, 1)
+	proceed
+end('hash_table_remove'/2):
+
+
+
+'$number_codes'/2:
+
+
+$1:
+	pseudo_instr2(118, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$number_codes'/2):
+
+
+
+'$codes_number'/2:
+
+
+$1:
+	pseudo_instr2(119, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$codes_number'/2):
+
+
+
 'functor'/3:
 
 
@@ -3400,6 +3421,38 @@ $1:
 	get_x_value(2, 3)
 	proceed
 end('$predicate_stamp'/3):
+
+
+
+'hash_table_insert'/3:
+
+
+$1:
+	pseudo_instr3(73, 0, 1, 2)
+	proceed
+end('hash_table_insert'/3):
+
+
+
+'hash_table_lookup'/3:
+
+
+$1:
+	pseudo_instr3(74, 0, 1, 3)
+	get_x_value(2, 3)
+	proceed
+end('hash_table_lookup'/3):
+
+
+
+'$hash_table_search'/3:
+
+
+$1:
+	pseudo_instr3(75, 0, 1, 3)
+	get_x_value(2, 3)
+	proceed
+end('$hash_table_search'/3):
 
 
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: choice.h,v 1.9 2005/11/26 23:34:29 qp Exp $
+// $Id: choice.h,v 1.10 2006/01/31 23:17:49 qp Exp $
 
 #ifndef	CHOICE_H
 #define	CHOICE_H

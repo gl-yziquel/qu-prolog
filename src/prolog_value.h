@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: prolog_value.h,v 1.2 2005/11/26 23:34:30 qp Exp $
+// $Id: prolog_value.h,v 1.4 2006/03/30 22:50:31 qp Exp $
 
 #ifndef	PROLOG_VALUE_H
 #define	PROLOG_VALUE_H
@@ -65,51 +65,51 @@
 
 class PrologValue
 {
-private:
+ private:
   Object *sub;		// List of substitutions
   Object *term;		// The term
 
-public:
+ public:
   PrologValue(void) : sub(AtomTable::nil), term(NULL) { }
-  PrologValue(Object *t)
-    {
-      if (t->isSubstitution())
-	{
-	  Substitution *s = OBJECT_CAST(Substitution*, t);
-	  sub = s->getSubstitutionBlockList();
-	  term = s->getTerm();
-          assert(sub->isLegalSub());
-	}
-      else
-	{
-	  sub = AtomTable::nil;
-	  term = t;
-	}
-    }
-  PrologValue(Object *s, Object *t)
-    : sub(s), term(t)
-    {
-      assert(s->isLegalSub());
-    }
+    PrologValue(Object *t)
+      {
+	if (t->isSubstitution())
+	  {
+	    Substitution *s = OBJECT_CAST(Substitution*, t);
+	    sub = s->getSubstitutionBlockList();
+	    term = s->getTerm();
+	    assert(sub->isLegalSub());
+	  }
+	else
+	  {
+	    sub = AtomTable::nil;
+	    term = t;
+	  }
+      }
+    PrologValue(Object *s, Object *t)
+      : sub(s), term(t)
+      {
+	assert(s->isLegalSub());
+      }
   
-  Object *getSubstitutionBlockList(void) { return sub; }
-  Object *getTerm(void) { return term; }
-  void setTerm(Object *t)
-    {
-      term = t;
-    }
+      Object *getSubstitutionBlockList(void) { return sub; }
+      Object *getTerm(void) { return term; }
+      void setTerm(Object *t)
+      {
+	term = t;
+      }
 
-  Object **getSubstitutionBlockListAddress(void) 
-    { 
-      return &sub;
-    }
+      Object **getSubstitutionBlockListAddress(void) 
+	{ 
+	  return &sub;
+	}
 
-  void setSubstitutionBlockList(Object *list)
-    {
-      assert(list->isLegalSub());
+      void setSubstitutionBlockList(Object *list)
+      {
+	assert(list->isLegalSub());
 
-      sub = list;
-    }
+	sub = list;
+      }
 
   
 };

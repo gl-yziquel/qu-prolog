@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: timeout.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: timeout.h,v 1.2 2006/02/14 02:40:09 qp Exp $
 
 #ifndef	TIMEOUT_H
 #define	TIMEOUT_H
@@ -86,7 +86,7 @@ bool IsTimeout(Object*);
 // integer:n		n
 // atom::"block"	-1
 // 
-time_t DecodeTimeout(Object*);
+double DecodeTimeout(Object*);
 
 #endif	// TIMEOUT_H
 

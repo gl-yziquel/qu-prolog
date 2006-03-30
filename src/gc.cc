@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc.cc,v 1.14 2005/11/26 23:34:29 qp Exp $
+// $Id: gc.cc,v 1.15 2006/01/31 23:17:50 qp Exp $
 
 #include "global.h"
 #include "gc.h"

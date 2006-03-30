@@ -53,22 +53,22 @@
 // 
 // ##Copyright##
 //
-// $Id: debug.h,v 1.5 2005/11/26 23:34:29 qp Exp $
+// $Id: debug.h,v 1.7 2006/03/30 22:50:30 qp Exp $
 
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef QP_DEBUG
+#ifndef NDEBUG
 
 #include <iostream>
 //#include <pthread.h>
 #include <stdlib.h>
 
+#define QP_DEBUG
+
 // Every program in the suite has to define its own name.
 extern const char *Program;
 
-#else	// DEBUG
-#define NDEBUG 1
 #endif	// DEBUG
 #include <assert.h>
 

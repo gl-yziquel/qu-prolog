@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 7.0 Reference Manual - Built-in Predicates
+Qu-Prolog 7.1 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -5204,6 +5204,78 @@ The integer stored in the global state associated with <KBD>Atom</KBD> is decrem
 </KBD>
 </BLOCKQUOTE>
 
+<!-- Section 3.8.4 -->
+<H3>
+<A NAME="Section3.8.4">3.8.4 Hash Table</A>
+</H3>
+
+<P> The hash table is a table of terms (global to all threads), with two-level
+indexing: the first index being an atom and the second being an atomic. The
+hash table provides efficient (non-backtrackable) access/update of terms
+associated with index pairs.
+
+<P>Predicates:
+
+<P><KBD><a name="hash_table_insert"></a>hash_table_insert(Atom, Atomic, Term)</KBD>
+
+<BLOCKQUOTE>
+The term of the hash table associated with the index pair (<KBD>Atom</KBD>, <KBD>Atomic</KBD>) is set to <KBD>Term</KBD>.
+<BR><KBD>mode hash_table_insert(@atom, @atomic, @term)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- hash_table_insert(student, 1234567, info('Fred', 'Bloggs', 'BSc')).
+<BR>
+<BR>yes
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="hash_table_lookup"></a>hash_table_lookup(Atom, Atomic, Term)</KBD>
+
+<BLOCKQUOTE>
+The current value indexed by (<KBD>Atom</KBD>, <KBD>Atomic</KBD>) in the hash table is unified with <KBD>Term</KBD>. Fails if the term associated with the index pair has not been given a value.
+<BR><KBD>mode hash_table_lookup(@atom, @atomic, ?term)</KBD>
+
+<P>Examples (Continued from last):
+
+<KBD>
+<P>| ?- hash_table_lookup(student, 1234567, Term).
+<BR>
+<BR>Term =  info(Fred, Bloggs, BSc)
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="hash_table_remove"></a>hash_table_remove(Atom, Atomic)</KBD>
+
+<BLOCKQUOTE>
+The current value (if any) indexed by (<KBD>Atom</KBD>, <KBD>Atomic</KBD>) in the hash table is removed. 
+<BR><KBD>mode hash_table_remove(@atom, @atomic)</KBD>
+
+<P>Examples (Continued from last):
+
+<KBD>
+<P>| ?- hash_table_remove(student, 1234567).
+<BR>
+<BR>yes
+<BR>
+<BR>| ?- hash_table_lookup(student, 1234567, Term).
+<BR>
+<BR>no
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="hash_table_search"></a>hash_table_search(Fst, Snd, Term)</KBD>
+
+<BLOCKQUOTE>
+Return, on backtracking, each entry in the hash table that has an index pair
+that unifies with
+(<KBD>Fst</KBD>, <KBD>Snd</KBD>) and corresponding value that 
+unifies with <KBD>Term</KBD>. 
+There is no guarantee about the order in which answers are returned.
+<BR><KBD>mode hash_table_search(?atom, ?atomic, ?term)</KBD>
+
+</BLOCKQUOTE>
 
 <!-- Section 3.9 -->
 <H2>
@@ -5991,6 +6063,14 @@ It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
 <BR>{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;*a = (x * 3);
 <BR>}
+<BR>
+<BR>//
+<BR>// foreign(mkfoo, 'c++', mkfoo(- atom)).
+<BR>//
+<BR>void mkfoo(char** a)
+<BR>{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;*a = "foo";
+<BR>}
 </KBD>
 
 <P>The file is compiled with the appropriate compiler to obtain the object file.
@@ -6002,24 +6082,25 @@ It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
 <P>The interface is defined in <KBD>test.ql</KBD> with the following clauses.
 
 <KBD>
-<P>foreign_file('test.o', [twice, triple]).
+<P>foreign_file('test.o', [twice, triple, mkfoo]).
 <BR>
 <BR>foreign(twice, c, twice(+ integer, [- integer])).
 <BR>foreign(triple, 'c++', triple(+ float, - float)).
+<BR>foreign(mkfoo, 'c++', mkfoo(- atom)).
 </KBD>
 
 <P>When <KBD>test.ql</KBD> and the object file <KBD>test.o</KBD> is loaded, interface functions, such as those below, are generated for each function.  These interface functions perform the necessary type checking and conversion.
 
 
 <KBD>
-
 <BR>#include "QuProlog.h"
 <BR>
 <BR>extern "C" long twice(long);
-<BR>extern  void triple(long, long*);
-<BR>
+<BR>extern  void triple(double, double*);
+<BR>extern  void mkfoo(char **);
+
 <BR>extern "C" bool
-<BR>twice_interface(Thread&#38; th)
+<BR>twice_interface(ForeignInterface* fi)
 <BR>{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bool result = true;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long integer0;
@@ -6028,25 +6109,21 @@ It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* object1;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* outarg1;
 <BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = th.XRegs()[0]-&#62;variableDereference();
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isInteger())
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = fi->getXReg(0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0->isInteger())
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(false);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;integer0 = object0-&#62;getNumber();
-<BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object1 = th.XRegs()[1];
-<BR>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;integer0 = object0->getNumber();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object1 = fi->getXReg(1);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;integer1 = twice(integer0);
-<BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg1 = th.TheHeap().newNumber(integer1);
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = result &#38;&#38; th.unify(object1, outarg1);
-<BR>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg1 = fi->makeInteger(integer1);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = result && fi->unify(object1, outarg1);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(result);
 <BR>}
 <BR>
 <BR>extern "C" bool
-<BR>triple_interface(Thread&#38; th)
+<BR>triple_interface(ForeignInterface* fi)
 <BR>{
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bool result = true;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;double float0;
@@ -6055,31 +6132,40 @@ It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* object1;
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* outarg1;
 <BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = th.XRegs()[0]-&#62;variableDereference();
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isDouble())
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = fi->getXReg(0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0->isNumber())
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(false);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(false);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (!object0-&#62;isInteger())
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (object0->isInteger())
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float0 = object0-&#62;getNumber();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float0 = object0->getNumber();
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float0 = object0-&#62;getDouble();
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float0 = object0->getDouble();
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object1 = th.XRegs()[1];
-<BR>
-<BR>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object1 = fi->getXReg(1);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;triple(float0, &float1);
-<BR>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg1 = th.TheHeap().newNumber(float1);
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = result &#38;&#38; th.unify(object1, outarg1);
-<BR>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg1 = fi->makeDouble(float1);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = result && fi->unify(object1, outarg1);
 <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(result);
 <BR>}
 
+<BR>extern "C" bool
+<BR>mkfoo_interface(ForeignInterface* fi)
+<BR>{
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bool result = true;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char * atom0;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* object0;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object* outarg0;
+<BR>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;object0 = fi->getXReg(0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mkfoo(&atom0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outarg0 = fi->makeAtom(atom0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = result && fi->unify(object0, outarg0);
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(result);
+<BR>}
 </KBD>
 
 <P>Here is a sample Qu-Prolog session using these foreign functions.
@@ -6101,6 +6187,12 @@ It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
 <BR>| ?- triple(3.1, N).
 <BR>
 <BR>N = 9.3;
+<BR>
+<BR>no
+<BR>
+<BR>| ?- mkfoo(X).
+<BR>
+<BR>X = foo;
 <BR>
 <BR>no
 <BR>
@@ -6144,7 +6236,8 @@ The <KBD>ObjectFiles</KBD> contains the predicates specified in
 <KBD>
 <P>| ?- load_foreign(['test_interface.o', 'test.o'],
 <BR>[twice/2=twice_interface,
-<BR>triple/2=triple_interface]).
+<BR>triple/2=triple_interface,
+<BR>mkfoo/1 = mkfoo_interface]).
 </KBD>
 
 
@@ -6692,7 +6785,9 @@ Unify <KBD>Term1</KBD> and <KBD>Term2</KBD>.
 <P><KBD><a name="unify_with_occurs_check"></a>unify_with_occurs_check(Term1, Term2)</KBD>
  
 <BLOCKQUOTE>
-This is not really needed because Qu-Prolog's unification always carries out occurs checking. It is included for compatibility with the ISO standard.
+This is not really needed because Qu-Prolog's unification always carries out 
+occurs checking. It is included for compatibility with the ISO standard.
+
 </BLOCKQUOTE>
 
 <P><KBD><a name="structural_unify"></a>structural_unify(Term1, Term2)</KBD>
@@ -7276,7 +7371,19 @@ Fails if <KBD>ThreadID</KBD> is not a current thread.
 <A NAME="Section3.18">3.18 Exception Handling</A>
 </H2>
 
-<P>There are two kinds of exception handlers: local and global.  When an exception is raised (whether by the system or by user code), the current handler state is checked.  If a local handler for that exception is in scope, the innermost such handler is called; if the handler returns, execution continues after the <KBD><a href="#with_local_exception_handler">with_local_exception_handler/3</a></KBD> call. Otherwise, if a global handler for the exception has been defined, the most recent matching handler is called.  If the handler returns, execution continues after the goal that raised the exception (unless the severity of the exception forbids that).  If neither a local or global handler for the exception is defined, the default action is taken: this default action is to print a suitable message then succeed, fail or abort according to the severity of the exception.
+<P>There are two kinds of exception handlers: local and global.  
+When an exception is raised (whether by the system or by user code), 
+the current handler state is checked.  
+If a local handler for that exception is in scope, 
+the innermost such handler is called; 
+if the handler returns, execution continues after the 
+<KBD><a href="#with_local_exception_handler">with_local_exception_handler/3</a></KBD> call. 
+Otherwise, if a global handler for the exception has been defined, 
+the most recent matching handler is called.  
+If the handler returns, execution continues after the goal that raised 
+the exception (unless the severity of the exception forbids that).  
+If neither a local or global handler for the exception is defined, 
+the default action is taken: this default action is to throw an exception term.
 
 <P> Because of problems with signal handling in POSIX threads the only signal
 that is caught by Qu-Prolog is <KBD>SIGINT</KBD>. All other signals have
@@ -7286,6 +7393,11 @@ is passed to <KBD><a href="#exception">exception/1</a></KBD> for handling.
 handle the signal.
 <P> Because local exception handlers are thread specific then a local
 exception handler cannot trap <KBD>SIGINT</KBD> signals.
+
+The Qu-Prolog interpreter catches thrown exceptions 
+(printing a suitable error message) and also catches 
+<KBD>ctrlC_reset</KBD> thrown by a reset in the
+default <KBD>SIGINT</KBD> handler.
 
 <P>Predicates:
 
@@ -7577,34 +7689,18 @@ Remove the most recent global exception handler matching <KBD>Data</KBD> and <KB
 <P><KBD><a name="default_exception_handler"></a>default_exception_handler(Data)</KBD>
 
 <BLOCKQUOTE>
-Perform the default exception handler for <KBD>Data</KBD> (see <KBD><a href="#exception">exception/1</a></KBD> for the possible values for <KBD>Data</KBD>). The default handlers typically print a message then succeed, fail or abort according to the default action defined by <KBD><a href="#exception_severity">exception_severity/3</a></KBD>.  This predicate bypasses any user defined exception handlers.
+Perform the default exception handler for <KBD>Data</KBD> 
+(see <KBD><a href="#exception">exception/1</a></KBD> for the possible values 
+for <KBD>Data</KBD>). The default handler typically throws an exception term.
 <BR><KBD>mode default_exception_handler(+compound)</KBD>
+</BLOCKQUOTE>
 
-<P>Example (Assuming the following predicate definition):
+<P><KBD><a name="default_exception_error"></a>default_exception_error(Data)</KBD>
 
-<KBD>
-<P>
-<BR>
-<BR>eval(Expr, Result) :-
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;with_local_exception_handler(Result is Expr,
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;instantiation_error(A, is(Result,Expr),B,C,D),
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;default_exception_handler(instantiation_error(A,
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;is(Result,Expr) ,B,C,D))).
+<BLOCKQUOTE>
+Write the default error message for the given exception data to standard error.
+<BR><KBD>mode default_exception_error(+compound)</KBD>
 
-<BR>
-<BR>?- add_global_exception_handler(instantiation_error(_, is(R,_),
-<BR>&nbsp;&nbsp;_,_,_), R = 0).
-<BR>
-<BR>| ?- X is Y+1.
-<BR>Y = Y
-<BR>X = 0
-<BR>
-<BR>| ?- eval(Y+1,X).
-<BR>Recoverable error: instantiation error in _FA is Y + 1 at argument 2
-<BR>&nbsp;&nbsp;allowable modes are [? number is @ gcomp, ? number is @ number]
-<BR>
-<BR>no
-</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="default_signal_handler"></a>default_signal_handler(Signal)</KBD>
@@ -7855,11 +7951,7 @@ to multi-threading.
 <UL type="disc">
 <LI>
 <KBD>db(Boolean)</KBD>
-<BR>Wait on any database change.
-<BR>default: <KBD>true</KBD>
-<LI>
-<KBD>record_db(Boolean)</KBD>
-<BR>Wait on a record database change.
+<BR>Wait on any database change (including changes to the global state and hash table).
 <BR>default: <KBD>true</KBD>
 <LI>
 <KBD>timeout(N)</KBD>
@@ -8091,7 +8183,11 @@ patterns.
 <UL type="disc">
 <LI>
 <KBD>timeout(Value)</KBD>
-<BR><KBD>Value</KBD> is either <KBD>block</KBD>, <KBD>poll</KBD> or an integer.  If <KBD>Value</KBD> is <KBD>block</KBD> then the call delays until a message arrives.  If <KBD>Value</KBD> is <KBD>poll</KBD> then the call fails immediately if no message is in the queue.  If <KBD>Value</KBD> is an integer, <KBD>N</KBD>, then the call will wait <KBD>N</KBD> seconds for a message, and if no matching message arrives in that time the call fails.
+<BR><KBD>Value</KBD> is either <KBD>block</KBD>, <KBD>poll</KBD> or a number.  
+If <KBD>Value</KBD> is <KBD>block</KBD> then the call delays until a message 
+arrives.  If <KBD>Value</KBD> is <KBD>poll</KBD> then the call fails 
+immediately if no message is in the queue.  If <KBD>Value</KBD> is 
+a number, <KBD>N</KBD>, then the call will wait <KBD>N</KBD> seconds for a message, and if no matching message arrives in that time the call fails.
 <BR>Default: <KBD>block</KBD>
 <LI>
 <KBD>remember_names(Value)</KBD>
@@ -8499,13 +8595,6 @@ Delete all subscription from this thread.
 <BLOCKQUOTE>
 Add an Elvin notification for <KBD>ElvinTermList</KBD> (a Qu-Prolog 
 of the form described earlier). Fails if the notification is unsuccessful.
-</BLOCKQUOTE>
- <a name="elvin_makeID"></a><KBD>elvin_makeID(ID)</KBD>
- 
-<BLOCKQUOTE>
-Make a unique ID - uses the same algorithm as for message ID's 
-in ktickertape. This can be used, for example, when sending notifications 
-to ktickertape or other Elvin applications that require a unique message ID.
 </BLOCKQUOTE>
  
 

@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: QuProlog.h,v 1.3 2005/08/31 03:20:19 qp Exp $
+// $Id: QuProlog.h,v 1.4 2006/02/05 22:14:54 qp Exp $
 
 
 #ifndef QU_PROLOG_H
@@ -62,7 +62,6 @@
 
 #include "thread_qp.h"
 
-extern AtomTable* atoms;
 
 #ifdef WIN32
        #define QPVISIBLE _declspec(dllexport)

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: is_ready.h,v 1.15 2005/03/08 00:35:09 qp Exp $
+// $Id: is_ready.h,v 1.16 2006/02/14 02:40:09 qp Exp $
 
 #ifndef	IS_READY_H
 #define	IS_READY_H
@@ -73,7 +73,7 @@ do {									\
    }                                                                    \
  else /* Block */							\
    {									\
-     BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (s)->getFD(), (s)->Type(), iom);							\
+     BlockingIOObject* blockobj = new BlockingIOObject(this, (s)->getFD(), (s)->Type(), iom);							\
      scheduler->blockedQueue().push_back(blockobj); 	        	\
      block_status.setBlocked();                                         \
      return RV_BLOCK;							\
@@ -139,7 +139,7 @@ do {									\
    }                                                                    \
  else /* Block */					\
    {									\
-     BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (s)->getFD(), (s)->Type(), iom);							\
+     BlockingIOObject* blockobj = new BlockingIOObject(this, (s)->getFD(), (s)->Type(), iom);							\
      scheduler->blockedQueue().push_back(blockobj); 	        	\
      block_status.setBlocked();                                    \
      return RV_BLOCK;							\
@@ -184,7 +184,7 @@ do {                                                                        \
              }                                                              \
            else /* Block */						\
              {								\
-               BlockingIOObject* blockobj = new BlockingIOObject(this, -1, (socket)->getFD(), QPSOCKET, iom);							\
+               BlockingIOObject* blockobj = new BlockingIOObject(this, (socket)->getFD(), QPSOCKET, iom);							\
                scheduler->blockedQueue().push_back(blockobj); 	       	\
                block_status.setBlocked();                                    \
                return RV_BLOCK;                                             \

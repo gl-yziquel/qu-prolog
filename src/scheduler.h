@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.h,v 1.12 2005/03/08 00:35:13 qp Exp $
+// $Id: scheduler.h,v 1.13 2006/02/14 02:40:09 qp Exp $
 
 #ifndef	SCHEDULER_H
 #define	SCHEDULER_H
@@ -77,6 +77,7 @@
 #include "thread_qp.h"
 #include "thread_options.h"
 #include "thread_table.h"
+#include "timeout.h"
 
 #define SIGTIMESLICE (SIGVTALRM)
 #define ITIMER (ITIMER_VIRTUAL)
@@ -109,7 +110,7 @@ private:
   UINT_PTR timerptr;
 #endif
 
-  int theTimeouts;              // Calculated in IterQuantum to determine of 
+  Timeval theTimeouts;           // Calculated in IterQuantum to determine of 
 	                         // Sleep is a block or a timeout
   //
   // Perform actions between thread executions.
@@ -132,7 +133,7 @@ private:
   bool ShuffleAllMessages(void);
   
   // Look for fd's that are ready
-  bool poll_fds(int32);
+  bool poll_fds(Timeval&);
 
 public:
   Scheduler(ThreadOptions& to, ThreadTable& tt, Signals& s, PredTab& p);
@@ -150,7 +151,7 @@ public:
   list <MessageChannel*>& getChannels(void) { return message_channels; }
 
   // Sleeps waiting for IO or messages to become ready.
-  Thread::ReturnValue Sleep(bool doPoll);
+  Thread::ReturnValue Sleep();
 
   void insertThread(Thread*, Thread*);
 

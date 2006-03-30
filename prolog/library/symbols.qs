@@ -345,9 +345,10 @@ $1:
 	get_x_variable(0, 1)
 	pseudo_instr2(32, 0, 1)
 	get_x_variable(0, 1)
-	put_y_value(0, 1)
+	pseudo_instr2(119, 0, 1)
+	get_y_value(0, 1)
 	deallocate
-	execute_predicate('$codes_number', 2)
+	proceed
 
 $2:
 	get_x_value(0, 2)

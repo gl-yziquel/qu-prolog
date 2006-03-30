@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system.cc,v 1.18 2005/11/26 23:34:31 qp Exp $
+// $Id: system.cc,v 1.20 2006/02/02 02:20:13 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"

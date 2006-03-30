@@ -149,14 +149,12 @@ end('thread_wait'/0):
 
 
 $1:
-	allocate(3)
-	put_y_variable(2, 1)
-	put_y_variable(1, 2)
-	put_y_variable(0, 3)
-	call_predicate('$thread_wait_conditions', 4, 3)
+	allocate(2)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$thread_wait_conditions', 3, 2)
 	put_x_variable(0, 1)
-	get_structure('$thread_wait_conditions', 3, 1)
-	unify_y_value(2)
+	get_structure('$thread_wait_conditions', 2, 1)
 	unify_y_value(1)
 	unify_y_value(0)
 	pseudo_instr1(71, 0)
@@ -166,7 +164,7 @@ end('thread_wait'/1):
 
 
 
-'$thread_wait_conditions/4$0'/1:
+'$thread_wait_conditions/3$0'/1:
 
 	try(1, $1)
 	trust($2)
@@ -180,29 +178,11 @@ $1:
 
 $2:
 	proceed
-end('$thread_wait_conditions/4$0'/1):
+end('$thread_wait_conditions/3$0'/1):
 
 
 
-'$thread_wait_conditions/4$1'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	pseudo_instr1(1, 0)
-	neck_cut
-	put_constant('true', 1)
-	get_x_value(0, 1)
-	proceed
-
-$2:
-	proceed
-end('$thread_wait_conditions/4$1'/1):
-
-
-
-'$thread_wait_conditions/4$2'/1:
+'$thread_wait_conditions/3$1'/1:
 
 	try(1, $1)
 	trust($2)
@@ -216,40 +196,34 @@ $1:
 
 $2:
 	proceed
-end('$thread_wait_conditions/4$2'/1):
+end('$thread_wait_conditions/3$1'/1):
 
 
 
-'$thread_wait_conditions/4$3/4$0'/4:
+'$thread_wait_conditions/3$2/3$0'/3:
 
-	switch_on_term(0, $10, $4, $4, $5, $4, $4)
+	switch_on_term(0, $8, $3, $3, $4, $3, $3)
+
+$4:
+	switch_on_structure(0, 8, ['$default':$3, '$'/0:$5, 'db'/1:$6, 'timeout'/1:$7])
 
 $5:
-	switch_on_structure(0, 8, ['$default':$4, '$'/0:$6, 'db'/1:$7, 'record_db'/1:$8, 'timeout'/1:$9])
+	try(3, $1)
+	retry($2)
+	trust($3)
 
 $6:
-	try(4, $1)
-	retry($2)
-	retry($3)
-	trust($4)
+	try(3, $1)
+	trust($3)
 
 $7:
-	try(4, $1)
-	trust($4)
+	try(3, $2)
+	trust($3)
 
 $8:
-	try(4, $2)
-	trust($4)
-
-$9:
-	try(4, $3)
-	trust($4)
-
-$10:
-	try(4, $1)
+	try(3, $1)
 	retry($2)
-	retry($3)
-	trust($4)
+	trust($3)
 
 $1:
 	get_structure('db', 1, 0)
@@ -257,24 +231,19 @@ $1:
 	proceed
 
 $2:
-	get_structure('record_db', 1, 0)
+	get_structure('timeout', 1, 0)
 	unify_x_value(2)
 	proceed
 
 $3:
-	get_structure('timeout', 1, 0)
-	unify_x_value(3)
-	proceed
-
-$4:
 	fail
-end('$thread_wait_conditions/4$3/4$0'/4):
+end('$thread_wait_conditions/3$2/3$0'/3):
 
 
 
-'$thread_wait_conditions/4$3'/4:
+'$thread_wait_conditions/3$2'/3:
 
-	try(4, $1)
+	try(3, $1)
 	trust($2)
 
 $1:
@@ -283,52 +252,47 @@ $1:
 	fail
 
 $2:
-	execute_predicate('$thread_wait_conditions/4$3/4$0', 4)
-end('$thread_wait_conditions/4$3'/4):
+	execute_predicate('$thread_wait_conditions/3$2/3$0', 3)
+end('$thread_wait_conditions/3$2'/3):
 
 
 
-'$thread_wait_conditions'/4:
+'$thread_wait_conditions'/3:
 
 	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
 
 $3:
-	try(4, $1)
+	try(3, $1)
 	trust($2)
 
 $1:
 	get_constant('[]', 0)
 	get_x_variable(0, 1)
-	allocate(2)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
+	allocate(1)
+	get_y_variable(0, 2)
 	neck_cut
-	call_predicate('$thread_wait_conditions/4$0', 1, 2)
-	put_y_value(1, 0)
-	call_predicate('$thread_wait_conditions/4$1', 1, 1)
+	call_predicate('$thread_wait_conditions/3$0', 1, 1)
 	put_y_value(0, 0)
 	deallocate
-	execute_predicate('$thread_wait_conditions/4$2', 1)
+	execute_predicate('$thread_wait_conditions/3$1', 1)
 
 $2:
 	get_list(0)
 	unify_x_variable(0)
-	allocate(5)
-	unify_y_variable(3)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
+	allocate(4)
+	unify_y_variable(2)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
 	neck_cut
-	get_y_level(4)
-	call_predicate('$thread_wait_conditions/4$3', 4, 5)
-	cut(4)
-	put_y_value(3, 0)
-	put_y_value(2, 1)
-	put_y_value(1, 2)
-	put_y_value(0, 3)
+	get_y_level(3)
+	call_predicate('$thread_wait_conditions/3$2', 3, 4)
+	cut(3)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
 	deallocate
-	execute_predicate('$thread_wait_conditions', 4)
-end('$thread_wait_conditions'/4):
+	execute_predicate('$thread_wait_conditions', 3)
+end('$thread_wait_conditions'/3):
 
 
 
@@ -346,18 +310,12 @@ $1:
 	proceed
 
 $2:
-	put_structure(1, 0)
-	set_constant('record_db')
-	set_constant('true')
-	put_list(1)
-	set_x_value(0)
-	set_constant('[]')
-	put_structure(1, 2)
+	put_structure(1, 1)
 	set_constant('db')
 	set_constant('true')
 	put_list(0)
-	set_x_value(2)
 	set_x_value(1)
+	set_constant('[]')
 	allocate(0)
 	call_predicate('thread_wait', 1, 0)
 	fail
@@ -399,18 +357,12 @@ $1:
 	proceed
 
 $2:
-	put_structure(1, 0)
-	set_constant('record_db')
-	set_constant('true')
-	put_list(1)
-	set_x_value(0)
-	set_constant('[]')
-	put_structure(1, 2)
+	put_structure(1, 1)
 	set_constant('db')
 	set_constant('true')
 	put_list(0)
-	set_x_value(2)
 	set_x_value(1)
+	set_constant('[]')
 	allocate(0)
 	call_predicate('thread_wait', 1, 0)
 	fail
@@ -524,7 +476,7 @@ $1:
 	set_x_value(1)
 	put_structure(1, 1)
 	set_constant('@')
-	set_constant('integer')
+	set_constant('number')
 	put_structure(1, 3)
 	set_constant('thread_sleep')
 	set_x_value(1)
@@ -535,26 +487,24 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
-	pseudo_instr1(3, 0)
-	neck_cut
-	put_structure(1, 1)
-	set_constant('record_db')
-	set_constant('false')
-	put_list(2)
-	set_x_value(1)
-	set_constant('[]')
-	put_structure(1, 1)
+	allocate(2)
+	get_y_variable(0, 0)
+	get_y_level(1)
+	call_predicate('number', 1, 2)
+	cut(1)
+	put_structure(1, 0)
 	set_constant('db')
 	set_constant('false')
-	put_list(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('timeout')
+	put_list(1)
 	set_x_value(0)
+	set_constant('[]')
+	put_structure(1, 2)
+	set_constant('timeout')
+	set_y_value(0)
 	put_list(0)
+	set_x_value(2)
 	set_x_value(1)
-	set_x_value(3)
+	deallocate
 	execute_predicate('thread_wait', 1)
 
 $3:
@@ -564,12 +514,12 @@ $3:
 	set_x_value(1)
 	put_structure(1, 1)
 	set_constant('@')
-	set_constant('integer')
+	set_constant('number')
 	put_structure(1, 2)
 	set_constant('thread_sleep')
 	set_x_value(1)
 	put_integer(1, 1)
-	put_constant('integer', 3)
+	put_constant('number', 3)
 	execute_predicate('type_exception', 4)
 end('thread_sleep/1$0'/1):
 
@@ -616,23 +566,17 @@ $2:
 	pseudo_instr3(3, 0, 1, 2)
 	get_x_variable(0, 2)
 	put_structure(1, 1)
-	set_constant('record_db')
+	set_constant('db')
 	set_constant('false')
 	put_list(2)
 	set_x_value(1)
 	set_constant('[]')
 	put_structure(1, 1)
-	set_constant('db')
-	set_constant('false')
-	put_list(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
 	set_constant('timeout')
 	set_x_value(0)
 	put_list(0)
 	set_x_value(1)
-	set_x_value(3)
+	set_x_value(2)
 	execute_predicate('thread_wait', 1)
 
 $3:

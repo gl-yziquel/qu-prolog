@@ -102,7 +102,7 @@ $4:
 	get_constant('atom', 0)
 	allocate(1)
 	get_y_variable(0, 1)
-	put_constant('atoms->getAtomString(', 0)
+	put_constant('fi->getAtomString(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 0)
@@ -132,7 +132,7 @@ $1:
 	get_y_variable(0, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_output_val', 1, 1)
-	put_constant(' = th.TheHeap().newNumber(', 0)
+	put_constant(' = fi->makeInteger(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 1)
 	put_constant('integer', 0)
@@ -145,7 +145,7 @@ $2:
 	get_y_variable(0, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_output_val', 1, 1)
-	put_constant(' = th.TheHeap().newDouble(', 0)
+	put_constant(' = fi->makeDouble(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 1)
 	put_constant('float', 0)
@@ -158,7 +158,7 @@ $3:
 	get_y_variable(0, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_output_val', 1, 1)
-	put_constant(' = th.TheHeap().newDouble(', 0)
+	put_constant(' = fi->makeDouble(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 1)
 	put_constant('float', 0)
@@ -171,7 +171,7 @@ $4:
 	get_y_variable(0, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_output_val', 1, 1)
-	put_constant(' = atoms->add(', 0)
+	put_constant(' = fi->makeAtom(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 1)
 	put_constant('atom', 0)
@@ -620,9 +620,7 @@ end('generate_foreign_interface/3$1'/1):
 	retry($4)
 	retry($5)
 	retry($6)
-	retry($7)
-	retry($8)
-	trust($9)
+	trust($7)
 
 $1:
 	get_x_variable(3, 0)
@@ -748,28 +746,6 @@ $4:
 	execute_predicate('$convert_foreign', 3)
 
 $5:
-	put_x_variable(1, 1)
-	pseudo_instr1(1, 1)
-	neck_cut
-	put_structure(1, 0)
-	set_constant('generate_foreign_interface')
-	set_x_value(1)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 3)
-	set_constant('generate_foreign_interface')
-	set_x_value(1)
-	put_list(2)
-	set_x_value(3)
-	set_constant('[]')
-	put_integer(1, 1)
-	execute_predicate('instantiation_exception', 3)
-
-$6:
-	execute_predicate('$convert_foreign', 3)
-
-$7:
 	allocate(2)
 	get_y_variable(0, 0)
 	get_y_level(1)
@@ -821,7 +797,7 @@ $7:
 	deallocate
 	execute_predicate('type_exception', 4)
 
-$8:
+$6:
 	allocate(2)
 	get_y_variable(0, 0)
 	get_x_variable(0, 1)
@@ -874,7 +850,7 @@ $8:
 	deallocate
 	execute_predicate('type_exception', 4)
 
-$9:
+$7:
 	get_x_variable(3, 0)
 	put_structure(2, 0)
 	set_constant('generate_foreign_interface')
@@ -1310,7 +1286,7 @@ $2:
 	proceed
 
 $3:
-	pseudo_instr1(113, 0)
+	pseudo_instr1(112, 0)
 	neck_cut
 	put_constant('$foreign_stream', 2)
 	pseudo_instr2(73, 2, 1)
@@ -1748,7 +1724,7 @@ extern "C" bool
 	call_predicate('$foreign_write', 1, 4)
 	put_y_value(3, 0)
 	call_predicate('$foreign_write', 1, 3)
-	put_constant('(Thread& th)
+	put_constant('(ForeignInterface* fi)
 {
  bool result = true;
 ', 0)
@@ -2049,7 +2025,7 @@ $1:
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(0, 0)
 	call_predicate('$write_foreign_reg', 1, 2)
-	put_constant('->variableDereference();
+	put_constant(';
  if (!', 0)
 	call_predicate('$foreign_write', 1, 2)
 	put_y_value(0, 0)
@@ -2177,11 +2153,11 @@ end('$get_foreign_val'/2):
 $1:
 	allocate(1)
 	get_y_variable(0, 0)
-	put_constant('th.XRegs()[', 0)
+	put_constant('fi->getXReg(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$foreign_write', 1, 0)
-	put_constant(']', 0)
+	put_constant(')', 0)
 	deallocate
 	execute_predicate('$foreign_write', 1)
 end('$write_foreign_reg'/1):
@@ -2381,7 +2357,7 @@ $1:
 	put_y_value(0, 1)
 	call_predicate('$make_term', 2, 1)
 	put_constant(');
- result = result && th.unify(', 0)
+ result = result && fi->unify(', 0)
 	call_predicate('$foreign_write', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$write_pval', 1, 1)

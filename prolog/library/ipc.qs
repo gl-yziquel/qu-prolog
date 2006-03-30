@@ -416,10 +416,12 @@ $9:
 	trust($4)
 
 $1:
-	get_structure('timeout', 1, 0)
-	unify_x_value(1)
-	pseudo_instr1(3, 1)
-	proceed
+	get_x_variable(3, 0)
+	get_x_variable(0, 1)
+	put_x_value(3, 1)
+	get_structure('timeout', 1, 1)
+	unify_x_value(0)
+	execute_predicate('number', 1)
 
 $2:
 	get_structure('timeout', 1, 0)

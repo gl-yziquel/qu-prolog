@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_escapes.cc,v 1.21 2005/11/26 23:34:31 qp Exp $
+// $Id: thread_escapes.cc,v 1.23 2006/02/14 02:40:09 qp Exp $
 
 #include <errno.h>
 
@@ -736,7 +736,6 @@ Thread::psi_thread_resume(Object *& thread_id_cell)
 //
 // The available conditions are:
 // 	db(boolean) - Wait on database change. (Default: true.)
-//	record_db(boolean) - Wait on record database change. (Default: true.)
 //	time(integer) - Wait for the specified number of seconds. 
 // @end pred
 // @end user
@@ -746,18 +745,14 @@ Thread::psi_thread_wait(Object *& conditions_arg)
   Object* argS = heap.dereference(conditions_arg);
   
   bool db_flag = false;
-  bool record_db_flag = false;
-  time_t timeout = (time_t) -1;
+  double timeout = -1;
 
-  DECODE_THREAD_CONDITIONS_ARG(heap, *atoms, argS, 1,
-			       db_flag,
-			       record_db_flag,
-			       timeout);
+  DECODE_THREAD_CONDITIONS_ARG(heap, *atoms, argS, 1, db_flag, timeout);
   if (block_status.isRestarted())
     {
       return RV_SUCCESS;
     }
-  else if (db_flag || record_db_flag)
+  else if (db_flag)
     {
       BlockingWaitObject* bwo = new BlockingWaitObject(this, code, timeout);
       scheduler->blockedQueue().push_back(bwo);

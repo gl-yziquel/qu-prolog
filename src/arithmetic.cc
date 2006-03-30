@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: arithmetic.cc,v 1.9 2005/11/26 23:34:28 qp Exp $
+// $Id: arithmetic.cc,v 1.10 2006/01/31 23:17:49 qp Exp $
 
 #include <math.h>
 #ifdef WIN32
@@ -556,7 +556,7 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 	  if (BOTH_INTS(res1, res2) && (GET_INT_VAL(res2) >= 0))
             {
 	      number res;
-              MAKE_INT(res, (long)pow(GET_INT_VAL(res1), GET_INT_VAL(res2)));
+              MAKE_INT(res, (long)::pow(GET_INT_VAL(res1), GET_INT_VAL(res2)));
 	      return res;
             }
           else

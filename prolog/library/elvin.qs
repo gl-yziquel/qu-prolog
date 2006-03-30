@@ -658,7 +658,7 @@ $1:
 	proceed
 
 $2:
-	pseudo_instr1(113, 0)
+	pseudo_instr1(112, 0)
 	neck_cut
 	proceed
 
@@ -858,7 +858,7 @@ $2:
 	get_y_level(1)
 	call_predicate('$check_parts', 1, 2)
 	cut(1)
-	pseudo_instr1(110, 20)
+	pseudo_instr1(109, 20)
 	deallocate
 	proceed
 
@@ -885,7 +885,7 @@ end('elvin_add_notification'/1):
 
 
 
-'$query_elvin2005_11_27_9_44_7_496/0$0'/0:
+'$query_elvin2006_3_31_8_54_24_929/0$0'/0:
 
 
 $1:
@@ -898,11 +898,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_elvin2005_11_27_9_44_7_496/0$0'/0):
+end('$query_elvin2006_3_31_8_54_24_929/0$0'/0):
 
 
 
-'$query_elvin2005_11_27_9_44_7_496/0$1'/0:
+'$query_elvin2006_3_31_8_54_24_929/0$1'/0:
 
 
 $1:
@@ -915,11 +915,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_elvin2005_11_27_9_44_7_496/0$1'/0):
+end('$query_elvin2006_3_31_8_54_24_929/0$1'/0):
 
 
 
-'$query_elvin2005_11_27_9_44_7_496'/0:
+'$query_elvin2006_3_31_8_54_24_929'/0:
 
 	try(0, $1)
 	retry($2)
@@ -927,17 +927,17 @@ end('$query_elvin2005_11_27_9_44_7_496/0$1'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_elvin2005_11_27_9_44_7_496/0$0', 0, 0)
+	call_predicate('$query_elvin2006_3_31_8_54_24_929/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_elvin2005_11_27_9_44_7_496/0$1', 0, 0)
+	call_predicate('$query_elvin2006_3_31_8_54_24_929/0$1', 0, 0)
 	fail
 
 $3:
 	proceed
-end('$query_elvin2005_11_27_9_44_7_496'/0):
+end('$query_elvin2006_3_31_8_54_24_929'/0):
 
 
 
@@ -945,7 +945,7 @@ end('$query_elvin2005_11_27_9_44_7_496'/0):
 
 
 $1:
-	execute_predicate('$query_elvin2005_11_27_9_44_7_496', 0)
+	execute_predicate('$query_elvin2006_3_31_8_54_24_929', 0)
 end('$query'/0):
 
 

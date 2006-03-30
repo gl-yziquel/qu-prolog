@@ -53,14 +53,19 @@
 // 
 // ##Copyright##
 //
-// $Id: block.h,v 1.11 2005/11/26 23:34:28 qp Exp $
+// $Id: block.h,v 1.13 2006/02/14 02:40:09 qp Exp $
 
 #ifndef	BLOCK_H
 #define	BLOCK_H
 
 #include "defs.h"
+#include "timeval.h"
 #include <list>
 #include <sys/types.h>
+#ifndef WIN32
+        #include <sys/time.h>
+#endif
+
 #ifdef WIN32
         #define _WINSOCKAPI_
         #include <windows.h>
@@ -74,11 +79,10 @@ class Code;
 class IOManager;
 class Message;
 
-time_t absoluteTimeout(const time_t timeout);
 
 class BlockStatus
 {
-private:
+ private:
   enum RunType {
     RUNNABLE,       
     RESTART_IO,
@@ -127,7 +131,7 @@ public:
 
   Thread* getThread(void) { return thread; }
 
-  virtual bool unblock(int& tout) = 0;
+  virtual bool unblock(Timeval& tout) = 0;
 
   virtual bool hasFD(void) = 0;
 
@@ -141,15 +145,15 @@ public:
 class BlockingIOObject : public BlockingObject
 {
  private:
-  time_t retry_time;            // Absolute time of retry
+  Timeval retry_time;            // Absolute time of retry
   int fd;                       // The fd to wait on
   IOType io_type;               // Type of io to be waited on
   IOManager* iomp;
  public:
-  BlockingIOObject(Thread* const t, time_t to, int f, IOType iot, IOManager* mp)
-    : BlockingObject(t), retry_time(to), fd(f), io_type(iot), iomp(mp) {}
+  BlockingIOObject(Thread* const t, int f, IOType iot, IOManager* mp)
+    : BlockingObject(t), retry_time(-1, 0), fd(f), io_type(iot), iomp(mp) {}
 
-  bool unblock(int& tout);
+  bool unblock(Timeval& tout);
 
   bool hasFD(void) { return true; }
 
@@ -161,14 +165,12 @@ class BlockingIOObject : public BlockingObject
 class BlockingTimeoutObject : public BlockingObject
 {
  private:
-  time_t timeout;
+  Timeval timeout;
  public:
-  BlockingTimeoutObject(Thread* const t, time_t to) 
-    : BlockingObject(t)
-    {
-      timeout = absoluteTimeout(to);
-    }
-  bool unblock(int& tout);
+  BlockingTimeoutObject(Thread* const t, double to) 
+    : BlockingObject(t), timeout(to) {}
+
+  bool unblock(Timeval& tout);
 
   bool hasFD(void) { return false; }
 
@@ -183,14 +185,14 @@ class BlockingTimeoutObject : public BlockingObject
 class BlockingMessageObject : public BlockingObject
 {
  private:
-  time_t timeout;
+  Timeval timeout;
   std::list<Message *>::iterator *iter;
   u_int size;
  public:
-  BlockingMessageObject(Thread* const t, time_t to, 
+  BlockingMessageObject(Thread* const t, double to, 
 			std::list<Message *>::iterator *i);
 
-  bool unblock(int& tout);
+  bool unblock(Timeval& tout);
 
   bool hasFD(void) { return true; }
 
@@ -206,12 +208,12 @@ class BlockingWaitObject : public BlockingObject
 {
  private:
   Code* code; 
-  time_t timeout;
+  Timeval timeout;
   u_int stamp;
  public:
-  BlockingWaitObject(Thread* const t, Code* c, time_t to);
+  BlockingWaitObject(Thread* const t, Code* c, double to);
 
-  bool unblock(int& tout);
+  bool unblock(Timeval& tout);
 
   bool hasFD(void) { return false; }
 

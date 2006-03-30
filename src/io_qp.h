@@ -53,10 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: io_qp.h,v 1.20 2005/11/26 23:34:30 qp Exp $
+// $Id: io_qp.h,v 1.22 2006/03/13 00:10:25 qp Exp $
 
 #ifndef	IO_QP_H
 #define	IO_QP_H
+
+#include <math.h>
 
 #ifdef WIN32
         #define _WINSOCKAPI_
@@ -703,6 +705,7 @@ class QPostream: public QPStream
       return !stream->put(ch).fail();
     }
 
+
   void operator<<(const char c)
     {
       (*stream) << c;
@@ -720,7 +723,13 @@ class QPostream: public QPStream
 
   void operator<<(const double n)
     {
-      (*stream) << n;
+      (*stream) << n; 
+      int prec = stream->precision();
+      double absn = fabs(n);
+
+      if ((n == 0) || 
+          ((floor(absn) > 0) && ((absn - floor(absn)) <= 5*pow(10, -prec))))
+             (*stream) << ".0";
     }
 
   void flush(void)
@@ -786,7 +795,7 @@ class QPostringstream: public QPStream
 
   void operator<<(const double n)
     {
-      stream << n;
+      stream << showpoint << n << noshowpoint;
     }
 
  const string str(void)

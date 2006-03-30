@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: regalloc.cc,v 1.9 2005/11/26 23:34:30 qp Exp $
+// $Id: regalloc.cc,v 1.10 2006/01/31 23:17:51 qp Exp $
 
 #include "atom_table.h"
 #include "heap_qp.h"

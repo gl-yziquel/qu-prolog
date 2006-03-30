@@ -53,12 +53,12 @@
 // 
 // ##Copyright##
 //
-// $Id: trace_escapes.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
+// $Id: trace_escapes.cc,v 1.8 2006/03/30 22:50:31 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
 #include "trace_qp.h"
-
+#include "assert.h"
 #ifdef QP_DEBUG
 //
 // A wrapper for decode_trace_flag() calls.

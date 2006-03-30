@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: name_table.h,v 1.5 2005/11/26 23:34:30 qp Exp $
+// $Id: name_table.h,v 1.6 2006/01/31 23:17:51 qp Exp $
 
 #ifndef	NAME_TABLE_H
 #define	NAME_TABLE_H

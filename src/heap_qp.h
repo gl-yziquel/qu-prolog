@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_qp.h,v 1.7 2005/11/26 23:34:30 qp Exp $
+// $Id: heap_qp.h,v 1.9 2006/02/05 22:14:55 qp Exp $
 
 #ifndef HEAP_QP_H
 #define HEAP_QP_H
@@ -71,10 +71,11 @@
 #include "area_offsets.h"
 #include "atom_table.h"      
 #include "compiler_support.h"      
-//#include "defaults.h" // Default sizes for data areas.
+
 #include "defs.h" // Qu-Prolog data type definitions &c.
 #include "debug.h" // Qu-Prolog debugging facilities
 #include "errors.h" // Qu-Prolog error handling
+#include "foreign_interface.h"
 
 #include "objects.h" // What's going to get created on the heap
 
@@ -89,6 +90,7 @@
 #include "truth3.h"
 
 enum BoundVarState { MISMATCH, DELAY, MATCH };
+
 
 
 //
@@ -245,6 +247,7 @@ truth3 fastEqual(PrologValue&, PrologValue&);
   void save(ostream& ostrm) const;
 
   void load(istream& istrm);
+
 
 #include "check.h"
 #include "copy_term.h"
@@ -735,8 +738,6 @@ Heap::prologValueDereference(PrologValue& pval)
       return;
     }
 }
-
-
 
 #endif // HEAP_QP_H
 

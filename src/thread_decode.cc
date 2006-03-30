@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_decode.cc,v 1.6 2002/12/03 04:54:59 qp Exp $
+// $Id: thread_decode.cc,v 1.8 2006/02/14 02:40:09 qp Exp $
 
 #include "thread_decode.h"
 
@@ -117,32 +117,26 @@ ErrorValue
 decode_thread_conditions(Heap& heap, AtomTable& atoms,
 			 Object * arg,
 			 bool& db,
-			 bool& record_db,
-			 time_t& wait_time)
+			 double& wait_time)
 {
-  if (heap.check_functor(arg, AtomTable::thread_wait_conditions, 3))
+  if (heap.check_functor(arg, AtomTable::thread_wait_conditions, 2))
     {
       Structure* str = OBJECT_CAST(Structure*, arg);
       Object* db_cell 
 	= str->getArgument(1)->variableDereference();
-      Object* record_db_cell 
-	= str->getArgument(2)->variableDereference();
       Object* wait_time_cell 
-	= str->getArgument(3)->variableDereference();
+	= str->getArgument(2)->variableDereference();
 
       if (db_cell->isVariable() ||
-	  record_db_cell->isVariable() ||
 	  wait_time_cell->isVariable())
 	{
 	  return EV_INST;
 	}
 
       if (db_cell->isAtom() &&
-	  record_db_cell->isAtom() &&
 	  heap.IsTimeout(wait_time_cell))
 	{
 	  db = atoms.atomToBool(db_cell);
-	  record_db = atoms.atomToBool(record_db_cell);
 	  wait_time = heap.DecodeTimeout(wait_time_cell);
 
 	  return EV_NO_ERROR;

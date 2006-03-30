@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: examine_term.h,v 1.2 2005/03/27 22:07:40 qp Exp $
+// $Id: examine_term.h,v 1.4 2006/02/06 00:51:38 qp Exp $
 
 #ifndef EXAMINE_TERM_H
 #define EXAMINE_TERM_H
@@ -156,6 +156,7 @@ ReturnValue psi_list(Object *& );
 // mode(in, out)
 //
 ReturnValue psi_fast_simplify(Object *& , Object *& );
+
 
 
 #endif // EXAMINE_TERM_H

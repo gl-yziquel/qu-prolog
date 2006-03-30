@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: state.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
+// $Id: state.cc,v 1.7 2006/01/31 23:17:51 qp Exp $
 
 #include <iostream>
 #include <fstream>
@@ -242,6 +242,7 @@ Thread::psi_global_state_set(Object *& object1, Object *& object2)
       OBJECT_CAST(Atom*, val1)->associateInteger(val2->getNumber());
     }
   
+  code->Stamp();
   return(RV_SUCCESS);
 }
 
@@ -315,6 +316,7 @@ Thread::psi_global_state_increment(Object *& object1, Object *& object2)
       
       object2 = heap.newNumber(intval);      
 
+      code->Stamp();
       return RV_SUCCESS;
     }
   else
@@ -353,6 +355,7 @@ Thread::psi_global_state_decrement(Object *& object1, Object *& object2)
       name->associateInteger(intval);
       object2 = heap.newNumber(intval);
 
+      code->Stamp();
       return RV_SUCCESS;
     }
   else

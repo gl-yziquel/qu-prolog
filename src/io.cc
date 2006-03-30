@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: io.cc,v 1.29 2005/11/26 23:34:30 qp Exp $
+// $Id: io.cc,v 1.30 2006/01/31 23:17:50 qp Exp $
 
 #include <string.h>
 // #include <stropts.h>

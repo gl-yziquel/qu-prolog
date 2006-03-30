@@ -331,8 +331,6 @@ end('$basename1'/3):
 
 '$dynamic_load'/2:
 
-	try(2, $1)
-	trust($2)
 
 $1:
 	allocate(5)
@@ -359,30 +357,6 @@ $1:
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('load', 1)
-
-$2:
-	allocate(2)
-	get_y_variable(1, 0)
-	get_y_variable(0, 1)
-	pseudo_instr1(2, 21)
-	pseudo_instr1(3, 20)
-	neck_cut
-	put_constant('stderr', 0)
-	put_constant('no definition for ', 1)
-	call_predicate('write_atom', 2, 2)
-	put_y_value(1, 1)
-	put_constant('stderr', 0)
-	call_predicate('write_atom', 2, 1)
-	put_constant('stderr', 0)
-	put_constant('/', 1)
-	call_predicate('write_atom', 2, 1)
-	put_constant('stderr', 0)
-	pseudo_instr2(18, 0, 20)
-	put_constant('stderr', 0)
-	put_constant('
-', 1)
-	call_predicate('write_atom', 2, 0)
-	fail
 end('$dynamic_load'/2):
 
 

@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pred_table.h,v 1.5 2005/11/26 23:34:30 qp Exp $
+// $Id: pred_table.h,v 1.7 2006/02/05 22:14:55 qp Exp $
 
 #ifndef	PRED_TABLE_H
 #define	PRED_TABLE_H
@@ -71,7 +71,7 @@
 #include "defs.h"
 #include "hash_table.h"
 #include "magic.h"
-
+#include "foreign_interface.h"
 //
 // Forward declaration.
 //
@@ -81,7 +81,7 @@ class   DynamicPredicate;
 //
 // Prototyping an escape function.
 //
-typedef	bool (*EscFn)(Thread&);
+typedef	bool (*EscFn)(ForeignInterface*);
 
 //
 // Hold the code address for the predicate or an escape function.

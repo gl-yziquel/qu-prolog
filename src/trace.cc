@@ -55,8 +55,9 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: trace.cc,v 1.9 2005/03/08 00:35:17 qp Exp $
+// $Id: trace.cc,v 1.10 2006/03/30 22:50:31 qp Exp $
 
+#include "debug.h"
 #ifdef QP_DEBUG
 
 #include	<sys/types.h>

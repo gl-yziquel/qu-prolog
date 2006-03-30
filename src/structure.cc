@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: structure.cc,v 1.4 2005/11/26 23:34:31 qp Exp $
+// $Id: structure.cc,v 1.6 2006/02/06 00:51:38 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"

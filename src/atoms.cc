@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: atoms.cc,v 1.6 2005/11/26 23:34:28 qp Exp $
+// $Id: atoms.cc,v 1.7 2006/01/31 23:17:49 qp Exp $
 
 #include <string.h>
 #include <sstream>

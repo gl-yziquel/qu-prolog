@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: substitution.h,v 1.4 2005/11/26 23:34:31 qp Exp $
+// $Id: substitution.h,v 1.5 2006/01/31 23:17:51 qp Exp $
 
 #ifndef	SUBSTITUTION_H
 #define	SUBSTITUTION_H

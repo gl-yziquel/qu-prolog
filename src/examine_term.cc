@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: examine_term.cc,v 1.5 2005/11/26 23:34:29 qp Exp $
+// $Id: examine_term.cc,v 1.7 2006/02/06 00:51:38 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"
@@ -326,6 +326,8 @@ Thread::psi_fast_simplify(Object *& object1, Object *& object2)
   (void)occursCheckAndSimplify(ALL_CHECK, pv, object2, NULL);
   return RV_SUCCESS;
 }
+
+
 
 
 

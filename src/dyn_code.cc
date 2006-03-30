@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dyn_code.cc,v 1.12 2005/11/26 23:34:29 qp Exp $
+// $Id: dyn_code.cc,v 1.13 2006/01/31 23:17:50 qp Exp $
 
 #include "config.h"
 #include "global.h"

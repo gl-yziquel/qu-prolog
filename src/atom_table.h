@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: atom_table.h,v 1.8 2005/11/26 23:34:28 qp Exp $
+// $Id: atom_table.h,v 1.10 2006/02/20 03:18:51 qp Exp $
 
 #ifndef ATOM_TABLE_H
 #define ATOM_TABLE_H
@@ -467,7 +467,7 @@ public:
     thread_defaults = add("$thread_defaults");
     thread_wait_conditions = add("$thread_wait_conditions");
 
-    undefined_predicate = add("$undefined_predicate");
+    undefined_predicate = add("undefined_predicate");
     recoverable = add("recoverable");
     retry_woken_delays = add("retry_woken_delays");
     exception = add("exception");

@@ -1,6 +1,6 @@
 // elvin_env.h - Elvin support.
 //
-// $Id: elvin_env.h,v 1.7 2005/11/26 23:34:29 qp Exp $
+// $Id: elvin_env.h,v 1.9 2006/02/14 02:40:09 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -19,6 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+5B
  * Boston, MA 02111-1307, USA.
  *
  */
@@ -32,6 +33,7 @@
 #include <stdlib.h>
 #include <elvin/elvin.h>
 #include "messages.h"
+#include "timeout.h"
 
 string createUUID();
 
@@ -311,7 +313,7 @@ class ElvinMessageChannel : public MessageChannel
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
 
-  void processTimeouts(struct timeval& next);
+  void processTimeouts(Timeval& next);
 
 };
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: scheduler.cc,v 1.34 2005/11/26 23:34:30 qp Exp $
+// $Id: scheduler.cc,v 1.38 2006/03/30 22:50:31 qp Exp $
 
 #include <algorithm>
 
@@ -117,22 +117,21 @@ static void handle_timeslice(int);
 
 Scheduler::Scheduler(ThreadOptions& to, ThreadTable& tt, 
 		     Signals& s, PredTab& p)
-  : thread_options(to), thread_table(tt), signals(s), predicates(p)
+  : thread_options(to), thread_table(tt), signals(s), 
+    predicates(p),theTimeouts((time_t) -1, 0)
 {
   //
   // Allow time slicing.
   //
   scheduler_status.setEnableTimeslice();
-  theTimeouts = 0;
 }
 
 Scheduler::~Scheduler(void) { }
 
 extern int* sigint_pipe;
 
-bool Scheduler::poll_fds(int32 poll_timeout)
+bool Scheduler::poll_fds(Timeval& poll_timeout)
 {
-  struct timeval timeout = { poll_timeout , 0 };
 #ifndef WIN32
   fd_set rfds, wfds;
   FD_ZERO(&rfds);
@@ -152,7 +151,7 @@ bool Scheduler::poll_fds(int32 poll_timeout)
        iter++)
     {
       (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
-      (*iter)->processTimeouts(timeout);
+      (*iter)->processTimeouts(poll_timeout);
     }
 #endif
 
@@ -160,8 +159,9 @@ bool Scheduler::poll_fds(int32 poll_timeout)
        // We need to turn these fd sets into Handle arrays. So...
         HANDLE* handles;
 
-        int hcount=0;
-        handles = new HANDLE[blocked_queue.size()];
+        int hcount=1;
+        handles = new HANDLE[blocked_queue.size()+1];
+        handles[0] = (HANDLE)_get_osfhandle(sigint_pipe[0]);
 
         for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
                         iter != blocked_queue.end();
@@ -175,7 +175,7 @@ bool Scheduler::poll_fds(int32 poll_timeout)
 
 
   int result;
-  if (timeout.tv_sec == 0 && timeout.tv_usec == 0)
+  if (poll_timeout.isForever())
     {
       // Remember, select only works on sockets in windows
 #ifdef WIN32
@@ -187,6 +187,7 @@ bool Scheduler::poll_fds(int32 poll_timeout)
     }
   else
     {
+      struct timeval timeout = {poll_timeout.Sec(), poll_timeout.MicroSec()};
 #ifdef WIN32
       result = WaitForMultipleObjects(hcount + 1, handles, true,
                    timeout.tv_usec / 1000 + timeout.tv_sec*1000 ) > 0;
@@ -208,7 +209,7 @@ bool Scheduler::poll_fds(int32 poll_timeout)
 }
 
 Thread::ReturnValue
-Scheduler::Sleep(bool doPoll)
+Scheduler::Sleep()
 {
 #ifdef DEBUG_BLOCK
   cerr << __FUNCTION__ << " Sleeping" << endl;
@@ -227,11 +228,7 @@ Scheduler::Sleep(bool doPoll)
 #endif
 	  return result;
 	}
-      int timeout;
-      if (doPoll) timeout = 1;
-      else if (theTimeouts > 0) timeout = theTimeouts;
-      else timeout = 0;
-      if (poll_fds(timeout))
+      if (poll_fds(theTimeouts))
 	{
 	  break;
 	}
@@ -265,7 +262,7 @@ Scheduler::InterQuantum(void)
   // 
   // Was anything actually done?
   //
-  theTimeouts = 0;
+  theTimeouts.setTime((time_t) -1, 0);
   return processBlockedThreads();
 }
 
@@ -432,7 +429,7 @@ Scheduler::Schedule(void)
 		  cerr << " in forbid/permit section" << endl;
 #endif
 
-		  const Thread::ReturnValue result = Sleep(false);
+		  const Thread::ReturnValue result = Sleep();
 		  if (result == Thread::RV_HALT)
 		    {
 		      return 0;
@@ -650,7 +647,7 @@ Scheduler::Schedule(void)
 #endif
 
 	      // Sleep until something useful happens (maybe).
-		  const Thread::ReturnValue result = Sleep(false);
+		  const Thread::ReturnValue result = Sleep();
 		  if (result == Thread::RV_HALT)
 		    {
 		      return 0;
@@ -676,7 +673,7 @@ Scheduler::Schedule(void)
       // If none of the threads was runnable...
       if (! run_queue.empty() && blocked == run_queue.size())
 	{
-	  const Thread::ReturnValue result = Sleep(false);
+	  const Thread::ReturnValue result = Sleep();
 	  if (result == Thread::RV_HALT)
 	    {
 	      return 0;
@@ -768,7 +765,6 @@ Scheduler::HandleSignal(void)
   Atom* predicate = atoms->add("$signal_thread_exit");
   Object* problem = thread->BuildCall(predicate, 0);
   thread->programCounter = thread->HandleInterrupt(problem);
-
   thread->TInfo().Goal() =  sig_atom;
   thread_table.IncLive();
   thread->Condition(Thread::RUNNABLE);
@@ -784,7 +780,7 @@ Scheduler::HandleSignal(void)
       result = thread->Execute();
       if (result == Thread::RV_BLOCK)
 	{
-	  Sleep(false);
+	  Sleep();
 	}
       else
 	{

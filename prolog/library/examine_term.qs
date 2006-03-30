@@ -9,7 +9,7 @@ $1:
 	proceed
 
 $2:
-	pseudo_instr1(113, 0)
+	pseudo_instr1(112, 0)
 	proceed
 end('number'/1):
 

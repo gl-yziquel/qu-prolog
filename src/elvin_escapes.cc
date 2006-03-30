@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: elvin_escapes.cc,v 1.2 2003/12/11 23:41:26 qp Exp $
+// $Id: elvin_escapes.cc,v 1.3 2006/01/31 23:17:50 qp Exp $
 
 #include "global.h"
 #include "thread_qp.h"
@@ -195,6 +195,7 @@ Thread::psi_elvin_delete_subscription(Object *& subscription_cell)
 #endif // ELVIN_DEF
 }
 
+#if 0
 Thread::ReturnValue
 Thread::psi_elvin_makeID(Object *& id)
 {
@@ -211,3 +212,4 @@ Thread::psi_elvin_makeID(Object *& id)
   return RV_FAIL;
 #endif // ELVIN_DEF
 }
+#endif

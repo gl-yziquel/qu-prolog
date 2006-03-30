@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ipc_escapes.cc,v 1.27 2005/11/26 23:34:30 qp Exp $
+// $Id: ipc_escapes.cc,v 1.29 2006/02/14 02:40:09 qp Exp $
 
 #include <algorithm>
 
@@ -316,7 +316,7 @@ Thread::psi_ipc_first(Object *& reference0_cell,
       Fatal(__FUNCTION__, "Null iterator");
     }
 
-  time_t timeout;
+  double timeout;
   DECODE_TIMEOUT_ARG(heap, timeout_arg, 2, timeout);
 
   *iter = message_queue.begin();
@@ -352,7 +352,7 @@ Thread::psi_ipc_next(Object *& reference0_cell,
       Fatal(__FUNCTION__, "Null iterator");
     }
 
-  time_t timeout;
+  double timeout;
   DECODE_TIMEOUT_ARG(heap, timeout_arg, 2, timeout);
 
   // Save the current position

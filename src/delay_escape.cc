@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: delay_escape.cc,v 1.6 2005/11/26 23:34:29 qp Exp $
+// $Id: delay_escape.cc,v 1.7 2006/01/31 23:17:49 qp Exp $
 
 //#include "atom_table.h"
 #include "global.h"

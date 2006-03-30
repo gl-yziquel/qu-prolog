@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: unify.cc,v 1.15 2005/11/26 23:34:31 qp Exp $
+// $Id: unify.cc,v 1.17 2006/02/06 00:51:38 qp Exp $
 
 // #include "atom_table.h"
 #include "global.h"
@@ -426,7 +426,10 @@ Thread::bindToSkelStruct(Object* variable, Object* structure)
       // a new variable.
       //
       Variable* arg = heap.newVariable();
-      arg->setOccursCheck();
+      if (OBJECT_CAST(Variable*, variable)->isOccursChecked())
+        {
+          arg->setOccursCheck();
+        }
       newStruct->setArgument(i, arg);
     }
   bind(OBJECT_CAST(Variable*, variable), newStruct);

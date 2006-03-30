@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: write.cc,v 1.12 2005/11/26 23:34:31 qp Exp $
+// $Id: write.cc,v 1.14 2006/03/30 22:50:31 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -393,7 +393,7 @@ Thread::writeVarName(Object* ref, NameGen gen,
       //
       // There is no name for the variable.  Generate one.
       //
-      varName = (*gen)(this, counter, atom_buf1);
+      varName = (*gen)(this, counter);
       //
       // Link the name and the variable up together.
       //

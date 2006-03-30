@@ -2654,7 +2654,7 @@ $7:
 	execute_predicate('write_integer', 2)
 
 $8:
-	pseudo_instr1(113, 1)
+	pseudo_instr1(112, 1)
 	neck_cut
 	execute_predicate('write_float', 2)
 

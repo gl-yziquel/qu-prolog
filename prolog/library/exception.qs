@@ -284,36 +284,7 @@ end('$default_exception_handler/5$0'/1):
 
 
 
-'$default_exception_handler/5$1'/2:
-
-	try(2, $1)
-	trust($2)
-
-$1:
-	get_x_variable(2, 0)
-	allocate(2)
-	get_y_level(1)
-	put_x_variable(0, 0)
-	put_x_variable(1, 1)
-	put_y_variable(0, 3)
-	call_predicate('$inline', 4, 2)
-	cut(1)
-	put_y_value(0, 0)
-	deallocate
-	execute_predicate('call', 1)
-
-$2:
-	put_structure(3, 0)
-	set_constant('undefined_predicate')
-	set_constant('recoverable')
-	set_x_value(1)
-	set_constant('default')
-	execute_predicate('exception', 1)
-end('$default_exception_handler/5$1'/2):
-
-
-
-'$default_exception_handler/5$2/2$0'/2:
+'$default_exception_handler/5$1/2$0'/2:
 
 	try(2, $1)
 	trust($2)
@@ -327,11 +298,11 @@ $1:
 
 $2:
 	proceed
-end('$default_exception_handler/5$2/2$0'/2):
+end('$default_exception_handler/5$1/2$0'/2):
 
 
 
-'$default_exception_handler/5$2'/2:
+'$default_exception_handler/5$1'/2:
 
 	try(2, $1)
 	trust($2)
@@ -339,22 +310,22 @@ end('$default_exception_handler/5$2/2$0'/2):
 $1:
 	allocate(1)
 	get_y_level(0)
-	call_predicate('$default_exception_handler/5$2/2$0', 2, 1)
+	call_predicate('$default_exception_handler/5$1/2$0', 2, 1)
 	cut(0)
 	fail
 
 $2:
 	proceed
-end('$default_exception_handler/5$2'/2):
+end('$default_exception_handler/5$1'/2):
 
 
 
 '$default_exception_handler'/5:
 
-	switch_on_term(0, $9, $4, $4, $4, $4, $5)
+	switch_on_term(0, $8, $4, $4, $4, $4, $5)
 
 $5:
-	switch_on_constant(0, 8, ['$default':$4, 'signal':$6, '$undefined_predicate':$7, 'undefined_predicate':$8])
+	switch_on_constant(0, 4, ['$default':$4, 'signal':$6, 'undefined_predicate':$7])
 
 $6:
 	try(5, $1)
@@ -362,13 +333,10 @@ $6:
 
 $7:
 	try(5, $2)
+	retry($3)
 	trust($4)
 
 $8:
-	try(5, $3)
-	trust($4)
-
-$9:
 	try(5, $1)
 	retry($2)
 	retry($3)
@@ -389,52 +357,42 @@ $1:
 	execute_predicate('$signal_handler', 1)
 
 $2:
-	get_constant('$undefined_predicate', 0)
-	get_x_variable(1, 3)
-	neck_cut
-	pseudo_instr2(92, 1, 0)
-	execute_predicate('$default_exception_handler/5$1', 2)
+	get_constant('undefined_predicate', 0)
+	pseudo_instr2(92, 3, 0)
+	get_x_variable(2, 0)
+	allocate(2)
+	get_y_level(1)
+	put_x_variable(0, 0)
+	put_x_variable(1, 1)
+	put_y_variable(0, 3)
+	call_predicate('$inline', 4, 2)
+	cut(1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('call', 1)
 
 $3:
 	get_constant('undefined_predicate', 0)
-	allocate(3)
+	allocate(4)
 	get_y_variable(0, 3)
-	neck_cut
+	get_y_level(1)
 	put_y_value(0, 0)
-	put_y_variable(2, 1)
-	put_y_variable(1, 2)
-	call_predicate('$higher_functor', 3, 3)
-	put_y_value(2, 0)
-	put_y_value(1, 1)
-	call_predicate('$default_exception_handler/5$2', 2, 1)
+	put_y_variable(3, 1)
+	put_y_variable(2, 2)
+	call_predicate('$higher_functor', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	call_predicate('$default_exception_handler/5$1', 2, 2)
+	cut(1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('call_predicate', 1)
 
 $4:
-	get_x_variable(5, 0)
-	get_x_variable(0, 1)
-	allocate(4)
-	get_y_variable(1, 2)
-	put_y_variable(2, 19)
-	put_y_variable(0, 19)
-	put_x_value(5, 1)
-	put_y_variable(3, 5)
-	call_predicate('$get_exception_message', 6, 4)
-	put_y_value(2, 1)
-	put_constant('stderr', 0)
-	call_predicate('$streamnum', 2, 4)
-	put_y_value(2, 0)
-	put_y_value(3, 1)
-	call_predicate('$write_term_list', 2, 2)
-	put_y_value(1, 0)
-	put_y_value(0, 1)
-	put_x_variable(2, 2)
-	put_x_variable(3, 3)
-	call_predicate('$exception_severity', 4, 1)
-	put_y_value(0, 0)
-	deallocate
-	execute_predicate('call_predicate', 1)
+	put_structure(1, 0)
+	set_constant('exception')
+	set_x_value(1)
+	execute_predicate('throw', 1)
 end('$default_exception_handler'/5):
 
 
@@ -953,10 +911,14 @@ $8:
 	unify_x_ref(0)
 	unify_x_ref(1)
 	get_structure('w', 1, 0)
-	unify_x_value(2)
+	unify_x_ref(0)
+	get_structure('/', 2, 0)
+	unify_x_variable(0)
+	unify_x_variable(3)
 	get_list(1)
 	unify_constant('nl')
 	unify_constant('[]')
+	pseudo_instr3(0, 2, 0, 3)
 	proceed
 
 $9:
@@ -1280,6 +1242,25 @@ $21:
 	pseudo_instr3(0, 2, 0, 1)
 	proceed
 end('$builtin_exception_message'/6):
+
+
+
+'default_exception_error'/1:
+
+
+$1:
+	allocate(2)
+	put_y_variable(0, 19)
+	put_y_variable(1, 1)
+	call_predicate('get_exception_message', 2, 2)
+	put_y_value(0, 1)
+	put_constant('stderr', 0)
+	call_predicate('$streamnum', 2, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	deallocate
+	execute_predicate('$write_term_list', 2)
+end('default_exception_error'/1):
 
 
 

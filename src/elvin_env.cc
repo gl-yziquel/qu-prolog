@@ -1,7 +1,7 @@
 
 // elvin_env.cc - Elvin support.
 //
-// $Id: elvin_env.cc,v 1.8 2005/11/06 22:59:16 qp Exp $
+// $Id: elvin_env.cc,v 1.11 2006/03/30 22:50:30 qp Exp $
 
 /* This file is part of the Elvin interface to QuProlog.
  * Copyright (c) 2003 Peter Robinson <pjr@itee.uq.edu.au>
@@ -35,9 +35,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <elvin/elvin.h>
-#ifndef WIN32
-        #include <crypt.h>
-#endif
+//#ifndef WIN32
+//        #include <crypt.h>
+//#endif
 #include <time.h>
 #include <stdio.h>
 
@@ -166,7 +166,7 @@ static elvin_io_handler_t ELVIN_CALLBACK add_io_handler(elvin_socket_t fd,
     (mask & (ELVIN_READ_MASK | ELVIN_ACCEPT_MASK | ELVIN_ERROR_MASK)) ? true : false;
   
   // Create a new elvin handler and add to message channel
-  ElvinHandler* elvin_handler = new ElvinHandler(read, fd, hand);
+  ElvinHandler* elvin_handler = new ElvinHandler(read, (int)(fd), hand);
   elvin_channel_ptr->addHandler(elvin_handler);
   return hand;
 }
@@ -598,10 +598,9 @@ ElvinMessageChannel::removeTimeout(elvin_timeout_t timeout)
 
 // Process expired timeouts
 void 
-ElvinMessageChannel::processTimeouts(struct timeval& next)
+ElvinMessageChannel::processTimeouts(Timeval& next)
 {
-  struct timeval now;
-  if( gettimeofday(&now, NULL) != 0) cerr << "gettimeofday failed" << endl;
+  Timeval now;
 
   for (list<elvin_timeout_t>::iterator iter = reg_timeouts.begin();
        iter != reg_timeouts.end();
@@ -615,7 +614,8 @@ ElvinMessageChannel::processTimeouts(struct timeval& next)
 	  exit(1);
 	}
 
-      if (timeout_before(&item_expiry_time, &now))
+      Timeval expiry_time(item_expiry_time.tv_sec, item_expiry_time.tv_usec);
+      if (expiry_time < now)    //timeout_before(&item_expiry_time, &now))
 	{
 	  if (!elvin_timeout_dispatch((*iter), error)) 
 	    {
@@ -627,23 +627,24 @@ ElvinMessageChannel::processTimeouts(struct timeval& next)
 	}
       else
 	{
-	  struct timeval n1;
-          if (now.tv_usec > item_expiry_time.tv_usec)
-	    { 
-	      n1.tv_usec = 1000000 + item_expiry_time.tv_usec - now.tv_usec;
-	      n1.tv_sec = item_expiry_time.tv_sec - now.tv_sec - 1;
-	    }
-	  else
-	    {
-	      n1.tv_usec = item_expiry_time.tv_usec - now.tv_usec;
-	      n1.tv_sec = item_expiry_time.tv_sec - now.tv_sec;
-	    }
-	  if (((next.tv_sec == 0) && (next.tv_usec == 0)) 
-	      || timeout_before(&n1, &next)) 
-	    {
-	      next.tv_sec = n1.tv_sec;
-	      next.tv_usec = n1.tv_usec;
-	    }
+	  Timeval n1(expiry_time, now);
+//          if (now.tv_usec > item_expiry_time.tv_usec)
+//	    { 
+//	      n1.tv_usec = 1000000 + item_expiry_time.tv_usec - now.tv_usec;
+//	      n1.tv_sec = item_expiry_time.tv_sec - now.tv_sec - 1;
+//	    }
+//	  else
+//	    {
+//	      n1.tv_usec = item_expiry_time.tv_usec - now.tv_usec;
+//	      n1.tv_sec = item_expiry_time.tv_sec - now.tv_sec;
+//	    }
+//	  if (((next.tv_sec == 0) && (next.tv_usec == 0)) 
+//	      || timeout_before(&n1, &next)) 
+//	    {
+//	      next.tv_sec = n1.tv_sec;
+//	      next.tv_usec = n1.tv_usec;
+//	    }
+          if (n1 < next) next = n1;
 	  return;
 	}
     }
@@ -656,19 +657,6 @@ ElvinMessageChannel::processTimeouts(struct timeval& next)
 void
 ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds,
 				  int& max_fd)
-#ifdef WIN32
-{
-	updateFDSETS(rfds, wfds, reinterpret_cast<elvin_socket_t&>(max_fd));
-}
-
-//
-// Update the FD sets for use in select
-//
-void
-ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds,
-				  elvin_socket_t& max_fd)
-#endif //if it's not windows, we don't need two separate methods, 
-       //since elvin_socket_t and int are equivalent
 {
   // Consider all the handlers
   for (list<ElvinHandler*>::iterator iter = elvin_handlers.begin();
@@ -684,7 +672,7 @@ ElvinMessageChannel::updateFDSETS(fd_set* rfds, fd_set* wfds,
       else
 	{
 	  // Update appropriate FD set and max FD
-	  elvin_socket_t fd = (*iter)->getFD();
+	  int fd = (*iter)->getFD();
 	  if (fd > max_fd) max_fd = fd;
 	  if ((*iter)->isRead())
 	    {
@@ -710,7 +698,7 @@ ElvinMessageChannel::ShuffleMessages(void)
   // Continue processing until no more events on Elvin sockets.
   while(true)
     {
-      elvin_socket_t max_fd = 0;
+      int max_fd = 0;
       
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
@@ -940,16 +928,17 @@ void
 ElvinMessageChannel::readElvin(void)
 {
   fd_set rfds,wfds;
-  elvin_socket_t max_fd = 0;
+  int max_fd = 0;
   
   FD_ZERO(&rfds);
   FD_ZERO(&wfds);
   
   updateFDSETS(&rfds, &wfds, max_fd);
-  struct timeval tout = { 0 , 0 };
-  processTimeouts(tout);
+  Timeval timeout(UINT_MAX, 0);
+  processTimeouts(timeout);
+  struct timeval tout = {timeout.Sec(), timeout.MicroSec() };
   timeval* wait_val;
-  if (tout.tv_sec == 0 && tout.tv_usec == 0) 
+  if ((unsigned)tout.tv_sec == UINT_MAX) 
     {
       wait_val = NULL; 
     }
@@ -998,16 +987,18 @@ ElvinMessageChannel::elvinDisconnect(void)
   // Process Elvin socket events until disconnected
   while (connected)
     {
-      elvin_socket_t max_fd = 0;
+      int max_fd = 0;
       
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
       
       updateFDSETS(&rfds, &wfds, max_fd);
-      struct timeval tout = { 0 , 0 };
-      processTimeouts(tout);
+      Timeval timeout(UINT_MAX, 0);
+      processTimeouts(timeout);
+      struct timeval tout = {timeout.Sec(), timeout.MicroSec() };
+
       timeval* wait_val;
-      if (tout.tv_sec == 0 && tout.tv_usec == 0) 
+      if ((unsigned)tout.tv_sec == UINT_MAX) 
 	{
 	  wait_val = NULL; 
 	}
@@ -1265,6 +1256,7 @@ ElvinMessageChannel::addNotification(Object* object0, Thread& thread)
   return true;
 }
 
+#if 0
 ///////////////////////////////////////////
 // Code for constructing message ID's.
 // Taken directly from ktickertape
@@ -1334,5 +1326,6 @@ string createUUID()
     uuid_count = (uuid_count + 1) % 256;
     return retval;
 }
+#endif
 
 #endif // ELVIN_DEF

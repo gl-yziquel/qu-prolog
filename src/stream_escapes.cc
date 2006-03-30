@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stream_escapes.cc,v 1.14 2005/11/26 23:34:31 qp Exp $
+// $Id: stream_escapes.cc,v 1.15 2006/01/31 23:17:51 qp Exp $
 
 #include <errno.h>
 #include <iostream>

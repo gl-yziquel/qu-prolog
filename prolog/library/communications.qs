@@ -1362,7 +1362,7 @@ end('$mc_get_msg_addr_code'/6):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$0'/0:
+'$query_communications2006_3_31_8_54_18_737/0$0'/0:
 
 
 $1:
@@ -1375,11 +1375,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$0'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$0'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$1'/0:
+'$query_communications2006_3_31_8_54_18_737/0$1'/0:
 
 
 $1:
@@ -1392,11 +1392,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$1'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$1'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$2'/0:
+'$query_communications2006_3_31_8_54_18_737/0$2'/0:
 
 
 $1:
@@ -1409,11 +1409,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$2'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$2'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$3'/0:
+'$query_communications2006_3_31_8_54_18_737/0$3'/0:
 
 
 $1:
@@ -1426,11 +1426,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$3'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$3'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$4'/0:
+'$query_communications2006_3_31_8_54_18_737/0$4'/0:
 
 
 $1:
@@ -1443,11 +1443,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$4'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$4'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$5'/0:
+'$query_communications2006_3_31_8_54_18_737/0$5'/0:
 
 
 $1:
@@ -1460,11 +1460,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$5'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$5'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$6'/0:
+'$query_communications2006_3_31_8_54_18_737/0$6'/0:
 
 
 $1:
@@ -1477,11 +1477,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$6'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$6'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$7'/0:
+'$query_communications2006_3_31_8_54_18_737/0$7'/0:
 
 
 $1:
@@ -1494,11 +1494,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$7'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$7'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$8'/0:
+'$query_communications2006_3_31_8_54_18_737/0$8'/0:
 
 
 $1:
@@ -1511,11 +1511,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$8'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$8'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973/0$9'/0:
+'$query_communications2006_3_31_8_54_18_737/0$9'/0:
 
 
 $1:
@@ -1528,11 +1528,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2005_11_27_9_44_4_973/0$9'/0):
+end('$query_communications2006_3_31_8_54_18_737/0$9'/0):
 
 
 
-'$query_communications2005_11_27_9_44_4_973'/0:
+'$query_communications2006_3_31_8_54_18_737'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1548,57 +1548,57 @@ end('$query_communications2005_11_27_9_44_4_973/0$9'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$0', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$1', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$2', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$3', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$4', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$5', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$5', 0, 0)
 	fail
 
 $7:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$6', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$6', 0, 0)
 	fail
 
 $8:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$7', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$7', 0, 0)
 	fail
 
 $9:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$8', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$8', 0, 0)
 	fail
 
 $10:
 	allocate(0)
-	call_predicate('$query_communications2005_11_27_9_44_4_973/0$9', 0, 0)
+	call_predicate('$query_communications2006_3_31_8_54_18_737/0$9', 0, 0)
 	fail
 
 $11:
 	proceed
-end('$query_communications2005_11_27_9_44_4_973'/0):
+end('$query_communications2006_3_31_8_54_18_737'/0):
 
 
 
@@ -1606,7 +1606,7 @@ end('$query_communications2005_11_27_9_44_4_973'/0):
 
 
 $1:
-	execute_predicate('$query_communications2005_11_27_9_44_4_973', 0)
+	execute_predicate('$query_communications2006_3_31_8_54_18_737', 0)
 end('$query'/0):
 
 

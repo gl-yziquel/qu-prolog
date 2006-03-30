@@ -166,12 +166,12 @@ end('$psi0_decl'/5):
 
 '$psi1_decl'/6:
 
-	switch_on_term(0, $119, 'fail', 'fail', 'fail', 'fail', $118)
+	switch_on_term(0, $118, 'fail', 'fail', 'fail', 'fail', $117)
+
+$117:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116])
 
 $118:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117])
-
-$119:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -287,8 +287,7 @@ $119:
 	retry($113)
 	retry($114)
 	retry($115)
-	retry($116)
-	trust($117)
+	trust($116)
 
 $1:
 	get_integer(0, 0)
@@ -2262,24 +2261,6 @@ $109:
 
 $110:
 	get_integer(109, 0)
-	get_constant('psi_elvin_makeID', 3)
-	get_structure('elvin_makeID', 1, 1)
-	unify_x_variable(0)
-	get_x_value(0, 2)
-	get_list(4)
-	unify_constant('out')
-	unify_constant('[]')
-	get_list(5)
-	unify_x_ref(0)
-	unify_constant('[]')
-	get_structure('elvin_makeID', 1, 0)
-	unify_x_ref(0)
-	get_structure('-', 1, 0)
-	unify_constant('term')
-	proceed
-
-$111:
-	get_integer(110, 0)
 	get_constant('psi_elvin_add_notification', 3)
 	get_structure('$elvin_add_notification', 1, 1)
 	unify_x_variable(0)
@@ -2296,8 +2277,8 @@ $111:
 	unify_constant('term')
 	proceed
 
-$112:
-	get_integer(111, 0)
+$111:
+	get_integer(110, 0)
 	get_constant('psi_chdir', 3)
 	get_structure('chdir', 1, 1)
 	unify_x_variable(0)
@@ -2314,8 +2295,8 @@ $112:
 	unify_constant('atom')
 	proceed
 
-$113:
-	get_integer(112, 0)
+$112:
+	get_integer(111, 0)
 	get_constant('psi_getcwd', 3)
 	get_structure('getcwd', 1, 1)
 	unify_x_variable(0)
@@ -2332,8 +2313,8 @@ $113:
 	unify_constant('atom')
 	proceed
 
-$114:
-	get_integer(113, 0)
+$113:
+	get_integer(112, 0)
 	get_constant('psi_float', 3)
 	get_structure('float', 1, 1)
 	unify_x_variable(0)
@@ -2350,8 +2331,8 @@ $114:
 	unify_constant('term')
 	proceed
 
-$115:
-	get_integer(114, 0)
+$114:
+	get_integer(113, 0)
 	get_constant('psi_srandom', 3)
 	get_structure('srandom', 1, 1)
 	unify_x_variable(0)
@@ -2368,8 +2349,8 @@ $115:
 	unify_constant('integer')
 	proceed
 
-$116:
-	get_integer(115, 0)
+$115:
+	get_integer(114, 0)
 	get_constant('psi_random_float', 3)
 	get_structure('random', 1, 1)
 	unify_x_variable(0)
@@ -2386,8 +2367,8 @@ $116:
 	unify_constant('double')
 	proceed
 
-$117:
-	get_integer(116, 0)
+$116:
+	get_integer(115, 0)
 	get_constant('psi_random_int', 3)
 	get_structure('irandom', 1, 1)
 	unify_x_variable(0)
@@ -2409,12 +2390,12 @@ end('$psi1_decl'/6):
 
 '$psi2_decl'/7:
 
-	switch_on_term(0, $119, 'fail', 'fail', 'fail', 'fail', $118)
+	switch_on_term(0, $122, 'fail', 'fail', 'fail', 'fail', $121)
 
-$118:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117])
+$121:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120])
 
-$119:
+$122:
 	try(7, $1)
 	retry($2)
 	retry($3)
@@ -2531,7 +2512,10 @@ $119:
 	retry($114)
 	retry($115)
 	retry($116)
-	trust($117)
+	retry($117)
+	retry($118)
+	retry($119)
+	trust($120)
 
 $1:
 	get_integer(0, 0)
@@ -5662,18 +5646,96 @@ $117:
 	get_structure('-', 1, 1)
 	unify_constant('integer')
 	proceed
+
+$118:
+	get_integer(117, 0)
+	get_constant('psi_user_ht_remove', 4)
+	get_structure('hash_table_remove', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('hash_table_remove', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('atom')
+	get_structure('@', 1, 1)
+	unify_constant('atomic')
+	proceed
+
+$119:
+	get_integer(118, 0)
+	get_constant('psi_number_codes', 4)
+	get_structure('$number_codes', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$number_codes', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('?', 1, 0)
+	unify_constant('number')
+	get_structure('?', 1, 1)
+	unify_constant('list')
+	proceed
+
+$120:
+	get_integer(119, 0)
+	get_constant('psi_codes_number', 4)
+	get_structure('$codes_number', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$codes_number', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('?', 1, 0)
+	unify_constant('list')
+	get_structure('?', 1, 1)
+	unify_constant('number')
+	proceed
 end('$psi2_decl'/7):
 
 
 
 '$psi3_decl'/8:
 
-	switch_on_term(0, $75, 'fail', 'fail', 'fail', 'fail', $74)
+	switch_on_term(0, $78, 'fail', 'fail', 'fail', 'fail', $77)
 
-$74:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73])
+$77:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76])
 
-$75:
+$78:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -5746,7 +5808,10 @@ $75:
 	retry($70)
 	retry($71)
 	retry($72)
-	trust($73)
+	retry($73)
+	retry($74)
+	retry($75)
+	trust($76)
 
 $1:
 	get_integer(0, 0)
@@ -8229,6 +8294,108 @@ $73:
 	get_structure('-', 1, 2)
 	unify_constant('integer')
 	proceed
+
+$74:
+	get_integer(73, 0)
+	get_constant('psi_user_ht_insert', 5)
+	get_structure('hash_table_insert', 3, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(5)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(5, 4)
+	get_list(6)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(7)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('hash_table_insert', 3, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	get_structure('@', 1, 0)
+	unify_constant('atom')
+	get_structure('@', 1, 1)
+	unify_constant('atomic')
+	get_structure('@', 1, 2)
+	unify_constant('term')
+	proceed
+
+$75:
+	get_integer(74, 0)
+	get_constant('psi_user_ht_lookup', 5)
+	get_structure('hash_table_lookup', 3, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(5)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(5, 4)
+	get_list(6)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(7)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('hash_table_lookup', 3, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	get_structure('@', 1, 0)
+	unify_constant('atom')
+	get_structure('@', 1, 1)
+	unify_constant('atomic')
+	get_structure('@', 1, 2)
+	unify_constant('term')
+	proceed
+
+$76:
+	get_integer(75, 0)
+	get_constant('psi_user_ht_search', 5)
+	get_structure('$hash_table_search', 3, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(5)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(5, 4)
+	get_list(6)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(7)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('hash_table_search', 3, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	get_structure('?', 1, 0)
+	unify_constant('atom')
+	get_structure('?', 1, 1)
+	unify_constant('atomic')
+	get_structure('?', 1, 2)
+	unify_constant('term')
+	proceed
 end('$psi3_decl'/8):
 
 
@@ -9160,7 +9327,7 @@ end('$psi5_decl'/10):
 
 
 
-'$query_pseudo_instr2005_11_27_9_44_14_471/0$0'/0:
+'$query_pseudo_instr2006_3_31_8_54_45_576/0$0'/0:
 
 
 $1:
@@ -9173,11 +9340,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2005_11_27_9_44_14_471/0$0'/0):
+end('$query_pseudo_instr2006_3_31_8_54_45_576/0$0'/0):
 
 
 
-'$query_pseudo_instr2005_11_27_9_44_14_471/0$1'/0:
+'$query_pseudo_instr2006_3_31_8_54_45_576/0$1'/0:
 
 
 $1:
@@ -9190,11 +9357,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2005_11_27_9_44_14_471/0$1'/0):
+end('$query_pseudo_instr2006_3_31_8_54_45_576/0$1'/0):
 
 
 
-'$query_pseudo_instr2005_11_27_9_44_14_471/0$2'/0:
+'$query_pseudo_instr2006_3_31_8_54_45_576/0$2'/0:
 
 
 $1:
@@ -9207,11 +9374,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2005_11_27_9_44_14_471/0$2'/0):
+end('$query_pseudo_instr2006_3_31_8_54_45_576/0$2'/0):
 
 
 
-'$query_pseudo_instr2005_11_27_9_44_14_471'/0:
+'$query_pseudo_instr2006_3_31_8_54_45_576'/0:
 
 	try(0, $1)
 	retry($2)
@@ -9220,22 +9387,22 @@ end('$query_pseudo_instr2005_11_27_9_44_14_471/0$2'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2005_11_27_9_44_14_471/0$0', 0, 0)
+	call_predicate('$query_pseudo_instr2006_3_31_8_54_45_576/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2005_11_27_9_44_14_471/0$1', 0, 0)
+	call_predicate('$query_pseudo_instr2006_3_31_8_54_45_576/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2005_11_27_9_44_14_471/0$2', 0, 0)
+	call_predicate('$query_pseudo_instr2006_3_31_8_54_45_576/0$2', 0, 0)
 	fail
 
 $4:
 	proceed
-end('$query_pseudo_instr2005_11_27_9_44_14_471'/0):
+end('$query_pseudo_instr2006_3_31_8_54_45_576'/0):
 
 
 
@@ -9243,7 +9410,7 @@ end('$query_pseudo_instr2005_11_27_9_44_14_471'/0):
 
 
 $1:
-	execute_predicate('$query_pseudo_instr2005_11_27_9_44_14_471', 0)
+	execute_predicate('$query_pseudo_instr2006_3_31_8_54_45_576', 0)
 end('$query'/0):
 
 

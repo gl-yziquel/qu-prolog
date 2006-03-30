@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: name.h,v 1.1.1.1 2000/12/07 21:48:04 qp Exp $
+// $Id: name.h,v 1.2 2006/02/01 04:26:02 qp Exp $
 
 #ifndef	NAME_H
 #define	NAME_H
@@ -87,5 +87,19 @@ ReturnValue	psi_char_code(Object *& , Object *& );
 // mode(in,out)
 //
 ReturnValue	psi_code_char(Object *& , Object *& );
+
+//
+// psi_number_codes(number, list)
+// Convert number to ASCII representation
+// mode(in,out)
+//
+ReturnValue     psi_number_codes(Object *& , Object *& );
+
+//
+// psi_codes_number(number, list)
+// Convert a list (an ASCII representation of a number) iinto that number
+// mode(in,out)
+//
+ReturnValue     psi_codes_number(Object *& , Object *& );
 
 #endif // NAME_H

@@ -20,6 +20,7 @@ export SOURCES.heap = \
 	timeout.cc \
 	unify.cc \
 	unravel.cc \
+	user_hash_table.cc \
 	yield.cc
 
 export BASES.heap	= $(basename $(SOURCES.heap))

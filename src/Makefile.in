@@ -38,10 +38,10 @@ export OPTIMISATION=-O3
 #	DEBUG_RETRY	: Debugging information about retries
 #	DEBUG_MT	: Debugging information about multi-threading
 
-export DEBUGGING=
+#export DEBUGGING=
 
-export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 $(OPTIMISATION) $(DEBUGGING) -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
-export QACXXFLAGS = -Wall -D_GNU_SOURCE=1 $(DEBUGGING) -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
+export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 $(OPTIMISATION) @DEBUGGING@ -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
+export QACXXFLAGS = -Wall -D_GNU_SOURCE=1 @DEBUGGING@ -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
 
 .PHONY: all
 all: commands

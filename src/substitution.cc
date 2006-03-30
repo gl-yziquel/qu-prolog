@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: substitution.cc,v 1.12 2005/11/26 23:34:31 qp Exp $
+// $Id: substitution.cc,v 1.14 2006/03/13 00:10:25 qp Exp $
 
 //#include "atom_table.h"
 #include "heap_qp.h"
@@ -507,7 +507,8 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 		{
 		  assert(doms[k] != NULL);
 		  bool del = true;
-		  for (int p = k-1; p >= 0; p--)
+		  for (int p = k+1; p < blocksize; p++)
+		  //for (int p = k-1; p >= 0; p--)
 		    {
 		      assert(doms[k] == doms[k]->variableDereference());
 		      if (doms[p] == NULL)

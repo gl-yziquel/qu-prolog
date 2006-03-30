@@ -53,13 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: generate_var_names.h,v 1.3 2005/06/29 22:05:25 qp Exp $
+// $Id: generate_var_names.h,v 1.4 2006/03/30 22:50:30 qp Exp $
 
 #ifndef GENERATE_VAR_NAMES_H
 #define GENERATE_VAR_NAMES_H
 
 public:
-typedef Atom* (*NameGen)(Thread*, word32&, char*);
+typedef Atom* (*NameGen)(Thread*, word32&);
 
 //
 // Generate a new name for variables.  Find one that is either not in use or
@@ -67,20 +67,20 @@ typedef Atom* (*NameGen)(Thread*, word32&, char*);
 // The name sequence is:
 // A, .., Z, A1, .., Z1, A2, .., Z2, ...
 //
-static Atom* GenerateVarName(Thread* threadPtr, word32& counter, char* buff);
+static Atom* GenerateVarName(Thread* threadPtr, word32& counter);
 
 //
 // Generate a new name for object variables.  Find one that is either not in
 // use or generate a new variable name.
 //
-static Atom* GenerateObjectVariableName(Thread* threadPtr, word32& counter, char* buff);
+static Atom* GenerateObjectVariableName(Thread* threadPtr, word32& counter);
 
 //
 // Generate a new remembered name for object variables.  
 // Find one that is either not in
 // use or generate a new variable name.
 //
-static Atom* GenerateRObjectVariableName(Thread* threadPtr, word32& counter, char* buff);
+static Atom* GenerateRObjectVariableName(Thread* threadPtr, word32& counter);
 
 #endif // GENERATE_VAR_NAMES_H
 

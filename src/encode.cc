@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: encode.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
+// $Id: encode.cc,v 1.11 2006/03/30 22:50:30 qp Exp $
 
 #ifndef ENCODE_CC
 #define ENCODE_CC
@@ -266,7 +266,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 		
 		if (OBJECT_CAST(Reference*, term)->getName() == NULL)
 		  {
-		    Atom* name = th.GenerateVarName(&th, th.MetaCounter(), th.getAtomBuf1());
+		    Atom* name = th.GenerateVarName(&th, th.MetaCounter());
 		    names.setNameOldVar(name, term, th);
 		  }
 	      }
@@ -306,7 +306,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 		if (ref->getName() == NULL)
 		  {
 		    Atom* name = 
-		      th.GenerateObjectVariableName(&th, th.ObjectCounter(), th.getAtomBuf1());
+		      th.GenerateObjectVariableName(&th, th.ObjectCounter());
 		    names.setNameOldVar(name, term, th);
 		  }
 	      }

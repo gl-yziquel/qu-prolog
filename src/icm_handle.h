@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_handle.h,v 1.7 2005/11/26 23:34:30 qp Exp $
+// $Id: icm_handle.h,v 1.8 2006/01/31 23:17:50 qp Exp $
 #ifdef ICM_DEF //don't use this file if icm isn't in use
 
 #ifndef	ICM_HANDLE_H

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: quantifier.cc,v 1.3 2005/11/26 23:34:30 qp Exp $
+// $Id: quantifier.cc,v 1.5 2006/02/06 00:51:38 qp Exp $
 
 #include "atom_table.h"
 #include "thread_qp.h"

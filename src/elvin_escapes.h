@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: elvin_escapes.h,v 1.1 2003/12/10 21:28:04 qp Exp $
+// $Id: elvin_escapes.h,v 1.2 2006/01/31 23:17:50 qp Exp $
 
 #ifndef	ELVIN_ESCAPES_H
 #define	ELVIN_ESCAPES_H
@@ -111,6 +111,7 @@ ReturnValue psi_elvin_subscriptions(Object *&);
 //
 ReturnValue psi_elvin_delete_subscription(Object *&);
 
+#if 0
 //
 // psi_elvin_makeID(ID)
 //
@@ -119,6 +120,7 @@ ReturnValue psi_elvin_delete_subscription(Object *&);
 // mode(out)
 //
 ReturnValue psi_elvin_makeID(Object *&);
+#endif
 
 #endif	// ELVIN_ESCAPES_H
 

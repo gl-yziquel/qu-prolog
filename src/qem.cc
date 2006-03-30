@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.30 2005/11/26 23:34:30 qp Exp $
+// $Id: qem.cc,v 1.31 2006/01/31 23:17:51 qp Exp $
 
 #include <typeinfo>
 
@@ -100,6 +100,7 @@
 #include "thread_qp.h"
 #include "thread_options.h"
 #include "thread_table.h"
+#include "user_hash_table.h"
 
 const char *Program = "qem";
 
@@ -129,13 +130,16 @@ Signals *signals = NULL;
 ThreadTable *thread_table = NULL;
 ThreadOptions *thread_options = NULL;
 char *process_symbol = NULL;
+UserHashState* user_hash = new UserHashState(100, 10);
+int errorno = 0;
+
 #ifdef ICM_DEF
 char *icm_address = NULL;
+ICMMessageChannel* icm_channel = NULL;
+ICMEnvironment* icm_environment = NULL;
 #endif
 int icm_port = 0;
 
-ICMMessageChannel* icm_channel = NULL;
-ICMEnvironment* icm_environment = NULL;
 
 #ifdef ELVIN_DEF
 ElvinMessageChannel* elvin_channel = NULL;
@@ -357,7 +361,8 @@ main(int32 argc, char** argv)
     }
 #endif // ICM_DEF
 
-  exit(EXIT_SUCCESS);
+  //exit(EXIT_SUCCESS);
+  exit(errorno);
 }
 
 

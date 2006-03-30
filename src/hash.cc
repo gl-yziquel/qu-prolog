@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: hash.cc,v 1.4 2004/07/25 04:15:13 qp Exp $
+// $Id: hash.cc,v 1.5 2006/02/01 04:26:02 qp Exp $
 
 #include <sys/types.h>
 
@@ -70,7 +70,7 @@ Hash(const char *s)
 {
   word32 value = 5381;
   int c;
-  while (c = *s++)
+  while ((c = *s++))
     {
       value = ((value << 5) + value) + c; /* hash * 33 + c */
     }

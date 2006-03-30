@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: stack_qp.h,v 1.12 2005/11/26 23:34:31 qp Exp $
+// $Id: stack_qp.h,v 1.13 2006/01/31 23:17:51 qp Exp $
 
 #ifndef	STACK_QP_H
 #define	STACK_QP_H

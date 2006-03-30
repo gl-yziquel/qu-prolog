@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread.cc,v 1.11 2005/03/08 00:35:16 qp Exp $
+// $Id: thread.cc,v 1.12 2006/02/05 22:14:55 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -92,6 +92,7 @@ Thread::InitThread(void)
   metaCounter = 0;
   objectCounter = 0;
   ForeignFile = NULL;
+  finter = NULL;
   error_value = EV_NO_ERROR;
 
   for (u_int i = 0; i < NUMBER_X_REGISTERS; i++) 
@@ -219,6 +220,7 @@ Thread::Thread(Thread *pt,
 
 Thread::~Thread(void)
 {
+  if (finter != NULL) delete finter;
 
   if (localAreas)
     {

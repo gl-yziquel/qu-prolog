@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code.h,v 1.8 2005/11/26 23:34:29 qp Exp $ 
+// $Id: code.h,v 1.9 2006/01/31 23:17:49 qp Exp $ 
 
 #ifndef	CODE_H
 #define	CODE_H
@@ -116,21 +116,15 @@ inline word32	get4Bytes(CodeLoc& loc)
 //
 inline void	update1Byte(CodeLoc loc, word8 data)
 {
-  //Stamp();
-
   *loc = data;
 }
 inline void	update2Bytes(CodeLoc loc, word16 data)
 {
-  //Stamp();
-
   *loc++ = (data & 0xff00) >> 8;
   *loc   =  data & 0x00ff;
 }
 inline void	update4Bytes(CodeLoc loc, word32 data)
 {
-  //Stamp();
-
   *loc++ = static_cast<word8>((data & 0xff000000) >> 24);
   *loc++ = static_cast<word8>((data & 0x00ff0000) >> 16);
   *loc++ = static_cast<word8>((data & 0x0000ff00) >> 8);
@@ -246,11 +240,11 @@ public:
   
 };
 
-class	Code : public StaticCodeArea,
-	       public Timestamp
+class	Code : public StaticCodeArea
 {
 
 private:
+  Timestamp stamp;
   //
   // Return the name of the table.
   //
@@ -427,6 +421,9 @@ public:
   // Restore the code area.
   //
   void	load(istream& istrm, AtomTable& atoms);
+  
+  const word32 GetStamp(void) { return stamp.GetStamp(); }
+  void Stamp(void) { stamp.Stamp(); }
 
 };
 

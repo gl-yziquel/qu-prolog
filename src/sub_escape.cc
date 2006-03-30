@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: sub_escape.cc,v 1.7 2005/11/26 23:34:31 qp Exp $
+// $Id: sub_escape.cc,v 1.8 2006/01/31 23:17:51 qp Exp $
 
 #include "thread_qp.h"
 

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.h,v 1.10 2005/11/26 23:34:30 qp Exp $
+// $Id: icm_environment.h,v 1.12 2006/02/14 02:40:09 qp Exp $
 
 #ifdef ICM_DEF
 #ifndef	ICM_ENVIRONMENT_H
@@ -144,7 +144,7 @@ public:
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
 
-  void processTimeouts(struct timeval& t) {}
+  void processTimeouts(Timeval& t) {}
 };
 
 

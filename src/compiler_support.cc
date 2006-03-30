@@ -1,4 +1,4 @@
-// compiler_support.cc - Support ofr the C++ version of the compiler 
+
 //
 // ##Copyright##
 // 
@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compiler_support.cc,v 1.8 2005/11/26 23:34:29 qp Exp $
+// $Id: compiler_support.cc,v 1.10 2006/03/13 00:10:24 qp Exp $
 
 #include "code.h"
 #include "compiler_support.h"
@@ -598,9 +598,9 @@ void writeCAtom(char* atom, QPStream* stream)
   for (; *atom != '\0'; atom++)
     {
       if (*atom == '\\' || *atom == '\'')
-	{
-	  *stream << *atom;
-	}
+	    {
+	      *stream << *atom;
+	    }
       *stream << *atom;
     }
 }

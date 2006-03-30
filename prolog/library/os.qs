@@ -376,14 +376,14 @@ end('access'/3):
 $1:
 	pseudo_instr1(1, 0)
 	neck_cut
-	pseudo_instr1(112, 1)
+	pseudo_instr1(111, 1)
 	get_x_value(0, 1)
 	proceed
 
 $2:
 	pseudo_instr1(2, 0)
 	neck_cut
-	pseudo_instr1(111, 0)
+	pseudo_instr1(110, 0)
 	proceed
 
 $3:
@@ -410,9 +410,9 @@ end('working_directory'/1):
 
 
 $1:
-	pseudo_instr1(112, 2)
+	pseudo_instr1(111, 2)
 	get_x_value(0, 2)
-	pseudo_instr1(111, 1)
+	pseudo_instr1(110, 1)
 	proceed
 end('working_directory'/2):
 

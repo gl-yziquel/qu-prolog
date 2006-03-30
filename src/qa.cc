@@ -3176,6 +3176,7 @@ int
 yyerror(const char *s)
 {
   Fatal(__FUNCTION__, s);
+  return(1);
 }
 
 

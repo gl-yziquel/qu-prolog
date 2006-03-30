@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: hash_table.h,v 1.6 2005/11/26 23:34:30 qp Exp $
+// $Id: hash_table.h,v 1.7 2006/01/31 23:17:50 qp Exp $
 
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H

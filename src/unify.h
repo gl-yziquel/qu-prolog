@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: unify.h,v 1.2 2002/03/14 22:48:04 qp Exp $
+// $Id: unify.h,v 1.3 2006/03/30 22:50:31 qp Exp $
 
 #ifndef UNIFY_H
 #define UNIFY_H
@@ -105,7 +105,7 @@ void bindToSkelQuant(Object* variable);
 //
 // Unify two quantified terms.
 //
-bool unifyQuantifiers(PrologValue& quant1, PrologValue& quant1, bool in_quant);
+bool unifyQuantifiers(PrologValue& , PrologValue& , bool in_quant);
 
 //
 // Unify two frozen object variables.

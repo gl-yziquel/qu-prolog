@@ -56,7 +56,7 @@
 // 
 // ##Copyright##
 //
-// $Id: system_support.cc,v 1.2 2005/03/08 00:35:16 qp Exp $
+// $Id: system_support.cc,v 1.3 2006/03/30 22:50:31 qp Exp $
 
 // PORT
 #include "system_support.h"
@@ -108,11 +108,8 @@ void wordexp(string& str)
 	//hopefully never that these will get passed to us.
 	if (hasChanged)
 	{
-		return newstr;
-	} else
-	{
-		return str;
-	}
+		str = newstr;
+	} 
 
 #else //UNIX STUFF HERE
 

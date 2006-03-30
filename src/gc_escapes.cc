@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.cc,v 1.20 2005/11/26 23:34:29 qp Exp $
+// $Id: gc_escapes.cc,v 1.21 2006/01/31 23:17:50 qp Exp $
 
 #include <stdlib.h>
 

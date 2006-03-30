@@ -101,7 +101,8 @@ $1:
 	proceed
 
 $2:
-	proceed
+	put_integer(1, 0)
+	execute_predicate('halt', 1)
 end('$compilefile'/1):
 
 

@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: code.cc,v 1.15 2005/11/26 23:34:29 qp Exp $
+// $Id: code.cc,v 1.16 2006/01/31 23:17:49 qp Exp $
 
 #include "config.h"
 #include <iostream>

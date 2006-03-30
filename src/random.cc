@@ -2,7 +2,7 @@
 //
 // http://www.qbrundage.com/michaelb/pubs/essays/random_number_generation
 //
-// $Id: random.cc,v 1.2 2005/07/28 02:17:25 qp Exp $
+// $Id: random.cc,v 1.3 2006/01/31 23:17:51 qp Exp $
 
 #include <limits.h>
 #include <stdlib.h>
@@ -92,13 +92,16 @@ unsigned long r250_521_random() {
     i2 = (i2 != sizeof(unsigned long)*(R521_LEN-1)) ? (i2 + sizeof(unsigned long)) : 0;
     r521_index = i2;
         
-    return r ^ s;
+    return (r ^ s) & ALL_BITS;
 }
 
 
 double dr250()          /* returns a random double in range 0..1 */
 {
-  return (double)r250_521_random() / ALL_BITS;
+  int r = r250_521_random();
+  while (r == ALL_BITS)  r = r250_521_random();
+
+  return (double)r / ALL_BITS;
 }
 //
 // psi_srandom(Seed)
@@ -116,7 +119,7 @@ Thread::psi_srandom(Object *& object1)
       long seed = static_cast<long>(time((time_t *) NULL));
       srand(seed);
       r250_521_init();
-      for (int i = 0; i < 0; i++) (void)r250_521_random();
+      for (int i = 0; i < 10; i++) (void)r250_521_random();
       return BOOL_TO_RV(unify(object1, heap.newNumber(seed)));
     }
   else if (val1->isInteger())

@@ -55,7 +55,7 @@
 //
 // email: svrc@cs.uq.oz.au
 //
-// $Id: decompile.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
+// $Id: decompile.cc,v 1.11 2006/02/06 00:51:38 qp Exp $
 
 #include <sys/types.h>
 #include <signal.h>

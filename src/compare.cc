@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: compare.cc,v 1.3 2005/11/26 23:34:29 qp Exp $
+// $Id: compare.cc,v 1.4 2006/01/31 23:17:49 qp Exp $
 
 #include <string.h>
 

@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: env.cc,v 1.9 2005/11/26 23:34:29 qp Exp $
+// $Id: env.cc,v 1.11 2006/02/05 22:14:55 qp Exp $
 
 #include	<stdlib.h>
 #include	<sstream>
@@ -217,7 +217,7 @@ Thread::call_predicate(int32 noargs, ...)
   PredAddr = predicates->getCode(PredCodeLoc);
   if (PredAddr.type() == PredCode::ESCAPE_PRED)
     {
-      return(PredAddr.getEscape()(*this) ? RV_SUCCESS : RV_FAIL);
+      return(PredAddr.getEscape()(getFInter()) ? RV_SUCCESS : RV_FAIL);
     }
   else if (PredAddr.type() == PredCode::DYNAMIC_PRED)
     {

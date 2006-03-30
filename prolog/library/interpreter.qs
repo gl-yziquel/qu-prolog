@@ -211,7 +211,10 @@ end('$interpreter_catch'/1):
 '$interpreter_catch_msg'/1:
 
 	try(1, $1)
-	trust($2)
+	retry($2)
+	retry($3)
+	retry($4)
+	trust($5)
 
 $1:
 	pseudo_instr1(46, 0)
@@ -234,6 +237,80 @@ $1:
 	execute_predicate('write_atom', 2)
 
 $2:
+	pseudo_instr1(46, 0)
+	get_structure('exception', 1, 0)
+	unify_x_ref(0)
+	get_structure('undefined_predicate', 3, 0)
+	unify_void(1)
+	unify_x_variable(0)
+	unify_void(1)
+	allocate(2)
+	put_y_variable(1, 19)
+	put_y_variable(0, 19)
+	pseudo_instr3(0, 0, 21, 20)
+	neck_cut
+	put_constant('stderr', 0)
+	put_constant('no definition for ', 1)
+	call_predicate('write_atom', 2, 2)
+	put_y_value(1, 1)
+	put_constant('stderr', 0)
+	call_predicate('write_atom', 2, 1)
+	put_constant('stderr', 0)
+	put_constant('/', 1)
+	call_predicate('write_atom', 2, 1)
+	put_constant('stderr', 0)
+	pseudo_instr2(18, 0, 20)
+	put_constant('stderr', 0)
+	put_constant('
+', 1)
+	deallocate
+	execute_predicate('write_atom', 2)
+
+$3:
+	pseudo_instr1(46, 0)
+	get_structure('exception', 1, 0)
+	allocate(8)
+	unify_y_variable(7)
+	neck_cut
+	put_y_variable(3, 19)
+	put_y_variable(2, 19)
+	put_y_variable(0, 19)
+	put_y_value(7, 0)
+	put_y_variable(6, 1)
+	put_y_variable(1, 2)
+	put_y_variable(5, 3)
+	put_y_variable(4, 4)
+	call_predicate('$valid_exception_term', 5, 8)
+	put_y_value(7, 0)
+	put_y_value(6, 1)
+	put_y_value(1, 2)
+	put_y_value(5, 3)
+	put_y_value(4, 4)
+	put_y_value(3, 5)
+	call_predicate('$get_exception_message', 6, 4)
+	put_y_value(2, 1)
+	put_constant('stderr', 0)
+	call_predicate('$streamnum', 2, 4)
+	put_y_value(2, 0)
+	put_y_value(3, 1)
+	call_predicate('$write_term_list', 2, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	put_x_variable(2, 2)
+	put_x_variable(3, 3)
+	call_predicate('$exception_severity', 4, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('call_predicate', 1)
+
+$4:
+	pseudo_instr1(46, 0)
+	put_constant('ctrlC_reset', 1)
+	get_x_value(0, 1)
+	neck_cut
+	proceed
+
+$5:
 	allocate(1)
 	get_y_variable(0, 0)
 	put_constant('stderr', 0)

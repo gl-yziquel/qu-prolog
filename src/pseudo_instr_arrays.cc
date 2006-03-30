@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.59 2005/11/06 22:59:16 qp Exp $
+// $Id: pseudo_instr_arrays.cc,v 1.63 2006/03/13 00:10:25 qp Exp $
 
 #include "thread_qp.h"
 
@@ -188,7 +188,6 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_elvin_add_subscription,	0,	"psi_elvin_add_subscription"}, 
 	{&Thread::psi_elvin_delete_subscription,	0,	"psi_elvin_delete_subscription"}, 
 	{&Thread::psi_elvin_subscriptions,	1,	"psi_elvin_subscriptions"}, 
-	{&Thread::psi_elvin_makeID,	1,	"psi_elvin_makeID"}, 
 	{&Thread::psi_elvin_add_notification,	0,	"psi_elvin_add_notification"}, 
 	{&Thread::psi_chdir,	0,	"psi_chdir"}, 
 	{&Thread::psi_getcwd,	1,	"psi_getcwd"}, 
@@ -315,7 +314,10 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
 	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}, 
 	{&Thread::psi_write_float,	0,	"psi_write_float"}, 
-	{&Thread::psi_hash_double,	1,	"psi_hash_double"}
+	{&Thread::psi_hash_double,	1,	"psi_hash_double"}, 
+	{&Thread::psi_user_ht_remove,	0,	"psi_user_ht_remove"}, 
+	{&Thread::psi_number_codes,	1,	"psi_number_codes"}, 
+	{&Thread::psi_codes_number,	1,	"psi_codes_number"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -391,7 +393,10 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_simplify_term3,	3,	"psi_simplify_term3"}, 
 	{&Thread::psi_get_double,	4,	"psi_get_double"}, 
 	{&Thread::psi_random_range,	1,	"psi_random_range"}, 
-	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}
+	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
+	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}, 
+	{&Thread::psi_user_ht_lookup,	1,	"psi_user_ht_lookup"}, 
+	{&Thread::psi_user_ht_search,	1,	"psi_user_ht_search"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: timeout.cc,v 1.4 2005/11/26 23:34:31 qp Exp $
+// $Id: timeout.cc,v 1.6 2006/02/14 02:40:09 qp Exp $
 
 // #include "atom_table.h"
 #include "heap_qp.h"
@@ -71,23 +71,27 @@ Heap::IsTimeout(Object* cell)
     }
 }
 
-time_t
+double
 Heap::DecodeTimeout(Object* cell)
 {
   if (cell->isAtom())
     {
       if (cell == AtomTable::block)
 	{
-	  return (time_t) -1;
+	  return -1;
 	}
       else
 	{
 	  assert(false);
 	}
     }
-  else if (cell->isNumber() && cell->getNumber() >= 0)
+  else if (cell->isInteger() && cell->getNumber() >= 0)
     {
-      return (time_t) (cell->getNumber());
+      return (cell->getNumber());
+    }
+  else if (cell->isDouble() && cell->getDouble() >= 0)
+    {
+      return (cell->getDouble());
     }
 
   // Should never get here!

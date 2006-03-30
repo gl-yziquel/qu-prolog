@@ -51,6 +51,7 @@ export SOURCES.psi = \
 	thread_escapes.cc \
 	token.cc \
 	trace_escapes.cc \
+	user_hash_table_escapes.cc \
 	varname.cc \
 	write.cc
 

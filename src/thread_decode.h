@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_decode.h,v 1.4 2002/12/03 04:54:59 qp Exp $
+// $Id: thread_decode.h,v 1.6 2006/02/14 02:40:09 qp Exp $
 
 #ifndef	THREAD_DECODE_H
 #define	THREAD_DECODE_H
@@ -95,14 +95,13 @@ ErrorValue
 decode_thread_conditions(Heap& heap, AtomTable& atoms,
 			 Object * arg,
 			 bool& db,
-			 bool& record_db,
-			 time_t& wait_time);
+			 double& wait_time);
 
 #define DECODE_THREAD_CONDITIONS_ARG(heap, atoms, arg, arg_num,		\
-				     db, record_db, wait_time)		\
+				     db, wait_time)			\
 do {									\
   const ErrorValue ev = decode_thread_conditions(heap, atoms, arg,	\
-						 db, record_db,		\
+						 db, 			\
 						 wait_time);		\
   if (ev != EV_NO_ERROR)						\
     {									\

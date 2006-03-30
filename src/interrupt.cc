@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: interrupt.cc,v 1.5 2005/11/26 23:34:30 qp Exp $
+// $Id: interrupt.cc,v 1.9 2006/02/20 03:18:51 qp Exp $
 
 #include	<iostream>
 #include	<signal.h>
@@ -163,7 +163,7 @@ Thread::UndefinedPred(Object* goal)
   // Build argument for exception/1.
   //
   Structure* str = heap.newStructure(3);
-  str->setFunctor(AtomTable::undefined_predicate); // "$undefined_predicate"
+  str->setFunctor(AtomTable::undefined_predicate); // "undefined_predicate"
   str->setArgument(1, AtomTable::recoverable);     // "recoverable"
   str->setArgument(2, goal);
   str->setArgument(3, AtomTable::default_atom);                  // "default"

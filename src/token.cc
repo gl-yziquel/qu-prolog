@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: token.cc,v 1.13 2005/11/26 23:34:31 qp Exp $
+// $Id: token.cc,v 1.15 2006/03/30 22:50:31 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -67,9 +67,9 @@
 #include "thread_qp.h" 
 #include "scheduler.h"
 #ifdef WIN32
-	#include <conio.h>
-	#include "qem.h"
-	extern int* sigint_pipe;
+#include <conio.h>
+#include "qem.h"
+extern int* sigint_pipe;
 #endif
 
 extern AtomTable *atoms;
@@ -148,151 +148,151 @@ static const	int8	BANGS		= 12;	// extra quote characters
 // Classify each character.
 //
 const	int8	ChType[ASCII_SIZE + 1] =
-{
-       EOFCH,                  // really the -1th element of the table: 
-   //  ^@      ^A      ^B      ^C      ^D      ^E      ^F      ^G      
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //  ^H      ^I      ^J      ^K      ^L      ^M      ^N      ^O      
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //  ^P      ^Q      ^R      ^S      ^T      ^U      ^V      ^W      
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //  ^X      ^Y      ^Z      ^[      ^\      ^]      ^^      ^_      
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE, 
-   //  sp      !       "       #       $       %       &       '       
-       SPACE,  BANGS,  LISQT,  SIGN,   SIGN,   PUNCT,  SIGN,   ATMQT,
-   //  (       )       *       +       ,       -       .       /       
-       PUNCT,  PUNCT,  SIGN,   SIGN,   PUNCT,  SIGN,   SIGN,   SIGN,
-   //  0       1       2       3       4       5       6       7       
-       DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,
-   //  8       9       :       ;       <       =       >       ?       
-       DIGIT,  DIGIT,  SIGN,   NOBLE,  SIGN,   SIGN,   SIGN,   SIGN,
-   //  @       A       B       C       D       E       F       G       
-       SIGN,   UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,
-   //  H       I       J       K       L       M       N       O       
-       UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,
-   //  P       Q       R       S       T       U       V       W       
-       UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,
-   //  X       Y       Z       [       \       ]       ^       _       
-       UPPER,  UPPER,  UPPER,  PUNCT,  SIGN,   PUNCT,  SIGN,   UPPER,
-   //  `       a       b       c       d       e       f       g       
-       SIGN,   LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
-   //  h       i       j       k       l       m       n       o       
-       LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
-   //  p       q       r       s       t       u       v       w       
-       LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
-   //  x       y       z       {       |       }       ~       ^?      
-       LOWER,  LOWER,  LOWER,  PUNCT,  PUNCT,  PUNCT,  SIGN,   SPACE,
-   //  128     129     130     131     132     133     134     135     
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //   136     137     138     139     140     141     142     143     
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //   144     145     146     147     148     149     150     151     
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //   152     153     154     155     156     157     158     159     
-       SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
-   //   NBSP    !-inv   cents   pounds  ching   yen     brobar  section 
-       SPACE,  SIGN,   SIGN,   SIGN,   SIGN,   SIGN,   SIGN,   SIGN,
-   //   "accent copyr   -a ord  <<      nothook SHY     (reg)   ovbar   
-       SIGN,   SIGN,   LOWER,  SIGN,   SIGN,   SIGN,   SIGN,   SIGN,
-   //   degrees +/-     super 2 super 3 -       micron  pilcrow -       
-       SIGN,   SIGN,   LOWER,  LOWER,  SIGN,   SIGN,   SIGN,   SIGN,
-   //   ,       super 1 -o ord  >>      1/4     1/2     3/4     ?-inv   
-       SIGN,   LOWER,  LOWER,  SIGN,   SIGN,   SIGN,   SIGN,   SIGN,
-   //   `A      'A      ^A      ~A      "A      oA      AE      ,C      
-       UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER, 
-   //   `E      'E      ^E      "E      `I      'I      ^I      "I      
-       UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER, 
-   //   ETH     ~N      `O      'O      ^O      ~O      "O      x times 
-       UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER, 
-   //   /O      `U      'U      ^U      "U      'Y      THORN   ,B      
-       UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  LOWER,
-   //   `a      'a      ^a      ~a      "a      oa      ae      ,c      
-       LOWER,  LOWER8, LOWER8, LOWER8, LOWER8,  LOWER8, LOWER8, LOWER8,
-   //   `e      'e      ^e      "e      `i      'i      ^i      "i      
-       LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8,
-   //   eth     ~n      `o      'o      ^o      ~o      "o      -:-     
-       LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8,
-   //   /o      `u      'u      ^u      "u      'y      thorn  "y       
-       LOWER8, LOWER8, LOWER8, LOWER,  LOWER,  LOWER,  LOWER,  LOWER
-};
+  {
+    EOFCH,                  // really the -1th element of the table: 
+    //  ^@      ^A      ^B      ^C      ^D      ^E      ^F      ^G      
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //  ^H      ^I      ^J      ^K      ^L      ^M      ^N      ^O      
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //  ^P      ^Q      ^R      ^S      ^T      ^U      ^V      ^W      
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //  ^X      ^Y      ^Z      ^[      ^\      ^]      ^^      ^_      
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE, 
+    //  sp      !       "       #       $       %       &       '       
+    SPACE,  BANGS,  LISQT,  SIGN,   SIGN,   PUNCT,  SIGN,   ATMQT,
+    //  (       )       *       +       ,       -       .       /       
+    PUNCT,  PUNCT,  SIGN,   SIGN,   PUNCT,  SIGN,   SIGN,   SIGN,
+    //  0       1       2       3       4       5       6       7       
+    DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,  DIGIT,
+    //  8       9       :       ;       <       =       >       ?       
+    DIGIT,  DIGIT,  SIGN,   NOBLE,  SIGN,   SIGN,   SIGN,   SIGN,
+    //  @       A       B       C       D       E       F       G       
+    SIGN,   UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,
+    //  H       I       J       K       L       M       N       O       
+    UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,
+    //  P       Q       R       S       T       U       V       W       
+    UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,
+    //  X       Y       Z       [       \       ]       ^       _       
+    UPPER,  UPPER,  UPPER,  PUNCT,  SIGN,   PUNCT,  SIGN,   UPPER,
+    //  `       a       b       c       d       e       f       g       
+    SIGN,   LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
+    //  h       i       j       k       l       m       n       o       
+    LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
+    //  p       q       r       s       t       u       v       w       
+    LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
+    //  x       y       z       {       |       }       ~       ^?      
+    LOWER,  LOWER,  LOWER,  PUNCT,  PUNCT,  PUNCT,  SIGN,   SPACE,
+    //  128     129     130     131     132     133     134     135     
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //   136     137     138     139     140     141     142     143     
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //   144     145     146     147     148     149     150     151     
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //   152     153     154     155     156     157     158     159     
+    SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
+    //   NBSP    !-inv   cents   pounds  ching   yen     brobar  section 
+    SPACE,  SIGN,   SIGN,   SIGN,   SIGN,   SIGN,   SIGN,   SIGN,
+    //   "accent copyr   -a ord  <<      nothook SHY     (reg)   ovbar   
+    SIGN,   SIGN,   LOWER,  SIGN,   SIGN,   SIGN,   SIGN,   SIGN,
+    //   degrees +/-     super 2 super 3 -       micron  pilcrow -       
+    SIGN,   SIGN,   LOWER,  LOWER,  SIGN,   SIGN,   SIGN,   SIGN,
+    //   ,       super 1 -o ord  >>      1/4     1/2     3/4     ?-inv   
+    SIGN,   LOWER,  LOWER,  SIGN,   SIGN,   SIGN,   SIGN,   SIGN,
+    //   `A      'A      ^A      ~A      "A      oA      AE      ,C      
+    UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER, 
+    //   `E      'E      ^E      "E      `I      'I      ^I      "I      
+    UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER, 
+    //   ETH     ~N      `O      'O      ^O      ~O      "O      x times 
+    UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER, 
+    //   /O      `U      'U      ^U      "U      'Y      THORN   ,B      
+    UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  UPPER,  LOWER,
+    //   `a      'a      ^a      ~a      "a      oa      ae      ,c      
+    LOWER,  LOWER8, LOWER8, LOWER8, LOWER8,  LOWER8, LOWER8, LOWER8,
+    //   `e      'e      ^e      "e      `i      'i      ^i      "i      
+    LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8,
+    //   eth     ~n      `o      'o      ^o      ~o      "o      -:-     
+    LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8, LOWER8,
+    //   /o      `u      'u      ^u      "u      'y      thorn  "y       
+    LOWER8, LOWER8, LOWER8, LOWER,  LOWER,  LOWER,  LOWER,  LOWER
+  };
 
 
 //
 // Convert a character to a digital value.
 //
 static const int32 DigitVal[ASCII_SIZE + 1] =
-{
-	//
-	// This table helps to recognise digit numbers (including 
-	// hexadecimal digits). That is Each symbol, other than '0'..'9'and 
-	// 'A' .. 'E' and 'a'..'e', is associated with the number 99. 
-	//
-        99,                     // really the -1th element of the table 
+  {
+    //
+    // This table helps to recognise digit numbers (including 
+    // hexadecimal digits). That is Each symbol, other than '0'..'9'and 
+    // 'A' .. 'E' and 'a'..'e', is associated with the number 99. 
+    //
+    99,                     // really the -1th element of the table 
     //  ^@      ^A      ^B      ^C      ^D      ^E      ^F      ^G      
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  ^H      ^I      ^J      ^K      ^L      ^M      ^N      ^O      
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  ^P      ^Q      ^R      ^S      ^T      ^U      ^V      ^W      
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  ^X      ^Y      ^Z      ^[      ^\      ^]      ^^      ^_      
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  sp      !       "       #       $       %       &       '       
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  (       )       *       +       ,       -       .       /       
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  0       1       2       3       4       5       6       7       
-        0,      1,      2,      3,      4,      5,      6,      7,
+    0,      1,      2,      3,      4,      5,      6,      7,
     //  8       9       :       ;       <       =       >       ?       
-        8,      9,      99,     99,     99,     99,     99,     99,
+    8,      9,      99,     99,     99,     99,     99,     99,
     //  @       A       B       C       D       E       F       G       
-        99,     10,     11,     12,     13,     14,     15,     16,
+    99,     10,     11,     12,     13,     14,     15,     16,
     //  H       I       J       K       L       M       N       O       
-        17,     18,     19,     20,     21,     22,     23,     24,
+    17,     18,     19,     20,     21,     22,     23,     24,
     //  P       Q       R       S       T       U       V       W       
-        25,     26,     27,     28,     29,     30,     31,     32,
+    25,     26,     27,     28,     29,     30,     31,     32,
     //  X       Y       Z       [       \       ]       ^       _       
-        33,     34,     35,     99,     99,     99,     99,     99,
+    33,     34,     35,     99,     99,     99,     99,     99,
     //  `       a       b       c       d       e       f       g       
-        99,     10,     11,     12,     13,     14,     15,     16,
+    99,     10,     11,     12,     13,     14,     15,     16,
     //  h       i       j       k       l       m       n       o       
-        17,     18,     19,     20,     21,     22,     23,     24,
+    17,     18,     19,     20,     21,     22,     23,     24,
     //  p       q       r       s       t       u       v       w       
-        25,     26,     27,     28,     29,     30,     31,     32,
+    25,     26,     27,     28,     29,     30,     31,     32,
     //  x       y       z       {       |       }       ~       ^?      
-        33,     34,     35,     99,     99,     99,     99,     99,
+    33,     34,     35,     99,     99,     99,     99,     99,
     //  128     129     130     131     132     133     134     135     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  136     137     138     139     140     141     142     143     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  144     145     146     147     148     149     150     151     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  152     153     154     155     156     157     158     159     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  160     161     162     163     164     165     166     167     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  168     169     170(-a) 171     172     173     174     175     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  176     177     178(2)  179(3)  180     181     182     183     
-        99,     99,     2,      3,      99,     99,     99,     99,
+    99,     99,     2,      3,      99,     99,     99,     99,
     //  184     185(1)  186(-o) 187     188     189     190     191     
-        99,     1,      99,     99,     99,     99,     99,     99,
+    99,     1,      99,     99,     99,     99,     99,     99,
     //  192     193     194     195     196     197     198     199     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  200     201     202     203     204     205     206     207     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  208     209     210     211     212     213     214     215     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  216     217     218     219     220     221     222     223     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  224     225     226     227     228     229     230     231     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  232     233     234     235     236     237     238     239     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  240     241     242     243     244     245     246     247     
-        99,     99,     99,     99,     99,     99,     99,     99,
+    99,     99,     99,     99,     99,     99,     99,     99,
     //  248     249     250     251     252     253     254     255     
-        99,     99,     99,     99,     99,     99,     99,     99
-};
+    99,     99,     99,     99,     99,     99,     99,     99
+  };
 
 //
 // Look up the classification of a character.
@@ -343,23 +343,23 @@ inline int
 Thread::Get(QPStream *InStrm)
 {
   int c;
-   c = InStrm->get();
+  c = InStrm->get();
   
   if (c == '\n')
     {
       InStrm->newline();
     }
 #ifdef WIN32
-    //We read from the pipe here instead of in scheduler.cc
-    //and change the eof (-1 to a newline (10)
-    if (c == -1)
+  //We read from the pipe here instead of in scheduler.cc
+  //and change the eof (-1 to a newline (10)
+  if (c == -1)
     {
-        char buff[128];
-        if (!_eof(sigint_pipe[0]))
+      char buff[128];
+      if (!_eof(sigint_pipe[0]))
         {
-              read(sigint_pipe[0], buff, 120);
-              if (buff[0] == 'a')
-              	c = 10;
+	  read(sigint_pipe[0], buff, 120);
+	  if (buff[0] == 'a')
+	    c = 10;
 	}
     }		    
 #endif
@@ -455,10 +455,10 @@ Thread::ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer)
 {
   int c = Get(InStrm);
 
-BACK:
+ BACK:
   if (c == EOF) 
     {
-DOERR:
+    DOERR:
       assert(q == QUOTE || q == DOUBLE_QUOTE);
       
       InStrm->clear();
@@ -702,63 +702,63 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
       
       if (c == TERMIN)
         {
-	   sprintf(number, "%d", Integer);
-	   size_t len = strlen(number);
-           numptr = number + len;
-           *numptr++ = c;
-	   c = Get(InStrm);
-           if (InType(c) != DIGIT)
-             {
-               Putback(InStrm, c);
-               Putback(InStrm, TERMIN);
-               return(NUMBER_TOKEN); 
-             }
-           while (InType(c) == DIGIT)
-             {
-               *numptr++ = c;
-	       c = Get(InStrm);
-             }
-	   if (c == 'e')
-             {
-               *numptr++ = c;
-	       c = Get(InStrm);
-               if ((c == '-') || (c == '+'))
-                 {
-                   *numptr++ = c;
-	           c = Get(InStrm);
-                 }
+	  sprintf(number, "%d", Integer);
+	  size_t len = strlen(number);
+	  numptr = number + len;
+	  *numptr++ = c;
+	  c = Get(InStrm);
+	  if (InType(c) != DIGIT)
+	    {
+	      Putback(InStrm, c);
+	      Putback(InStrm, TERMIN);
+	      return(NUMBER_TOKEN); 
+	    }
+	  while (InType(c) == DIGIT)
+	    {
+	      *numptr++ = c;
+	      c = Get(InStrm);
+	    }
+	  if (c == 'e')
+	    {
+	      *numptr++ = c;
+	      c = Get(InStrm);
+	      if ((c == '-') || (c == '+'))
+		{
+		  *numptr++ = c;
+		  c = Get(InStrm);
+		}
               while (InType(c) == DIGIT)
-                 {
-                   *numptr++ = c;
-	           c = Get(InStrm);
-                 }
-              }
-           *numptr = '\0';
-           Putback(InStrm, c);
-           sscanf(number, "%lf" , &Double);
-           return(DOUBLE_TOKEN);
+		{
+		  *numptr++ = c;
+		  c = Get(InStrm);
+		}
+	    }
+	  *numptr = '\0';
+	  Putback(InStrm, c);
+	  sscanf(number, "%lf" , &Double);
+	  return(DOUBLE_TOKEN);
         }
       if (c == 'e')
         {
-	   sprintf(number, "%d", Integer);
-	   size_t len = strlen(number);
-           numptr = number + len;
-           *numptr++ = c;
-	   c = Get(InStrm);
-           if ((c == '-') || (c == '+'))
-             {
-               *numptr++ = c;
-	       c = Get(InStrm);
-             }
-           while (InType(c) == DIGIT)
-             {
-               *numptr++ = c;
-	       c = Get(InStrm);
-             }
-           *numptr = '\0';
-           Putback(InStrm, c);
-           sscanf(number, "%lf" , &Double);
-           return(DOUBLE_TOKEN);
+	  sprintf(number, "%d", Integer);
+	  size_t len = strlen(number);
+	  numptr = number + len;
+	  *numptr++ = c;
+	  c = Get(InStrm);
+	  if ((c == '-') || (c == '+'))
+	    {
+	      *numptr++ = c;
+	      c = Get(InStrm);
+	    }
+	  while (InType(c) == DIGIT)
+	    {
+	      *numptr++ = c;
+	      c = Get(InStrm);
+	    }
+	  *numptr = '\0';
+	  Putback(InStrm, c);
+	  sscanf(number, "%lf" , &Double);
+	  return(DOUBLE_TOKEN);
         }
       if (c == QUOTE)  
 	{
@@ -1013,7 +1013,8 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
 	{
 	  if (n-- == 0) 
 	    {
-	      RecoverQuotedName(InStrm, true);
+	      *s = '\0';
+	      RecoverQuotedName(InStrm, false);
 	      SyntaxError(Integer, TOO_LONG);
 	      return(ERROR_TOKEN);
 	    }
@@ -1053,7 +1054,7 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
 	  }
 	else
 	  {
-	   *tail = AtomTable::nil;
+	    *tail = AtomTable::nil;
 	    return(STRING_TOKEN);
 	  }
       }

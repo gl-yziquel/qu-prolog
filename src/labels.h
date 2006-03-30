@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: labels.h,v 1.6 2005/11/26 23:34:30 qp Exp $
+// $Id: labels.h,v 1.7 2006/01/31 23:17:51 qp Exp $
 
 #ifndef	LABELS_H
 #define	LABELS_H

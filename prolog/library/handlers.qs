@@ -69,7 +69,7 @@ $1:
 	put_y_variable(0, 19)
 	call_predicate('errornl', 0, 2)
 	call_predicate('repeat', 0, 2)
-	put_constant('SIGINT interrupt [cehtpx?] ? ', 0)
+	put_constant('SIGINT interrupt [cehprtx?] ? ', 0)
 	call_predicate('error', 1, 2)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
@@ -85,19 +85,20 @@ end('$read_option'/1):
 
 '$SIGINT_handler'/1:
 
-	switch_on_term(0, $9, 'fail', 'fail', 'fail', 'fail', $8)
-
-$8:
-	switch_on_constant(0, 16, ['$default':'fail', 99:$1, 101:$2, 104:$3, 116:$4, 112:$5, 120:$6, 63:$7])
+	switch_on_term(0, $10, 'fail', 'fail', 'fail', 'fail', $9)
 
 $9:
+	switch_on_constant(0, 16, ['$default':'fail', 99:$1, 101:$2, 104:$3, 116:$4, 112:$5, 114:$6, 120:$7, 63:$8])
+
+$10:
 	try(1, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
 	retry($6)
-	trust($7)
+	retry($7)
+	trust($8)
 
 $1:
 	get_integer(99, 0)
@@ -117,9 +118,11 @@ $3:
 	call_predicate('errornl', 1, 0)
 	put_constant('h)elp message', 0)
 	call_predicate('errornl', 1, 0)
+	put_constant('p)ush a goal into a thread', 0)
+	call_predicate('errornl', 1, 0)
 	put_constant('t)hread info', 0)
 	call_predicate('errornl', 1, 0)
-	put_constant('p)ush a goal into a thread', 0)
+	put_constant('r)eset: kill all threads (except thread0) and throw ctrlC_reset in thread0', 0)
 	call_predicate('errornl', 1, 0)
 	put_constant('e(x)it a given thread', 0)
 	call_predicate('errornl', 1, 0)
@@ -157,6 +160,19 @@ $5:
 	fail
 
 $6:
+	get_integer(114, 0)
+	pseudo_instr1(96, 0)
+	allocate(0)
+	call_predicate('$exit_threads', 1, 0)
+	put_constant('thread0', 0)
+	put_x_variable(1, 2)
+	get_structure('throw', 1, 2)
+	unify_constant('ctrlC_reset')
+	pseudo_instr2(103, 0, 1)
+	deallocate
+	execute_predicate('errornl', 0)
+
+$7:
 	get_integer(120, 0)
 	allocate(1)
 	put_y_variable(0, 19)
@@ -169,11 +185,56 @@ $6:
 	pseudo_instr1(97, 20)
 	fail
 
-$7:
+$8:
 	get_integer(63, 0)
 	put_integer(104, 0)
 	execute_predicate('$SIGINT_handler', 1)
 end('$SIGINT_handler'/1):
+
+
+
+'$exit_threads'/1:
+
+	switch_on_term(0, $6, 'fail', $5, 'fail', 'fail', $1)
+
+$5:
+	try(1, $2)
+	retry($3)
+	trust($4)
+
+$6:
+	try(1, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$1:
+	get_constant('[]', 0)
+	proceed
+
+$2:
+	get_list(0)
+	unify_integer(0)
+	unify_x_variable(0)
+	neck_cut
+	execute_predicate('$exit_threads', 1)
+
+$3:
+	get_list(0)
+	unify_x_variable(1)
+	unify_x_variable(0)
+	put_x_variable(2, 2)
+	pseudo_instr2(82, 1, 2)
+	neck_cut
+	pseudo_instr1(97, 2)
+	execute_predicate('$exit_threads', 1)
+
+$4:
+	get_list(0)
+	unify_void(1)
+	unify_x_variable(0)
+	execute_predicate('$exit_threads', 1)
+end('$exit_threads'/1):
 
 
 
@@ -1236,7 +1297,7 @@ end('$psi5_resume'/7):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648/0$0'/0:
+'$query_handlers2006_3_31_8_54_35_408/0$0'/0:
 
 
 $1:
@@ -1250,11 +1311,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648/0$0'/0):
+end('$query_handlers2006_3_31_8_54_35_408/0$0'/0):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648/0$1'/0:
+'$query_handlers2006_3_31_8_54_35_408/0$1'/0:
 
 
 $1:
@@ -1268,11 +1329,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648/0$1'/0):
+end('$query_handlers2006_3_31_8_54_35_408/0$1'/0):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648/0$2'/0:
+'$query_handlers2006_3_31_8_54_35_408/0$2'/0:
 
 
 $1:
@@ -1286,11 +1347,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648/0$2'/0):
+end('$query_handlers2006_3_31_8_54_35_408/0$2'/0):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648/0$3'/0:
+'$query_handlers2006_3_31_8_54_35_408/0$3'/0:
 
 
 $1:
@@ -1304,11 +1365,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648/0$3'/0):
+end('$query_handlers2006_3_31_8_54_35_408/0$3'/0):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648/0$4'/0:
+'$query_handlers2006_3_31_8_54_35_408/0$4'/0:
 
 
 $1:
@@ -1322,11 +1383,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648/0$4'/0):
+end('$query_handlers2006_3_31_8_54_35_408/0$4'/0):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648/0$5'/0:
+'$query_handlers2006_3_31_8_54_35_408/0$5'/0:
 
 
 $1:
@@ -1340,11 +1401,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648/0$5'/0):
+end('$query_handlers2006_3_31_8_54_35_408/0$5'/0):
 
 
 
-'$query_handlers2005_11_27_9_44_10_648'/0:
+'$query_handlers2006_3_31_8_54_35_408'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1356,37 +1417,37 @@ end('$query_handlers2005_11_27_9_44_10_648/0$5'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_handlers2005_11_27_9_44_10_648/0$0', 0, 0)
+	call_predicate('$query_handlers2006_3_31_8_54_35_408/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_handlers2005_11_27_9_44_10_648/0$1', 0, 0)
+	call_predicate('$query_handlers2006_3_31_8_54_35_408/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_handlers2005_11_27_9_44_10_648/0$2', 0, 0)
+	call_predicate('$query_handlers2006_3_31_8_54_35_408/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_handlers2005_11_27_9_44_10_648/0$3', 0, 0)
+	call_predicate('$query_handlers2006_3_31_8_54_35_408/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_handlers2005_11_27_9_44_10_648/0$4', 0, 0)
+	call_predicate('$query_handlers2006_3_31_8_54_35_408/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_handlers2005_11_27_9_44_10_648/0$5', 0, 0)
+	call_predicate('$query_handlers2006_3_31_8_54_35_408/0$5', 0, 0)
 	fail
 
 $7:
 	proceed
-end('$query_handlers2005_11_27_9_44_10_648'/0):
+end('$query_handlers2006_3_31_8_54_35_408'/0):
 
 
 
@@ -1394,7 +1455,7 @@ end('$query_handlers2005_11_27_9_44_10_648'/0):
 
 
 $1:
-	execute_predicate('$query_handlers2005_11_27_9_44_10_648', 0)
+	execute_predicate('$query_handlers2006_3_31_8_54_35_408', 0)
 end('$query'/0):
 
 

@@ -53,12 +53,13 @@
 // 
 // ##Copyright##
 //
-// $Id: messages.h,v 1.6 2005/11/26 23:34:30 qp Exp $
+// $Id: messages.h,v 1.8 2006/02/14 02:40:09 qp Exp $
 
 #ifndef	MESSAGES_H
 #define	MESSAGES_H
 
 #include "thread_table.h"
+#include "timeval.h"
 
 #ifdef WIN32
 #define _WINSOCKAPI_
@@ -122,7 +123,7 @@ public:
   virtual void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) = 0;
 
   // Process timeouts related to message channel
-  virtual void processTimeouts(struct timeval& timeout) = 0;
+  virtual void processTimeouts(Timeval& timeout) = 0;
 };
 
 

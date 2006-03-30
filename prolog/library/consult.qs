@@ -645,17 +645,19 @@ end('$read_assert_clauses/3$0'/4):
 
 
 
-'$read_assert_clauses/3$1'/3:
+'$read_assert_clauses/3$1'/4:
 
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
+	get_x_variable(4, 2)
 	allocate(3)
-	get_y_variable(1, 2)
+	get_y_variable(1, 3)
 	get_y_level(2)
 	put_y_variable(0, 2)
-	call_predicate('$consult_clauses', 3, 3)
+	put_x_value(4, 3)
+	call_predicate('$consult_clauses', 4, 3)
 	cut(2)
 	put_y_value(1, 1)
 	put_y_value(0, 2)
@@ -665,7 +667,7 @@ $1:
 
 $2:
 	proceed
-end('$read_assert_clauses/3$1'/3):
+end('$read_assert_clauses/3$1'/4):
 
 
 
@@ -696,17 +698,19 @@ end('$read_assert_clauses/3$2'/3):
 
 
 
-'$read_assert_clauses/3$3'/3:
+'$read_assert_clauses/3$3'/4:
 
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
+	get_x_variable(4, 2)
 	allocate(3)
-	get_y_variable(1, 2)
+	get_y_variable(1, 3)
 	get_y_level(2)
 	put_y_variable(0, 2)
-	call_predicate('$consult_clauses', 3, 3)
+	put_x_value(4, 3)
+	call_predicate('$consult_clauses', 4, 3)
 	cut(2)
 	put_y_value(1, 1)
 	put_y_value(0, 2)
@@ -716,21 +720,23 @@ $1:
 
 $2:
 	proceed
-end('$read_assert_clauses/3$3'/3):
+end('$read_assert_clauses/3$3'/4):
 
 
 
-'$read_assert_clauses/3$4'/3:
+'$read_assert_clauses/3$4'/4:
 
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
+	get_x_variable(4, 2)
 	allocate(3)
-	get_y_variable(1, 2)
+	get_y_variable(1, 3)
 	get_y_level(2)
 	put_y_variable(0, 2)
-	call_predicate('$consult_clauses', 3, 3)
+	put_x_value(4, 3)
+	call_predicate('$consult_clauses', 4, 3)
 	cut(2)
 	put_y_value(1, 1)
 	put_y_value(0, 2)
@@ -740,21 +746,23 @@ $1:
 
 $2:
 	proceed
-end('$read_assert_clauses/3$4'/3):
+end('$read_assert_clauses/3$4'/4):
 
 
 
-'$read_assert_clauses/3$5'/3:
+'$read_assert_clauses/3$5'/4:
 
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
+	get_x_variable(4, 2)
 	allocate(3)
-	get_y_variable(1, 2)
+	get_y_variable(1, 3)
 	get_y_level(2)
 	put_y_variable(0, 2)
-	call_predicate('$consult_clauses', 3, 3)
+	put_x_value(4, 3)
+	call_predicate('$consult_clauses', 4, 3)
 	cut(2)
 	put_y_value(1, 1)
 	put_y_value(0, 2)
@@ -764,7 +772,7 @@ $1:
 
 $2:
 	proceed
-end('$read_assert_clauses/3$5'/3):
+end('$read_assert_clauses/3$5'/4):
 
 
 
@@ -784,55 +792,51 @@ $6:
 $1:
 	get_constant('encoded', 0)
 	allocate(6)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
 	put_y_variable(0, 19)
-	put_y_value(2, 0)
+	put_y_value(3, 0)
 	put_y_variable(5, 1)
 	put_y_variable(4, 2)
-	put_y_variable(3, 3)
+	put_y_variable(1, 3)
 	call_predicate('$read_assert_clauses/3$0', 4, 6)
 	put_y_value(5, 0)
 	put_y_value(0, 1)
 	put_y_value(4, 2)
 	call_predicate('expand_term', 3, 4)
-	put_y_value(3, 0)
-	put_y_value(0, 1)
-	call_predicate('$check_singletons', 2, 3)
 	put_y_value(0, 0)
-	put_y_value(1, 1)
-	put_y_value(2, 2)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(3, 3)
 	deallocate
-	execute_predicate('$read_assert_clauses/3$1', 3)
+	execute_predicate('$read_assert_clauses/3$1', 4)
 
 $2:
 	get_constant('encoded_expanded', 0)
 	allocate(4)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	put_y_value(2, 0)
-	put_y_variable(0, 1)
-	put_y_variable(3, 2)
-	call_predicate('$read_assert_clauses/3$2', 3, 4)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
 	put_y_value(3, 0)
-	put_y_value(0, 1)
-	call_predicate('$check_singletons', 2, 3)
-	put_y_value(0, 0)
-	put_y_value(1, 1)
-	put_y_value(2, 2)
+	put_y_variable(1, 1)
+	put_y_variable(0, 2)
+	call_predicate('$read_assert_clauses/3$2', 3, 4)
+	put_y_value(1, 0)
+	put_y_value(2, 1)
+	put_y_value(0, 2)
+	put_y_value(3, 3)
 	deallocate
-	execute_predicate('$read_assert_clauses/3$3', 3)
+	execute_predicate('$read_assert_clauses/3$3', 4)
 
 $3:
 	get_constant('normal_expanded', 0)
 	allocate(4)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	put_y_value(2, 0)
-	put_y_variable(0, 1)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
+	put_y_value(3, 0)
+	put_y_variable(1, 1)
 	put_structure(1, 2)
 	set_constant('singletons')
-	set_y_variable(3)
+	set_y_variable(0)
 	put_list(3)
 	set_x_value(2)
 	set_constant('[]')
@@ -843,26 +847,24 @@ $3:
 	set_x_value(4)
 	set_x_value(3)
 	call_predicate('read_term', 3, 4)
-	put_y_value(3, 0)
-	put_y_value(0, 1)
-	call_predicate('$check_singletons', 2, 3)
-	put_y_value(0, 0)
-	put_y_value(1, 1)
-	put_y_value(2, 2)
+	put_y_value(1, 0)
+	put_y_value(2, 1)
+	put_y_value(0, 2)
+	put_y_value(3, 3)
 	deallocate
-	execute_predicate('$read_assert_clauses/3$4', 3)
+	execute_predicate('$read_assert_clauses/3$4', 4)
 
 $4:
 	get_constant('normal', 0)
 	allocate(6)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
 	put_y_variable(0, 19)
-	put_y_value(2, 0)
+	put_y_value(3, 0)
 	put_y_variable(5, 1)
 	put_structure(1, 2)
 	set_constant('singletons')
-	set_y_variable(3)
+	set_y_variable(1)
 	put_list(3)
 	set_x_value(2)
 	set_constant('[]')
@@ -877,14 +879,12 @@ $4:
 	put_y_value(0, 1)
 	put_y_value(4, 2)
 	call_predicate('expand_term', 3, 4)
-	put_y_value(3, 0)
-	put_y_value(0, 1)
-	call_predicate('$check_singletons', 2, 3)
 	put_y_value(0, 0)
-	put_y_value(1, 1)
-	put_y_value(2, 2)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(3, 3)
 	deallocate
-	execute_predicate('$read_assert_clauses/3$5', 3)
+	execute_predicate('$read_assert_clauses/3$5', 4)
 end('$read_assert_clauses'/3):
 
 
@@ -1009,23 +1009,23 @@ end('$extract_singletons'/2):
 
 
 
-'$consult_clauses'/3:
+'$consult_clauses'/4:
 
 	switch_on_term(0, $7, $3, $4, $3, $3, $5)
 
 $4:
-	try(3, $2)
+	try(4, $2)
 	trust($3)
 
 $5:
 	switch_on_constant(0, 4, ['$default':$3, '[]':$6])
 
 $6:
-	try(3, $1)
+	try(4, $1)
 	trust($3)
 
 $7:
-	try(3, $1)
+	try(4, $1)
 	retry($2)
 	trust($3)
 
@@ -1038,25 +1038,27 @@ $1:
 $2:
 	get_list(0)
 	unify_x_variable(0)
-	allocate(3)
-	unify_y_variable(2)
-	get_y_variable(1, 2)
+	allocate(4)
+	unify_y_variable(3)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
 	neck_cut
 	put_y_variable(0, 2)
-	call_predicate('$consult_clause', 3, 3)
-	put_y_value(2, 0)
+	call_predicate('$consult_clause', 4, 4)
+	put_y_value(3, 0)
 	put_y_value(0, 1)
-	put_y_value(1, 2)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
 	deallocate
-	execute_predicate('$consult_clauses', 3)
+	execute_predicate('$consult_clauses', 4)
 
 $3:
-	execute_predicate('$consult_clause', 3)
-end('$consult_clauses'/3):
+	execute_predicate('$consult_clause', 4)
+end('$consult_clauses'/4):
 
 
 
-'$consult_clause/3$0'/1:
+'$consult_clause/4$0'/1:
 
 	try(1, $1)
 	trust($2)
@@ -1066,11 +1068,11 @@ $1:
 
 $2:
 	proceed
-end('$consult_clause/3$0'/1):
+end('$consult_clause/4$0'/1):
 
 
 
-'$consult_clause/3$1'/3:
+'$consult_clause/4$1'/3:
 
 	switch_on_term(0, $6, $1, $1, $3, $1, $1)
 
@@ -1111,11 +1113,11 @@ $2:
 	put_x_variable(0, 0)
 	pseudo_instr3(0, 0, 1, 2)
 	execute_predicate('retractall', 1)
-end('$consult_clause/3$1'/3):
+end('$consult_clause/4$1'/3):
 
 
 
-'$consult_clause'/3:
+'$consult_clause'/4:
 
 	switch_on_term(0, $7, $6, $6, $6, $6, $4)
 
@@ -1123,16 +1125,16 @@ $4:
 	switch_on_constant(0, 4, ['$default':$6, 'end_of_file':$5])
 
 $5:
-	try(3, $1)
+	try(4, $1)
 	retry($2)
 	trust($3)
 
 $6:
-	try(3, $2)
+	try(4, $2)
 	trust($3)
 
 $7:
-	try(3, $1)
+	try(4, $1)
 	retry($2)
 	trust($3)
 
@@ -1150,7 +1152,7 @@ $2:
 	cut(0)
 	put_integer(1, 1)
 	pseudo_instr3(1, 1, 21, 0)
-	call_predicate('$consult_clause/3$0', 1, 1)
+	call_predicate('$consult_clause/4$0', 1, 1)
 	cut(0)
 	deallocate
 	proceed
@@ -1160,16 +1162,21 @@ $3:
 	get_y_variable(0, 0)
 	get_y_variable(3, 1)
 	get_y_variable(2, 2)
-	put_y_variable(1, 1)
+	get_x_variable(0, 3)
+	put_y_variable(1, 19)
+	put_y_value(0, 1)
+	call_predicate('$check_singletons', 2, 4)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
 	call_predicate('get_name', 2, 4)
 	put_y_value(1, 0)
 	put_y_value(3, 1)
 	put_y_value(2, 2)
-	call_predicate('$consult_clause/3$1', 3, 1)
+	call_predicate('$consult_clause/4$1', 3, 1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('assertz', 1)
-end('$consult_clause'/3):
+end('$consult_clause'/4):
 
 
 

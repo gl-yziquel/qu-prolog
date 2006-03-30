@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_environment.cc,v 1.16 2005/11/26 23:34:30 qp Exp $
+// $Id: icm_environment.cc,v 1.17 2006/01/31 23:17:50 qp Exp $
 
 #include "config.h"
 

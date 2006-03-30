@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: heap_buffer.h,v 1.4 2005/11/26 23:34:30 qp Exp $
+// $Id: heap_buffer.h,v 1.5 2006/01/31 23:17:50 qp Exp $
 
 #ifndef	HEAP_BUFFER_H
 #define	HEAP_BUFFER_H

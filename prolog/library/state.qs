@@ -196,3 +196,21 @@ end('restore'/1):
 
 
 
+'hash_table_search'/3:
+
+
+$1:
+	get_x_variable(3, 0)
+	get_x_variable(4, 1)
+	pseudo_instr3(75, 3, 4, 0)
+	get_x_variable(1, 0)
+	put_structure(3, 0)
+	set_constant('$')
+	set_x_value(3)
+	set_x_value(4)
+	set_x_value(2)
+	execute_predicate('member', 2)
+end('hash_table_search'/3):
+
+
+

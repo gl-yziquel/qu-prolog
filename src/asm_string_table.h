@@ -55,7 +55,7 @@
 // 
 // ##Copyright##
 //
-// $Id: asm_string_table.h,v 1.8 2005/11/26 23:34:28 qp Exp $
+// $Id: asm_string_table.h,v 1.9 2006/01/31 23:17:49 qp Exp $
 
 #ifndef	ASM_STRING_TABLE_H
 #define	ASM_STRING_TABLE_H

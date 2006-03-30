@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: dynamic_code.h,v 1.10 2005/11/26 23:34:29 qp Exp $  
+// $Id: dynamic_code.h,v 1.11 2006/01/31 23:17:50 qp Exp $  
 
 #ifndef DYNAMIC_CODE_H
 #define DYNAMIC_CODE_H
@@ -272,7 +272,7 @@ public:
 // varChain - the clause chain with variables in the index arg.
 // indexedClauses - the hash table for indexing.
 //
-class DynamicPredicate : public Timestamp 
+class DynamicPredicate 
 {
 private:
   word8	             clauseArity;
@@ -282,8 +282,12 @@ private:
   ChainEnds          allChain;
   ChainEnds          varChain;
   DynamicClauseHash  indexedClauses;
+  Timestamp	     stamp;
 
 public:
+
+  const word32 GetStamp(void) { return stamp.GetStamp(); }
+  void Stamp(void) { stamp.Stamp(); }
 
   word8 getIndexedArg(void) const 
   { return indexedArg; }

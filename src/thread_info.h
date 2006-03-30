@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_info.h,v 1.6 2005/11/26 23:34:31 qp Exp $
+// $Id: thread_info.h,v 1.7 2006/01/31 23:17:52 qp Exp $
 
 #ifndef THREAD_INFO_H
 #define THREAD_INFO_H

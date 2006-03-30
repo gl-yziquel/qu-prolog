@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: options.h,v 1.2 2005/11/26 23:34:30 qp Exp $
+// $Id: options.h,v 1.3 2006/01/31 23:17:51 qp Exp $
 
 #ifndef	OPTIONS_H
 #define	OPTIONS_H

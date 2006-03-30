@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: block.cc,v 1.14 2005/03/08 00:34:59 qp Exp $
+// $Id: block.cc,v 1.15 2006/02/14 02:40:08 qp Exp $
 
 #include "config.h"
 
@@ -69,20 +69,9 @@
 #include "io_qp.h"
 #include "thread_qp.h"
 
-time_t absoluteTimeout(const time_t timeout)
-{
-  if (timeout == static_cast<time_t>(-1))
-    {
-      return timeout;
-    }
-  else
-    {
-      return timeout + time(NULL);
-    }
-}
- 
+
 bool 
-BlockingIOObject::unblock(int& tout)
+BlockingIOObject::unblock(Timeval& tout)
 {
   if (io_type == IMSTREAM)
     {
@@ -122,30 +111,31 @@ BlockingIOObject::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
 }
 
 bool 
-BlockingTimeoutObject::unblock(int& tout)
+BlockingTimeoutObject::unblock(Timeval& tout)
 {
-  const time_t now = time(NULL);
-  if (timeout > 0 && timeout <= now)
+  Timeval now;
+
+  if (timeout.isForever())
+    {
+      return false;
+    }
+  else if (timeout <= now)
     {
       getThread()->getBlockStatus().setRestartTime();
       return true;
     }
   else
-    {
-      if (timeout > 0)
-	{
-	  int delta = static_cast<int>(timeout - now);
-	  if ((tout == 0) || tout > delta) tout = delta;
-	}
+    { 
+      Timeval delta(timeout, now);
+      if (delta < tout) tout = delta;
       return false;
     }
 }
 
-BlockingMessageObject::BlockingMessageObject(Thread* const t, time_t to, 
+BlockingMessageObject::BlockingMessageObject(Thread* const t, double to, 
 					     list<Message *>::iterator *i)
-  : BlockingObject(t), iter(i)
+  : BlockingObject(t), timeout(to), iter(i)
 {
-  timeout = absoluteTimeout(to);
   size = static_cast<u_int>(t->MessageQueue().size());
 }
 
@@ -155,9 +145,9 @@ BlockingMessageObject::updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd)
 }
 
 bool 
-BlockingMessageObject::unblock(int& tout)
+BlockingMessageObject::unblock(Timeval& tout)
 {
-  const time_t now = time(NULL);
+  Timeval now;
 
   if (size != getThread()->MessageQueue().size())
     {
@@ -169,52 +159,53 @@ BlockingMessageObject::unblock(int& tout)
       getThread()->getBlockStatus().setRestartMsg();
       return true;
     }
-  else if (timeout > 0 && timeout <= now)
+  else if (timeout.isForever())
+    {
+      return false;
+    }
+  else if (timeout <= now)
     {
       getThread()->getBlockStatus().setRestartTime();
       return true;
     }
   else
-    {      
-      if (timeout > 0)
-	{
-	  int delta = static_cast<int>(timeout - now);
-	  if ((tout == 0) || tout > delta) tout = delta;
-	}
+    { 	 
+      Timeval delta(timeout, now);
+      if (delta < tout) tout = delta;
       return false;
     }
 }
 
-BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, time_t to) 
-  :  BlockingObject(t), code(c)
+BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, double to) 
+  :  BlockingObject(t), code(c), timeout(to)
 {
-  timeout = absoluteTimeout(to);
   stamp = c->GetStamp();
 }
 
 
 bool 
-BlockingWaitObject::unblock(int& tout)
+BlockingWaitObject::unblock(Timeval& tout)
 {
-  const time_t now = time(NULL);
+  Timeval now;
 
   if (stamp < code->GetStamp())
     {
       getThread()->getBlockStatus().setRestartWait();
       return true;
     }
-  else if (timeout > 0 && timeout <= now)
+  else if (timeout.isForever())
+    {
+      return false;
+    }
+  else if (timeout <= now)
     {
       getThread()->getBlockStatus().setRestartTime();
       return true;
     }
   else
-    {
-      if (timeout > 0)
-	{
-	  int delta = static_cast<int>(timeout - now);
-	  if ((tout == 0) || tout > delta) tout = delta;
-	}
+    { 	 
+      Timeval delta(timeout, now);
+      if (delta < tout) tout = delta;
       return false;
     }
 }

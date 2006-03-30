@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_qp.h,v 1.11 2005/05/26 03:51:03 qp Exp $
+// $Id: thread_qp.h,v 1.13 2006/02/05 22:14:55 qp Exp $
 
 #ifndef	THREAD_QP_H
 #define	THREAD_QP_H
@@ -88,6 +88,7 @@
 #include "thread_options.h"
 #include "trace_qp.h"
 #include "trail.h"
+#include "foreign_interface.h"
 
 //
 // Was the thread interrupted? If so, what sort of interruption was
@@ -210,6 +211,7 @@ private:
 
   // Foreign function interface file.
   Handle *ForeignFile;
+  ForeignInterface *finter;
 
   // Used for passing back information about failed pseudo-instructions.
   ErrorValue error_value;
@@ -387,6 +389,13 @@ public:
     return(index);
   }
 
+  ForeignInterface* getFInter()
+    {
+      if (finter == NULL)
+	finter = new ForeignInterface(this);
+      return finter;
+    }
+
 
   // Declarations for many of the thread methods, most notably, the
   // pseudo-instructions.
@@ -455,6 +464,7 @@ public:
 #include "trace_escapes.h"
 #include "trail.h"
 #include "unify.h"
+#include "user_hash_table_escapes.h"
 #include "varname.h"
 #include "write.h"
 

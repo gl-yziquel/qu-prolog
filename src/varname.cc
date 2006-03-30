@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: varname.cc,v 1.6 2005/11/26 23:34:31 qp Exp $
+// $Id: varname.cc,v 1.8 2006/03/30 22:50:31 qp Exp $
 
 #include <iostream>
 #include <sstream>
@@ -116,7 +116,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
 	    }
 	  if (do_name)
 	    {
-	      Atom* name = GenerateVarName(this, metaCounter, atom_buf1);
+	      Atom* name = GenerateVarName(this, metaCounter);
               term = addExtraInfo(OBJECT_CAST(Variable*, term));
 	      names.setNameOldVar(name, term, *this);
 	    }
@@ -134,7 +134,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
 	    }
 	  if (do_name)
 	    {
-	      Atom* name = GenerateRObjectVariableName(this, objectCounter, atom_buf1);
+	      Atom* name = GenerateRObjectVariableName(this, objectCounter);
 	      names.setNameOldVar(name, term, *this);
 	    }
 	}
@@ -294,21 +294,23 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
   //
   AtomLoc name_loc;
   ostringstream strm;
+  string strm_string;
   do
     {
       strm.str("");
       strm << atoms->getAtomString(val2);
       strm << counter;
-      strm << ends;
+  //    strm << ends;
       counter++;
-      name_loc = atoms->lookUp(strm.str().data());
+      strm_string = strm.str();
+      name_loc = atoms->lookUp(strm_string.c_str());
     } while (name_loc != EMPTY_LOC && 
 	     names.getVariable(atoms->getAtom(name_loc)) != NULL);
 
   //
   // Add to the tables.
   //
-  Atom* name = atoms->add(strm.str().c_str());
+  Atom* name = atoms->add(strm_string.c_str());
   names.setNameOldVar(name, var, *this);
 
   return(RV_SUCCESS);
@@ -365,21 +367,23 @@ Thread::psi_set_object_variable_name(Object *& object1, Object *& object2)
   //
   AtomLoc name_loc;
   ostringstream strm;
+  string strm_string;
   do
     {
       strm.str("");
       strm << atoms->getAtomString(OBJECT_CAST(Atom*, val2));
       strm << objectCounter;
-      strm << ends;
+      //strm << ends;
       objectCounter++;
-      name_loc = atoms->lookUp(strm.str().data());
+      strm_string = strm.str();
+      name_loc = atoms->lookUp(strm_string.c_str());
     } while (name_loc != EMPTY_LOC && 
 	     names.getVariable(atoms->getAtom(name_loc)) != NULL);
 
   //
   // Add to the tables.
   //
-  Atom* name = atoms->add(strm.str().c_str());
+  Atom* name = atoms->add(strm_string.c_str());
 
   names.setNameOldVar(name, newvar, *this);
   bindObjectVariables(var, newvar);

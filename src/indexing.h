@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: indexing.h,v 1.6 2005/11/26 23:34:30 qp Exp $
+// $Id: indexing.h,v 1.7 2006/01/31 23:17:50 qp Exp $
 
 #ifndef INDEXING_H
 #define INDEXING_H
