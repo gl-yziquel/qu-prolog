@@ -15,8 +15,6 @@ export SOURCES.library	= \
 	name_table.cc \
 	obj_index.cc \
 	pred_table.cc \
-	record_ref_table.cc \
-	record_stack.cc \
 	signal.cc \
 	string.cc \
 	string_map.cc \

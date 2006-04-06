@@ -3,7 +3,7 @@
 exec /usr/bin/wish "$0" "$@"
 
 # load icm interface functions
-load /home/pjr/qp_dev/rel/qp7.1/bin/tkICM.so tkICM
+load /home/pjr/qp_dev/rel/qp7.2/bin/tkICM.so tkICM
 
 #
 # A "dumb terminal" interface to the QP interpreter

@@ -49,3 +49,5 @@ xqp:
 	cd @QPHOME@/src/xqpdebug;qmake;cd -
 	@$(MAKE) -C @QPHOME@/src/xqp
 	@$(MAKE) -C @QPHOME@/src/xqpdebug
+	/usr/bin/install @XQP@ @QPHOME@/bin
+	/usr/bin/install @XQPDEBUG@ @QPHOME@/bin

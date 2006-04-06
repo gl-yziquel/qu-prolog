@@ -138,6 +138,16 @@ end('elvin_disconnect'/0):
 
 
 
+'icm_connected'/0:
+
+
+$1:
+	pseudo_instr0(14)
+	proceed
+end('icm_connected'/0):
+
+
+
 'compound'/1:
 
 
@@ -387,13 +397,14 @@ end('$psi_resume'/1):
 
 
 
-'$erase'/1:
+'irandom'/1:
 
 
 $1:
-	pseudo_instr1(24, 0)
+	pseudo_instr1(24, 1)
+	get_x_value(0, 1)
 	proceed
-end('$erase'/1):
+end('irandom'/1):
 
 
 
@@ -1325,14 +1336,13 @@ end('random'/1):
 
 
 
-'irandom'/1:
+'$icm_ping'/1:
 
 
 $1:
-	pseudo_instr1(115, 1)
-	get_x_value(0, 1)
+	pseudo_instr1(115, 0)
 	proceed
-end('irandom'/1):
+end('$icm_ping'/1):
 
 
 
@@ -1718,47 +1728,46 @@ end('$code_char'/2):
 
 
 
-'$record_get_first_ref'/2:
+'$hash_double'/2:
 
 
 $1:
 	pseudo_instr2(36, 0, 2)
 	get_x_value(1, 2)
 	proceed
-end('$record_get_first_ref'/2):
+end('$hash_double'/2):
 
 
 
-'$record_get_next_ref'/2:
+'hash_table_remove'/2:
 
 
 $1:
-	pseudo_instr2(37, 0, 2)
-	get_x_value(1, 2)
+	pseudo_instr2(37, 0, 1)
 	proceed
-end('$record_get_next_ref'/2):
+end('hash_table_remove'/2):
 
 
 
-'$record_get_last_ref'/2:
+'$number_codes'/2:
 
 
 $1:
 	pseudo_instr2(38, 0, 2)
 	get_x_value(1, 2)
 	proceed
-end('$record_get_last_ref'/2):
+end('$number_codes'/2):
 
 
 
-'$record_get_term'/2:
+'$codes_number'/2:
 
 
 $1:
 	pseudo_instr2(39, 0, 2)
 	get_x_value(1, 2)
 	proceed
-end('$record_get_term'/2):
+end('$codes_number'/2):
 
 
 
@@ -2568,49 +2577,6 @@ end('$write_float'/2):
 
 
 
-'$hash_double'/2:
-
-
-$1:
-	pseudo_instr2(116, 0, 2)
-	get_x_value(1, 2)
-	proceed
-end('$hash_double'/2):
-
-
-
-'hash_table_remove'/2:
-
-
-$1:
-	pseudo_instr2(117, 0, 1)
-	proceed
-end('hash_table_remove'/2):
-
-
-
-'$number_codes'/2:
-
-
-$1:
-	pseudo_instr2(118, 0, 2)
-	get_x_value(1, 2)
-	proceed
-end('$number_codes'/2):
-
-
-
-'$codes_number'/2:
-
-
-$1:
-	pseudo_instr2(119, 0, 2)
-	get_x_value(1, 2)
-	proceed
-end('$codes_number'/2):
-
-
-
 'functor'/3:
 
 
@@ -2935,25 +2901,25 @@ end('concat_atom'/3):
 
 
 
-'$record_record_first'/3:
+'hash_table_lookup'/3:
 
 
 $1:
 	pseudo_instr3(29, 0, 1, 3)
 	get_x_value(2, 3)
 	proceed
-end('$record_record_first'/3):
+end('hash_table_lookup'/3):
 
 
 
-'$record_record_last'/3:
+'$hash_table_search'/3:
 
 
 $1:
 	pseudo_instr3(30, 0, 1, 3)
 	get_x_value(2, 3)
 	proceed
-end('$record_record_last'/3):
+end('$hash_table_search'/3):
 
 
 
@@ -3431,28 +3397,6 @@ $1:
 	pseudo_instr3(73, 0, 1, 2)
 	proceed
 end('hash_table_insert'/3):
-
-
-
-'hash_table_lookup'/3:
-
-
-$1:
-	pseudo_instr3(74, 0, 1, 3)
-	get_x_value(2, 3)
-	proceed
-end('hash_table_lookup'/3):
-
-
-
-'$hash_table_search'/3:
-
-
-$1:
-	pseudo_instr3(75, 0, 1, 3)
-	get_x_value(2, 3)
-	proceed
-end('$hash_table_search'/3):
 
 
 

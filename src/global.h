@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: global.h,v 1.4 2005/03/08 00:35:06 qp Exp $
+// $Id: global.h,v 1.6 2006/04/04 02:44:32 qp Exp $
 
 #ifndef	GLOBAL_H
 #define	GLOBAL_H
@@ -67,7 +67,6 @@
 #endif
 #include "pred_table.h"
 #include "qem_options.h"
-#include "record_ref_table.h"
 #include "scheduler.h"
 #include "scheduler_status.h"
 #include "signals.h"
@@ -87,7 +86,6 @@ extern IOManager *iom;
 extern SocketManager *sockm;
 extern PredTab *predicates;
 extern QemOptions *qem_options;
-extern RecordDB *record_db;
 extern Scheduler *scheduler;
 extern SchedulerStatus *scheduler_status;
 extern Signals *signals;

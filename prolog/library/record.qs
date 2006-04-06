@@ -1,3 +1,15 @@
+'$init_record'/0:
+
+
+$1:
+	put_constant('$recordDBcounter', 0)
+	put_integer(0, 1)
+	pseudo_instr2(74, 0, 1)
+	proceed
+end('$init_record'/0):
+
+
+
 'recorded/3$0/3$0'/1:
 
 	try(1, $1)
@@ -63,7 +75,7 @@ $2:
 	put_y_value(1, 1)
 	put_y_value(0, 2)
 	deallocate
-	execute_predicate('$recorded', 3)
+	execute_predicate('$recordDB', 3)
 
 $3:
 	get_x_variable(3, 0)
@@ -104,102 +116,11 @@ end('recorded'/3):
 
 
 
-'$recorded/3$0'/3:
-
-	try(3, $1)
-	trust($2)
-
-$1:
-	pseudo_instr1(3, 0)
-	neck_cut
-	pseudo_instr2(39, 0, 2)
-	get_x_value(1, 2)
-	proceed
-
-$2:
-	get_x_variable(3, 0)
-	get_x_variable(0, 2)
-	put_x_value(3, 2)
-	execute_predicate('$record_get_atomic', 3)
-end('$recorded/3$0'/3):
-
-
-
-'$recorded'/3:
-
-
-$1:
-	get_x_variable(3, 0)
-	get_x_variable(0, 2)
-	put_x_value(3, 2)
-	execute_predicate('$recorded/3$0', 3)
-end('$recorded'/3):
-
-
-
-'$record_get_atomic'/3:
-
-
-$1:
-	get_x_variable(4, 1)
-	get_x_variable(3, 2)
-	put_integer(5, 1)
-	put_integer(0, 2)
-	pseudo_instr2(10, 1, 2)
-	pseudo_instr2(36, 0, 1)
-	put_x_value(4, 2)
-	allocate(0)
-	call_predicate('$recorded_loop', 4, 0)
-	put_integer(5, 0)
-	put_integer(1, 1)
-	pseudo_instr2(10, 0, 1)
-	deallocate
-	proceed
-end('$record_get_atomic'/3):
-
-
-
-'$recorded_loop'/4:
-
-	try(4, $1)
-	trust($2)
-
-$1:
-	get_x_value(1, 3)
-	pseudo_instr2(39, 1, 0)
-	get_x_value(2, 0)
-	proceed
-
-$2:
-	pseudo_instr2(37, 1, 4)
-	get_x_variable(1, 4)
-	execute_predicate('$recorded_loop', 4)
-end('$recorded_loop'/4):
-
-
-
-'recorda/3$0/3$0'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	pseudo_instr1(1, 0)
-	proceed
-
-$2:
-	pseudo_instr1(3, 0)
-	proceed
-end('recorda/3$0/3$0'/1):
-
-
-
 'recorda/3$0'/3:
 
 	try(3, $1)
 	retry($2)
-	retry($3)
-	trust($4)
+	trust($3)
 
 $1:
 	get_x_variable(3, 0)
@@ -231,37 +152,21 @@ $1:
 	execute_predicate('instantiation_execption', 3)
 
 $2:
-	pseudo_instr1(2, 0)
-	pseudo_instr1(1, 1)
+	get_x_variable(3, 0)
+	pseudo_instr1(2, 3)
+	pseudo_instr1(1, 2)
 	neck_cut
-	put_integer(5, 3)
-	put_integer(0, 4)
-	pseudo_instr2(10, 3, 4)
-	pseudo_instr2(36, 0, 3)
-	get_x_value(2, 3)
-	pseudo_instr2(39, 2, 0)
-	get_x_value(1, 0)
-	put_integer(5, 0)
-	put_integer(1, 1)
-	pseudo_instr2(10, 0, 1)
-	proceed
+	put_constant('$recordDBcounter', 4)
+	pseudo_instr2(75, 4, 0)
+	get_x_value(2, 0)
+	put_structure(3, 0)
+	set_constant('$recordDB')
+	set_x_value(3)
+	set_x_value(1)
+	set_x_value(2)
+	execute_predicate('asserta', 1)
 
 $3:
-	allocate(4)
-	get_y_variable(2, 0)
-	get_y_variable(1, 1)
-	get_y_variable(0, 2)
-	pseudo_instr1(2, 22)
-	get_y_level(3)
-	put_y_value(0, 0)
-	call_predicate('recorda/3$0/3$0', 1, 4)
-	cut(3)
-	pseudo_instr3(29, 22, 21, 0)
-	get_y_value(0, 0)
-	deallocate
-	proceed
-
-$4:
 	get_x_variable(3, 0)
 	put_structure(3, 0)
 	set_constant('recorda')
@@ -300,28 +205,11 @@ end('recorda'/3):
 
 
 
-'recordz/3$0/3$0'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	pseudo_instr1(1, 0)
-	proceed
-
-$2:
-	pseudo_instr1(3, 0)
-	proceed
-end('recordz/3$0/3$0'/1):
-
-
-
 'recordz/3$0'/3:
 
 	try(3, $1)
 	retry($2)
-	retry($3)
-	trust($4)
+	trust($3)
 
 $1:
 	get_x_variable(3, 0)
@@ -353,37 +241,21 @@ $1:
 	execute_predicate('instantiation_execption', 3)
 
 $2:
-	pseudo_instr1(2, 0)
-	pseudo_instr1(1, 1)
+	get_x_variable(3, 0)
+	pseudo_instr1(2, 3)
+	pseudo_instr1(1, 2)
 	neck_cut
-	put_integer(5, 3)
-	put_integer(0, 4)
-	pseudo_instr2(10, 3, 4)
-	pseudo_instr2(38, 0, 3)
-	get_x_value(2, 3)
-	pseudo_instr2(39, 2, 0)
-	get_x_value(1, 0)
-	put_integer(5, 0)
-	put_integer(1, 1)
-	pseudo_instr2(10, 0, 1)
-	proceed
+	put_constant('$recordDBcounter', 4)
+	pseudo_instr2(75, 4, 0)
+	get_x_value(2, 0)
+	put_structure(3, 0)
+	set_constant('$recordDB')
+	set_x_value(3)
+	set_x_value(1)
+	set_x_value(2)
+	execute_predicate('assertz', 1)
 
 $3:
-	allocate(4)
-	get_y_variable(2, 0)
-	get_y_variable(1, 1)
-	get_y_variable(0, 2)
-	pseudo_instr1(2, 22)
-	get_y_level(3)
-	put_y_value(0, 0)
-	call_predicate('recordz/3$0/3$0', 1, 4)
-	cut(3)
-	pseudo_instr3(30, 22, 21, 0)
-	get_y_value(0, 0)
-	deallocate
-	proceed
-
-$4:
 	get_x_variable(3, 0)
 	put_structure(3, 0)
 	set_constant('recordz')
@@ -448,10 +320,14 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
-	pseudo_instr1(3, 0)
+	get_x_variable(1, 0)
+	pseudo_instr1(3, 1)
 	neck_cut
-	pseudo_instr1(24, 0)
-	proceed
+	put_structure(3, 0)
+	set_constant('$recordDB')
+	set_void(2)
+	set_x_value(1)
+	execute_predicate('retract', 1)
 
 $3:
 	get_x_variable(1, 0)
@@ -513,11 +389,11 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
-	pseudo_instr1(3, 0)
+	get_x_variable(2, 0)
+	pseudo_instr1(3, 2)
 	neck_cut
-	pseudo_instr2(39, 0, 2)
-	get_x_value(1, 2)
-	proceed
+	put_x_variable(0, 0)
+	execute_predicate('$recordDB', 3)
 
 $3:
 	get_x_variable(2, 0)

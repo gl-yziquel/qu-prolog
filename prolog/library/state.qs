@@ -202,7 +202,7 @@ end('restore'/1):
 $1:
 	get_x_variable(3, 0)
 	get_x_variable(4, 1)
-	pseudo_instr3(75, 3, 4, 0)
+	pseudo_instr3(30, 3, 4, 0)
 	get_x_variable(1, 0)
 	put_structure(3, 0)
 	set_constant('$')

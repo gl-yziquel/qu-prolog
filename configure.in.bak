@@ -794,8 +794,6 @@ AC_OUTPUT(LOGIN_CMDS \
 	  bin/qcc \
 	  bin/qppp \
 	  bin/qp_gui \
-	  bin/xqp \
-	  bin/xqpdebug \
 	  bin/qp_debug_gui \
 	  examples/monitor_gui \
 	  examples/template_gui \
@@ -844,8 +842,6 @@ chmod -f a+x bin/kq \
 	  bin/qc1.boot \
 	  bin/qcc \
 	  bin/qppp \
-	  bin/xqp \
-	  bin/xqpdebug \
 	  bootstrap/qc1.boot \
 	  sys_bin/Update \
 	  sys_bin/Makefile \

@@ -6335,7 +6335,7 @@ _ACEOF
 fi
 #------------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                                                                                                                                        ac_config_files="$ac_config_files LOGIN_CMDS Makefile PROFILE_CMDS bin/Makefile bin/kq bin/qc bin/qc1.boot bin/qcc bin/qppp bin/qp_gui bin/xqp bin/xqpdebug bin/qp_debug_gui examples/monitor_gui examples/template_gui examples/tcp_gui prolog/Makefile prolog/compiler/Makefile prolog/library/Makefile prolog/qc1/Makefile prolog/qecat/Makefile prolog/qg/Makefile prolog/qp/Makefile src/Makefile src/Makefile.heap src/Makefile.ipc src/Makefile.library src/Makefile.psi src/Makefile.qa src/Makefile.qdeal src/Makefile.qem src/Makefile.ql src/Makefile.qod src/Makefile.thread src/Makefile.tkICM src/xqpdebug/xqpdebug.pro"
+                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files LOGIN_CMDS Makefile PROFILE_CMDS bin/Makefile bin/kq bin/qc bin/qc1.boot bin/qcc bin/qppp bin/qp_gui bin/qp_debug_gui examples/monitor_gui examples/template_gui examples/tcp_gui prolog/Makefile prolog/compiler/Makefile prolog/library/Makefile prolog/qc1/Makefile prolog/qecat/Makefile prolog/qg/Makefile prolog/qp/Makefile src/Makefile src/Makefile.heap src/Makefile.ipc src/Makefile.library src/Makefile.psi src/Makefile.qa src/Makefile.qdeal src/Makefile.qem src/Makefile.ql src/Makefile.qod src/Makefile.thread src/Makefile.tkICM src/xqpdebug/xqpdebug.pro"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -6871,8 +6871,6 @@ do
   "bin/qcc" ) CONFIG_FILES="$CONFIG_FILES bin/qcc" ;;
   "bin/qppp" ) CONFIG_FILES="$CONFIG_FILES bin/qppp" ;;
   "bin/qp_gui" ) CONFIG_FILES="$CONFIG_FILES bin/qp_gui" ;;
-  "bin/xqp" ) CONFIG_FILES="$CONFIG_FILES bin/xqp" ;;
-  "bin/xqpdebug" ) CONFIG_FILES="$CONFIG_FILES bin/xqpdebug" ;;
   "bin/qp_debug_gui" ) CONFIG_FILES="$CONFIG_FILES bin/qp_debug_gui" ;;
   "examples/monitor_gui" ) CONFIG_FILES="$CONFIG_FILES examples/monitor_gui" ;;
   "examples/template_gui" ) CONFIG_FILES="$CONFIG_FILES examples/template_gui" ;;
@@ -7540,8 +7538,6 @@ chmod -f a+x bin/kq \
 	  bin/qc1.boot \
 	  bin/qcc \
 	  bin/qppp \
-	  bin/xqp \
-	  bin/xqpdebug \
 	  examples/monitor_gui \
 	  examples/template_gui \
 	  bin/qp_gui \

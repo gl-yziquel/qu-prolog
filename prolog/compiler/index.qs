@@ -523,7 +523,7 @@ $5:
 $6:
 	pseudo_instr1(112, 0)
 	neck_cut
-	pseudo_instr2(116, 0, 2)
+	pseudo_instr2(36, 0, 2)
 	get_x_variable(0, 2)
 	get_structure('const', 1, 1)
 	unify_x_value(0)

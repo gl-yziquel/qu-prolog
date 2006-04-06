@@ -62,6 +62,7 @@ $1:
 	call_predicate('$init_op', 0, 0)
 	call_predicate('$init_stream', 0, 0)
 	call_predicate('$init_term_exp', 0, 0)
+	call_predicate('$init_record', 0, 0)
 	deallocate
 	execute_predicate('$init_objvar', 0)
 end('$initialise_subsystems'/0):

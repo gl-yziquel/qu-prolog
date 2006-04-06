@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem_options.h,v 1.4 2002/11/10 07:54:53 qp Exp $
+// $Id: qem_options.h,v 1.5 2006/04/04 01:56:36 qp Exp $
 
 #ifndef QEM_OPTIONS_H
 #define QEM_OPTIONS_H
@@ -86,7 +86,6 @@ private:
   Option<word32> string_map_size;
   Option<word32> ip_table_size;
   Option<word32> scratchpad_size;
-  Option<word32> record_db_size;
   Option<word32> thread_table_size;
   Option<bool> stand_alone;
   Option<char *> qx_file;
@@ -115,7 +114,6 @@ public:
   word32 TagTrailSize(void) const { return tag_trail_size.Value(); }
   word32 RefTrailSize(void) const { return ref_trail_size.Value(); }
   word32 StringMapSize(void) const { return string_map_size.Value(); }
-  word32 RecordDBSize(void) const { return record_db_size.Value(); }
   word32 ThreadTableSize(void) const { return thread_table_size.Value(); }
 
   char *QxFile(void) const { return qx_file.Value(); }

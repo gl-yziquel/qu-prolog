@@ -35,7 +35,6 @@ export SOURCES.psi = \
 	pseudo_instr_arrays.cc \
 	random.cc \
 	read.cc \
-	record.cc \
 	signal_escapes.cc \
 	state.cc \
 	statistics.cc \

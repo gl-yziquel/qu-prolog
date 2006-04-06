@@ -629,7 +629,7 @@ $1:
 	put_y_variable(0, 19)
 	call_predicate('number', 1, 4)
 	cut(3)
-	pseudo_instr2(118, 22, 0)
+	pseudo_instr2(38, 22, 0)
 	put_y_value(0, 1)
 	call_predicate('number_chars/2$0', 2, 2)
 	put_y_value(1, 0)
@@ -646,7 +646,7 @@ $2:
 	get_y_level(2)
 	call_predicate('number_chars/2$1', 2, 3)
 	cut(2)
-	pseudo_instr2(119, 21, 0)
+	pseudo_instr2(39, 21, 0)
 	get_y_value(0, 0)
 	deallocate
 	proceed
@@ -821,13 +821,13 @@ $1:
 	get_y_level(2)
 	call_predicate('number', 1, 3)
 	cut(2)
-	pseudo_instr2(118, 21, 0)
+	pseudo_instr2(38, 21, 0)
 	get_y_value(0, 0)
 	deallocate
 	proceed
 
 $2:
-	pseudo_instr2(119, 1, 2)
+	pseudo_instr2(39, 1, 2)
 	get_x_variable(1, 2)
 	neck_cut
 	get_x_value(0, 1)
@@ -1305,13 +1305,13 @@ $2:
 	get_y_level(2)
 	call_predicate('number', 1, 3)
 	cut(2)
-	pseudo_instr2(118, 21, 0)
+	pseudo_instr2(38, 21, 0)
 	get_y_value(0, 0)
 	deallocate
 	proceed
 
 $3:
-	pseudo_instr2(119, 1, 2)
+	pseudo_instr2(39, 1, 2)
 	get_x_variable(1, 2)
 	neck_cut
 	get_x_value(0, 1)

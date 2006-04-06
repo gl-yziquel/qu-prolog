@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: state.cc,v 1.7 2006/01/31 23:17:51 qp Exp $
+// $Id: state.cc,v 1.9 2006/04/04 02:44:32 qp Exp $
 
 #include <iostream>
 #include <fstream>
@@ -66,14 +66,12 @@
 #include "io_qp.h"
 #include "is_ready.h"
 #include "pred_table.h"
-#include "record_ref_table.h"
 #include "thread_qp.h"
 
 extern AtomTable *atoms;
 extern Code *code;
 extern IOManager *iom;
 extern PredTab *predicates;
-extern RecordDB *record_db;
 
 //
 // psi_save(filename)

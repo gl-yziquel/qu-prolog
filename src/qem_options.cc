@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem_options.cc,v 1.4 2005/03/08 00:35:12 qp Exp $
+// $Id: qem_options.cc,v 1.5 2006/04/04 01:56:36 qp Exp $
 
 #ifdef WIN32
 #include <io.h>
@@ -83,7 +83,6 @@ QemOptions::QemOptions(int argc, char **argv)
 	    "\t[-T tag-trail-size]\n"
 	    "\t[-r ref-trail-size]\n"
 	    "\t[-n name-table-size]\n"
-	    "\t[-b record-db-size]\n"
 	    "\t[-C choice-stack-size]\n"
 	    "\t[-e environment-stack-size]\n"
 	    "\t[-h heap-size]\n"
@@ -111,7 +110,6 @@ QemOptions::QemOptions(int argc, char **argv)
     string_map_size(STRING_MAP_SIZE),
     ip_table_size(IP_TABLE_SIZE),
     scratchpad_size(SCRATCHPAD_SIZE),
-    record_db_size(RECORD_DB_SIZE),
     thread_table_size(THREAD_TABLE_SIZE),
     stand_alone(STAND_ALONE),
     qx_file(QX_FILE),
@@ -122,7 +120,7 @@ QemOptions::QemOptions(int argc, char **argv)
 {
   int32 c;
 
-  static const char *opts =  "d:p:s:m:a:B:O:i:I:T:r:n:b:C:e:h:H:Q:z:N:P:A:LX";
+  static const char *opts =  "d:p:s:m:a:B:O:i:I:T:r:n:C:e:h:H:Q:z:N:P:A:LX";
 
   //
   // Parse command line options.
@@ -175,9 +173,6 @@ QemOptions::QemOptions(int argc, char **argv)
 	  break;
 	case 'i':
 	  ip_table_size.Value(atoi(optarg));
-	  break;
-	case 'b':
-	  record_db_size.Value(atoi(optarg));
 	  break;
 	case 'C':
 	  choice_stack_size.Value(atoi(optarg));

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: ipc_escapes.cc,v 1.29 2006/02/14 02:40:09 qp Exp $
+// $Id: ipc_escapes.cc,v 1.30 2006/04/04 01:56:36 qp Exp $
 
 #include <algorithm>
 
@@ -143,11 +143,16 @@ Thread::psi_ipc_send(Object *& message_cell,
   Object* replyto_handle_arg = heap.dereference(replyto_handle_cell);
   Object* options_arg = heap.dereference(options_cell);
 
-
   icmHandle recipient_handle;
   DECODE_ICM_HANDLE_ARG(heap, *atoms, recipient_handle_arg, 2,
 			recipient_handle);
   
+  icmHandle sender_handle = icm_thread_handle(*icm_environment,
+					      *this);
+  bool sameprocess =
+      (icmSameAgentHandle(sender_handle, recipient_handle) == icmOk);
+
+
   icmHandle replyto_handle;
   DECODE_ICM_HANDLE_ARG(heap, *atoms, replyto_handle_arg, 3,
 			replyto_handle);
@@ -218,13 +223,11 @@ Thread::psi_ipc_send(Object *& message_cell,
       delete msgstr;
     }
 
-  icmHandle sender_handle = icm_thread_handle(*icm_environment,
-					      *this);
 
   // If the message is destined for the same process then simply add
   // to the message queue otherwise send the message using the ICM.
 
-  if (icmSameAgentHandle(sender_handle, recipient_handle) == icmOk)
+  if (sameprocess)
     {
 
       ICMMessage *icm_message = new ICMMessage(sender_handle,

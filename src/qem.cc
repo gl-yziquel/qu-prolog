@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: qem.cc,v 1.31 2006/01/31 23:17:51 qp Exp $
+// $Id: qem.cc,v 1.33 2006/04/04 02:44:32 qp Exp $
 
 #include <typeinfo>
 
@@ -94,7 +94,6 @@
 #include "qem.h"
 #include "qem_options.h"
 #include "signals.h"
-#include "record_ref_table.h"
 #include "scheduler_status.h"
 #include "scheduler.h"
 #include "thread_qp.h"
@@ -123,7 +122,6 @@ IOManager *iom = NULL;
 SocketManager *sockm = NULL;
 PredTab *predicates = NULL;
 QemOptions *qem_options = NULL;
-RecordDB *record_db = NULL;
 Scheduler *scheduler = NULL;
 SchedulerStatus *scheduler_status = NULL;
 Signals *signals = NULL;
@@ -237,8 +235,6 @@ main(int32 argc, char** argv)
   predicates = new PredTab(atoms, qem_options->PredicateTableSize());
 
   code = new Code(qem_options->CodeSize());
-
-  record_db = new RecordDB(qem_options->RecordDBSize(), 0); 
 
   // Load executable file.
   LoadExecutable(qem_options->QxFile(), *code, *atoms, *predicates);

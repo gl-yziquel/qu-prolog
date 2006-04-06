@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 7.1 Reference Manual - Built-in Predicates
+Qu-Prolog 7.2 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -7984,7 +7984,7 @@ then this call blocks until at least one of the dynamic predicates given in
 <P><KBD><a name="thread_sleep"></a>thread_sleep(Time_Out)</KBD>
 <BLOCKQUOTE>
 <P>This is the same as 
-<BR><KBD>thread_wait([timeout(Time_Out), db(false), record_db(false)])</KBD>.
+<BR><KBD>thread_wait([timeout(Time_Out), db(false)])</KBD>.
 <BR><KBD>mode thread_sleep(+integer)</KBD>
 </BLOCKQUOTE>
 
@@ -8121,6 +8121,18 @@ already registered.
 Deregister from the ICM server. Fails if the process was not registered 
 at the time of the call.
 <BR><KBD>mode icm_deregister</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="icm_connected"></a>icm_connected</KBD>
+<BLOCKQUOTE>
+Succeeds if and only if this process is registered with the ICM.
+<BR><KBD>mode icm_connected</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="icm_ping"></a>icm_ping(Handle)</KBD>
+<BLOCKQUOTE>
+Succeeds if and only if the process with the given handle is registered with the ICM. Note: The handle given here does not include the thread ID.
+<BR><KBD>mode icm_ping(@Handle)</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="icm_thread_handle"></a>icm_thread_handle(Handle)</KBD>

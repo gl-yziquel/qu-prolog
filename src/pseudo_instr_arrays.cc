@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.63 2006/03/13 00:10:25 qp Exp $
+// $Id: pseudo_instr_arrays.cc,v 1.64 2006/04/04 01:56:36 qp Exp $
 
 #include "thread_qp.h"
 
@@ -75,7 +75,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_signal_thread_exit,	0,	"psi_signal_thread_exit"}, 
 	{&Thread::psi_gc,	0,	"psi_gc"}, 
 	{&Thread::psi_icm_deregister,	0,	"psi_icm_deregister"}, 
-	{&Thread::psi_elvin_disconnect,	0,	"psi_elvin_disconnect"}
+	{&Thread::psi_elvin_disconnect,	0,	"psi_elvin_disconnect"}, 
+	{&Thread::psi_icm_connected,	0,	"psi_icm_connected"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {
@@ -103,7 +104,7 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_get_catch,	1,	"psi_get_catch"}, 
 	{&Thread::psi_set_catch,	0,	"psi_set_catch"}, 
 	{&Thread::psi_psi_resume,	0,	"psi_psi_resume"}, 
-	{&Thread::psi_erase,	0,	"psi_erase"}, 
+	{&Thread::psi_random_int,	1,	"psi_random_int"}, 
 	{&Thread::psi_clear_signal,	0,	"psi_clear_signal"}, 
 	{&Thread::psi_default_signal_handler,	0,	"psi_default_signal_handler"}, 
 	{&Thread::psi_current_input,	1,	"psi_current_input"}, 
@@ -194,7 +195,7 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_float,	0,	"psi_float"}, 
 	{&Thread::psi_srandom,	0,	"psi_srandom"}, 
 	{&Thread::psi_random_float,	1,	"psi_random_float"}, 
-	{&Thread::psi_random_int,	1,	"psi_random_int"}
+	{&Thread::psi_icm_ping,	0,	"psi_icm_ping"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -234,10 +235,10 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_codes_atom,	1,	"psi_codes_atom"}, 
 	{&Thread::psi_char_code,	1,	"psi_char_code"}, 
 	{&Thread::psi_code_char,	1,	"psi_code_char"}, 
-	{&Thread::psi_record_get_first_ref,	1,	"psi_record_get_first_ref"}, 
-	{&Thread::psi_record_get_next_ref,	1,	"psi_record_get_next_ref"}, 
-	{&Thread::psi_record_get_last_ref,	1,	"psi_record_get_last_ref"}, 
-	{&Thread::psi_record_get_term,	1,	"psi_record_get_term"}, 
+	{&Thread::psi_hash_double,	1,	"psi_hash_double"}, 
+	{&Thread::psi_user_ht_remove,	0,	"psi_user_ht_remove"}, 
+	{&Thread::psi_number_codes,	1,	"psi_number_codes"}, 
+	{&Thread::psi_codes_number,	1,	"psi_codes_number"}, 
 	{&Thread::psi_close,	0,	"psi_close"}, 
 	{&Thread::psi_stream_position,	1,	"psi_stream_position"}, 
 	{&Thread::psi_set_stream_position,	0,	"psi_set_stream_position"}, 
@@ -313,11 +314,7 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_is_not_free_in,	0,	"psi_is_not_free_in"}, 
 	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
 	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}, 
-	{&Thread::psi_write_float,	0,	"psi_write_float"}, 
-	{&Thread::psi_hash_double,	1,	"psi_hash_double"}, 
-	{&Thread::psi_user_ht_remove,	0,	"psi_user_ht_remove"}, 
-	{&Thread::psi_number_codes,	1,	"psi_number_codes"}, 
-	{&Thread::psi_codes_number,	1,	"psi_codes_number"}
+	{&Thread::psi_write_float,	0,	"psi_write_float"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -350,8 +347,8 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_get_entry,	5,	"psi_get_entry"}, 
 	{&Thread::psi_copy_to_buffer_tail,	0,	"psi_copy_to_buffer_tail"}, 
 	{&Thread::psi_concat_atom3,	1,	"psi_concat_atom3"}, 
-	{&Thread::psi_record_record_first,	1,	"psi_record_record_first"}, 
-	{&Thread::psi_record_record_last,	1,	"psi_record_record_last"}, 
+	{&Thread::psi_user_ht_lookup,	1,	"psi_user_ht_lookup"}, 
+	{&Thread::psi_user_ht_search,	1,	"psi_user_ht_search"}, 
 	{&Thread::psi_open,	1,	"psi_open"}, 
 	{&Thread::psi_get_atom_from_atom_table,	1,	"psi_get_atom_from_atom_table"}, 
 	{&Thread::psi_symtype,	1,	"psi_symtype"}, 
@@ -394,9 +391,7 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_get_double,	4,	"psi_get_double"}, 
 	{&Thread::psi_random_range,	1,	"psi_random_range"}, 
 	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
-	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}, 
-	{&Thread::psi_user_ht_lookup,	1,	"psi_user_ht_lookup"}, 
-	{&Thread::psi_user_ht_search,	1,	"psi_user_ht_search"}
+	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {

@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: icm_escapes.cc,v 1.13 2006/01/31 23:17:50 qp Exp $
+// $Id: icm_escapes.cc,v 1.14 2006/04/04 01:56:36 qp Exp $
 
 #include "atom_table.h"
 #include "icm_environment.h"
@@ -645,4 +645,57 @@ Thread::psi_icm_symbolic_address_to_icm_handle(Object *& add_obj,
 #endif // ICM_DEF
 }
 
+Thread::ReturnValue 
+Thread::psi_icm_connected()
+{
+#ifdef ICM_DEF
+  if (process_symbol == NULL)
+    {
+      return RV_FAIL;
+    }
+  else
+    {
+      return RV_SUCCESS;
+    }
+#else // ICM_DEF
+  return RV_FAIL;
+#endif // ICM_DEF
+}
 
+Thread::ReturnValue 
+Thread::psi_icm_ping(Object *& handle_arg)
+{
+#ifdef ICM_DEF
+  if (process_symbol == NULL)
+    {
+      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
+      return RV_FAIL;
+    }
+  
+  Object* handle_obj = heap.dereference(handle_arg);
+  icmHandle handle;
+  icmHandle real;
+  icmHandle me = icm_thread_handle(*icm_environment,
+					      *this);
+
+  DECODE_ICM_HANDLE_ARG(heap, *atoms, handle_obj, 2, handle);
+
+  icmStatus status = icmPingAgent(icm_environment->Conn(), me, handle, &real);
+ 
+  if (status == icmOk)
+    {
+      return RV_SUCCESS;
+    }
+  else if (status == icmFailed)
+    {
+      return RV_FAIL;
+    }
+  else
+    {
+      assert(false);
+      return RV_FAIL;
+    }
+#else // ICM_DEF
+  return RV_FAIL;
+#endif // ICM_DEF
+}

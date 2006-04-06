@@ -345,7 +345,7 @@ $1:
 	get_x_variable(0, 1)
 	pseudo_instr2(32, 0, 1)
 	get_x_variable(0, 1)
-	pseudo_instr2(119, 0, 1)
+	pseudo_instr2(39, 0, 1)
 	get_y_value(0, 1)
 	deallocate
 	proceed

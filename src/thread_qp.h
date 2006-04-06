@@ -53,7 +53,7 @@
 // 
 // ##Copyright##
 //
-// $Id: thread_qp.h,v 1.13 2006/02/05 22:14:55 qp Exp $
+// $Id: thread_qp.h,v 1.14 2006/04/04 02:33:20 qp Exp $
 
 #ifndef	THREAD_QP_H
 #define	THREAD_QP_H
@@ -447,7 +447,6 @@ public:
 #include "quantifier.h"
 #include "random.h"
 #include "read_qp.h"
-#include "record.h"
 #include "signal_escapes.h"
 #include "state.h"
 #include "statistics.h"
