@@ -71,12 +71,82 @@
 #include "pred_table.h"
 
 static const size_t SIZE_OF_DB_BLOCK =  Code::SIZE_OF_INSTRUCTION 
-                                  + Code::SIZE_OF_NUMBER 
-                                  + 3*Code::SIZE_OF_ADDRESS;
+  + Code::SIZE_OF_NUMBER 
+  + 3*Code::SIZE_OF_ADDRESS;
 
 static const size_t OFFSET_TO_LAST_ADDRESS =  Code::SIZE_OF_INSTRUCTION 
-                                  + Code::SIZE_OF_NUMBER 
-                                  + 2*Code::SIZE_OF_ADDRESS;
+  + Code::SIZE_OF_NUMBER 
+  + 2*Code::SIZE_OF_ADDRESS;
+
+
+class DynamicPredicate;
+
+class CodeBlock
+{
+ private:
+  word32 create_timestamp;
+  word32 delete_timestamp;
+  CodeLoc codePtr;
+  DynamicPredicate* thispred;
+
+ public:
+  CodeBlock(word32 ct, CodeLoc cp, DynamicPredicate* tp) : 
+    create_timestamp(ct), delete_timestamp(WORD32_MAX), codePtr(cp),
+    thispred(tp)
+    { }
+
+    ~CodeBlock() { delete [] codePtr; }
+    
+    void setDelete(word32 ts) { delete_timestamp = ts; }
+    
+    bool isAlive(word32 ts) const 
+    { return (create_timestamp <= ts) && (ts < delete_timestamp); }
+    
+    bool toDelete(word32 ts) const { return ts >= delete_timestamp; }
+    CodeLoc getCode() const { return codePtr; }
+    DynamicPredicate* getThisPred() const { return thispred; }
+    word32 getCTS() const { return create_timestamp; }
+    word32 getDTS() const { return delete_timestamp; }
+    
+};
+
+class LinkedClause
+{
+ private:
+  CodeBlock* blockPtr;
+  LinkedClause* next;
+ public:
+  LinkedClause(CodeBlock* bp, LinkedClause* np) : 
+    blockPtr(bp), next(np) 
+    { }
+    
+    ~LinkedClause() { }
+    
+    bool isAlive(word32 ts) const 
+    { return blockPtr->isAlive(ts); }
+
+    LinkedClause* nextAlive(word32 ts)
+      {
+	LinkedClause* ptr = this;
+	while ((ptr != NULL) && !ptr->isAlive(ts))
+	  ptr = ptr->getNext();
+	return ptr;
+      }
+    LinkedClause* nextNextAlive(word32 ts)
+      {
+	LinkedClause* ptr = next;
+	while ((ptr != NULL) && !ptr->isAlive(ts))
+	  ptr = ptr->getNext();
+	return ptr;
+      }
+
+    bool toDelete(word32 ts) const { return blockPtr->toDelete(ts); }
+    CodeBlock* getCodeBlock() const { return blockPtr; }
+
+    LinkedClause* getNext() const { return next; }
+    void setNext(LinkedClause* n) { next = n; }
+    
+};
 
 //
 // Wrapper for start and end pointers of  code blocks that
@@ -84,76 +154,57 @@ static const size_t OFFSET_TO_LAST_ADDRESS =  Code::SIZE_OF_INSTRUCTION
 //
 class ChainEnds
 {
-private:
-  bool removed;
-  CodeLoc firstPtr;
-  CodeLoc lastPtr;
+ private:
+  LinkedClause* firstPtr;
+  LinkedClause* lastPtr;
 
-public:
+ public:
   
   static const word8 NULL_INSTR = (word8)256;
   
-  ChainEnds(void) : removed(false), firstPtr(NULL), lastPtr(NULL) {} 
+  ChainEnds(void) : firstPtr(NULL), lastPtr(NULL) {} 
 
-  ~ChainEnds(void) {}
+    ~ChainEnds(void) {}
 
-  void setFirst(CodeLoc f) { firstPtr = f; }
-  void setLast(CodeLoc l) { lastPtr = l; }
+    void setFirst(LinkedClause* f) { firstPtr = f; }
+    void setLast(LinkedClause* l) { lastPtr = l; }
   
-  CodeLoc first(void) { return firstPtr; }
-  CodeLoc last(void) { return lastPtr; }
+    LinkedClause* first(void) { return firstPtr; }
+    LinkedClause* last(void) { return lastPtr; }
 
-  void addToChainStart(CodeLoc block);
-  void addToChainEnd(CodeLoc block);
+    void addToChainStart(CodeBlock* block)
+    {
+      LinkedClause* newlink = new LinkedClause(block, firstPtr);
+      firstPtr = newlink;
+      if (lastPtr == NULL) lastPtr = newlink;
+    }
 
-  void makeRemoved(void) { removed = true; }
+    void addToChainEnd(CodeBlock* block)
+    {
+      LinkedClause* newlink = new LinkedClause(block, NULL);
+      if (lastPtr == NULL)
+	{
+	  assert(firstPtr == NULL);
+	  firstPtr = newlink;
+	}
+      else
+	lastPtr->setNext(newlink);
+      lastPtr = newlink;
+    }
 
-  void unmakeRemoved(void) { removed = false; }
+    void operator=(const ChainEnds c)
+      {
+	firstPtr = c.firstPtr;
+	lastPtr = c.lastPtr;
+      }
 
-  bool isRemoved(void) {return removed; }
-
-  void operator=(const ChainEnds c)
-  {
-    firstPtr = c.firstPtr;
-    lastPtr = c.lastPtr;
-    removed = c.removed;
-  }
-
-  void gcChain(void);
+    void gcChain(word32 time, bool deleteBlock);
 
 #ifdef QP_DEBUG
-  void printMe(void);
+    void printMe(void);
 #endif //DEBUG
   
 };
-
-//
-// The clause chains are made up of code blocks
-//
-// These blocks contain code for either linking blocks or clause code blocks
-//
-// The possible code for a link block
-//
-// The first clause of a chain is
-// DB_TRY
-// arity
-// address of predicate
-// address of this clause
-// address of next clause
-//
-// Subsequent clauses of a clain
-// DB_RETRY
-// arity
-// address of predicate
-// address of this clause
-// address of next clause
-//
-// A singleton clause
-// DB_JUMP
-// arity
-// address of predicate
-// address of code block
-// NULL address
 
 
 //
@@ -161,13 +212,14 @@ public:
 //
 class DynamicClauseHashEntry
 {
-private:
+ private:
   // tag is the Cell tag for the hashed arg and value is the associated
   // value. clauseChain is a chain of clauses for this entry.
   word32 	tag, value;
   ChainEnds*    clauseChain;
+  bool removed;
 
-public:
+ public:
   
   void clearEntry(void)
   {
@@ -181,24 +233,24 @@ public:
   }
 
   ChainEnds* getChainEnds(void)
-  {  return clauseChain; }
+    {  return clauseChain; }
 
-  CodeLoc getStartCodeChain(void)
+  LinkedClause* getStartCodeChain(void)
   {  return clauseChain->first(); }
 
-  CodeLoc getEndCodeChain(void) 
+  LinkedClause* getEndCodeChain(void) 
   {  return clauseChain->last(); }
 
   bool isEmpty(void) const
   {  return (tag == 0); }
 
   bool isRemoved(void)
-  {  return (clauseChain->isRemoved()); }
+  {  return removed; }
 
-  void addToChainStart(CodeLoc block)
+  void addToChainStart(CodeBlock* block)
   {  clauseChain->addToChainStart(block); }
 
-  void addToChainEnd(CodeLoc block)
+  void addToChainEnd(CodeBlock* block)
   {  clauseChain->addToChainEnd(block); }
 
   int hashFn(void) const
@@ -208,32 +260,32 @@ public:
   { return ((tag == entry.tag) && (value == entry.value)); }
 
   void operator=(const DynamicClauseHashEntry entry)
-  { 
-    tag = entry.tag; 
-    value = entry.value;
-    if (entry.clauseChain == NULL)
-      {
-	if (clauseChain == NULL)
-	  {
-	    clauseChain = new ChainEnds;
-	  }
-	else
-	  {
-	    assert(clauseChain->isRemoved());
-	    assert(clauseChain->first() == NULL);
-	    assert(clauseChain->last() == NULL);
-	    clauseChain->unmakeRemoved();
-	  }
-      }
-    else
-      {
-        clauseChain = entry.clauseChain;
-      }
-  }
+    { 
+      tag = entry.tag; 
+      value = entry.value;
+      if (entry.clauseChain == NULL)
+	{
+	  if (clauseChain == NULL)
+	    {
+	      clauseChain = new ChainEnds;
+	    }
+	  else
+	    {
+	      assert(removed);
+	      assert(clauseChain->first() == NULL);
+	      assert(clauseChain->last() == NULL);
+	    }
+	}
+      else
+	{
+	  clauseChain = entry.clauseChain;
+	}
+      removed = false;
+    }
 
   DynamicClauseHashEntry(word32 t = 0, word32 v = 0) 
-    : tag(t), value(v), clauseChain(NULL)
-  {};
+    : tag(t), value(v), clauseChain(NULL), removed(false)
+    {};
 
 };
 
@@ -243,23 +295,23 @@ public:
 //
 class DynamicClauseHash : public DynamicHashTable <DynamicClauseHashEntry>
 {
-private:
+ private:
   int	hashFunction(const DynamicClauseHashEntry entry) const
-	{ return (entry.hashFn()); }
+  { return (entry.hashFn()); }
   
-public:
+ public:
   ChainEnds* getChainEnds(const int index)
-  { return(getEntry(index).getChainEnds()); }
+    { return(getEntry(index).getChainEnds()); }
 
-  CodeLoc getStartCodeChain(const int index)
+  LinkedClause* getStartCodeChain(const int index)
   { return(getEntry(index).getStartCodeChain()); }
 
-  CodeLoc getEndCodeChain(const int index)
+  LinkedClause* getEndCodeChain(const int index)
   { return(getEntry(index).getEndCodeChain()); }
   
   explicit DynamicClauseHash(word32 TableSize) 
     : DynamicHashTable <DynamicClauseHashEntry> (TableSize)
-  {};
+    {};
 
 };
 
@@ -274,7 +326,7 @@ public:
 //
 class DynamicPredicate 
 {
-private:
+ private:
   word8	             clauseArity;
   word8	             indexedArg;
   bool               dirty;  // a flag to determine if some clause is retracted
@@ -284,7 +336,7 @@ private:
   DynamicClauseHash  indexedClauses;
   Timestamp	     stamp;
 
-public:
+ public:
 
   const word32 GetStamp(void) { return stamp.GetStamp(); }
   void Stamp(void) { stamp.Stamp(); }
@@ -292,7 +344,7 @@ public:
   word8 getIndexedArg(void) const 
   { return indexedArg; }
 
-  void gcPredicate(void);
+  void gcPredicate(word32);
 
   void aquire(void)
   { 
@@ -305,7 +357,7 @@ public:
     refcount--;
     if (refcount == 0 && dirty)
       {
-	gcPredicate();
+	gcPredicate(GetStamp());
       }
   }
 
@@ -347,68 +399,41 @@ public:
 
 
   ChainEnds* lookUpClauseChain(Thread &th, Object* indexarg) 
-  {
-    if (clauseArity == 0)
-      {
-	//
-	// No args - in this case indexarg is just a dummy.
-	// Nothing to index on so get all the clauses.
-	//
-	return &allChain;
-      }
-    int index = lookUp(th, indexarg);
-    if (index == -2)
-      {
-	//
-	// Variable so use allChain
-	//
-	return &allChain;
-      }
-    else if (index == -1)
-      {
-	//
-	// No existing clauses that match indexarg - so get the var clauses.
-	//
-	return &varChain;
-      }
-    else
-      {
-	//
-	// Match found so get the matching clauses.
-	//
-	return indexedClauses.getChainEnds(index);
-      }
-  }
-
-  CodeLoc makeDBCodeBlock(CodeLoc clauseCode)
-  {
-    CodeLoc block = new word8[SIZE_OF_DB_BLOCK];
-    CodeLoc pc = block;
-    updateInstruction(pc, DB_JUMP);
-    pc += Code::SIZE_OF_INSTRUCTION;
-    updateNumber(pc, clauseArity);
-    pc += Code::SIZE_OF_NUMBER;
-    updateAddress(pc, reinterpret_cast<word32>(this));
-    pc += Code::SIZE_OF_ADDRESS;
-    updateCodeLoc(pc, clauseCode);
-    pc += Code::SIZE_OF_ADDRESS;
-    updateAddress(pc, 0);
-    return (block);
-
-  }
-
-  void  addToStartClauseChain(ChainEnds& chain, CodeLoc codeBlock)
-  {
-    chain.addToChainStart(makeDBCodeBlock(codeBlock));
-  }
-
-  void  addToEndClauseChain(ChainEnds& chain, CodeLoc codeBlock)
-  {
-    chain.addToChainEnd(makeDBCodeBlock(codeBlock));
-  }
+    {
+      if (clauseArity == 0)
+	{
+	  //
+	  // No args - in this case indexarg is just a dummy.
+	  // Nothing to index on so get all the clauses.
+	  //
+	  return &allChain;
+	}
+      int index = lookUp(th, indexarg);
+      if (index == -2)
+	{
+	  //
+	  // Variable so use allChain
+	  //
+	  return &allChain;
+	}
+      else if (index == -1)
+	{
+	  //
+	  // No existing clauses that match indexarg - so get the var clauses.
+	  //
+	  return &varChain;
+	}
+      else
+	{
+	  //
+	  // Match found so get the matching clauses.
+	  //
+	  return indexedClauses.getChainEnds(index);
+	}
+    }
 
 
-  void addToHashedChains(const bool asserta, CodeLoc codeBlock);
+  void addToHashedChains(const bool asserta, CodeBlock* codeBlock);
    
   void copyVarClauses(ChainEnds& chain);
 
@@ -424,6 +449,9 @@ public:
     dirty(false), refcount(0),
     indexedClauses(tablesize) {}
 
+#ifdef QP_DEBUG
+    void display();
+#endif
   
 };
 

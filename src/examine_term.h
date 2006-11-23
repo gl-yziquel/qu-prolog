@@ -150,6 +150,12 @@ ReturnValue psi_std_nonvar(Object *& );
 //
 ReturnValue psi_list(Object *& );
 
+// psi_string(term)
+// True if term is a string, false otherwise
+// mode(in)
+//
+ReturnValue psi_string(Object *& object1);
+
 //
 // psi_fast_simplify(term, simpterm)
 // do a simple term simplification

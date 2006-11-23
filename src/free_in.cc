@@ -155,7 +155,7 @@ Thread::psi_is_not_free_in(Object*& obvar, Object*& term)
   PrologValue pv(term);
  
   truth3 result = freeness_test(OBJECT_CAST(ObjectVariable*, ov), pv);
-  
+
   return(BOOL_TO_RV(result == false));
 }  
 

@@ -47,7 +47,7 @@ $1:
 	pseudo_instr1(11, 0)
 	get_x_variable(1, 0)
 	put_structure(1, 0)
-	set_constant('main')
+	set_constant('$do_main')
 	set_x_value(1)
 	put_x_variable(3, 1)
 	put_structure(1, 2)
@@ -84,6 +84,31 @@ $1:
 	deallocate
 	execute_predicate('halt', 1)
 end('$exception_at_start'/1):
+
+
+
+'$do_main'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('$query', 2)
+	put_integer(0, 3)
+	pseudo_instr3(33, 2, 3, 1)
+	put_integer(0, 2)
+	get_x_value(1, 2)
+	neck_cut
+	execute_predicate('main', 1)
+
+$2:
+	allocate(1)
+	get_y_variable(0, 0)
+	call_predicate('$query', 0, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('main', 1)
+end('$do_main'/1):
 
 
 

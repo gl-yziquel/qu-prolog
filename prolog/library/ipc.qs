@@ -250,9 +250,8 @@ end('$ipc_peek'/6):
 	trust($2)
 
 $1:
-	get_x_value(0, 2)
-	pseudo_instr3(68, 0, 1, 2)
-	get_x_value(0, 2)
+	pseudo_instr3(68, 0, 1, 3)
+	get_x_value(2, 3)
 	neck_cut
 	proceed
 

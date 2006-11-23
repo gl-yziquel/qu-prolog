@@ -77,11 +77,8 @@ QemOptions::QemOptions(int argc, char **argv)
 	    "\t[-m string-map-size]\n"
 	    "\t[-a atom-table-size]\n"
 	    "\t[-B binding-trail-size]\n"
-	    "\t[-O object-trail-size]\n"
+	    "\t[-O other-trail-size]\n"
 	    "\t[-i ip-table-size]\n"
-	    "\t[-I ip-trail-size]\n"
-	    "\t[-T tag-trail-size]\n"
-	    "\t[-r ref-trail-size]\n"
 	    "\t[-n name-table-size]\n"
 	    "\t[-C choice-stack-size]\n"
 	    "\t[-e environment-stack-size]\n"
@@ -103,10 +100,7 @@ QemOptions::QemOptions(int argc, char **argv)
     environment_stack_size(ENVIRONMENT_STACK_SIZE),
     choice_stack_size(CHOICE_STACK_SIZE),
     binding_trail_size(BINDING_TRAIL_SIZE),  
-    object_trail_size(OBJECT_TRAIL_SIZE),   
-    ip_trail_size(IP_TRAIL_SIZE),
-    tag_trail_size(TAG_TRAIL_SIZE),
-    ref_trail_size(REF_TRAIL_SIZE),
+    other_trail_size(OTHER_TRAIL_SIZE),   
     string_map_size(STRING_MAP_SIZE),
     ip_table_size(IP_TABLE_SIZE),
     scratchpad_size(SCRATCHPAD_SIZE),
@@ -120,7 +114,7 @@ QemOptions::QemOptions(int argc, char **argv)
 {
   int32 c;
 
-  static const char *opts =  "d:p:s:m:a:B:O:i:I:T:r:n:C:e:h:H:Q:z:N:P:A:LX";
+  static const char *opts =  "d:p:s:m:a:B:O:i::n:C:e:h:H:Q:z:N:P:A:LX";
 
   //
   // Parse command line options.
@@ -157,16 +151,7 @@ QemOptions::QemOptions(int argc, char **argv)
 	  binding_trail_size.Value(atoi(optarg));
 	  break;
 	case 'O':
-	  object_trail_size.Value(atoi(optarg));
-	  break;
-	case 'I':
-	  ip_trail_size.Value(atoi(optarg));
-	  break;
-	case 'T':
-	  tag_trail_size.Value(atoi(optarg));
-	  break;
-	case 'r':
-	  ref_trail_size.Value(atoi(optarg));
+	  other_trail_size.Value(atoi(optarg));
 	  break;
 	case 'n':
 	  name_table_size.Value(atoi(optarg));

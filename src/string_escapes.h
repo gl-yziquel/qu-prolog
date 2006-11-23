@@ -73,4 +73,50 @@ ReturnValue psi_stream_to_chars(Object *& , Object *& );
 //
 ReturnValue psi_stream_to_atom(Object *& , Object *& );
 
+//
+// psi_stream_to_string(stream_index, variable)
+// Get a string from a string stream.
+//
+ReturnValue psi_stream_to_string(Object *& stream_arg, Object *& string_arg);
+
+//
+// psi_list_to_string(list, variable)
+// Convert a list into a string
+//
+ReturnValue psi_list_to_string(Object *& list_arg, Object *& string_arg);
+
+//
+// psi_string_to_atom(string, variable)
+// Convert a string into an atom
+//
+ReturnValue psi_string_to_atom(Object *& string_arg, Object *& atom_arg);
+
+//
+// psi_atom_to_string(atom, variable)
+// Convert an atom into a string
+//
+ReturnValue psi_atom_to_string(Object *& atom_arg, Object *& string_arg);
+
+//
+// psi_string_length(string, variable)
+// Get the length of a string
+//
+ReturnValue psi_string_length(Object *& string_arg, Object *& length_arg);
+
+//
+// psi_string_concat(string, string, variable)
+// Concatentate 2 strings
+//
+ReturnValue psi_string_concat(Object *& string1_arg, Object *& string2_arg, 
+			      Object *& concat_arg);
+
+//
+// psi_split_string(string, integer, variable, variable)
+// Split a string at the given position
+//
+ReturnValue psi_split_string(Object *& string_arg, Object *& pos_arg, 
+			     Object *& split1_arg, Object *& split2_arg);
+
+
+
 #endif // STRING_ESCAPES_H

@@ -885,7 +885,7 @@ end('elvin_add_notification'/1):
 
 
 
-'$query_elvin2006_4_6_12_14_13_86/0$0'/0:
+'$query_elvin2006_11_24_7_37_18_34/0$0'/0:
 
 
 $1:
@@ -898,11 +898,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_elvin2006_4_6_12_14_13_86/0$0'/0):
+end('$query_elvin2006_11_24_7_37_18_34/0$0'/0):
 
 
 
-'$query_elvin2006_4_6_12_14_13_86/0$1'/0:
+'$query_elvin2006_11_24_7_37_18_34/0$1'/0:
 
 
 $1:
@@ -915,11 +915,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_elvin2006_4_6_12_14_13_86/0$1'/0):
+end('$query_elvin2006_11_24_7_37_18_34/0$1'/0):
 
 
 
-'$query_elvin2006_4_6_12_14_13_86'/0:
+'$query_elvin2006_11_24_7_37_18_34'/0:
 
 	try(0, $1)
 	retry($2)
@@ -927,17 +927,17 @@ end('$query_elvin2006_4_6_12_14_13_86/0$1'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_elvin2006_4_6_12_14_13_86/0$0', 0, 0)
+	call_predicate('$query_elvin2006_11_24_7_37_18_34/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_elvin2006_4_6_12_14_13_86/0$1', 0, 0)
+	call_predicate('$query_elvin2006_11_24_7_37_18_34/0$1', 0, 0)
 	fail
 
 $3:
 	proceed
-end('$query_elvin2006_4_6_12_14_13_86'/0):
+end('$query_elvin2006_11_24_7_37_18_34'/0):
 
 
 
@@ -945,7 +945,7 @@ end('$query_elvin2006_4_6_12_14_13_86'/0):
 
 
 $1:
-	execute_predicate('$query_elvin2006_4_6_12_14_13_86', 0)
+	execute_predicate('$query_elvin2006_11_24_7_37_18_34', 0)
 end('$query'/0):
 
 

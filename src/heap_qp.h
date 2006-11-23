@@ -141,6 +141,10 @@ public:
   // Is the pointer a heap pointer
   //
   inline bool isHeapPtr(heapobject* ptr) {return (ptr >= data && ptr < top); }
+
+  inline bool isActive(heapobject* ptr)
+    { return (!isHeapPtr(ptr) || ptr < next); }
+
   //
   // Allocated size
   //
@@ -186,14 +190,16 @@ public:
   // Both constructors for the list type.
   inline Cons *newCons(void);
   inline Cons *newCons(Object *, Object *);
+  Cons *newCons(char* ch);
 
   inline Cons *newSubstitutionBlockList(SubstitutionBlock *,
 					Object *);
 
   inline Short *newShort(int32 val);
   inline Long *newLong(long val);
-  inline Object *newNumber(long val);
+  inline Object *newInteger(long val);
   inline Double *newDouble(double d);
+  inline StringObject *newStringObject(const char* s);
   inline QuantifiedTerm *newQuantifiedTerm(void);
 
   inline Substitution *newSubstitution(void);
@@ -407,11 +413,12 @@ Heap::newVariable(const bool has_extra_info)
 {
   heapobject *x = allocateHeapSpace(Variable::size(has_extra_info));
 
-  x[0] = Object::TypeVar;
+  x[0] = Object::VarTag;
   x[1] = reinterpret_cast<heapobject>(x);
 
   if (has_extra_info)
     {
+      x[0] = Object::VarOtherTag;
       reinterpret_cast<Reference*>(x)->setExtraInfo();
       x[2] = 
 	reinterpret_cast<heapobject>((Object*)NULL);           // name
@@ -430,7 +437,7 @@ Heap::newObjectVariable(void)
 {
   heapobject *x = allocateHeapSpace(ObjectVariable::size(true));
 
-  x[0] = Object::TypeObjVar;
+  x[0] = Object::ObjVarTag;
   x[1] = reinterpret_cast<heapobject>(x);
 
   reinterpret_cast<Reference*>(x)->setExtraInfo();
@@ -456,7 +463,7 @@ Heap::newStructure(const size_t arity)
   assert(0 <= arity && arity <= MaxArity);
 
   heapobject *x = allocateHeapSpace(Structure::size(arity));
-  x[0] = static_cast<heapobject>((arity << 8) | Object::TypeStruct);
+  x[0] = static_cast<heapobject>((arity << 8) | Object::StructTag);
 
   return reinterpret_cast<Structure *>(x);
 }
@@ -469,7 +476,7 @@ Heap::newCons(void)
 {
   heapobject *x = allocateHeapSpace(Cons::size());
 
-  x[0] = Object::TypeCons;
+  x[0] = Object::ConsTag;
 
   return reinterpret_cast<Cons *>(x);
 }
@@ -536,7 +543,7 @@ Heap::newShort(int32 val)
   assert(-0x400000 <= val && val < 0x400000);
 
   heapobject *x = allocateHeapSpace(Short::size());
-  x[0] = (val << 8) | Constant::ConstShort | Object::TypeConst;
+  x[0] = (val << 8) | Object::ShortTag;
 
   return reinterpret_cast<Short *>(x);
 }
@@ -556,15 +563,27 @@ Heap::newLong(long val)
   assert(LONG_MIN <= val && val <= LONG_MAX);
 
   heapobject *x = allocateHeapSpace(Long::size());
-
-  x[0] = (val & Long::LongBits) | Constant::ConstLong | Object::TypeConst;
-  x[1] = (val & ~Long::LongBits) << 2;
+  x[0] = Object::LongTag; 
+  x[1] = val;
 
   return reinterpret_cast<Long *>(x);
 }
 
+inline StringObject*
+Heap::newStringObject(const char* s)
+{
+  int size = strlen(s);
+  assert(size > 0);
+  int word_size = (size + sizeof(heapobject))/sizeof(heapobject);
+  heapobject *x = allocateHeapSpace(1 + word_size);
+  x[0] = static_cast<heapobject>((word_size << 8) | Object::StringTag);
+  x[word_size] = 0;
+  strcpy((char*)(x+1), s);
+   return reinterpret_cast<StringObject *>(x);
+}
+
 inline Object *
-Heap::newNumber(long val)
+Heap::newInteger(long val)
 {
   if (-0x400000 <= val && val < 0x400000)
     {
@@ -580,17 +599,9 @@ inline Double *
 Heap::newDouble(double val)
 {
   heapobject *x = allocateHeapSpace(Double::size());
-  double *k = (double *) malloc(sizeof (double));
 
-  word32 w[2];
-  memcpy(w, &val, sizeof(double));
-  
-  *k = val;
-  x[0] = Constant::ConstDouble | Object::TypeConst 
-          | ((w[0] & Constant::DoubleLowbits) << 30) 
-          | ((w[1] & Constant::DoubleLowbits) << 28);
-  x[1] = (heapobject) (w[0] & ~Constant::DoubleLowbits);
-  x[2] = (heapobject) (w[1] & ~Constant::DoubleLowbits);
+  x[0] = Object::DoubleTag;
+  *((double*)(x+1)) = val; 
 
   return reinterpret_cast<Double *>(x);
 }
@@ -603,7 +614,7 @@ Heap::newQuantifiedTerm(void)
 {
   heapobject *x = allocateHeapSpace(QuantifiedTerm::size());
 
-  x[0] = Object::TypeQuant;
+  x[0] = Object::QuantTag;
 
   return reinterpret_cast<QuantifiedTerm *>(x);
 }
@@ -616,7 +627,7 @@ Heap::newSubstitution(void)
 {
   heapobject *x = allocateHeapSpace(Substitution::size());
 
-  x[0] = Object::TypeSubst;
+  x[0] = Object::SubstTag;
 
   return reinterpret_cast<Substitution *>(x);
 }
@@ -648,7 +659,7 @@ Heap::newSubstitutionBlock(size_t sub_size)
 
   heapobject *x = allocateHeapSpace(SubstitutionBlock::size(sub_size));
 
-  x[0] = static_cast<heapobject>(sub_size << 8 | Object::TypeSubBlock);
+  x[0] = static_cast<heapobject>(sub_size << 12 | Object::SubBlockTag);
 
   return reinterpret_cast<SubstitutionBlock *>(x);
 }
@@ -692,10 +703,10 @@ Heap::dereference(Object* o)
   //
   assert(o != NULL);
   
-  while ( o->isAnyVariable() ) 
+  while ( (o->getTag() & Object::DerefMask) == 0 ) 
     {
       //
-      // While still an (ob)variable, hence referring to something else,
+      // While still a (ob)variable, hence referring to something else,
       // move to what it's referring to
       //
       Object* n = OBJECT_CAST(Reference *, o)->getReference();
@@ -706,6 +717,7 @@ Heap::dereference(Object* o)
 	}
       o = n;
     }
+
   if (o->isSubstitution())
     {
       return (subDereference(o));

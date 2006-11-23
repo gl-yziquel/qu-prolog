@@ -207,6 +207,7 @@ public:
   static Atom *cut_ancestor;
   static Atom *allocate;
   static Atom *deallocate;
+  static Atom *do_cleanup;
   static Atom *cproceed;
   static Atom *get_level_ancestor;
   static Atom *get_level;
@@ -361,6 +362,7 @@ public:
     neckcut = add("$$neckcut");
     cut_atom = add("$cut");
     delayneckcut = add("$delayneckcut");
+    do_cleanup = add("$do_cleanup");
     psi0_call = add("$psi0_calls$");
     psi1_call = add("$psi1_calls$");
     psi2_call = add("$psi2_calls$");

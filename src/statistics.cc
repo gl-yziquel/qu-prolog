@@ -97,7 +97,7 @@ Thread::psi_cputime(Object *& object1)
   times(&usage);
   msec = (usage.tms_utime + usage.tms_stime) * 1000 / CLK_TCK;
 #endif
-  object1 = heap.newNumber(msec);
+  object1 = heap.newInteger(msec);
   return RV_SUCCESS;
 }
 
@@ -111,9 +111,45 @@ Thread::return_stack_stat(const FixedSizeStack& stack, Object *& object1)
 
   Structure* stats = heap.newStructure(3);
   stats->setFunctor(atoms->add("stat"));
-  stats->setArgument(1, heap.newNumber(size));
-  stats->setArgument(2, heap.newNumber(stack.allocatedSize() - size));
-  stats->setArgument(3, heap.newNumber(stack.maxUsage()));
+  stats->setArgument(1, heap.newInteger(size));
+  stats->setArgument(2, heap.newInteger(stack.allocatedSize() - size));
+  stats->setArgument(3, heap.newInteger(stack.maxUsage()));
+
+  object1 = stats;
+ 
+  return RV_SUCCESS;
+}
+//
+// Return the amount of space used and available in the trail.
+//
+Thread::ReturnValue
+Thread::return_stack_stat(const BindingTrail& trail, Object *& object1) 
+{
+  word32  used = trail.usedTrail();
+
+  Structure* stats = heap.newStructure(3);
+  stats->setFunctor(atoms->add("stat"));
+  stats->setArgument(1, heap.newInteger(used));
+  stats->setArgument(2, heap.newInteger(trail.allocatedSize() - used));
+  stats->setArgument(3, heap.newInteger(trail.maxUsage()));
+
+  object1 = stats;
+ 
+  return RV_SUCCESS;
+}
+//
+// Return the amount of space used and available in the trail.
+//
+Thread::ReturnValue
+Thread::return_stack_stat(const OtherTrail& trail, Object *& object1) 
+{
+  word32  used = trail.usedTrail();
+
+  Structure* stats = heap.newStructure(3);
+  stats->setFunctor(atoms->add("stat"));
+  stats->setArgument(1, heap.newInteger(used));
+  stats->setArgument(2, heap.newInteger(trail.allocatedSize() - used));
+  stats->setArgument(3, heap.newInteger(trail.maxUsage()));
 
   object1 = stats;
  
@@ -130,9 +166,9 @@ Thread::return_heap_stat(Heap& hp, Object *& object1)
 
   Structure* stats = heap.newStructure(3);
   stats->setFunctor(atoms->add("stat"));
-  stats->setArgument(1, heap.newNumber(size));
-  stats->setArgument(2, heap.newNumber(hp.allocatedSize() - size));
-  stats->setArgument(3, heap.newNumber(hp.maxUsage()));
+  stats->setArgument(1, heap.newInteger(size));
+  stats->setArgument(2, heap.newInteger(hp.allocatedSize() - size));
+  stats->setArgument(3, heap.newInteger(hp.maxUsage()));
 
   object1 = stats;
  
@@ -148,9 +184,9 @@ Thread::return_code_stat(Code& code, Object *& object1,
 {
   word32  size = static_cast<word32>(code.getTop() - code.getBase());
 
-  object1 = heap.newNumber(size);
-  object2 = heap.newNumber(code.allocatedSize() - size);
-  object3 = heap.newNumber(size);
+  object1 = heap.newInteger(size);
+  object2 = heap.newInteger(code.allocatedSize() - size);
+  object3 = heap.newInteger(size);
  
   return RV_SUCCESS;
 }
@@ -166,8 +202,8 @@ Thread::return_table_stat(FixedSizeHashTable& table,
 
   Structure* stats = heap.newStructure(2);
   stats->setFunctor(atoms->add("stat"));
-  stats->setArgument(1, heap.newNumber(size));
-  stats->setArgument(2, heap.newNumber(table.allocatedSize() - size));
+  stats->setArgument(1, heap.newInteger(size));
+  stats->setArgument(2, heap.newInteger(table.allocatedSize() - size));
 
   object1 = stats;
 
@@ -238,68 +274,21 @@ Thread::psi_stat_binding_trail(Object *& object1, Object *& object2, Object *& o
 }
 
 //
-// psi_stat_object_trail(var, var, var)
+// psi_stat_other_trail(var, var, var)
 // Return the amount of space used and available, and maximum usage
 // in the object trail.
 //
 Thread::ReturnValue
-Thread::psi_stat_object_trail(Object *& object1, Object *& object2, Object *& object3)
+Thread::psi_stat_other_trail(Object *& object1, Object *& object2, Object *& object3)
 {
   Object* argT = heap.dereference(object1);
   Thread *thread;
   DECODE_THREAD_ARG(heap, argT, *thread_table, 1, thread);
 
   object3 = AtomTable::success;
-  return(return_stack_stat(thread->TheObjectTrail(), object2));
+  return(return_stack_stat(thread->TheOtherTrail(), object2));
 }
 
-//
-// psi_stat_ip_trail(var, var, var)
-// Return the amount of space used and available, and maximum usage
-// in the IP trail.
-//
-Thread::ReturnValue
-Thread::psi_stat_ip_trail(Object *& object1, Object *& object2, Object *& object3)
-{
-  Object* argT = heap.dereference(object1);
-  Thread *thread;
-  DECODE_THREAD_ARG(heap, argT, *thread_table, 1, thread);
-
-  object3 = AtomTable::success;
-  return(return_stack_stat(thread->TheIPTrail(), object2));
-}
-
-//
-// psi_stat_tag_trail(var, var, var)
-// Return the amount of space used and available, and maximum usage
-// in the tag trail in the heap.
-//
-Thread::ReturnValue
-Thread::psi_stat_tag_trail(Object *& object1, Object *& object2, Object *& object3)
-{
-  Object* argT = heap.dereference(object1);
-  Thread *thread;
-  DECODE_THREAD_ARG(heap, argT, *thread_table, 1, thread);
-
-  object3 = AtomTable::success;
-  return(return_stack_stat(thread->TheTagTrail(), object2));
-}
-
-//
-// psi_stat_ref_trail(var, var, var)
-// Return the amount of space used and available, and maximum usage
-// in the reference trail in the heap.
-//
-Thread::ReturnValue
-Thread::psi_stat_ref_trail(Object *& object1, Object *& object2, Object *& object3)
-{
-  Object* argT = heap.dereference(object1);
-  Thread *thread;
-  DECODE_THREAD_ARG(heap, argT, *thread_table, 1, thread);
-
-  object3 = AtomTable::success;
-  return(return_stack_stat(thread->TheRefTrail(), object2));
-}
 
 //
 // psi_stat_code(var, var, var)
@@ -397,9 +386,9 @@ Thread::ReturnValue
 Thread::psi_stat_memory(Object *& object1)
 {
 #if 0
-  object1 = heap.newNumber((char *)(sbrk(0)) - BeforeAllocation);
+  object1 = heap.newInteger((char *)(sbrk(0)) - BeforeAllocation);
 #else	// 0
-  object1 = heap.newNumber(0);
+  object1 = heap.newInteger(0);
 #endif	// 0
 
   return RV_SUCCESS;
@@ -412,7 +401,7 @@ Thread::psi_stat_memory(Object *& object1)
 Thread::ReturnValue
 Thread::psi_stat_program(Object *& object1)
 {
-  object1 = heap.newNumber(code->size() + atoms->size() * Atom::size() 
+  object1 = heap.newInteger(code->size() + atoms->size() * Atom::size() 
 			   + predicates->size() * sizeof(PredEntry));
 
   return RV_SUCCESS;

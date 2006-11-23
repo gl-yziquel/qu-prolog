@@ -343,11 +343,11 @@ Thread::psi_ccompile(Object*& clause, Object*& type,
   if (ctype)
     {
       writeInstructions(array2, stream);
-      codeptr = heap.newNumber(0);
+      codeptr = heap.newInteger(0);
     }
   else
     {
-      codeptr = heap.newNumber(reinterpret_cast<word32>(dumpInstructions(array2)));
+      codeptr = heap.newInteger(reinterpret_cast<word32>(dumpInstructions(array2)));
     }
   return RV_SUCCESS;
 }

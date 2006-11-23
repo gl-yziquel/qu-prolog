@@ -66,6 +66,16 @@ private:
 ReturnValue return_stack_stat(const FixedSizeStack& stack, Object *& );
 
 //
+// Return the amount of space used and available in the binding trail.
+//
+ReturnValue return_stack_stat(const BindingTrail&, Object *& );
+
+//
+// Return the amount of space used and available in the other trail.
+//
+ReturnValue return_stack_stat(const OtherTrail&, Object *& );
+
+//
 // Return the amount of space used and available in a heap.
 //
 ReturnValue return_heap_stat(Heap& hp, Object *& );
@@ -114,30 +124,11 @@ ReturnValue psi_stat_local(Object *& , Object *& , Object *& );
 //
 ReturnValue psi_stat_binding_trail(Object *& , Object *& , Object *& );
 //
-// psi_stat_object_trail(var, var, var)
+// psi_stat_other_trail(var, var, var)
 // Return the amount of space used and available, and maximum usage
-// in the object trai.
+// in the other trail.
 //
-ReturnValue psi_stat_object_trail(Object *& , Object *& , Object *& );
-//
-// psi_stat_ip_trail(var, var, var)
-// Return the amount of space used and available, and maximum usage
-// in the IP trail.
-//
-ReturnValue psi_stat_ip_trail(Object *& , Object *& , Object *& );
-//
-// psi_stat_tag_trail(var, var, var)
-// Return the amount of space used and available, and maximum usage
-// in the tag trail.
-//
-ReturnValue psi_stat_tag_trail(Object *& , Object *& , Object *& );
-
-//
-// psi_stat_ref_trail(var, var, var)
-// Return the amount of space used and available, and maximum usage
-// in the reference trail.
-//
-ReturnValue psi_stat_ref_trail(Object *& , Object *& , Object *& );
+ReturnValue psi_stat_other_trail(Object *& , Object *& , Object *& );
 
 
 //

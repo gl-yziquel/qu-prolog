@@ -185,12 +185,67 @@ SafeAtom(const char *s)
     }
 }
 
+static void addEscapes(string& str, char quote)
+{
+  string tmp;
+  for (string::iterator iter = str.begin(); iter != str.end(); iter++)
+    {
+      char c = *iter;
+      switch ((int)c)
+	{
+	case 7:  // \a
+	  tmp.push_back('\\');
+	  tmp.push_back('a');
+	  break;
+	case 8:  // \b
+	  tmp.push_back('\\');
+	  tmp.push_back('b');
+	  break;
+	case 9:  // \t
+	  tmp.push_back('\\');
+	  tmp.push_back('t');
+	  break;
+	case 10:  // \n
+	  tmp.push_back('\\');
+	  tmp.push_back('n');
+	  break;
+	case 11:  // \v
+	  tmp.push_back('\\');
+	  tmp.push_back('v');
+	  break;
+	case 12:  // \f
+	  tmp.push_back('\\');
+	  tmp.push_back('f');
+	  break;
+	case 13:  // \r
+	  tmp.push_back('\\');
+	  tmp.push_back('r');
+	  break;
+	case 92:  
+	  tmp.push_back('\\');
+	  break;
+	default:
+	  if (c == quote)
+	    {
+	      tmp.push_back('\\');
+	      tmp.push_back(c);
+	    }
+	  else
+	      tmp.push_back(c);
+	  break;
+	}
+    }
+  str = tmp;
+}
+
 void
 writeqAtom(const char *s, QPStream *stream)
 {
-  if (SafeAtom(s))
+  string atomname(s);
+  addEscapes(atomname, '\'');
+  if (SafeAtom(atomname.c_str()))
     {
-      *stream << s;
+      *stream << atomname.c_str();
     }
   else
     {
@@ -198,25 +253,7 @@ writeqAtom(const char *s, QPStream *stream)
       // The atom is not safe.  Quotes are needed.
       //
       *stream << '\'';
-      while (*s != '\0')
-	{
-	  //
-	  // For some characters, an extra copy of
-	  // the same character is needed.
-	  //
-	  switch (*s)
-	    {
-	    case '\\':
-	    case '\'':
-	      *stream << *s;
-	      break;
-	    }
-	  //
-	  // Write the character out.
-	  //
-	  *stream << *s;
-	  s++;
-	}
+      *stream << atomname.c_str();
       *stream << '\'';
     }
   return;
@@ -281,7 +318,7 @@ Thread::psi_write_integer(Object *& object1, Object *& object2)
 
   // IS_READY_STREAM(stream, -1);
 
-  *(stream) << val2->getNumber();
+  *(stream) << val2->getInteger();
 
   return(RV_SUCCESS);
 }
@@ -312,6 +349,61 @@ Thread::psi_write_float(Object *& object1, Object *& object2)
   double d = val2->getDouble();
 
   *(stream) << d;
+
+  return(RV_SUCCESS);
+}
+
+
+//
+// psi_write_string(stream_index, string)
+// Write for strings.
+// mode(in,in)
+//
+Thread::ReturnValue
+Thread::psi_write_string(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  Object* val2 = heap.dereference(object2);
+
+  QPStream *stream;
+  DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
+
+  if (val2->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 2);
+    }
+  if (!val2->isString())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 2);
+    }
+
+  *(stream) << OBJECT_CAST(StringObject*, val2)->getChars(); 
+
+  return(RV_SUCCESS);
+}
+
+Thread::ReturnValue
+Thread::psi_writeq_string(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  Object* val2 = heap.dereference(object2);
+
+  QPStream *stream;
+  DECODE_STREAM_OUTPUT_ARG(heap, *iom, val1, 1, stream);
+
+  if (val2->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 2);
+    }
+  if (!val2->isString())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 2);
+    }
+  string stringchars(OBJECT_CAST(StringObject*, val2)->getChars());
+  addEscapes(stringchars, '"');
+  *(stream) << "\"";
+  *(stream) << stringchars.c_str(); 
+  *(stream) << "\"";
 
   return(RV_SUCCESS);
 }

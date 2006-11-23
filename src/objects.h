@@ -62,6 +62,7 @@
 #define OBJECTS_H
 
 #include <stdlib.h>
+#include <strings.h>
 
 //#include "atom_table.h"
 #include "debug.h" // Qu-Prolog debug code facilities
@@ -83,6 +84,7 @@ class Atom;
 class Short;
 class Long;
 class Double;
+class StringObject;
 class Reference; // abstract
 class Variable;
 class ObjectVariable;
@@ -93,6 +95,8 @@ class QuantifiedTerm;
 class Substitution;
 class SubstitutionBlock;
 
+// Garbage collection bit
+static const heapobject GC_B    = 0x00000001UL;
 
 //////////////////////////////////////////////////////////////////////
 // The Object class specification
@@ -100,225 +104,93 @@ class SubstitutionBlock;
 class Object
 {
   
-  // The Heap and Object classes are tightly bound.  Actually,
-  // probably more like besotted teenagers feverishly necking in the
-  // back of an old combi van with fogged-up windows and squeaking
-  // suspension.  But they claim to be just friends. And who are we
-  // to argue?
+  // The Heap and Object classes are tightly bound.  
   
   friend class Heap;
   friend class AtomTable;
   
-protected:
-  // The following is a summary of the uses of the tagword. The
-  // lower byte is always enough to distinguish two types.
-  //
-  //
-  // #=================#============#================#==========#====#
-  // | Type            | Top 23 bts | Option (3bts)  | TypeFlag | GC |
-  // #=================#============#================#==========#====#
-  // | Variable        :      0...0 : occr,info,temp :   0 0 0  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | ObjectVariable  :      0...0 :local,info,temp :   0 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // |   Reference     :      x...x :    x,   x,   x :   0 0 x  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Cons            :  see notes : type,type,invrt:   0 1 0  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Structure       : arity      :    0,   0,   0 :   0 1 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // |   Any Structure :      x...x :    x,   x,   x :   0 1 x  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Quantified Term :      0...0 :    0,   0,   0 :   1 0 0  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Atom            : see notes  :    0,   0,   0 :   1 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Short           : value      :    1,   0,   0 :   1 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Long            :      0...0 :    1,   0,   1 :   1 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Double          :      0...0 :    1,   1,   0 :   1 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // |   Any Constant  :      x...x :    x,   x,   x :   1 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // |   Any Number    :      x...x :    1,   x,   x :   1 0 1  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // | Substitution    :      0...0 :    0,   0,   0 :   1 1 0  : 00 |
-  // +-----------------+------------+----------------+----------+----+
-  // |SubstitutionBlock:       size :    0,   0,invrt:   1 1 1  : 00 |
-  // #=================#============#================#==========#====#   
-  //
-  // More detail on each type:
-  //
-  // Object
-  // ~~~~~~
-  //
-  // Variable
-  // ~~~~~~~~   
-  //             : | byte | byte | byte | x      x        x    ttt gc |
-  //         TAG : | 0                  | occurs info blk temp 000 00 |
-  //
-  //   REFERENCE : ptr to refered Object (unbound, ptr to TAG)
-  // [      NAME : info[1] = pointer to Atom        | extra info block
-  // |    DELAYS : info[2] = pointer to delays List ] (optional)
-  //
-  //
-  // ObjectVariable
-  // ~~~~~~~~~~~~~~
-  //             : | byte | byte | byte | x     x        x    ttt gc |
-  //         TAG : | 0                  | local info blk temp 001 00 |
-  //   REFERENCE : ptr to refered ObjectVariable (unbound, ptr to TAG)
-  // [      NAME = info[1] = pointer to Atom          | extra info block
-  // |    DELAYS : info[2] = pointer to delays List   | (optional)
-  // |  DISTINCT : info[3] = pointer to distinct List ]
-  //
-  //
-  // Cons
-  // ~~~~
-  //             : | byte | byte | byte | x    x    x      ttt gc |
-  //         TAG : | See notes          | type type invert 010 00 |
-  //        HEAD = pointer to Object (depending on type)
-  //        TAIL = pointer to Object (a Cons, an Atom [ Nil ] or a Variable)
-  //
-  // A Cons (list) may be restricted to hold only particular objects,
-  // by specifying various values as the top two xxx bits:
-  //
-  //     In particular:
-  //
-  //          000 -- any Prolog Object
-  //          010 -- objvariables only (distinctness info)
-  //          10x -- substitution blocks only (substitutions) (x = invertible)
-  //          110 -- code (delayed problems)
-  //
-  // The semantics of restricting a Cons (list) is to assert that the head
-  // of the list is of the given type, and that the tail of the list,
-  // should it be a list having has the same property.
-  //
-  // Additionally, if a list is a substitution block list, then
-  // information about invertibility is also stored.
-  //
-  //	     100 -- Not invertible
-  //         101 -- Invertible
-  //
-  // Structure
-  // ~~~~~~~~~   
-  //             : | byte | byte | byte | xxx ttt gc |
-  //         TAG : | arity              | 000 011 00 |
-  //     FUNCTOR : pointer to functor
-  // { ARGUMENTx : pointer to argument(x) } 
-  //                 (arity arguments, indexed from 1. argument 0 is
-  //                  defined to be the functor.) 
-  //  
-  // QuantifiedTerm
-  // ~~~~~~~~~~~~~~
-  //             : | byte | byte | byte | xxx ttt gc |
-  //         TAG : | 0                  | 000 100 00 |
-  //       QUANT : pointer to Object (-generally- Atom of Variable)
-  //       BOUND : pointer to List of ObjVars
-  //        BODY : pointer to Object
-  //
-  // Atom
-  // ~~~~
-  //             : | byte | byte | byte             | xxx ttt gc |
-  //         TAG : | 0           | 0000 00 atom int | 000 101 00 |
-  //        NAME : pointer to asciiz
-  //       ASSOC : unsigned long or pointer to Atom as appropriate
-  // (NB.  Atoms do not reside on the heap.  They reside in an Atom
-  // Table.)
-  //
-  // Whether another atom or an integer is associated with the
-  // atom is represented within the third 
-  //
-  //               0000 0000 -- no associated info
-  //               0000 0001 -- integer associated
-  //               0000 0010 -- atom associated 
-  //
-  // Short
-  // ~~~~~
-  //             : | byte | byte | byte | xxx ttt gc |
-  //         TAG : | value              | 100 101 00 |
-  //
-  // Value is tored as a 24-bit integer, with the standard integer encoding
-  // for the compiler and platform.
-  //
-  // Long
-  // ~~~~
-  //             : | byte | byte | byte | xxx TTT GC |
-  //         TAG : | 0                  | 101 101 00 |
-  //        LONG : long
-  //
-  // [4] A Long is stored as a C long int, which is at least 32-bits in
-  // size.  It is, however, implementation dependent.
-  //
-  // Double
-  // ~~~~~
-  //             : | byte | byte | byte | xxx TTT GC |
-  //         TAG : | 0                  | 110 101 00 |
-  //      DOUBLE : val[2]
-  //
-  //
-  // Substitution
-  // ~~~~~~~~~~~~
-  //             : | byte | byte | byte | xxx TTT GC |
-  //         TAG : | 0                  | 000 110 00 |
-  //       SUBST : pointer to List of SubBlocks
-  //        TERM : pointer to Object
-  //
-  // SubstitutionBlock
-  // ~~~~~~~~~~~~~~~~~
-  //             : | byte | byte | byte | xx x      TTT GC |
-  //         TAG : | size               | 00 invert 111 00 |
-  // {      DOMx : pointer to ObjectVariable } 
-  // {      RANx : pointer to Object         }
-  //          (size * pairs of replacements)
-  
+public:
   // Buckybits for the broadest types in the tag
-  static const heapobject TypeMask =	0x0000001CUL;
-  static const heapobject TypeVar =	0x00000000UL;	// variable
-  static const heapobject TypeObjVar =	0x00000004UL;	// object variable
-  static const heapobject TypeCons =	0x00000008UL;	// Cons (list)
-  static const heapobject TypeStruct =	0x0000000CUL;	// struct
-  static const heapobject TypeQuant =	0x00000010UL;	// quantifier
-  static const heapobject TypeConst =	0x00000014UL;	// constant
-  static const heapobject TypeSubst =	0x00000018UL;	// substitution
-  static const heapobject TypeSubBlock =0x0000001CUL;   // substitution block
+  static const heapobject TypeMask     =  0x000000F0UL;
+  static const heapobject TypeVar      =  0x00000000UL;	// variable
+  static const heapobject TypeShort    =  0x00000010UL;	// short
+  static const heapobject TypeLong     =  0x00000030UL;	// long
+  static const heapobject TypeDouble   =  0x00000050UL;	// double
+  static const heapobject TypeAtom     =  0x00000040UL;	// atom
+  static const heapobject TypeString   =  0x00000020UL;	// string
+  static const heapobject TypeStruct   =  0x00000070UL;	// struct
+  static const heapobject TypeCons     =  0x00000060UL;	// Cons (list)
+  static const heapobject TypeObjVar   =  0x00000080UL;	// object variable
+  static const heapobject TypeQuant    =  0x00000090UL;	// quantifier
+  static const heapobject TypeSubst    =  0x000000A0UL;	// substitution
+  static const heapobject TypeSubBlock =  0x000000B0UL; // substitution block
+
+  // Types for unification switch
+  // number = { short, long, double}
+  // other = {sub, subblock, obvar, quant, other-var}
+  static const heapobject UnifyMask    =  0x0000000EUL;
+  static const heapobject UVar         =  0x00000000UL; // variable
+  static const heapobject UVarOC       =  0x00000002UL; // var with OC flag set
+  static const heapobject UNumber      =  0x00000004UL; // number
+  static const heapobject UAtom        =  0x00000006UL; // atom
+  static const heapobject UString      =  0x00000008UL; // string
+  static const heapobject UStruct      =  0x0000000AUL; // structure
+  static const heapobject UCons        =  0x0000000cUL; // cons
+  static const heapobject UOther       =  0x0000000EUL; // other
+
+  static const heapobject TypeTagMask  =  0x000000FFUL;
+  static const heapobject VarTag       =  GC_B | UVar      | TypeVar;
+  static const heapobject VarOCTag     =  GC_B | UVarOC    | TypeVar;
+  static const heapobject VarOtherTag  =  GC_B | UOther    | TypeVar;
+  static const heapobject ShortTag     =  GC_B | UNumber   | TypeShort;
+  static const heapobject LongTag      =  GC_B | UNumber   | TypeLong;
+  static const heapobject DoubleTag    =  GC_B | UNumber   | TypeDouble;
+  static const heapobject AtomTag      =  GC_B | UAtom     | TypeAtom;
+  static const heapobject StringTag    =  GC_B | UString   | TypeString;
+  static const heapobject StructTag    =  GC_B | UStruct   | TypeStruct;
+  static const heapobject ConsTag      =  GC_B | UCons     | TypeCons;
+  static const heapobject ObjVarTag    =  GC_B | UOther    | TypeObjVar;
+  static const heapobject QuantTag     =  GC_B | UOther    | TypeQuant;
+  static const heapobject SubstTag     =  GC_B | UOther    | TypeSubst;
+  static const heapobject SubBlockTag  =  GC_B | UOther    | TypeSubBlock;
+
+  static const heapobject NumberTag        =  0x00000015UL;
+  static const heapobject DerefMask        =  0x00000070UL;
+
+
+  static const heapobject tVar         =  TypeVar >> 4;
+  static const heapobject tShort       =  TypeShort >> 4;
+  static const heapobject tLong        =  TypeLong >> 4;
+  static const heapobject tDouble      =  TypeDouble >> 4;
+  static const heapobject tAtom        =  TypeAtom >> 4;
+  static const heapobject tString      =  TypeString >> 4;
+  static const heapobject tStruct      =  TypeStruct >> 4;
+  static const heapobject tCons        =  TypeCons >> 4;
+  static const heapobject tObjVar      =  TypeObjVar >> 4;
+  static const heapobject tSubst       =  TypeSubst >> 4;
+  static const heapobject tSubBlock    =  TypeSubBlock >> 4;
+  static const heapobject tQuant       =  TypeQuant >> 4;
 
 protected:			// contents of structure
   heapobject tag;
 
+
 public:
   // For masking the top bits
-  static const heapobject TopMask =    0xffffff00UL;
+  static const heapobject TopMask   =    0xffffff00UL;
+  static const heapobject TopSBMask =    0xfffff000UL;
 
   // Special tag for unify_x_ref instruction
-  static const heapobject RefTag = 0x000000FCUL;
+  static const heapobject RefTag = 0x000000FEUL;
 
-  // Garbage collection bits and mask
-  static const heapobject GC_M    = 0x00000002UL;
-  static const heapobject GC_F    = 0x00000001UL;
-  static const heapobject GC_Mask = GC_M | GC_F;
+  inline u_int tTag() const;
+  inline heapobject getTag() const;
+  inline u_int getType(void) const;
 
-public:
-  // uTags == microtags == Small tags used for switching purposes
-  static const heapobject uVar = TypeVar >> 2;
-  static const heapobject uObjVar = TypeObjVar >> 2;
-  static const heapobject uCons = TypeCons >> 2;
-  static const heapobject uStruct = TypeStruct >> 2;
-  static const heapobject uQuant = TypeQuant >> 2;
-  static const heapobject uConst = TypeConst >> 2;
-  static const heapobject uSubst = TypeSubst >> 2;
-  static const heapobject uSubsBlock = TypeSubBlock >> 2;
-  
-  typedef heapobject uTag;
-  inline uTag utag(void) const;
-
-  inline heapobject getTag(void) const;
-
-public:
+  inline u_int switchOffset() const;
   // Returns the first word of the storage after the tag
   inline heapobject *storage(void);
 
-public:
   // Some boolean functions for eliciting the type of Object being
   // pointed to.
   
@@ -346,6 +218,7 @@ public:
   inline bool isNumber(void) const;
   inline bool isInteger(void) const;
   inline bool isAtom(void) const;
+  inline bool isString(void) const;
   inline bool isShort(void) const;
   inline bool isLong(void) const;
   inline bool isDouble(void) const;
@@ -353,17 +226,12 @@ public:
   inline bool isSubstitutionBlock(void) const;
   
   // Returns the value of a Short or Long.
-  inline int getNumber(void);
+  inline int getInteger(void);
   inline double getDouble(void);
 
   inline heapobject* last(void);
 
-  // Garbage collection methods
-  inline bool gc_isMarked(void) const;
-  inline void gc_mark(void);
-  inline void gc_setfs(void);
-  inline bool gc_isFset(void) const;
-  inline void gc_unsetf(void);
+
 
 public:
   // Dummy constructor - needed for atom constructor.
@@ -382,6 +250,9 @@ public:
   // Dispatching for the DEBUG printMe() message, which displays a
   // representation of the Object being pointed to
   inline void printMe_dispatch(AtomTable&, bool all = true);
+
+  bool check_object();
+
 #endif
 
   //
@@ -425,6 +296,7 @@ public:
 				  Object*& newEnd);
   
   inline bool equalConstants(Object* const2);
+  inline bool equalUninterp(Object* const2);
   
   //
   // Return the length of the bound variables list.
@@ -445,24 +317,7 @@ protected:
   friend class Object;
   friend class AtomTable;
 
-  // Buckybits
-  static const heapobject ConstMask =	0x000000e0UL;
-  static const heapobject ConstAtom =	0x00000000UL;
-  static const heapobject ConstShort =	0x00000080UL;
-  static const heapobject ConstLong =	0x000000a0UL;
-  static const heapobject ConstDouble =	0x000000c0UL;
-  // The high 2 bits of the tag are used for the high two bits of
-  // The long - the long is shifted up by 2 bits to free the bottom
-  // two bits for garbage collection bits.
-  static const heapobject LongBits =    0xc0000000UL;
-  // The bottom 2 bits of a double (each word) is stored in the top
-  // 4 bits of the tag
-  static const heapobject DoubleBits1   = 0xc0000000UL;
-  static const heapobject DoubleBits2   = 0x30000000UL;
-  static const heapobject DoubleLowbits = 0x00000003UL;
- 
-  
-public:
+ public:
   // Dummy constructor - needed for atom constructor
   Constant(void):Object() {}
 
@@ -503,7 +358,7 @@ public:
   // Constructor - needed to initialize atom table.
   Atom(void):Constant()
     {
-      tag = TypeConst | Constant::ConstAtom;
+      tag = AtomTag;
       string_table_loc = EMPTY_LOC;
       associatedval = 0;
       first_ref = EMPTY_LOC;
@@ -557,7 +412,7 @@ protected:
   // Value is encoded in tag; no extra elements required
   
 public:
-  static const heapobject Zero    = (TypeConst | Constant::ConstShort);
+  static const heapobject Zero    = ShortTag;
   // Accessors and mutators
   inline long getValue(void) const;
   
@@ -576,10 +431,14 @@ public:
 
 class Double : public Constant
 {
+public:
+  static const size_t DOUBLE_SIZE
+    = (sizeof(double) + sizeof(u_int) - 1)/sizeof(u_int);
+
 protected:
   // The value of the Double, stored as a pointer to a double in C
   // memory
-  heapobject x[2];
+  heapobject x[DOUBLE_SIZE];
   
 public:
   // Accessor (no mutator)
@@ -614,6 +473,16 @@ public:
 public:
   inline void printMe(AtomTable&, bool);
 #endif
+};
+
+class StringObject : public Object
+{
+ protected:
+  heapobject theChars[1];
+
+ public:
+  char* getChars() { return (char*)theChars; }
+  inline size_t size(void) const;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -665,17 +534,17 @@ protected:
   Object *tail;
 
 public:
-  static const heapobject FlagTypeMask =		0x000000c0UL;
+  static const heapobject FlagTypeMask =		0x00000c00UL;
 
   static const heapobject FlagAnyList =			0x00000000UL;
-  static const heapobject FlagObjectVariableList = 	0x00000040UL;
-  static const heapobject FlagSubstitutionBlockList =	0x00000080UL;
-  static const heapobject FlagDelayedProblemList =	0x000000c0UL;
+  static const heapobject FlagObjectVariableList = 	0x00000400UL;
+  static const heapobject FlagSubstitutionBlockList =	0x00000800UL;
+  static const heapobject FlagDelayedProblemList =	0x00000c00UL;
 
-  static const heapobject FlagInvertibleMask =		0x00000020UL;
+  static const heapobject FlagInvertibleMask =		0x00000200UL;
   
   static const heapobject FlagNotInvertible =		0x00000000UL;
-  static const heapobject FlagInvertible =		0x00000020UL;
+  static const heapobject FlagInvertible =		0x00000200UL;
   static const u_int TailOffset = 2;
 
 public:
@@ -781,8 +650,8 @@ protected:
 
 public:
   // Buckybits
-  static const heapobject InvertibleMask =      0x00000020UL;
-  static const heapobject FlagInvertible =	0x00000020UL;
+  static const heapobject InvertibleMask =      0x00000200UL;
+  static const heapobject FlagInvertible =	0x00000200UL;
   static const heapobject FlagNotInvertible =	0x00000000UL;
 
   // Accessor type for Invertible
@@ -850,25 +719,14 @@ public:
   static const u_int NameOffset = 2;
   static const u_int DelaysOffset = 3;
   // Buckybits
-  static const heapobject FlagExtraMask = 	0x000000d0UL;
+  static const heapobject FlagExtraMask = 	0x00000F00UL;
 
-  static const heapobject FlagOccurs =		0x00000080UL;
-  static const heapobject FlagExtraInfo =	0x00000040UL;
-  static const heapobject FlagTemperature =	0x00000020UL;
-  static const heapobject FlagCollected =       0x00000100UL;
-  static const heapobject FlagPerm =            0x00000200UL;
+  static const heapobject FlagOccurs =		0x00000100UL;
+  static const heapobject FlagExtraInfo =	0x00000200UL;
+  static const heapobject FlagTemperature =	0x00000400UL;
+  static const heapobject FlagCollected =       0x00001000UL;
+  static const heapobject FlagPerm =            0x00002000UL;
 
-  // Accessor type for Temperature
-  enum Temperature {
-    Thawed = 0UL,
-    Frozen = FlagTemperature
-  };
-
-  // Accessor type for OccursCheck
-  enum OccursCheck {
-    NoOccursCheck = 0UL,
-    HasOccursCheck = FlagOccurs
-  };
 
   // Accessors and mutators
   inline Object *getReference(void) const;
@@ -886,15 +744,7 @@ public:
   inline heapobject *getDelaysAddress(void);
   inline void setDelays(Object*);
 
-  // Temperature operations
-  inline void freeze(void);
-  inline bool isFrozen(void);
-  inline void thaw(void);
-  inline bool isThawed(void);
 
-  // OccursCheck operations
-  inline bool isOccursChecked(void) const;
-  inline void setOccursCheck(void);
 
   // Collection operations
   inline bool isCollected(void) const;
@@ -925,6 +775,16 @@ public:
   
   // Does the real work of figuring out the size.
   static inline size_t size(bool has_extra_info);
+  // Temperature operations
+  inline void freeze(void);
+  inline bool isFrozen(void);
+  inline void thaw(void);
+  inline bool isThawed(void);
+
+  // OccursCheck operations
+  inline bool isOccursChecked(void) const;
+  inline void setOccursCheck(void);
+  inline void setOccursCheckOther(void);
 
   inline bool isLifeSet(void) const;
   inline u_int getLife(void) const;
@@ -948,10 +808,15 @@ class ObjectVariable: public Reference
 {
 public:
   static const u_int DistinctnessOffset = 4;
-  static const heapobject FlagLocalMask = 	0x00000080UL;
+  static const heapobject FlagLocalMask = 	0x00000800UL;
 
-  static const heapobject FlagLocal =		0x00000080UL;
+  static const heapobject FlagLocal =		0x00000800UL;
 
+  // Temperature operations
+  inline void freeze(void);
+  inline bool isFrozen(void);
+  inline void thaw(void);
+  inline bool isThawed(void);
 
   // Accessors and mutators
   inline Object *getDistinctness(void) const;
@@ -990,8 +855,6 @@ public:
 #endif // OBJECTS_H
 #ifndef OBJECTS_H_INLINE // MEGA-KLUDGE!!!!!!
 #define OBJECTS_H_INLINE
-//#ifndef HEAP_H
-//#include "heap.h" // KLUDGE!!!!!!
 
 #include "atom_table.h"
 
@@ -999,11 +862,16 @@ public:
 // Inline functions for the Object class
 
 
-
-inline Object::uTag
-Object::utag(void) const
+inline u_int
+Object::tTag(void) const
 {
-  return static_cast<uTag>((tag & TypeMask) >> 2);
+  return (tag & TypeMask) >> 4;
+}
+
+inline u_int
+Object::getType(void) const
+{
+  return (tag & TypeTagMask);
 }
 
 inline heapobject 
@@ -1012,15 +880,50 @@ Object::getTag(void) const
   return tag;
 }
 
+inline u_int 
+Object::switchOffset() const
+{
+  switch ((tag & TypeMask) >> 4)
+    {
+    case tVar:
+      return 0;
+      break;
+    case tShort:
+    case tLong:
+    case tDouble:
+    case tAtom:
+      return 5;
+      break;
+    case tString:
+      return 2;
+      break;
+    case tStruct:
+      return 3;
+      break;
+    case tCons:
+      return 2;
+      break;
+    case tObjVar:
+      return 1;
+      break;
+    case tSubst:
+      return 6;
+      break;
+    case tQuant:
+      return 4;
+      break;
+    default:
+      assert(false);
+      return 0;
+      break;
+    }
+  assert(false);
+  return 0;
+}
+
 inline heapobject *
 Object::storage(void)
 {
-  assert(isCons() ||
-	       isAnyVariable() ||
-	       isStructure() ||
-	       isQuantifiedTerm() ||
-	       isSubstitutionBlock());
-
   return reinterpret_cast<heapobject *>(this) + 1;
 }
 
@@ -1034,21 +937,14 @@ inline bool Object::isVariable(void) const
   return (tag & TypeMask) == TypeVar;
 }
 
-inline bool Object::isNormalVariable(void) const
-{
-  return tag == TypeVar;
-}
-
 inline bool Object::isFrozenVariable(void) const
 {
-  return (tag & (TypeMask | Reference::FlagTemperature))
-    == (TypeVar | Reference::Frozen);
+  return (tag & (TypeMask | Reference::FlagTemperature)) == (TypeVar | Reference::FlagTemperature);
 }
 
 inline bool Object::isThawedVariable(void) const
 {
-  return (tag & (TypeMask | Reference::FlagTemperature))
-    == (TypeVar | Reference::Thawed);
+  return (tag & (TypeMask | Reference::FlagTemperature)) == TypeVar;
 }
 
 inline bool Object::isObjectVariable(void) const
@@ -1064,7 +960,7 @@ inline bool Object::isLocalObjectVariable(void) const
 
 inline bool Object::isAnyVariable(void) const
 {
-  return (tag & TypeMask & (~(TypeVar ^ TypeObjVar))) == TypeVar;
+  return isVariable() || isObjectVariable();
 }
 
 inline bool Object::isStructure(void) const
@@ -1099,47 +995,44 @@ inline bool Object::isQuantifiedTerm(void) const
 
 inline bool Object::isConstant(void) const
 {
-  return (tag & TypeMask) == TypeConst;
-}
-
-inline bool Object::isNumber(void) const
-{
-  return isConstant ()
-    && ((tag & Constant::ConstMask) != Constant::ConstAtom);
-}
-
-inline bool Object::isAtom(void) const
-{
-  return (tag & (TypeMask | Constant::ConstMask))
-    == (TypeConst | Constant::ConstAtom);
+  u_int t = (tag & UnifyMask) >> 1;
+  return ((t > 1) && (t < 5));
 }
 
 inline bool Object::isShort(void) const
 {
-  return (tag & (TypeMask | Constant::ConstMask))
-    == (TypeConst | Constant::ConstShort);
+  return (tag & TypeMask) == TypeShort;
+}
+
+inline bool Object::isString(void) const
+{
+  return (tag & TypeMask) == TypeString;
 }
 
 inline bool Object::isLong(void) const
 {
-  return (tag & (TypeMask | Constant::ConstMask))
-    == (TypeConst | Constant::ConstLong);
-}
-
-inline bool Object::isInteger(void) const
-{
-  return 
-    ((tag & (TypeMask | Constant::ConstMask))
-      == (TypeConst | Constant::ConstShort))
-    ||
-    ((tag & (TypeMask | Constant::ConstMask))
-      == (TypeConst | Constant::ConstLong));
+  return (tag & TypeMask) == TypeLong;
 }
 
 inline bool Object::isDouble(void) const
 {
-  return (tag & (TypeMask | Constant::ConstMask))
-    == (TypeConst | Constant::ConstDouble);
+  return (tag & TypeMask) == TypeDouble;
+}
+
+inline bool Object::isNumber(void) const
+{
+  return (tag & UnifyMask) == UNumber;
+}
+
+inline bool Object::isInteger(void) const
+{
+  return isShort() || isLong();
+}
+
+
+inline bool Object::isAtom(void) const
+{
+  return (tag & TypeMask) == TypeAtom;
 }
 
 inline bool Object::isSubstitution(void) const
@@ -1159,38 +1052,6 @@ inline heapobject* Object::last(void)
   return (reinterpret_cast<heapobject*>(this) + size_dispatch() - 1);
 }
 
-inline bool Object::gc_isMarked(void) const
-{
-  return ((tag & GC_M) == GC_M);
-}
-
-inline void Object::gc_mark(void)
-{
-  tag |= GC_M;
-}
-
-// Set the F bit for the GC on all but the first "argument" of the
-// object.
-inline void Object::gc_setfs(void)
-{
-  assert(!isNumber());
-  assert(size_dispatch() > 1);
-  heapobject* x = reinterpret_cast<heapobject*>(this);
-  for (u_int i = 1; i < size_dispatch(); i++)
-    {
-      x[i] |= GC_F;
-    }
-}
-
-inline bool Object::gc_isFset(void) const
-{
-  return ((tag & GC_M) == GC_F);
-}
-
-inline void Object::gc_unsetf(void)
-{
-  tag &= ~GC_F;
-}
 
 #ifdef QP_DEBUG
 
@@ -1217,6 +1078,11 @@ inline bool Object::isLegalSub(void)
      }
    for (size_t i = 1; i <= subblock->getSize(); i++)
      {
+        if (!subblock->getDomain(i)->variableDereference()->isObjectVariable())
+         {
+           return false;
+         }
+
         if (!subblock->getRange(i)->variableDereference()->hasLegalSub())
          {
            return false;
@@ -1244,48 +1110,43 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
       return;
     }
   
-  switch (utag ())
+  switch (tTag ())
     {
-    case uVar:
+    case tVar:
       OBJECT_CAST(Variable *, this)->printMe(atoms, all);
       break;
-    case uObjVar:
-      OBJECT_CAST(ObjectVariable *, this)->printMe(atoms, all);
+    case tShort:
+      OBJECT_CAST(Short *, this)->printMe(atoms, all);
       break;
-    case uStruct:
-      OBJECT_CAST(Structure *, this)->printMe(atoms, all);
+    case tLong:
+      OBJECT_CAST(Long *, this)->printMe(atoms, all);
       break;
-    case uCons:
+    case tAtom:
+      OBJECT_CAST(Atom *, this)->printMe(atoms, all);
+      break;
+    case tDouble:
+      OBJECT_CAST(Double *, this)->printMe(atoms, all);
+      break;
+    case tCons:
       OBJECT_CAST(Cons *, this)->printMe(atoms, all);
       break;
-    case uQuant:
-      OBJECT_CAST(QuantifiedTerm *, this)->printMe(atoms, all);
+    case tStruct:
+      OBJECT_CAST(Structure *, this)->printMe(atoms, all);
       break;
-    case uConst:
-      if (isAtom())
-	OBJECT_CAST(Atom *, this)->printMe(atoms, all);
-      else if (isShort())
-	OBJECT_CAST(Short *, this)->printMe(atoms, all);
-      else if (isLong())
-	OBJECT_CAST(Long *, this)->printMe(atoms, all);
-      else if (isDouble())
-	OBJECT_CAST(Double *, this)->printMe(atoms, all);
-      else
-	{
-		std::cerr << "Bogus const type" << std::endl;
-		std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
-	  assert(false);
-	  return;
-	}
-      break;
-    case uSubst:
+    case tSubst:
       OBJECT_CAST(Substitution *, this)->printMe(atoms, all);
       break;
-    case uSubsBlock:
+    case tSubBlock:
       OBJECT_CAST(SubstitutionBlock *, this)->printMe(atoms, all);
       break;
+    case tObjVar:
+      OBJECT_CAST(ObjectVariable *, this)->printMe(atoms, all);
+      break;
+    case tQuant:
+      OBJECT_CAST(QuantifiedTerm *, this)->printMe(atoms, all);
+      break;
     default:
-      // Not all uTags considered!
+      // Not all Tags considered!
       std::cerr << "Bogus type" << std::endl;
       std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
       assert(false);
@@ -1436,9 +1297,9 @@ inline size_t Short::size(void)
 #ifdef QP_DEBUG
 inline void Short::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Short[" 
-       << (word32)(tag & GC_Mask) << "]: \""
-       << getValue() << "\" ";
+	std::cerr << "[" << std::hex << (word32) this 
+		  << std::dec << "] Short: \""
+		  << getValue() << "\" ";
 }
 #endif
 
@@ -1446,11 +1307,7 @@ inline void Short::printMe(AtomTable& atoms, bool)
 // Inline functions for the Double class
 inline double Double::getValue(void) const
 {
-  double res;
-  word32 d[2];
-  d[0] = x[0] | ((tag & DoubleBits1) >> 30);
-  d[1] = x[1] | ((tag & DoubleBits2) >> 28);
-  memcpy(&res, d, sizeof(double));
+  double res = *((double*)x);
   return res;
 }
 
@@ -1474,7 +1331,7 @@ inline long Long::getValue(void) const
 {
   assert(sizeof(long) == sizeof(heapobject));
 
-  return (long)(((value >> 2) & ~LongBits) | (tag & LongBits));
+  return (long)value;
 }
 
 inline size_t Long::size(void)
@@ -1485,11 +1342,19 @@ inline size_t Long::size(void)
 #ifdef QP_DEBUG
 inline void Long::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << std::hex << (int32) this << std::dec << "] Long:[" 
-       << (word32)(tag & GC_Mask) << "] \""
-       << getValue() << "\" ";
+	std::cerr << "[" << std::hex << (int32) this << std::dec 
+		  << "] Long: \""
+		  << getValue() << "\" ";
 }
 #endif
+
+//////////////////////////////////////////////////////////////////////
+// Inline functions for the StringObject class
+
+inline size_t StringObject::size() const
+{
+  return (tag >> 8) - 1 + sizeof(StringObject) / BYTES_PER_WORD;
+}
 
 //////////////////////////////////////////////////////////////////////
 // Inline functions for the Structure class
@@ -1551,7 +1416,7 @@ inline size_t Structure::size(size_t arity)
 inline void Structure::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Structure:[" 
-       << (word32)(tag & GC_Mask) << "] functor: [ ";
+       << (word32)tag << "] functor: [ ";
   getFunctor()->printMe_dispatch(atoms, all);
   std::cerr << " ] ";
   for (size_t i = 1; i <= getArity(); i++)
@@ -1673,11 +1538,10 @@ Cons::getTailAddress(void)
 #ifdef QP_DEBUG
 inline void Cons::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Cons:[" 
-       << (word32)(tag & GC_Mask) << "] ";
+  std::cerr << "[" << std::hex << (word32) this << std::dec << "] Cons: ";
   if (isSubstitutionBlockList()) 
     {
-	    std::cerr << "(Sub) ";
+      std::cerr << "(Sub) ";
       if (isInvertible()) std::cerr << "(Invertible) ";
     }
   std::cerr << " head: [ ";
@@ -1742,8 +1606,8 @@ inline void QuantifiedTerm::setBody(Object *o)
 #ifdef QP_DEBUG
 inline void QuantifiedTerm::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] QuantifiedTerm: quantifier:[" 
-       << (word32)(tag & GC_Mask) << "] [ ";
+  std::cerr << "[" << std::hex << (word32) this << std::dec 
+	    << "] QuantifiedTerm: quantifier: [ ";
   getQuantifier()->printMe_dispatch(atoms, all);
   std::cerr << " ] boundvars: [ ";
   getBoundVars()->printMe_dispatch(atoms, all);
@@ -1795,8 +1659,8 @@ inline void Substitution::setTerm(Object *o)
 #ifdef QP_DEBUG
 inline void Substitution::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Substitution: subst:[" 
-       << (word32)(tag & GC_Mask) << "] [ ";
+  std::cerr << "[" << std::hex << (word32) this << std::dec 
+	    << "] Substitution: subst: [ ";
   getSubstitutionBlockList()->printMe_dispatch(atoms, all);
   std::cerr << " ] term: [ ";
   getTerm()->printMe_dispatch(atoms, all);
@@ -1830,7 +1694,7 @@ inline void SubstitutionBlock::makeInvertible(void)
 
 inline size_t SubstitutionBlock::getSize(void) const
 {
-  return (tag & TopMask) >> 8;
+  return tag  >> 12;
 }
 
 inline ObjectVariable *SubstitutionBlock::getDomain(const size_t n) const
@@ -1857,7 +1721,7 @@ inline void SubstitutionBlock::decrementSize(void)
 
   const size_t new_size = getSize() - 1;
 
-  tag = (tag & ~TopMask) | (new_size << 8);
+  tag = (tag & ~TopSBMask) | (new_size << 12);
 }
 
 inline void SubstitutionBlock::setDomain(const size_t n, Object *dom)
@@ -1912,9 +1776,10 @@ inline bool SubstitutionBlock::containsLocal(void) const
 #ifdef QP_DEBUG
 inline void SubstitutionBlock::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] SubstitutionBlock:[" 
-       << (word32)(tag & GC_Mask) << "] ";
+  std::cerr << "[" << std::hex << (word32) this << " : " << tag << std::dec 
+	    << "] SubstitutionBlock: ";
   if (isInvertible()) { std::cerr << "(invertible) "; }
+  std::cerr << " size = " << getSize() << " " << endl;
   for (size_t i = 1; i <= getSize(); i++)
     {
 	    std::cerr << "dom: [ ";
@@ -1927,38 +1792,6 @@ inline void SubstitutionBlock::printMe(AtomTable& atoms, bool all)
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////
-// Inline functions for the (abstract) Reference class
-
-inline void Reference::freeze(void)
-{
-  tag = (tag & ~FlagTemperature) | Frozen;
-}
-
-inline bool Reference::isFrozen(void)
-{
-  return (tag & FlagTemperature) == Frozen;
-}
-
-inline void Reference::thaw(void)
-{
-  tag = (tag & ~FlagTemperature) | Thawed;
-}
-
-inline bool Reference::isThawed(void)
-{
-  return (tag & FlagTemperature) == Thawed;
-}
-
-inline bool Reference::isOccursChecked(void) const
-{
-  return (tag & FlagOccurs) == HasOccursCheck;
-}
-
-inline void Reference::setOccursCheck(void)
-{
-  tag = tag | FlagOccurs;
-}
 
 inline bool Reference::isCollected(void) const
 {
@@ -2084,6 +1917,52 @@ inline size_t Variable::size(void) const
   return size(hasExtraInfo());
 }
 
+//////////////////////////////////////////////////////////////////////
+// Inline functions for the (abstract) Reference class
+
+inline void Variable::freeze(void)
+{
+  tag = (tag & ~TypeTagMask) | VarOtherTag | FlagTemperature;
+}
+
+inline bool Variable::isFrozen(void)
+{
+  return (tag & FlagTemperature) != 0;
+}
+
+inline void Variable::thaw(void)
+{
+  if ((tag & FlagExtraInfo) != 0)
+    tag = (tag & ~FlagTemperature);
+  else if ((tag & FlagOccurs) == 0)
+    tag = (tag & ~(TypeTagMask | FlagTemperature)) | VarTag;
+  else
+    tag = (tag & ~(TypeTagMask | FlagTemperature)) | VarOCTag;
+}
+
+inline bool Variable::isThawed(void)
+{
+  return (tag & FlagTemperature) == 0;
+}
+
+inline bool Variable::isOccursChecked(void) const
+{
+  return (tag & FlagOccurs) != 0;
+}
+
+inline void Variable::setOccursCheck(void)
+{
+  assert(isVariable());
+  tag = tag | FlagOccurs | VarOCTag;
+}
+
+inline void Variable::setOccursCheckOther(void)
+{
+  assert((tag & TypeTagMask) == VarOtherTag);
+  tag = tag | FlagOccurs;
+}
+
+
 inline size_t Variable::size(bool has_extra_info)
 {
   return sizeof(Variable) / BYTES_PER_WORD + (has_extra_info ? 2 : 0);
@@ -2101,6 +1980,7 @@ inline u_int Variable::getLife(void) const
       
 inline void Variable::setLife(u_int i)
 {
+  assert(i != 0);
   tag |= i << 16;
 }                 
 
@@ -2109,32 +1989,32 @@ inline void Variable::copyTag(Object* other)
   assert(hasExtraInfo());
   assert(other->isVariable());
   assert(!OBJECT_CAST(Variable*, other)->hasExtraInfo());
-  tag = other->getTag() | FlagExtraInfo;
+  tag |= (other->getTag() & ~TypeTagMask);
 }
   
 #ifdef QP_DEBUG
 inline void Variable::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Variable:[" 
-       << (word32)(tag & GC_Mask) << "] ";
+  std::cerr << "[" << std::hex << (word32) this << std::dec 
+	    << "] Variable: ";
   if (isFrozen()) { std::cerr << "(frozen) "; }
   if (isOccursChecked()) { std::cerr << "(occurs checked) "; }
   if (getReference() != (Object *) this)
     {
-	    std::cerr << "<" <<std::hex << (word32)(getReference()) << std::dec << ">ref: [ ";
+      std::cerr << "<" <<std::hex << (word32)(getReference()) << std::dec << ">ref: [ ";
       getReference()->printMe_dispatch(atoms, all);
       std::cerr << " ] ";
     }
   else
     {
-	    std::cerr << "(unbound)";
+      std::cerr << "(unbound)";
       if (hasExtraInfo())
 	{
-		std::cerr << "Name {";
+	  std::cerr << "Name {";
 	  getName()->printMe_dispatch(atoms, all);
 	  if (all)
 	    {
-		    std::cerr << "} Delays {";
+	      std::cerr << "} Delays {";
 	      getDelays()->printMe_dispatch(atoms, false);
 	    }
 	  std::cerr << "}";
@@ -2154,6 +2034,30 @@ inline Object *ObjectVariable::getDistinctness(void) const
 
   return info[3];
 }
+
+//////////////////////////////////////////////////////////////////////
+// Inline functions for the (abstract) Reference class
+
+inline void ObjectVariable::freeze(void)
+{
+  tag = (tag & ~FlagTemperature) | FlagTemperature;
+}
+
+inline bool ObjectVariable::isFrozen(void)
+{
+  return (tag & FlagTemperature) == FlagTemperature;
+}
+
+inline void ObjectVariable::thaw(void)
+{
+  tag = (tag & ~FlagTemperature);
+}
+
+inline bool ObjectVariable::isThawed(void)
+{
+  return (tag & FlagTemperature) == 0;
+}
+
 
 inline heapobject*
 ObjectVariable::getDistinctnessAddress(void)
@@ -2193,7 +2097,7 @@ inline void ObjectVariable::makeLocalObjectVariable(void)
 /////////////////////////////////////////////////////////
 // Other methods
 
-inline int Object::getNumber(void)
+inline int Object::getInteger(void)
 {
   assert(isShort() || isLong());
 
@@ -2216,8 +2120,7 @@ inline double Object::getDouble(void)
 #ifdef QP_DEBUG
 inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] ObjVar:[" 
-       << (word32)(tag & GC_Mask) << "] ";
+  std::cerr << "[" << std::hex << (word32) this << std::dec << "] ObjVar: ";
   if (isFrozen()) { std::cerr << "(frozen) "; }
   if (getReference() != OBJECT_CAST(const Object*, this))
     {
@@ -2259,17 +2162,17 @@ Object::variableDereference()
   //
   assert(o != NULL);
   
-  while (o->isAnyVariable()) 
+  while ((o->getTag() & Object::DerefMask) == 0) 
     {
       //
-      // While still an (ob)variable, hence referring to something else,
+      // While still a (ob)variable, hence referring to something else,
       // move to what it's referring to
       //
       Object* n = OBJECT_CAST(Reference*, o)->getReference();
       assert(n != NULL);
       if ( n == o ) 
           {
-	    break; // An unbound (ob)variable
+	    return o; // An unbound (ob)variable
 	  }
       o = n;
     }
@@ -2300,13 +2203,127 @@ inline bool Object::equalConstants(Object* const2)
   assert(this->isConstant());
   assert(const2->isConstant());
 
-  return(this == const2 ||
-	 (this->isInteger() && const2->isInteger() &&
-	  this->getNumber() == const2->getNumber())
-	 || (this->isDouble() && const2->isDouble() &&
-	  this->getDouble() == const2->getDouble())
-        );
+  if (this == const2) return true;
+  if (isAtom()) return false;
+
+  if (getTag() != const2->getTag()) return false;
+  size_t s = size_dispatch();
+  heapobject* ptr1 = storage();
+  heapobject* ptr2 = const2->storage(); 
+  for (size_t i = 1; i < s; i++)
+    {
+      if (*ptr1 != *ptr2) return false;
+      ptr1++;
+      ptr2++;
+    }
+  return false;
 }
+
+inline bool Object::equalUninterp(Object* const2)
+{
+  assert(isNumber() || isString());
+  if (this == const2) return true;
+  if (getTag() != const2->getTag()) return false;
+  size_t s = size_dispatch();
+  heapobject* ptr1 = storage();
+  heapobject* ptr2 = const2->storage(); 
+  for (size_t i = 1; i < s; i++)
+    {
+      if (*ptr1 != *ptr2) return false;
+      ptr1++;
+      ptr2++;
+    }
+  return true;
+}
+
+
+// function for GC (threading - Jonker's algorithm
+// assumes that what p points at is a pointer
+inline void threadGC(heapobject* p)
+{
+  assert(p != NULL);
+  heapobject* tmp = (heapobject*)(*p);
+  assert(*tmp != 0);
+  *p = *tmp;
+  *tmp = (heapobject)p;
+}
+
+
+
+static const int bitsPerWord = 8*sizeof(u_int);
+
+class GCBits
+{
+private:
+  int size;
+  u_int* bits;
+  static const u_int bitMask = (u_int)-1; 
+public:
+  GCBits(int s)
+  {
+    assert(s > 0);
+    size = s / bitsPerWord;
+    bits = new u_int[size];
+    bzero(bits, size*sizeof(u_int));
+  }
+  ~GCBits() { delete [] bits; }
+
+
+  void set(int i) 
+  { 
+    assert(i >= 0); 
+    assert((i / bitsPerWord) < size);
+    bits[i / bitsPerWord] |= 1 << (bitMask & i);
+  }
+
+  void setWord(int i, u_int v)
+  {
+    assert(i >= 0);
+    assert(i < size);
+    bits[i] = v;
+  }
+
+  bool isSet(int i) 
+  { 
+    assert(i >= 0); 
+    assert((i / bitsPerWord) < size);
+    return ((bits[i / bitsPerWord] & (1 << (bitMask & i))) != 0);
+  }
+
+  u_int* getBitsPtr() { return bits; }
+  
+};
+
+class ObjectsStack
+{
+ private:
+  Object** top;
+  Object** base;
+  Object** high;
+  
+ public:
+  ObjectsStack(size_t size)
+    {
+      base = new Object*[size];
+      top = base;
+      high = base + size;
+    }
+
+  ~ObjectsStack() { delete [] base; }
+  
+  void push(Object* ho) { assert(top < high - 1); *top = ho; top++; }
+#ifdef QP_DEBUG
+  bool atEnd() { return top == (high-1); }
+#endif
+  
+  Object* pop() { assert(top > base); top--; return *top; }
+  
+  Object** getTop() const { return top; }
+  
+  void setTop(Object** newtop) { top = newtop; }
+  
+  void reset() { top = base; }
+};
 
 
 //#endif // HEAP_H

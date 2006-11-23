@@ -78,43 +78,29 @@ class	HeapAndTrailsChoice
 {
 private:
   heapobject*		heapTop;
-  TrailLoc              bindingTrailTop;
-  TrailLoc              objectTrailTop;
-  TrailLoc              ipTrailTop;
-  TrailLoc              tagTrailTop;
-  TrailLoc              refTrailTop;
+  TrailLoc          bindingTrailTop;
+  TrailLoc          otherTrailTop;
 
 public:
   //
   // Save the tops of the heap and the trails.
   //
-  void		save(heapobject* hloc, const TrailLoc bloc,
-		     const TrailLoc oloc, const TrailLoc iploc,
-		     const TrailLoc tloc, const TrailLoc rloc)
+  void save(heapobject* hloc, const TrailLoc btloc,  const TrailLoc otloc)
   {
     heapTop = hloc;
-    bindingTrailTop = bloc;
-    objectTrailTop = oloc;
-    ipTrailTop = iploc;
-    tagTrailTop = tloc;
-    refTrailTop = rloc;
+    bindingTrailTop = btloc;
+    otherTrailTop = otloc;
   }
 
   //
   // Restore the tops of the heap and the trails.
   //
-  void		restore(heapobject*& hloc, TrailLoc& bloc, TrailLoc& oloc,
-			TrailLoc& iploc, TrailLoc& tloc, TrailLoc& rloc) const
+  void restore(heapobject*& hloc, TrailLoc& btloc, TrailLoc& otloc) const
   {
     hloc = heapTop;
-    bloc = bindingTrailTop;
-    oloc = objectTrailTop;
-    iploc = ipTrailTop;
-    tloc = tagTrailTop;
-    rloc = refTrailTop;
+    btloc = bindingTrailTop;
+    otloc = otherTrailTop;
   }
-
-  TrailLoc getRefTrailLoc(void) { return refTrailTop; }
 
   heapobject* getSavedTop(void) { return(heapTop); }
 
@@ -138,6 +124,7 @@ public:
   word32		metaCounter;
   word32		objectCounter;
   word32		NumArgs;
+  int        timestamp;
 #ifdef WIN32
   Object*               X[1];
 #else
@@ -249,6 +236,9 @@ public:
   //
   EnvLoc getEnvTop(void) const { return(envStackTop); }
   
+  int getTimestamp() const { return timestamp; }
+
+  void setTimestamp(int t) { timestamp = t; } 
   //
   // Compare two choice points for ``equality''. This
   // is rough and ready and quite possibly unreliable.

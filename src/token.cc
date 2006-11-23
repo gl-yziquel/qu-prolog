@@ -1037,15 +1037,11 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
       
     case LISQT:	// quoted list
       {
-	Object** tail = &String;
-	
+	string str;
 	i = ReadCharacter(InStrm, DOUBLE_QUOTE, Integer);
 	while (i > 0)
 	  {
-	    Cons* list = heap.newCons();
-	    list->setHead(heap.newNumber(i));
-	    *tail = list;
-	    tail = list->getTailAddress();
+	    str.push_back((char)i);
 	    i = ReadCharacter(InStrm, DOUBLE_QUOTE, Integer);
 	  }
 	if (i == -1)
@@ -1054,11 +1050,14 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
 	  }
 	else
 	  {
-	    *tail = AtomTable::nil;
+	    if (*(str.c_str()) == '\0')
+	      String = AtomTable::nil;
+	    else
+	      String = heap.newStringObject(str.c_str());
 	    return(STRING_TOKEN);
 	  }
-      }
       break;
+      }
       
     case SPACE:
       while ((InType(c) == SPACE) && (c != '\n'))
@@ -1157,7 +1156,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
     {
     case ERROR_TOKEN:
     case NUMBER_TOKEN:
-      value_arg = heap.newNumber(Integer);
+      value_arg = heap.newInteger(Integer);
       break;
     case DOUBLE_TOKEN:
       value_arg = heap.newDouble(Double);
@@ -1189,7 +1188,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
       assert(false); 
     }
   
-  type_arg = heap.newNumber(i); 
+  type_arg = heap.newInteger(i); 
 
   return RV_SUCCESS;
 }

@@ -65,7 +65,7 @@ class Timestamp
 private:
   word32 count;
 public:
-  Timestamp(void) : count(0) { }
+  Timestamp(void) : count(1) { }
 
   void Stamp(void) { count++; }
   

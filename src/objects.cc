@@ -68,46 +68,46 @@ size_t Object::size_dispatch(void)
       cerr << "Warning - size of NULL" << endl;
       return(0);
     }
-  switch (utag())
+  switch (tTag())
     {
-    case uVar:
+    case tVar:
       return OBJECT_CAST(Variable *, this)->size();
       break;
-    case uObjVar:
+    case tObjVar:
       return OBJECT_CAST(ObjectVariable *, this)->size();
       break;
-    case uStruct:
+    case tStruct:
       return OBJECT_CAST(Structure *, this)->size();
       break;
-    case uCons:
+    case tCons:
       return Cons::size();
       break;
-    case uQuant:
+    case tQuant:
       return QuantifiedTerm::size();
       break;
-    case uConst:
-      if (isAtom ())
-	return Atom::size();
-      if (isShort ())
-	return Short::size();
-      else if (isLong ())
-	return Long::size();
-      else if (isDouble())
-	return Double::size();
-      else
-	{
-	  assert(false);
-	  return 0;
-	}
+    case tShort:
+      return Short::size();
       break;
-    case uSubst:
+    case tLong:
+      return Long::size();
+      break;
+    case tDouble:
+      return Double::size();
+      break;
+    case tAtom:
+      return Atom::size();
+      break;
+    case tString:
+      return OBJECT_CAST(StringObject*, this)->size();
+      break;
+    case tSubst:
       return Substitution::size();
       break;
-    case uSubsBlock:
+    case tSubBlock:
       return OBJECT_CAST(SubstitutionBlock *, this)->size();
       break;
     default:
-      // Not all uTags considered!
+      // Not all tTags considered!
       assert(false);
       return 0;
     }
@@ -123,7 +123,7 @@ Object::isObjectVariableInDistinctList(const ObjectVariable *objvar) const
 {
   assert(this->isObjectVariable());
   assert(OBJECT_CAST(const Reference*, this)->getReference() == 
-	       OBJECT_CAST(const Object*, this));
+	 OBJECT_CAST(const Object*, this));
 
   for (Object *distinct = objvar->getDistinctness(); 
        distinct->isCons(); 
@@ -183,7 +183,7 @@ Object::distinctFromDomains(const SubstitutionBlock *sub_block, size_t i)
 
   for ( ; i <= sub_block->getSize(); i++)
     {
-      assert(sub_block->getDomain(i)->isObjectVariable());
+      assert(sub_block->getDomain(i)->variableDereference()->isObjectVariable());
 
       ObjectVariable *domain 
 	= OBJECT_CAST(ObjectVariable*, 
@@ -257,8 +257,8 @@ Object::containLocalObjectVariable(Object* sub, Object*& domElem,
 {
   assert(this->isLocalObjectVariable());
   assert(sub->isNil() || 
-	       (sub->isCons() && 
-	       OBJECT_CAST(Cons *, sub)->isSubstitutionBlockList()));
+	 (sub->isCons() && 
+	  OBJECT_CAST(Cons *, sub)->isSubstitutionBlockList()));
   
   bool    found = false;
   
@@ -299,7 +299,89 @@ Object::containLocalObjectVariable(Object* sub, Object*& domElem,
   return(true);
 }
 
-
+#ifdef QP_DEBUG
+bool
+Object::check_object()
+{
+  if ((tag & 1) == 0) return false;
+  switch (tTag())
+    {
+    case Object::tVar:
+      {
+	Object* n  = OBJECT_CAST(Reference*, this)->getReference();
+	if (n == this) return true;
+	return ((n != NULL) && n->check_object());
+      }
+      break;
+    case Object::tObjVar:
+      {
+	Object* n = OBJECT_CAST(Reference*, this)->getReference();
+	if (n == this) return true;
+	return ((n != NULL) && n->check_object());
+      }
+      break;
+    case Object::tStruct:
+      {
+	Structure* s = OBJECT_CAST(Structure *, this);
+	for (u_int i = 0; i <= s->getArity(); i++)
+	  {
+	    if (s->getArgument(i) == NULL || !s->getArgument(i)->check_object()) return false;
+	  }
+	return true;
+      }
+      break;
+    case Object::tCons:
+      {
+	Cons* l = OBJECT_CAST(Cons *, this);
+	return ((l->getHead() != NULL) && l->getHead()->check_object() && 
+		(l->getTail() != NULL) && l->getTail()->check_object());
+      }
+      break;
+    case Object::tQuant:
+      {
+	QuantifiedTerm* q = OBJECT_CAST(QuantifiedTerm *, this);
+	return ((q->getQuantifier() != NULL) && 
+		q->getQuantifier()->check_object() && 
+		(q->getBoundVars() != NULL) &&
+		q->getBoundVars()->check_object() && 
+		(q->getBody() != NULL) &&
+		q->getBody()->check_object());
+      }
+      break;
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
+      return true;
+      break;
+    case Object::tSubst:
+      {
+	Substitution* s = OBJECT_CAST(Substitution *, this);
+	return((s->getTerm() != NULL) &&
+	       s->getTerm()->check_object() && 
+	       (s->getSubstitutionBlockList() != NULL) &&
+	       s->getSubstitutionBlockList()->check_object());
+      }
+      break;
+    case Object::tSubBlock:
+      {
+	SubstitutionBlock * s = OBJECT_CAST(SubstitutionBlock *, this);
+	for (u_int i = 1; i <= s->getSize(); i++)
+	  {
+	    if ((s->getDomain(i) == NULL) ||
+		!s->getDomain(i)->check_object() || 
+		(s->getRange(i) == NULL) ||
+		!s->getRange(i)->check_object() )return false;
+	  }
+	return true;
+      }
+      break;
+    default:
+      return false;
+    }
+}
+#endif
 
 
 

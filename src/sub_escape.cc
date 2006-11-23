@@ -183,15 +183,15 @@ Thread::psi_new_sub(Object *& object1,
   Object* val3 = heap.dereference(object3);
 
   assert(val1->isShort());
-  assert(0 <= val1->getNumber() &&
-               (u_int)(val1->getNumber()) <= ARITY_MAX);
+  assert(0 <= val1->getInteger() &&
+               (u_int)(val1->getInteger()) <= ARITY_MAX);
   assert(val2->isNil() || val2->isCons() && OBJECT_CAST(Cons*, val2)->isSubstitutionBlockList());
 
   assert(val3->isCons());
   //
   // Link the new substitution to the existing substitutions.
   //
-  int size = val1->getNumber();
+  int size = val1->getInteger();
   SubstitutionBlock* new_block = 
     heap.newSubstitutionBlock(size);
 
@@ -271,7 +271,7 @@ Thread::psi_sub_table_size(Object *& object1, Object *& object2)
   //
   // Get the size and return it.
   //
-  object2 = heap.newNumber(static_cast<long>(sub_block->getSize()));
+  object2 = heap.newInteger(static_cast<long>(sub_block->getSize()));
   
   return RV_SUCCESS;
 }
@@ -292,9 +292,9 @@ Thread::psi_set_domain(Object *& object1, Object *& object2, Object *& object3)
   Object* val2 = heap.dereference(object2); 
   Object* val3 = heap.dereference(object3);
 
-  assert(val1->isNumber());
+  assert(val1->isInteger());
   
-  u_int index = (u_int)(val1->getNumber());
+  u_int index = (u_int)(val1->getInteger());
 
   assert(val2->isCons());
 
@@ -329,9 +329,9 @@ Thread::psi_set_range(Object *& object1, Object *& object2, Object *& object3)
   Object* val2 = heap.dereference(object2); 
   Object* val3 = heap.dereference(object3);
 
-  assert(val1->isNumber());
+  assert(val1->isInteger());
   
-  u_int index = (u_int)(val1->getNumber());
+  u_int index = (u_int)(val1->getInteger());
 
   assert(val2->isCons());
 
@@ -366,9 +366,9 @@ Thread::psi_get_domain(Object *& object1, Object *& object2, Object *& object3)
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2); 
 
-  assert(val1->isNumber());
+  assert(val1->isInteger());
   
-  u_int index = (u_int)(val1->getNumber());
+  u_int index = (u_int)(val1->getInteger());
 
   assert(val2->isCons());
 
@@ -405,9 +405,9 @@ Thread::psi_get_range(Object *& object1, Object *& object2, Object *& object3)
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2); 
 
-  assert(val1->isNumber());
+  assert(val1->isInteger());
   
-  u_int index = (u_int)(val1->getNumber());
+  u_int index = (u_int)(val1->getInteger());
 
   assert(val2->isCons());
 
@@ -591,8 +591,8 @@ Thread::psi_set_domains_apart(Object *& object1, Object *& object2,
    assert(sub->isNil() ||
                 OBJECT_CAST(Cons*, sub)->isSubstitutionBlockList());
    Object* pos = object3->variableDereference();
-   assert(pos->isNumber());
-   int dompos = pos->getNumber();
+   assert(pos->isInteger());
+   int dompos = pos->getInteger();
    Object* subpos = object4->variableDereference();
    assert(OBJECT_CAST(Cons*, subpos)->isSubstitutionBlockList() ||
                 ((dompos == 1) && subpos->isNil()));

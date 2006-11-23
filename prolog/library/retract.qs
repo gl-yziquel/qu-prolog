@@ -167,24 +167,31 @@ end('$retract/2$1'/2):
 
 
 $1:
-	allocate(7)
+	allocate(8)
 	get_y_variable(3, 1)
 	get_y_level(1)
+	put_y_variable(7, 19)
 	put_y_variable(6, 19)
 	put_y_variable(5, 19)
 	put_y_variable(2, 19)
 	put_y_variable(0, 19)
 	put_y_variable(4, 1)
-	call_predicate('$correct_name', 2, 7)
-	pseudo_instr3(66, 24, 0, 1)
+	call_predicate('$correct_name', 2, 8)
+	put_x_variable(0, 0)
+	put_x_variable(1, 1)
+	pseudo_instr3(0, 24, 0, 1)
+	pseudo_instr3(66, 0, 1, 2)
+	get_y_value(7, 2)
+	pseudo_instr4(16, 24, 27, 0, 1)
 	get_y_value(6, 0)
 	get_y_value(5, 1)
-	call_predicate('$retract/2$0', 0, 7)
+	call_predicate('$retract/2$0', 0, 8)
 	put_y_value(6, 0)
-	put_y_value(2, 1)
-	put_y_value(5, 2)
-	put_y_value(0, 3)
-	call_predicate('$get_clause_ref', 4, 5)
+	put_y_value(7, 1)
+	put_y_value(2, 2)
+	put_y_value(5, 3)
+	put_y_value(0, 4)
+	call_predicate('$get_clause_ref', 5, 5)
 	pseudo_instr3(57, 22, 24, 0)
 	pseudo_instr2(67, 24, 1)
 	put_y_value(3, 3)
@@ -196,6 +203,30 @@ $1:
 	deallocate
 	execute_predicate('$retract/2$1', 2)
 end('$retract'/2):
+
+
+
+'$retract2'/4:
+
+
+$1:
+	allocate(3)
+	get_y_variable(2, 0)
+	get_y_variable(1, 2)
+	get_x_variable(4, 3)
+	pseudo_instr4(16, 22, 1, 0, 2)
+	get_x_variable(3, 2)
+	put_y_variable(0, 2)
+	call_predicate('$get_clause_ref', 5, 3)
+	pseudo_instr3(57, 20, 22, 0)
+	pseudo_instr2(67, 22, 1)
+	put_y_value(1, 3)
+	put_constant('[]', 2)
+	call_predicate('$post_trans_decompile', 4, 1)
+	pseudo_instr1(12, 20)
+	deallocate
+	proceed
+end('$retract2'/4):
 
 
 

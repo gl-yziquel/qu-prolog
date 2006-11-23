@@ -110,15 +110,15 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
 		  ostrm << ":" << atoms.getAtomString(name);
 		}
 	      // Print out any other information.
-	      if (OBJECT_CAST(Reference*, ref)->isOccursChecked())
+	      if (OBJECT_CAST(Variable*, ref)->isOccursChecked())
 		{
 		  ostrm << ":" << "occurs";
 		}
-	      if (OBJECT_CAST(Reference*,ref)->isThawed())
+	      if (OBJECT_CAST(Variable*,ref)->isThawed())
 		{
 		  ostrm << ":" << "thawed";
 		}
-	      if (OBJECT_CAST(Reference*,ref)->isFrozen())
+	      if (OBJECT_CAST(Variable*,ref)->isFrozen())
 		{
 		  ostrm << ":" << "frozen";
 		}
@@ -227,9 +227,9 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     {
       ostrm << "ATOM:" << hex << reinterpret_cast<word32>(term) << ":" << dec <<atoms.getAtomString(OBJECT_CAST(Atom*, term)) <<  endl;
     }
-  else if (term->isNumber())
+  else if (term->isInteger())
     {
-      ostrm << "INTEGER:" << hex << reinterpret_cast<word32>(term) << ":" << dec << term->getNumber() <<  endl;
+      ostrm << "INTEGER:" << hex << reinterpret_cast<word32>(term) << ":" << dec << term->getInteger() <<  endl;
     }
   else if (term->isSubstitution())
     {
@@ -310,9 +310,13 @@ Heap::quick_display_term(ostream& ostrm, AtomTable& atoms, Object* term)
     {
       ostrm << atoms.getAtomString(OBJECT_CAST(Atom*, term));
     }
-  else if (term->isNumber())
+  else if (term->isInteger())
     {
-      ostrm << term->getNumber();
+      ostrm << term->getInteger();
+    }
+  else if (term->isDouble())
+    {
+      ostrm << term->getDouble();
     }
   else if (term->isSubstitution())
     {

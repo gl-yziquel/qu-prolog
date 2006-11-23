@@ -280,7 +280,7 @@ static Object* charsToList(Heap& heap, char* s)
   Object* result = list;
   while (true)
     {
-      list->setHead(heap.newNumber((int)(*c)));
+      list->setHead(heap.newInteger((int)(*c)));
       c++;
       if (*c == '\0')
 	{
@@ -305,7 +305,7 @@ static Object* stringToList(Heap& heap, string& s)
   for (int i = s.length()-1; i >= 0; i--)
     {
        Cons* list = heap.newCons();
-       list->setHead(heap.newNumber((int)(s[i])));
+       list->setHead(heap.newInteger((int)(s[i])));
        list->setTail(val);
        val = list;
     }
@@ -320,7 +320,7 @@ static void listToString(Object* arg, ostringstream& str)
   while (arg->isCons())
     {
       Cons* list = OBJECT_CAST(Cons*, arg);
-      str << (char)(list->getHead()->variableDereference()->getNumber());
+      str << (char)(list->getHead()->variableDereference()->getInteger());
       arg = list->getTail()->variableDereference();
     }
 }
@@ -370,7 +370,7 @@ Object*
 ElvinMsgPartInt::buildTerm(Thread& thread, AtomTable& atoms)
 {
   Heap& heap = thread.TheHeap();
-  return heap.newNumber(value);
+  return heap.newInteger(value);
 }
 
 //
@@ -1176,7 +1176,7 @@ ElvinMessageChannel::addNotification(Object* object0, Thread& thread)
       else if (arg2->isInteger())
 	{
 	  if (elvin_notification_add_int32(n, atoms->getAtomString(arg1),
-					   arg2->getNumber(), 
+					   arg2->getInteger(), 
 					   error) == 0) 
 	    {
 	      cerr << "elvin_notification_add_int32(): failed" << endl;

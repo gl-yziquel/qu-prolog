@@ -83,7 +83,8 @@ truth3 occursCheckAndSimplify(const CheckType type,
 inline truth3 occursCheck(const CheckType type,
 			  Object* variable, Object* term, Object*& simpterm)
 {
-  if (OBJECT_CAST(Reference*, variable)->isOccursChecked() &&
+  assert(variable->isVariable());
+  if (OBJECT_CAST(Variable*, variable)->isOccursChecked() &&
       status.testOccursCheck())
     {
       truth3 result = simpleOccursCheck(term, variable);

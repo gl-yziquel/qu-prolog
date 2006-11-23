@@ -215,7 +215,7 @@ Thread::psi_get_code(Object *& stream_arg,
       {							\
 	PSI_ERROR_RETURN(EV_TYPE, arg_num);		\
       }							\
-    c = object->getNumber();		       		\
+    c = object->getInteger();		       		\
     if (!(0 <= c && c <= 255))				\
       {							\
         PSI_ERROR_RETURN(EV_RANGE, arg_num);	        \
@@ -266,7 +266,7 @@ Thread::psi_put_code(Object *& stream_arg,
 //
 Thread::ReturnValue
 Thread::psi_get_line(Object *& stream_arg,
-                     Object *& code_list)
+                     Object *& str)
 {
   Object* argS = heap.dereference(stream_arg);
   
@@ -278,15 +278,16 @@ Thread::psi_get_line(Object *& stream_arg,
 
   IS_READY_STREAM(stream);
   
-  Object**  listPtr = &code_list;
+  string chars;
+
+  Object**  strPtr = &str;
   
   int c;
   c = stream->get();
   // EOF ?
   if (c == -1)
     {
-//      stream->clear();
-      *listPtr = heap.newNumber((int8)(-1));
+      *strPtr = heap.newInteger((int8)(-1));
       return RV_SUCCESS;
     }
 
@@ -294,23 +295,16 @@ Thread::psi_get_line(Object *& stream_arg,
     {
       if (c == -1)
         {
-//	  stream->clear();
-          *listPtr = AtomTable::nil;
 	  break;
         }
       if (c == '\n')
 	{
 	  stream->newline();
-	  //Cons* list = heap.newCons(heap.newNumber((int8)(c)), AtomTable::nil);
-	  *listPtr = AtomTable::nil;
 	  break;
 	}
       else
 	{
-	  Cons* list = heap.newCons();
-	  list->setHead(heap.newNumber(c));
-	  *listPtr = list;
-	  listPtr = list->getTailAddress();
+	  chars.push_back(c);
 	}
       if (stream->eof())
 	{
@@ -321,6 +315,10 @@ Thread::psi_get_line(Object *& stream_arg,
           c = stream->get();
 	}
     }
+  if (chars.length() == 0)
+    *strPtr = AtomTable::nil;
+  else
+    *strPtr = heap.newStringObject(chars.c_str());
   return RV_SUCCESS;
 }
 
@@ -344,41 +342,51 @@ Thread::psi_put_line(Object *& stream_arg, Object *& code_list)
 
   Object* chars = heap.dereference(code_list);
 
-  if (!chars->isList())
+
+  if (chars->isList())
     {
-      PSI_ERROR_RETURN(EV_TYPE, 2);
+      // Check input
+      int size = 3;
+      Cons* list = OBJECT_CAST(Cons*, chars);
+      for (;
+	   list->isCons();
+	   list = OBJECT_CAST(Cons*, list->getTail()->variableDereference()))
+	{
+	  int32 c;
+	  DECODE_CODE_ARG(list->getHead()->variableDereference(), 2, c);
+	  size++; 
+	}
+      if (!list->isNil())
+	{
+	  PSI_ERROR_RETURN(EV_TYPE, 2);
+	}
+      
+      // Write to stream
+      char* buf = new char[size];
+      int i = 0;
+      for (Cons* list = OBJECT_CAST(Cons*, chars);
+	   list->isCons();
+	   list = OBJECT_CAST(Cons*, list->getTail()->variableDereference()))
+	{
+	  int32 c;
+	  DECODE_CODE_ARG(list->getHead()->variableDereference(), 2, c);
+	  buf[i++] = (char)c;
+	}
+      buf[i++] = '\n';
+      buf[i] = '\0';
+      *stream << buf;
+      delete buf;
+      return RV_SUCCESS;
     }
 
-  // Check input
-  int size = 3;
-  Cons* list = OBJECT_CAST(Cons*, chars);
-  for (;
-       list->isCons();
-       list = OBJECT_CAST(Cons*, list->getTail()->variableDereference()))
+  if (chars->isString())
     {
-      int32 c;
-      DECODE_CODE_ARG(list->getHead()->variableDereference(), 2, c);
-      size++; 
-    }
-  if (!list->isNil())
-    {
-      PSI_ERROR_RETURN(EV_TYPE, 2);
+      StringObject* chars_string = OBJECT_CAST(StringObject*, chars);
+      *stream << chars_string->getChars();
+      *stream << '\n';
+      return RV_SUCCESS;
     }
 
-  // Write to stream
-  char* buf = new char[size];
-  int i = 0;
-  for (Cons* list = OBJECT_CAST(Cons*, chars);
-       list->isCons();
-       list = OBJECT_CAST(Cons*, list->getTail()->variableDereference()))
-    {
-      int32 c;
-      DECODE_CODE_ARG(list->getHead()->variableDereference(), 2, c);
-      buf[i++] = (char)c;
-    }
-  buf[i++] = '\n';
-  buf[i] = '\0';
-  *stream << buf;
-  delete buf;
-  return RV_SUCCESS;
+  PSI_ERROR_RETURN(EV_TYPE, 2);
+
 }

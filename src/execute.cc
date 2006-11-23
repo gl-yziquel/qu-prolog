@@ -94,73 +94,66 @@ extern int errorno;
 
 #define	OPCODE(x, y)		x
 
-#ifdef QP_DEBUG
+#define UT(x) (((x) & Object::UnifyMask) >> 1)
+
 #define BACKTRACK				\
-do {						\
-  programCounter = PC;                          \
-  Backtrack(*this, programCounter);		\
-  PC = programCounter;                          \
-} while (0)
-#else	// DEBUG
-#define BACKTRACK				\
-do {						\
-  Backtrack(PC);				\
-} while (0)
-#endif	// DEBUG
+  do {						\
+    Backtrack(PC);				\
+  } while (0)
 
 #define HANDLE_ESCAPE(fn)			\
- do {						\
-   const bool result = (fn);			\
-   if (!result)					\
-     {						\
-       BACKTRACK;				\
-     }						\
- } while (0)
+  do {						\
+    const bool result = (fn);			\
+    if (!result)				\
+      {						\
+	BACKTRACK;				\
+      }						\
+  } while (0)
 
-#define HANDLE_PSI(rv, pc_off)					\
- do {								\
-   switch (rv)							\
-     {								\
-     case RV_FAIL:						\
-       block_status.setRunnable();		       		\
-       restart_status.Clear();					\
-       BACKTRACK;						\
-       break;							\
-     case RV_SUCCESS:						\
-       block_status.setRunnable();			       	\
-       restart_status.Clear(); 					\
-       break;							\
-     case RV_YIELD:						\
-       block_status.setRunnable();     				\
-       restart_status.Clear();					\
-       return RV_YIELD;						\
-       break;							\
-     case RV_BLOCK:						\
-       restart_status.setRestartBlock();			\
-       programCounter -= pc_off;				\
-       return RV_BLOCK;						\
-       break;							\
-     case RV_SIGNAL:						\
-       restart_status.setRestartSignal();			\
-       programCounter -= pc_off;				\
-       return RV_SIGNAL;					\
-       break;							\
-     case RV_TIMESLICE:						\
-       restart_status.setRestartTimeslice();			\
-       programCounter -= pc_off;				\
-       return RV_TIMESLICE;					\
-       break;							\
-     case RV_ERROR:						\
-       Fatal(__FUNCTION__, "RV_ERROR should be handled separately!");	\
-       break;							\
-     case RV_EXIT:						\
-       return RV_EXIT;						\
-       break;							\
-     case RV_HALT:						\
-       return RV_HALT;						\
-       break;							\
-     }								\
- } while (0)
+#define HANDLE_PSI(rv, pc_off)						\
+  do {									\
+    switch (rv)								\
+      {									\
+      case RV_FAIL:							\
+	block_status.setRunnable();					\
+	restart_status.Clear();						\
+	BACKTRACK;							\
+	break;								\
+      case RV_SUCCESS:							\
+	block_status.setRunnable();					\
+	restart_status.Clear(); 					\
+	break;								\
+      case RV_YIELD:							\
+	block_status.setRunnable();     				\
+	restart_status.Clear();						\
+	return RV_YIELD;						\
+	break;								\
+      case RV_BLOCK:							\
+	restart_status.setRestartBlock();				\
+	programCounter -= pc_off;					\
+	return RV_BLOCK;						\
+	break;								\
+      case RV_SIGNAL:							\
+	restart_status.setRestartSignal();				\
+	programCounter -= pc_off;					\
+	return RV_SIGNAL;						\
+	break;								\
+      case RV_TIMESLICE:						\
+	restart_status.setRestartTimeslice();				\
+	programCounter -= pc_off;					\
+	return RV_TIMESLICE;						\
+	break;								\
+      case RV_ERROR:							\
+	Fatal(__FUNCTION__, "RV_ERROR should be handled separately!");	\
+	break;								\
+      case RV_EXIT:							\
+	return RV_EXIT;							\
+	break;								\
+      case RV_HALT:							\
+	return RV_HALT;							\
+	break;								\
+      }									\
+  } while (0)
 
 //
 // This macro is essential when we don't have POSIX threads.
@@ -184,35 +177,35 @@ do {						\
 // block of C++ code.
 //
 #define ONCE_ONLY(actions)				\
- do {							\
-   if (restart_status.IsRestart())			\
-     {							\
-       if (restart_status.testRestartSignal())		\
-	 {						\
-	   restart_status.resetRestartSignal();		\
- 	 }						\
-       else if (restart_status.testRestartTimeslice())	\
-	 {						\
-	   restart_status.resetRestartTimeslice();	\
-	 }						\
-     }							\
-   else							\
-     {							\
-       actions						\
-     }							\
- } while (0)
+  do {							\
+    if (restart_status.IsRestart())			\
+      {							\
+	if (restart_status.testRestartSignal())		\
+	  {						\
+	    restart_status.resetRestartSignal();	\
+	  }						\
+	else if (restart_status.testRestartTimeslice())	\
+	  {						\
+	    restart_status.resetRestartTimeslice();	\
+	  }						\
+      }							\
+    else						\
+      {							\
+	actions						\
+	  }						\
+  } while (0)
 
 #define HANDLE_SIGNAL(pc_off)			\
   do {						\
-    restart_status.setRestartSignal();	\
-    programCounter = PC - pc_off;			\
+    restart_status.setRestartSignal();		\
+    programCounter = PC - pc_off;		\
     return RV_SIGNAL;				\
   } while (0)
 
 #define HANDLE_TIMESLICE(pc_off)		\
   do {						\
     restart_status.setRestartTimeslice();	\
-    programCounter = PC - pc_off;			\
+    programCounter = PC - pc_off;		\
     return RV_TIMESLICE;			\
   } while (0)
 
@@ -222,16 +215,54 @@ do {						\
 #define VMBREAK break
 #endif
 
+extern CodeLoc failblock;
 
+
+bool Thread::initializeDPcall(DynamicPredicate* dp, int arity, CodeLoc& PC)
+{
+  assert(dp != NULL);
+  const word8 arg = dp->getIndexedArg();
+  
+  ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]->variableDereference());
+  assert(chain != NULL);
+  LinkedClause* block = chain->first();
+  if (block == NULL)
+    {
+      return false;
+    }
+  else
+    {
+      word32 time = dp->GetStamp();
+      block = block->nextAlive(time);
+      if (block == NULL)
+	{
+	  return false;
+	}
+      currentChoicePoint = pushChoicePoint(failblock, arity);
+      choiceStack.fetchChoice(currentChoicePoint)->setTimestamp(-1);
+      dp->aquire();
+      otherTrail.push(dp);
+      LinkedClause* nextClause = block->nextNextAlive(time);
+      if( nextClause != NULL)
+	{
+	  currentChoicePoint = 
+	    pushChoicePoint((CodeLoc)nextClause, arity);
+	  choiceStack.fetchChoice(currentChoicePoint)->setTimestamp(time);
+	}
+      PC = block->getCodeBlock()->getCode();
+      
+      return true;
+    }
+}
 //
 // Fetch-execute cycle for the Qu-Prolog Abstract Machine.
 //
 Thread::ReturnValue
 Thread::Execute(void)
 {
-  if (Condition() == EXITED)
+  if (Condition() == ThreadCondition::EXITED)
     {
-       return RV_EXIT;
+      return RV_EXIT;
     }
   //
   // Used to carry information across instructions.
@@ -241,54 +272,54 @@ Thread::Execute(void)
   Object*	saveTerm;
 
 #ifndef NDEBUG
- if (qem_options->Debugging())
- {
-   cerr << "Turning on QuAM debugging" << endl;
-   trace.TraceLevel() = Trace::TRACE_ALL;
- }
+  if (qem_options->Debugging())
+    {
+      cerr << "Turning on QuAM debugging" << endl;
+      trace.TraceLevel() = Trace::TRACE_ALL;
+    }
 #endif
 
 #if 0
   // TO DO: Complete the jump table implementation.
   const void *jumptable[] =
-  { &&err, 
-    &&put_x_variable, &&put_y_variable,
-    &&put_x_value, &&put_y_value,
-    &&put_constant, &&put_list, &&put_structure, 
-    &&put_x_object_variable, &&put_y_object_variable,
-    &&put_x_object_value, &&put_y_object_value,
-    &&put_apply_structure, &&put_quantifier,
-    &&check_binder,
-    &&put_substitution,
-    &&put_x_term_substitution, &&put_y_term_substitution,
-    &&put_initial_empty_substitution, &&put_empty_substitution,
-    &&put_substitution_operator, 
-    &&get_x_variable, &&get_y_variable,
-    &&get_x_value, &&get_y_value,
-    &&get_constant, &&get_list, &&get_structure, &&get_structure_frame,
-    &&get_x_object_variable, &&get_y_object_variable,
-    &&get_x_object_value, &&get_y_object_value,
-    &&get_apply_structure, 
-    &&unify_x_variable, &&unify_y_variable,
-    &&unify_x_value, &&unify_y_value, &&unify_void,
-    &&set_x_variable, &&set_y_variable,
-    &&set_x_value, &&set_y_value,
-    &&set_x_object_variable, &&set_y_object_variable,
-    &&set_x_object_value, &&set_y_object_value,
-    &&set_constant, &&set_void, &&set_object_void, 
-    &&allocate, &&deallocate,
-    &&call_predicate, &&call_address, &&call_escape,
-    &&execute_predicate, &&execute_address, &&execute_escape,
-    &&noop, &&jump, &&proceed, &&fail, &&halt, &&exit,
-    &&try_me_else, &&retry_me_else, &&trust_me_else_fail,
-    &&try, &&retry, &&trust,
-    &&neck_cut, &&get_x_level, &&get_y_level, &&cut,
-    &&switch_on_term, &&switch_on_constant, &&switch_on_structure,
-    &&switch_on_quantifier,
-    &&pseudo_instr0, &&pseudo_instr1, &&pseudo_instr2, &&pseuod_instr3,
-    &&pseudo_instr5,
-    &&unify_constant
-  };
+    { &&err, 
+      &&put_x_variable, &&put_y_variable,
+      &&put_x_value, &&put_y_value,
+      &&put_constant, &&put_list, &&put_structure, 
+      &&put_x_object_variable, &&put_y_object_variable,
+      &&put_x_object_value, &&put_y_object_value,
+      &&put_apply_structure, &&put_quantifier,
+      &&check_binder,
+      &&put_substitution,
+      &&put_x_term_substitution, &&put_y_term_substitution,
+      &&put_initial_empty_substitution, &&put_empty_substitution,
+      &&put_substitution_operator, 
+      &&get_x_variable, &&get_y_variable,
+      &&get_x_value, &&get_y_value,
+      &&get_constant, &&get_list, &&get_structure, &&get_structure_frame,
+      &&get_x_object_variable, &&get_y_object_variable,
+      &&get_x_object_value, &&get_y_object_value,
+      &&get_apply_structure, 
+      &&unify_x_variable, &&unify_y_variable,
+      &&unify_x_value, &&unify_y_value, &&unify_void,
+      &&set_x_variable, &&set_y_variable,
+      &&set_x_value, &&set_y_value,
+      &&set_x_object_variable, &&set_y_object_variable,
+      &&set_x_object_value, &&set_y_object_value,
+      &&set_constant, &&set_void, &&set_object_void, 
+      &&allocate, &&deallocate,
+      &&call_predicate, &&call_address, &&call_escape,
+      &&execute_predicate, &&execute_address, &&execute_escape,
+      &&noop, &&jump, &&proceed, &&fail, &&halt, &&exit,
+      &&try_me_else, &&retry_me_else, &&trust_me_else_fail,
+      &&try, &&retry, &&trust,
+      &&neck_cut, &&get_x_level, &&get_y_level, &&cut,
+      &&switch_on_term, &&switch_on_constant, &&switch_on_structure,
+      &&switch_on_quantifier,
+      &&pseudo_instr0, &&pseudo_instr1, &&pseudo_instr2, &&pseuod_instr3,
+      &&pseudo_instr5,
+      &&unify_constant
+    };
 #endif
 
   CodeLoc PC = programCounter;
@@ -296,8 +327,8 @@ Thread::Execute(void)
   while (true)
     {
 #ifndef NDEBUG
-    CodeLoc trace_pc = PC;
-    trace.TraceStart(*this);
+      CodeLoc trace_pc = PC;
+      trace.TraceStart(*this);
 #endif
 
       switch(getInstruction(PC))
@@ -320,7 +351,7 @@ Thread::Execute(void)
 	    X[i] = heap.newVariable();
 	    X[j]= X[i];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_Y_VARIABLE, ARGS(register, register)):
 	  {
@@ -334,7 +365,7 @@ Thread::Execute(void)
 	    X[j] = heap.newVariable();
 	    envStack.yReg(currentEnvironment, i) = X[j];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_X_VALUE, ARGS(register, register)):
 	  {
@@ -345,7 +376,7 @@ Thread::Execute(void)
 	    //
 	    X[j]= X[i];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_Y_VALUE, ARGS(register, register)):
 	  {
@@ -356,7 +387,7 @@ Thread::Execute(void)
 	    //
 	    X[j]= envStack.yReg(currentEnvironment, i);
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_CONSTANT, ARGS(constant, register)):
 	  {
@@ -368,11 +399,11 @@ Thread::Execute(void)
 	    //
 	    X[i]= c;
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_INTEGER, ARGS(integer, register)):
 	  {
-	    Object* c = heap.newNumber(getInteger(PC));
+	    Object* c = heap.newInteger(getInteger(PC));
 	    const word32 i = getRegister(PC);
 	    //
 	    // Place a number cell c into
@@ -380,7 +411,7 @@ Thread::Execute(void)
 	    //
 	    X[i]= c;
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 
 	case OPCODE(PUT_LIST, ARGS(register)):
@@ -392,7 +423,7 @@ Thread::Execute(void)
 	    X[i] = heap.newCons();
 	    StructurePointer = X[i]->storage();
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_STRUCTURE, ARGS(number, register)):
 	  {
@@ -404,7 +435,7 @@ Thread::Execute(void)
 	    X[i] = heap.newStructure(n);
 	    StructurePointer = X[i]->storage();
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_X_OBJECT_VARIABLE, ARGS(register, register)):
 	  {
@@ -418,7 +449,7 @@ Thread::Execute(void)
 	    X[i] = heap.newObjectVariable();
 	    X[j]= X[i];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_Y_OBJECT_VARIABLE, ARGS(register, register)):
 	  {
@@ -432,7 +463,7 @@ Thread::Execute(void)
 	    X[j] = heap.newObjectVariable();
 	    envStack.yReg(currentEnvironment, i) = X[j];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_X_OBJECT_VALUE, ARGS(register, register)):
 	  {
@@ -444,7 +475,7 @@ Thread::Execute(void)
 	    //
 	    X[j] = X[i];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_Y_OBJECT_VALUE, ARGS(register, register)):
 	  {
@@ -456,7 +487,7 @@ Thread::Execute(void)
 	    //
 	    X[j] = envStack.yReg(currentEnvironment, i);
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PUT_QUANTIFIER, ARGS(register)):
 	  {
@@ -467,7 +498,7 @@ Thread::Execute(void)
 	    X[i] = heap.newQuantifiedTerm();
 	    StructurePointer = X[i]->storage();
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(CHECK_BINDER, ARGS(register)):
 	  {
@@ -481,7 +512,7 @@ Thread::Execute(void)
 		BACKTRACK;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(PUT_SUBSTITUTION, ARGS(number, register)):
 	  {
@@ -500,7 +531,7 @@ Thread::Execute(void)
 	    X[i] = heap.newSubstitutionBlockList(sub, X[i]);
 	    StructurePointer = sub->storage();
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(PUT_X_TERM_SUBSTITUTION, ARGS(register, register)):
 	  {
@@ -511,8 +542,9 @@ Thread::Execute(void)
 	    //
 	    assert(!X[i]->isNil());
 	    X[j] = heap.newSubstitution(X[i], X[j]);
+	    assert(X[j]->hasLegalSub());
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(PUT_Y_TERM_SUBSTITUTION, ARGS(register, register)):
 	  {
@@ -525,7 +557,7 @@ Thread::Execute(void)
 	    X[j] = heap.newSubstitution(envStack.yReg(currentEnvironment, i),
 					X[j]);
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(PUT_INITIAL_EMPTY_SUBSTITUTION, ARGS(register)):
 	  {
@@ -535,12 +567,12 @@ Thread::Execute(void)
 	    //
 	    X[i] = AtomTable::nil;
 	  }
-	VMBREAK;
+	  VMBREAK;
 
-	//
-	// The "get" instructions unify the head arguments 
-	// with the ones in the query. 
-	//    
+	  //
+	  // The "get" instructions unify the head arguments 
+	  // with the ones in the query. 
+	  //    
 	case OPCODE(GET_X_VARIABLE, ARGS(register, register)):
 	  {
 	    const word32 i = getRegister(PC);
@@ -554,7 +586,7 @@ Thread::Execute(void)
 	    // 
 	    X[i] = X[j];
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(GET_Y_VARIABLE, ARGS(register, register)):
 	  {
@@ -570,7 +602,7 @@ Thread::Execute(void)
 	    // 
 	    envStack.yReg(currentEnvironment, i) = X[j];
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(GET_X_VALUE, ARGS(register, register)):
 	  {
@@ -588,7 +620,7 @@ Thread::Execute(void)
 		BACKTRACK;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(GET_Y_VALUE, ARGS(register, register)):
 	  {
@@ -600,13 +632,15 @@ Thread::Execute(void)
 	    // unifies the data objects in Yi and register Xj. 
 	    // Backtrack on failure. 
 	    // 
+	    assert(envStack.yReg(currentEnvironment, i)->variableDereference()->hasLegalSub());
+	    assert(X[j]->variableDereference()->hasLegalSub());
 
 	    if (! unify(envStack.yReg(currentEnvironment, i), X[j]))
 	      {
 		BACKTRACK;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(GET_CONSTANT, ARGS(constant, register)):
 	  {
@@ -619,40 +653,27 @@ Thread::Execute(void)
 	    //
 	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
-
-	    if (xval->isVariable())
+	    switch (UT(xval->getTag()))
 	      {
-		Variable* var = OBJECT_CAST(Variable*, xval);
-		if (var->isFrozen() && !status.testHeatWave())
-		  {
-		    BACKTRACK;
-		  }
-		else
-		  {
-		    bind(var, c); 
-		  }
-	      }
-	    else if (xval->isConstant())
-	      {
-		if (c != xval)
-		  {
-		    BACKTRACK;
-		  }
-	      }
-	    else if (xval->isSubstitution())
-	      {
-                assert(xval->hasLegalSub());
-		PrologValue pval(xval);
-		PrologValue cp(c);
-		heap.prologValueDereference(pval);
-		if (!unifyPrologValues(cp, pval))
-		  {
-		    BACKTRACK;
-		  }
-	      }
-	    else
-	      {
+	      case UT(Object::UVar):
+	      case UT(Object::UVarOC):
+		bindAndTrail(xval, c);
+		break;
+	      case UT(Object::UNumber):
+	      case UT(Object::UString):
+	      case UT(Object::UStruct):
+	      case UT(Object::UCons):
 		BACKTRACK;
+		break;
+	      case UT(Object::UAtom):
+		if (xval != c) BACKTRACK;
+		break;
+	      case UT(Object::UOther):
+		if (!unifyOtherConst(xval, c, true)) BACKTRACK;
+		break;
+	      default:
+		assert(false);
+		break;
 	      }
 	    VMBREAK;
 	  }
@@ -669,41 +690,33 @@ Thread::Execute(void)
 	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 
-	    if (xval->isVariable())
+	    switch (UT(xval->getTag()))
 	      {
-		Variable* var = OBJECT_CAST(Variable*, xval);
-		if (var->isFrozen() && !status.testHeatWave())
-		  {
-		    BACKTRACK;
-		  }
-		else
-		  {
-		    Object* c = heap.newNumber(n);
-		    bind(var, c); 
-		  }
-	      }
-	    else if (xval->isNumber())
-	      {
-		if (n != xval->getNumber())
-		  {
-		    BACKTRACK;
-		  }
-	      }
-	    else if (xval->isSubstitution())
-	      {
-                assert(xval->hasLegalSub());
-		PrologValue pval(xval);
-		Object* c = heap.newNumber(n);
-		PrologValue cp(c);
-		heap.prologValueDereference(pval);
-		if (!unifyPrologValues(cp, pval))
-		  {
-		    BACKTRACK;
-		  }
-	      }
-	    else
-	      {
+	      case UT(Object::UVar):
+	      case UT(Object::UVarOC):
+		{
+		  Object* c = heap.newInteger(n);
+		  bindAndTrail(xval, c);
+		  break;
+		}
+	      case UT(Object::UNumber):
+		if (!xval->isInteger() || xval->getInteger() != n) BACKTRACK;
+		break;
+	      case UT(Object::UAtom):
+	      case UT(Object::UString):
+	      case UT(Object::UStruct):
+	      case UT(Object::UCons):
 		BACKTRACK;
+		break;
+	      case UT(Object::UOther):
+		{
+		  Object* c = heap.newInteger(n);
+		  if (!unifyOtherConst(xval, c, true)) BACKTRACK;
+		  break;
+		}
+	      default:
+		assert(false);
+		break;
 	      }
 	    VMBREAK;
 	  }
@@ -727,67 +740,71 @@ Thread::Execute(void)
 		ReadMode = false;
 		StructurePointer = cons->storage();
 	      }
-	    else if (xval->isVariable())
-	      {
-		Variable* var = OBJECT_CAST(Variable*, xval);
-		if (var->isFrozen() && !status.testHeatWave())
-		  {
-		    BACKTRACK;
-		  }
-		else if (var->isOccursChecked() && status.testOccursCheck()) 
-		  {
-		    Variable* newhead = heap.newVariable();
-		    Variable* newtail = heap.newVariable();
-		    newhead->setOccursCheck();      
-		    newtail->setOccursCheck();    
-		    Cons* newlist = heap.newCons(newhead, newtail);
-		    bind(var, newlist);
-		    ReadMode = true;
-		    StructurePointer = newlist->storage();
-		  }
-		else
-		  {
-		    Cons* newlist = heap.newCons();
-		    bind(var, newlist);
-		    ReadMode = false;
-		    saveTerm = newlist;
-		    StructurePointer = newlist->storage();
-		  }
-	      }
-	    else if (xval->isCons())
-	      {
-		StructurePointer = xval->storage();
-		ReadMode = true;
-	      }
-	    else if (xval->isSubstitution())
-	      {
-		Substitution* sval = OBJECT_CAST(Substitution*, xval);
-		if (sval->getTerm()->isAnyVariable() ||
-		    sval->getTerm()->isCons())
-		  {
-		    Variable* newhead = heap.newVariable();
-		    Variable* newtail = heap.newVariable();
-		    newhead->setOccursCheck();       
-		    newtail->setOccursCheck();      
-		    Cons* newlist = heap.newCons(newhead, newtail);
-		    if (!unify(xval, newlist))
-		      {
-			BACKTRACK;
-		      }
-		    else
-		      {
-			ReadMode = true;
-			StructurePointer = newlist->storage();
-		      }	
-		  }
-		else
-		  {
-		    BACKTRACK;
-		  }
-	      }
 	    else
 	      {
-		BACKTRACK;
+		switch (UT(xval->getTag()))
+		  {
+		  case UT(Object::UVar):
+		    {
+		      Cons* newlist = heap.newCons();
+		      bindAndTrail(xval, newlist);
+		      ReadMode = false;
+		      saveTerm = newlist;
+		      StructurePointer = newlist->storage();
+		      break;
+		    }
+		  case UT(Object::UVarOC):
+		    {
+		      Variable* newhead = heap.newVariable();
+		      Variable* newtail = heap.newVariable();
+		      newhead->setOccursCheck();      
+		      newtail->setOccursCheck();    
+		      Cons* newlist = heap.newCons(newhead, newtail);
+		      bindAndTrail(xval, newlist);
+		      ReadMode = true;
+		      StructurePointer = newlist->storage();
+		      break;
+		    }
+		  case UT(Object::UNumber):
+		  case UT(Object::UAtom):
+		  case UT(Object::UStruct):
+		    BACKTRACK;
+		    break;
+		  case UT(Object::UString):
+		    {
+		      Cons* newlist = heap.newCons(OBJECT_CAST(StringObject*, xval)->getChars());
+		      ReadMode = true;
+		      StructurePointer = newlist->storage();
+		      break;
+		    }
+		  case UT(Object::UCons):
+		    {
+		      StructurePointer = xval->storage();
+		      ReadMode = true;
+		      break;
+		    }
+		  case UT(Object::UOther):
+		    {
+		      Variable* newhead = heap.newVariable();
+		      Variable* newtail = heap.newVariable();
+		      newhead->setOccursCheck();       
+		      newtail->setOccursCheck();      
+		      Cons* newlist = heap.newCons(newhead, newtail);
+		      if (!unify(xval, newlist))
+			{
+			  BACKTRACK;
+			}
+		      else
+			{
+			  ReadMode = true;
+			  StructurePointer = newlist->storage();
+			}	
+		      break;
+		    }
+		  default:
+		    assert(false);
+		    break;
+		  }
 	      }
 	    VMBREAK;
 	  }
@@ -815,92 +832,92 @@ Thread::Execute(void)
 		ReadMode = false;
 		StructurePointer = newstruct->storage() + 1;
 	      }
-	    else if (xval->isVariable())
-	      {
-		Variable* var = OBJECT_CAST(Variable*, xval);
-		if (var->isFrozen() && !status.testHeatWave())
-		  {
-		    BACKTRACK;
-		  }
-		else if (var->isOccursChecked() && status.testOccursCheck())  
-		  {
-		    Structure* newstruct = heap.newStructure(n);
-		    newstruct->setFunctor(c);
-		    for (u_int i = 1; i <= n; i++)
-		      {
-			Variable* arg = heap.newVariable();
-			arg->setOccursCheck();       
-			newstruct->setArgument(i, arg);
-		      }
-		    bind(var, newstruct);
-		    ReadMode = true;
-		    StructurePointer = newstruct->storage() + 1;
-		  }
-		else
-		  {
-		    Structure* newstruct = heap.newStructure(n);
-		    newstruct->setFunctor(c);
-		    bind(var, newstruct);
-		    ReadMode = false;
-		    saveTerm = newstruct;
-		    StructurePointer = newstruct->storage() + 1;
-		  }
-	      }
-	    else if (xval->isStructure())
-	      {
-		Structure* xstruct = OBJECT_CAST(Structure*, xval);
-		if (xstruct->getArity() != n)
-		  {
-		    BACKTRACK;
-		  }
-		else
-		  {
-		    Object* funct = heap.dereference(xstruct->getFunctor());
-		    if (funct->isAtom() && funct != c)
-		      {
-			BACKTRACK;
-		      }
-		    else if (!unify(funct, c))
-		      {
-			BACKTRACK;
-		      }
-		    StructurePointer = xval->storage() + 1;
-		    ReadMode = true;
-		  }
-	      }
-	    else if (xval->isSubstitution())
-	      {
-		Substitution* sval  = OBJECT_CAST(Substitution*, xval);
-		if (sval->getTerm()->isAnyVariable() ||
-		    (sval->getTerm()->isStructure() &&
-		     OBJECT_CAST(Structure*,sval->getTerm())->getArity() == n))
-		  {
-		    Structure* newstruct = heap.newStructure(n);
-		    newstruct->setFunctor(c);
-		    for (u_int i = 1; i <= n; i++)
-		      {
-			Variable* arg = heap.newVariable();
-			arg->setOccursCheck();        // PJR
-			newstruct->setArgument(i, arg);
-		      }
-		    if (!unify(xval, newstruct))
-		      {
-			BACKTRACK;
-		      }
-		    else
-		      {
-			ReadMode = true;
-			StructurePointer = newstruct->storage() + 1;
-		      }
-		  }
-		else
-		  {
-		    BACKTRACK;
-		  }
-	      }
 	    else
 	      {
-		BACKTRACK;
+		switch (UT(xval->getTag()))
+		  {
+		  case UT(Object::UVar):
+		    {
+		      Structure* newstruct = heap.newStructure(n);
+		      newstruct->setFunctor(c);
+		      assert(!OBJECT_CAST(Reference*, xval)->hasExtraInfo());
+		      bindAndTrail(xval, newstruct);
+		      ReadMode = false;
+		      saveTerm = newstruct;
+		      StructurePointer = newstruct->storage() + 1;
+		      break;
+		    }
+		  case UT(Object::UVarOC):
+		    {
+		      Structure* newstruct = heap.newStructure(n);
+		      newstruct->setFunctor(c);
+		      for (u_int i = 1; i <= n; i++)
+			{
+			  Variable* arg = heap.newVariable();
+			  arg->setOccursCheck();       
+			  newstruct->setArgument(i, arg);
+			}
+		      assert(!OBJECT_CAST(Reference*, xval)->hasExtraInfo());
+		      bindAndTrail(xval, newstruct);
+		      ReadMode = true;
+		      StructurePointer = newstruct->storage() + 1;
+		      break;
+		  }
+		  case UT(Object::UNumber):
+		  case UT(Object::UAtom):
+		  case UT(Object::UString):
+		  case UT(Object::UCons):
+		    BACKTRACK;
+		    break;
+		  case UT(Object::UStruct):
+		    {
+		      Structure* xstruct = OBJECT_CAST(Structure*, xval);
+		      if (xstruct->getArity() != n)
+			{
+			  BACKTRACK;
+			}
+		      else
+			{
+			  Object* funct = heap.dereference(xstruct->getFunctor());
+			  if (funct->isAtom() && funct != c)
+			    {
+			      BACKTRACK;
+			    }
+			  else if (!unify(funct, c))
+			    {
+			      BACKTRACK;
+			    }
+			  StructurePointer = xval->storage() + 1;
+			  ReadMode = true;
+			}
+		      break;
+		    }
+		  case UT(Object::UOther):
+		    {
+		      Structure* newstruct = heap.newStructure(n);
+		      newstruct->setFunctor(c);
+		      for (u_int i = 1; i <= n; i++)
+			{
+			  Variable* arg = heap.newVariable();
+			  arg->setOccursCheck();     
+			  newstruct->setArgument(i, arg);
+			}
+		      if (!unify(xval, newstruct))
+			{
+			  BACKTRACK;
+			}
+		      else
+			{
+			  ReadMode = true;
+			  StructurePointer = newstruct->storage() + 1;
+			}
+		      break;
+		    }
+		    
+		  default:
+		    assert(false);
+		    break;
+		  }
 	      }
 	    VMBREAK;
 	  }
@@ -926,86 +943,84 @@ Thread::Execute(void)
 		ReadMode = false;
 		StructurePointer = newstruct->storage();
 	      }
-	    else if (xval->isVariable())
-	      {
-		Variable* var = OBJECT_CAST(Variable*, xval);
-		if (var->isFrozen() && !status.testHeatWave())
-		  {
-		    BACKTRACK;
-		  }
-		else if (var->isOccursChecked() && status.testOccursCheck()) 
-		  {
-		    Structure* newstruct = heap.newStructure(n);
-		    Variable* funct = heap.newVariable();
-		    funct->setOccursCheck();        
-		    newstruct->setFunctor(funct);
-		    for (u_int i = 1; i <= n; i++)
-		      {
-			Variable* arg = heap.newVariable();
-			arg->setOccursCheck();        
-			newstruct->setArgument(i, arg);
-		      }
-		    bind(var, newstruct);
-		    ReadMode = true;
-		    StructurePointer = newstruct->storage();
-		  }
-		else
-		  {
-		    Structure* newstruct = heap.newStructure(n);
-		    bind(var, newstruct);
-		    ReadMode = false;
-		    saveTerm = newstruct;
-		    StructurePointer = newstruct->storage();
-		  }
-	      }
-	    else if (xval->isStructure())
-	      {
-		Structure* xstruct = OBJECT_CAST(Structure*, xval);
-		if (xstruct->getArity() != n)
-		  {
-		    BACKTRACK;
-		  }
-		else
-		  {
-		    StructurePointer = xval->storage();
-		    ReadMode = true;
-		  }
-	      }
-	    else if (xval->isSubstitution())
-	      {
-		Substitution* sval = OBJECT_CAST(Substitution*, xval);
-		if (sval->getTerm()->isAnyVariable() ||
-		    (sval->getTerm()->isStructure() &&
-		     OBJECT_CAST(Structure*,sval->getTerm())->getArity() == n))
-		  {
-		    Structure* newstruct = heap.newStructure(n);
-		    Variable* funct =heap. newVariable();
-		    funct->setOccursCheck();       
-		    newstruct->setFunctor(funct);
-		    for (u_int i = 1; i <= n; i++)
-		      {
-			Variable* arg = heap.newVariable();
-			arg->setOccursCheck();       
-			newstruct->setArgument(i, arg);
-		      }
-		    if (!unify(xval, newstruct))
-		      {
-			BACKTRACK;
-		      }
-		    else
-		      {
-			ReadMode = true;
-			StructurePointer = newstruct->storage();
-		      }
-		  }
-		else
-		  {
-		    BACKTRACK;
-		  }
-	      }
 	    else
 	      {
-		BACKTRACK;
+		switch (UT(xval->getTag()))
+		  {
+		  case UT(Object::UVar):
+		    {
+		      Structure* newstruct = heap.newStructure(n);
+		      bindAndTrail(xval, newstruct);
+		      ReadMode = false;
+		      saveTerm = newstruct;
+		      StructurePointer = newstruct->storage();
+		      break;
+		    }
+		  case UT(Object::UVarOC):
+		    {
+		      Structure* newstruct = heap.newStructure(n);
+		      Variable* funct = heap.newVariable();
+		      funct->setOccursCheck();
+		      newstruct->setFunctor(funct);
+		      for (u_int i = 1; i <= n; i++)
+			{
+			  Variable* arg = heap.newVariable();
+			  arg->setOccursCheck();       
+			  newstruct->setArgument(i, arg);
+			}
+		      bindAndTrail(xval, newstruct);
+		      ReadMode = true;
+		      StructurePointer = newstruct->storage();
+		      break;
+		  }
+		  case UT(Object::UNumber):
+		  case UT(Object::UAtom):
+		  case UT(Object::UString):
+		  case UT(Object::UCons):
+		    BACKTRACK;
+		    break;
+		  case UT(Object::UStruct):
+		    {
+		      Structure* xstruct = OBJECT_CAST(Structure*, xval);
+		      if (xstruct->getArity() != n)
+			{
+			  BACKTRACK;
+			}
+		      else
+			{
+			  StructurePointer = xval->storage();
+			  ReadMode = true;
+			}
+		      break;
+		    }
+		  case UT(Object::UOther):
+		    {
+		      Structure* newstruct = heap.newStructure(n);
+		      Variable* funct = heap.newVariable();
+		      funct->setOccursCheck();
+		      newstruct->setFunctor(funct);
+		      for (u_int i = 1; i <= n; i++)
+			{
+			  Variable* arg = heap.newVariable();
+			  arg->setOccursCheck();     
+			  newstruct->setArgument(i, arg);
+			}
+		      if (!unify(xval, newstruct))
+			{
+			  BACKTRACK;
+			}
+		      else
+			{
+			  ReadMode = true;
+			  StructurePointer = newstruct->storage();
+			}
+		      break;
+		    }
+		    
+		  default:
+		    assert(false);
+		    break;
+		  }
 	      }
 	    VMBREAK;
 	  }
@@ -1079,7 +1094,7 @@ Thread::Execute(void)
 	    // and data object in Xj.
 	    //
 	    assert(envStack.yReg(currentEnvironment, i)
-			 ->isObjectVariable());
+		   ->isObjectVariable());
 	    
 	    if (!unify(envStack.yReg(currentEnvironment, i), X[j]))
 	      {
@@ -1118,7 +1133,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(UNIFY_Y_VARIABLE, ARGS(register)):
 	  {
@@ -1142,7 +1157,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(UNIFY_X_VALUE, ARGS(register)):
 	  {
@@ -1195,7 +1210,7 @@ Thread::Execute(void)
 	    // "unify_x_value", but Yi is used instead of Xi.
 	    //
 	    if (ReadMode)
-	      {
+	      {	
 		if (!unify(envStack.yReg(currentEnvironment, i),
 			   reinterpret_cast<Object*>(*StructurePointer)))
 		  {
@@ -1278,8 +1293,8 @@ Thread::Execute(void)
 	    X[i] = var;
 	    *StructurePointer = reinterpret_cast<heapobject>(var);
 	    StructurePointer++;
-		  }
-	VMBREAK; 
+	  }
+	  VMBREAK; 
 
 	case OPCODE(SET_Y_VARIABLE, ARGS(register)):
 	  {
@@ -1296,7 +1311,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(var);
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_X_VALUE, ARGS(register)):
 	  {
@@ -1316,7 +1331,7 @@ Thread::Execute(void)
 		var->setOccursCheck();
 	      }
 	    else if (xval->isSubstitution())
-	      { // probably don't need for future Occurs check idea PJR
+	      { 
 		Substitution* sval = OBJECT_CAST(Substitution*, xval);
 		if (sval->getTerm()->isVariable()&&
 		    !OBJECT_CAST(Variable*, sval->getTerm())->isOccursChecked()
@@ -1330,7 +1345,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(xval);
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_Y_VALUE, ARGS(register)):
 	  {
@@ -1349,7 +1364,7 @@ Thread::Execute(void)
 		var->setOccursCheck();
 	      }
 	    else if (xval->isSubstitution())
-	      { // probably don't need for future Occurs check idea PJR
+	      { 
 		Substitution* sval = OBJECT_CAST(Substitution*, xval);
 		if (sval->getTerm()->isVariable() &&
 		    !OBJECT_CAST(Variable*, sval->getTerm())->isOccursChecked()
@@ -1363,7 +1378,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(xval);
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_X_OBJECT_VARIABLE, ARGS(register)):
 	  {
@@ -1379,7 +1394,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(X[i]);
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_Y_OBJECT_VARIABLE, ARGS(register)):
 	  {
@@ -1394,7 +1409,7 @@ Thread::Execute(void)
 	    *StructurePointer  = reinterpret_cast<heapobject>(envStack.yReg(currentEnvironment, i));
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_X_OBJECT_VALUE, ARGS(register)):
 	  {
@@ -1404,10 +1419,11 @@ Thread::Execute(void)
 	    // value of structure pointer. Increment structure 
 	    // pointer by one.
 	    // 
+	    assert(X[i]->isObjectVariable());
 	    *StructurePointer = reinterpret_cast<heapobject>(X[i]);
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_Y_OBJECT_VALUE, ARGS(register)):
 	  {
@@ -1420,7 +1436,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(envStack.yReg(currentEnvironment, i));
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_CONSTANT, ARGS(constant)):
 	  {
@@ -1432,11 +1448,11 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(c); 
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 
 	case OPCODE(SET_INTEGER, ARGS(integer)):
 	  {
-	    Object* c = heap.newNumber(getInteger(PC));
+	    Object* c = heap.newInteger(getInteger(PC));
 	    //
 	    // Create the constant c on the heap. Increment 
 	    // structure pointer by one.
@@ -1444,7 +1460,7 @@ Thread::Execute(void)
 	    *StructurePointer = reinterpret_cast<heapobject>(c); 
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 
 	  
 	case OPCODE(SET_VOID, ARGS(number)):
@@ -1463,7 +1479,7 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SET_OBJECT_VOID, ARGS(number)):
 	  {
@@ -1480,13 +1496,13 @@ Thread::Execute(void)
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
-	//
-	// The "control" instructions handle the procedural side of
-	// a program.  They switch the execution flow between
-	// procedures.
-	//
+	  //
+	  // The "control" instructions handle the procedural side of
+	  // a program.  They switch the execution flow between
+	  // procedures.
+	  //
 	case OPCODE(ALLOCATE, ARGS(number)):
 	  {
 	    //
@@ -1499,7 +1515,7 @@ Thread::Execute(void)
 
 
 	    if (choiceStack.isEnvProtected(currentChoicePoint,
-					      currentEnvironment))
+					   currentEnvironment))
 	      {
 		envStack.setTop(choiceStack.getEnvTop(currentChoicePoint));
 	      }
@@ -1509,9 +1525,9 @@ Thread::Execute(void)
 				envStack.envSize(currentEnvironment));
 	      }
 	    currentEnvironment = envStack.push(currentEnvironment,
-						     continuationInstr, n);
+					       continuationInstr, n);
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(DEALLOCATE, ARGS()):
 	  {
@@ -1522,7 +1538,7 @@ Thread::Execute(void)
 	    const EnvLoc PrevEnv = currentEnvironment;
 	    envStack.retrieve(PrevEnv, currentEnvironment, continuationInstr);
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(CALL_PREDICATE, ARGS(predatom, number, number)):
 	  {
@@ -1570,7 +1586,7 @@ Thread::Execute(void)
 		HANDLE_SIGNAL(SIZE_OF_CALL_PREDICATE_INSTR);
 	      }
 	    else if (scheduler->Status().testEnableTimeslice() &&
-		scheduler->Status().testTimeslice())
+		     scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_CALL_PREDICATE_INSTR);
 	      }
@@ -1589,37 +1605,35 @@ Thread::Execute(void)
 		Object* problem = BuildCall(predicate, arity);
 		PC = UndefinedPred(problem);
 	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
 	    else
 	      {
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
-			gc(arity);
+		    gc(arity);
                   }
 		const PredCode PredAddr = predicates->getCode(start);
 		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
                   {
 		    DynamicPredicate* dp = PredAddr.getDynamicPred();
-                    assert(dp != NULL);
-                    const word8 arg = dp->getIndexedArg();
-
-                    ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]);
-                    assert(chain != NULL);
-                    CodeLoc block = chain->first();
-                    if (block == NULL)
-                      {
-                        BACKTRACK;
-                      }
-                    else
-                      {
-                        PC = block;
-                      }
-                   }
+		    if (!initializeDPcall(dp, arity, PC))
+		      {
+			BACKTRACK;
+		      }
+  		  }
 		else if (PredAddr.type() == PredCode::ESCAPE_PRED)
 		  {
 		    code->updateCallInstruction(PC -
-					       SIZE_OF_CALL_PREDICATE_INSTR,
-					       CALL_ESCAPE, (CodeLoc)start);
+						SIZE_OF_CALL_PREDICATE_INSTR,
+						CALL_ESCAPE, (CodeLoc)start);
 
 		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
 		  }
@@ -1634,7 +1648,7 @@ Thread::Execute(void)
 		  }
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(CALL_ADDRESS, ARGS(address, number)):
 	  {
@@ -1674,7 +1688,7 @@ Thread::Execute(void)
 		HANDLE_SIGNAL(SIZE_OF_CALL_ADDRESS_INSTR);
 	      }
 	    else if (scheduler->Status().testEnableTimeslice() &&
-		scheduler->Status().testTimeslice())
+		     scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_CALL_ADDRESS_INSTR);
 	      }
@@ -1690,6 +1704,17 @@ Thread::Execute(void)
 		Object* problem = BuildCall(predicate, arity);
 		PC = HandleFastRetry(problem);
 	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		CodeLoc loc = address - Code::SIZE_OF_HEADER;
+		Atom* predicate = getPredAtom(loc);
+		const word32 arity = getNumber(loc);
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
 	    else
 	      {
                 if ((heap.doGarbageCollection() || status.testDoGC())
@@ -1703,7 +1728,7 @@ Thread::Execute(void)
 		PC = address;
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(CALL_ESCAPE, ARGS(address, number)):
 	  {
@@ -1739,7 +1764,7 @@ Thread::Execute(void)
 		HANDLE_SIGNAL(SIZE_OF_CALL_ESCAPE_INSTR);
 	      }
 	    else if (scheduler->Status().testEnableTimeslice() &&
-		scheduler->Status().testTimeslice())
+		     scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_CALL_ESCAPE_INSTR);
 	      }
@@ -1753,12 +1778,22 @@ Thread::Execute(void)
 		Object* problem = BuildCall(predicate, arity);
 		PC = HandleFastRetry(problem);
 	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();		
+		Atom* predicate = predicates->getPredName(address, atoms);
+		const word32 arity = predicates->getArity(address);
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
 	    else
 	      { 
 		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(getFInter()));
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(EXECUTE_PREDICATE, ARGS(predatom, number)):
 	  {
@@ -1790,7 +1825,7 @@ Thread::Execute(void)
 		HANDLE_SIGNAL(SIZE_OF_EXECUTE_PREDICATE_INSTR);
 	      }
 	    else if (scheduler->Status().testEnableTimeslice() &&
-		scheduler->Status().testTimeslice())
+		     scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_EXECUTE_PREDICATE_INSTR);
 	      }
@@ -1808,37 +1843,38 @@ Thread::Execute(void)
 		Object* problem = BuildCall(predicate, arity);
 		PC = UndefinedPred(problem);
 	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
 	    else
 	      {
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
-			gc(arity);
+		    gc(arity);
                   }
 		const CodeLoc oldpc = PC;
 		const PredCode PredAddr = predicates->getCode(start);
 		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
                   {
-                    const word8 arg = 
-                          PredAddr.getDynamicPred()->getIndexedArg();
-                    ChainEnds* chain = PredAddr.getDynamicPred()->lookUpClauseChain(*this, X[arg]);
-                    CodeLoc block = chain->first();
-                    if (block == NULL)
-                      {
-                        BACKTRACK;
-                      }
-                    else
-                      {
-                        PC = block;
-                      }
-                   }
+		    DynamicPredicate* dp = PredAddr.getDynamicPred();
+		    if (!initializeDPcall(dp, arity, PC))
+		      {
+			BACKTRACK;
+		      }
+		  }
 		else if (PredAddr.type() == PredCode::ESCAPE_PRED)
 		  {
 		    PC = continuationInstr;
 
 		    code->updateCallInstruction(oldpc -
-					       SIZE_OF_EXECUTE_PREDICATE_INSTR,
-					       EXECUTE_ESCAPE, (CodeLoc)start);
+						SIZE_OF_EXECUTE_PREDICATE_INSTR,
+						EXECUTE_ESCAPE, (CodeLoc)start); 
 
 		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
 		  }
@@ -1854,7 +1890,7 @@ Thread::Execute(void)
 		  }
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	    
 	case OPCODE(EXECUTE_ADDRESS, ARGS(address)):
 	  {
@@ -1881,7 +1917,7 @@ Thread::Execute(void)
 		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ADDRESS_INSTR);
 	      }
 	    else if (scheduler->Status().testEnableTimeslice() &&
-		scheduler->Status().testTimeslice())
+		     scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_EXECUTE_ADDRESS_INSTR);
 	      }
@@ -1896,6 +1932,17 @@ Thread::Execute(void)
 		Object* problem = BuildCall(predicate, arity);
 		PC = HandleFastRetry(problem);
 	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		CodeLoc loc = address - Code::SIZE_OF_HEADER;
+		Atom* predicate = getPredAtom(loc);
+		const word32 arity = getNumber(loc);
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
 	    else
 	      {
                 if ((heap.doGarbageCollection() || status.testDoGC())
@@ -1909,7 +1956,7 @@ Thread::Execute(void)
 		PC = address;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(EXECUTE_ESCAPE, ARGS(address)):
 	  {
@@ -1936,7 +1983,7 @@ Thread::Execute(void)
 		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ESCAPE_INSTR);
 	      }
 	    else if (scheduler->Status().testEnableTimeslice() &&
-		scheduler->Status().testTimeslice())
+		     scheduler->Status().testTimeslice())
 	      {
 		HANDLE_TIMESLICE(SIZE_OF_EXECUTE_ESCAPE_INSTR);
 	      }
@@ -1951,6 +1998,16 @@ Thread::Execute(void)
 		Object* problem = BuildCall(predicate, arity);
 		PC = HandleFastRetry(problem);
 	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		Atom* predicate = predicates->getPredName(address, atoms);
+		const word32 arity = predicates->getArity(address);
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
 	    else
 	      {
 		PC = continuationInstr; // Simulate PROCEED.
@@ -1958,7 +2015,7 @@ Thread::Execute(void)
 		HANDLE_ESCAPE(predicates->getCode(address).getEscape()(getFInter()));
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(NOOP, ARGS()):
 	  //
@@ -1975,7 +2032,7 @@ Thread::Execute(void)
 
 	    PC = address;
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PROCEED, ARGS()):
 	  //
@@ -1998,7 +2055,7 @@ Thread::Execute(void)
 	  // Halt the execution and exit with 0.
 	  //
 	  assert(X[0]->variableDereference()->isNumber());
-          errorno = X[0]->variableDereference()->getNumber();
+          errorno = X[0]->variableDereference()->getInteger();
 	  return RV_HALT;
 	  VMBREAK;
 	  
@@ -2007,13 +2064,13 @@ Thread::Execute(void)
 	  return RV_EXIT;
 	  VMBREAK;
 	  
-	// 
-	// The "choice" instructions manipulate with the choice points.
-	// Choice points are 
-	//	 created by: "try_me_else" or "try",
-	//	 removed by: "trust_me" or "trust",
-	//	 updated by: "retry_me_else" or "retry".
-	// 
+	  // 
+	  // The "choice" instructions manipulate with the choice points.
+	  // Choice points are 
+	  //	 created by: "try_me_else" or "try",
+	  //	 removed by: "trust_me" or "trust",
+	  //	 updated by: "retry_me_else" or "retry".
+	  // 
 	case OPCODE(TRY_ME_ELSE, ARGS(number, offset)):
 	  {
 	    //
@@ -2029,7 +2086,7 @@ Thread::Execute(void)
 	    currentChoicePoint =
 	      pushChoicePoint(PC + label, arity);
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(RETRY_ME_ELSE, ARGS(offset)):
 	  {
@@ -2046,7 +2103,7 @@ Thread::Execute(void)
 	    choiceStack.nextClause(currentChoicePoint) =
 	      PC + label;
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(TRUST_ME_ELSE_FAIL, ARGS()):
 	  //
@@ -2076,7 +2133,7 @@ Thread::Execute(void)
 	    currentChoicePoint = pushChoicePoint(PC, arity);
 	    PC += label;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(RETRY, ARGS(offset)):
 	  {
@@ -2094,7 +2151,7 @@ Thread::Execute(void)
 	    choiceStack.nextClause(currentChoicePoint) = PC;
 	    PC += label;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(TRUST, ARGS(offset)):
 	  {
@@ -2113,7 +2170,7 @@ Thread::Execute(void)
 	    tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
 	    PC += label;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(NECK_CUT, ARGS()):
 	  {
@@ -2133,7 +2190,7 @@ Thread::Execute(void)
 		status.setNeckCutRetry();
 		SaveXRegisters();
 		problem->setFunctor(AtomTable::delayneckcut);
-		result = heap.newNumber(cutPoint);
+		result = heap.newInteger(cutPoint);
 		problem->setArgument(1, result);
 		PC = HandleFastRetry(problem);
 	      }
@@ -2144,7 +2201,7 @@ Thread::Execute(void)
 		tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(GET_X_LEVEL, ARGS(register)):
 	  {
@@ -2155,7 +2212,7 @@ Thread::Execute(void)
 	    assert(false);
 	    X[i] = reinterpret_cast<Object*>(cutPoint);
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(GET_Y_LEVEL, ARGS(register)):
 	  {
@@ -2165,9 +2222,9 @@ Thread::Execute(void)
 	    const word32 i = getRegister(PC);
 
 	    envStack.yReg(currentEnvironment, i) = 
-	      heap.newNumber(cutPoint);
+	      heap.newInteger(cutPoint);
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(CUT, ARGS(register)):
 	  {
@@ -2195,7 +2252,7 @@ Thread::Execute(void)
 	      {
 
 		const ChoiceLoc cutY =
-		  (word32)(envStack.yReg(currentEnvironment, i)->getNumber());
+		  (word32)(envStack.yReg(currentEnvironment, i)->getInteger());
 
 		if (currentChoicePoint > cutY)
 		  {
@@ -2205,15 +2262,15 @@ Thread::Execute(void)
 		  }
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
-	//
-	// The purpose of the indexing instructions is to filter 
-	// out clauses which cannot unify with a goal, and link 
-	// the candidate clauses together.
-	// The jump provided by the instructions is relative to 
-	// the program counter.
-	//
+	  //
+	  // The purpose of the indexing instructions is to filter 
+	  // out clauses which cannot unify with a goal, and link 
+	  // the candidate clauses together.
+	  // The jump provided by the instructions is relative to 
+	  // the program counter.
+	  //
 	case OPCODE(SWITCH_ON_TERM, ARGS(register)):
 	  {
 	    // switch_on_term i, 
@@ -2238,7 +2295,7 @@ Thread::Execute(void)
 	    // The indices for the table is based on utag.
 	    //
 	    CodeLoc loc =
-	      PC + Code::SIZE_OF_OFFSET * pval1.getTerm()->utag();
+	      PC + Code::SIZE_OF_OFFSET * pval1.getTerm()->switchOffset();
 	    const word32 offset = getOffset(loc); 
 	    if (offset == Code::FAIL)
 	      {
@@ -2255,7 +2312,7 @@ Thread::Execute(void)
 		PC += 6 * Code::SIZE_OF_OFFSET + offset;
 	      }
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 	  
 	case OPCODE(SWITCH_ON_CONSTANT, ARGS(register, tablesize)):
 	  {
@@ -2284,8 +2341,8 @@ Thread::Execute(void)
 		assert(val->isNumber());
                 if (val->isInteger())
                   {
-		    constant.assign((word32)(val->getNumber()),
-		        		ConstEntry::INTEGER_TYPE);
+		    constant.assign((word32)(val->getInteger()),
+				    ConstEntry::INTEGER_TYPE);
                   }
                 else
                   {
@@ -2311,7 +2368,7 @@ Thread::Execute(void)
 		PC += label;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(SWITCH_ON_STRUCTURE, ARGS(register, tablesize)):
 	  {
@@ -2327,7 +2384,7 @@ Thread::Execute(void)
 	    
 	    StructureTable CodeStructTable(*code, PC, n);
 	    
-assert(X[i]->variableDereference()->hasLegalSub());
+	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* val = heap.dereference(X[i]);
 	    word32 arity;
 	    Object* func;
@@ -2381,7 +2438,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		PC += label;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 	  
 	case OPCODE(SWITCH_ON_QUANTIFIER, ARGS(register, tablesize)):
 	  {
@@ -2438,12 +2495,12 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		PC += label;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
-	//
-	// The pseudo-instructions are intended to be a long term replacement
-	// for the old escape functions.
-	//
+	  //
+	  // The pseudo-instructions are intended to be a long term replacement
+	  // for the old escape functions.
+	  //
 	case OPCODE(PSEUDO_INSTR0, ARGS(number)):
 	  {
 	    //
@@ -2514,7 +2571,6 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		const ReturnValue rv 
 		  = (this->*pseudo_instr1_array[n].funct)(arg1);
                 PC = programCounter;
-
 		if (rv == RV_ERROR)
 		  {
 		    psi1NewVars(pseudo_instr1_array[n].mode, arg1);
@@ -2526,7 +2582,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR2, ARGS(number, register, register)):
 	  {
@@ -2574,7 +2630,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR3, ARGS(number, register, register, register)):
 	  {
@@ -2625,7 +2681,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR4, ARGS(number, register, register, register, register)):
 	  {
@@ -2679,7 +2735,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(PSEUDO_INSTR5, ARGS(number, register, register, register, register, register)):
 	  {
@@ -2735,7 +2791,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		  }
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(UNIFY_CONSTANT, ARGS(constant)):
 	  {
@@ -2775,57 +2831,54 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(UNIFY_INTEGER, ARGS(integer)):
 	  {
 	    int32 n = getInteger(PC);
 	    if (ReadMode)
 	      {
-		Object* val = heap.dereference(reinterpret_cast<Object*>(*StructurePointer));
+		Object* xval = heap.dereference(reinterpret_cast<Object*>(*StructurePointer));
 	
-		if (val->isNumber())
+		switch (UT(xval->getTag()))
 		  {
-		    if (n != val->getNumber())
-		      {
-			BACKTRACK;
-		      }
-		  }
-		else if (val->isVariable())
-		  {
-		    Variable* v = OBJECT_CAST(Variable*, val);
-		    if (v->isFrozen() && !status.testHeatWave())
-		      {
-			BACKTRACK;
-		      }
-		    else
-		      {
-			Object* c = heap.newNumber(n);
-			bind(v, c);
-		      }
-		  }
-		else if (val->isSubstitution())
-		  {
-		    Object* c = heap.newNumber(n);
-		    if (!unify(val, c))
-		      {
-			BACKTRACK;
-		      }
-		  }
-		else
-		  {
+		  case UT(Object::UVar):
+		  case UT(Object::UVarOC):
+		    {
+		      Object* c = heap.newInteger(n);
+		      bindAndTrail(xval, c);
+		      break;
+		    }
+		  case UT(Object::UNumber):
+		    if (!xval->isInteger() || xval->getInteger() != n) BACKTRACK;
+		    break;
+		  case UT(Object::UAtom):
+		  case UT(Object::UString):
+		  case UT(Object::UStruct):
+		  case UT(Object::UCons):
 		    BACKTRACK;
+		    break;
+		  case UT(Object::UOther):
+		    {
+		      Object* c = heap.newInteger(n);
+		      if (!unifyOtherConst(xval, c, true)) BACKTRACK;
+		      break;
+		    }
+		  default:
+		    assert(false);
+		    break;
 		  }
+		
 		StructurePointer++;
 	      }
 	    else
 	      {
-		Object* c = heap.newNumber(n);
+		Object* c = heap.newInteger(n);
 		*StructurePointer = reinterpret_cast<heapobject>(c);
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(UNIFY_X_REF, ARGS(register)):
 	  {
@@ -2872,10 +2925,12 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 	case OPCODE(DB_JUMP, ARGS(number, address, address, address)):
 	  {
+	    assert(false);
+#if 0
 	    (void)getNumber(PC);
 	    DynamicPredicate* pred = 
 	      reinterpret_cast<DynamicPredicate*>(getAddress(PC));
@@ -2884,11 +2939,14 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    RefObject r(REF_CLAUSE, pred); 
 	    pred->aquire();
 	    refTrail.trail(r);
+#endif
 	  }
 	  VMBREAK;
 
 	case OPCODE(DB_TRY, ARGS(number, address, address, address)):
 	  {
+	    assert(false);
+#if 0
 	    const word32 arity = getNumber(PC);
 	    DynamicPredicate* pred = 
 	      reinterpret_cast<DynamicPredicate*>(getAddress(PC));
@@ -2903,11 +2961,14 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    pred->aquire();
 	    refTrail.trail(r);
 	    PC = first;
+#endif
 	  }
 	  VMBREAK;
 
 	case OPCODE(DB_RETRY, ARGS(number, address, address, address)):
 	  {
+	    assert(false);
+#if 0
 	    backtrackTo(choiceStack.fetchChoice(currentChoicePoint));
 	    (void)getNumber(PC);
 	    DynamicPredicate* pred = 
@@ -2929,13 +2990,19 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    RefObject r(REF_CLAUSE, pred);
 	    refTrail.trail(r);
 	    PC = first;
+#endif
 	  }
 	  VMBREAK;
 
 	case OPCODE(DB_TRY_DEC_REF, ARGS()):
           {
-            TrailLoc refcp = choiceStack.getHeapAndTrailsState(currentChoicePoint).getRefTrailLoc();
-            refTrail.tryDecRef(refcp);
+	    Choice* currChoice = choiceStack.fetchChoice(currentChoicePoint);
+	    int time = currChoice->getTimestamp();
+	    if (time == -1)
+	      {
+		currentChoicePoint = choiceStack.pop(currentChoicePoint);
+		tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+	      }
 	    PC = continuationInstr; 
           }
           VMBREAK;
@@ -2950,7 +3017,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    //
 	    X[i]= c;
 	  }
-	VMBREAK;
+	  VMBREAK;
 
 
 	case OPCODE(GET_DOUBLE, ARGS(double, register)):
@@ -2965,41 +3032,33 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    assert(X[i]->variableDereference()->hasLegalSub());
 	    Object* xval = heap.dereference(X[i]);
 
-	    if (xval->isVariable())
+	    switch (UT(xval->getTag()))
 	      {
-		Variable* var = OBJECT_CAST(Variable*, xval);
-		if (var->isFrozen() && !status.testHeatWave())
-		  {
-		    BACKTRACK;
-		  }
-		else
-		  {
-		    Object* c = heap.newDouble(n);
-		    bind(var, c); 
-		  }
-	      }
-	    else if (xval->isDouble())
-	      {
-		if (n != xval->getDouble())
-		  {
-		    BACKTRACK;
-		  }
-	      }
-	    else if (xval->isSubstitution())
-	      {
-                assert(xval->hasLegalSub());
-		PrologValue pval(xval);
-		Object* c = heap.newDouble(n);
-		PrologValue cp(c);
-		heap.prologValueDereference(pval);
-		if (!unifyPrologValues(cp, pval))
-		  {
-		    BACKTRACK;
-		  }
-	      }
-	    else
-	      {
+	      case UT(Object::UVar):
+	      case UT(Object::UVarOC):
+		{
+		  Object* c = heap.newDouble(n);
+		  bindAndTrail(xval, c);
+		  break;
+		}
+	      case UT(Object::UNumber):
+		if (!xval->isDouble() || xval->getDouble() != n) BACKTRACK;
+		break;
+	      case UT(Object::UAtom):
+	      case UT(Object::UString):
+	      case UT(Object::UStruct):
+	      case UT(Object::UCons):
 		BACKTRACK;
+		break;
+	      case UT(Object::UOther):
+		{
+		  Object* c = heap.newDouble(n);
+		  if (!unifyOtherConst(xval, c, true)) BACKTRACK;
+		  break;
+		}
+	      default:
+		assert(false);
+		break;
 	      }
 	    VMBREAK;
 	  }
@@ -3014,7 +3073,7 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    *StructurePointer = reinterpret_cast<heapobject>(c); 
 	    StructurePointer++;
 	  }
-	VMBREAK; 
+	  VMBREAK; 
 
 
 	case OPCODE(UNIFY_DOUBLE, ARGS(double)):
@@ -3022,39 +3081,35 @@ assert(X[i]->variableDereference()->hasLegalSub());
 	    double n = getDouble(PC);
 	    if (ReadMode)
 	      {
-		Object* val = heap.dereference(reinterpret_cast<Object*>(*StructurePointer));
-	
-		if (val->isDouble())
+		Object* xval = heap.dereference(reinterpret_cast<Object*>(*StructurePointer));
+
+		switch (UT(xval->getTag()))
 		  {
-		    if (n != val->getDouble())
-		      {
-			BACKTRACK;
-		      }
-		  }
-		else if (val->isVariable())
-		  {
-		    Variable* v = OBJECT_CAST(Variable*, val);
-		    if (v->isFrozen() && !status.testHeatWave())
-		      {
-			BACKTRACK;
-		      }
-		    else
-		      {
-			Object* c = heap.newDouble(n);
-			bind(v, c);
-		      }
-		  }
-		else if (val->isSubstitution())
-		  {
-		    Object* c = heap.newDouble(n);
-		    if (!unify(val, c))
-		      {
-			BACKTRACK;
-		      }
-		  }
-		else
-		  {
+		  case UT(Object::UVar):
+		  case UT(Object::UVarOC):
+		    {
+		      Object* c = heap.newDouble(n);
+		      bindAndTrail(xval, c);
+		      break;
+		    }
+		  case UT(Object::UNumber):
+		    if (!xval->isDouble() || xval->getDouble() != n) BACKTRACK;
+		    break;
+		  case UT(Object::UAtom):
+		  case UT(Object::UString):
+		  case UT(Object::UStruct):
+		  case UT(Object::UCons):
 		    BACKTRACK;
+		    break;
+		  case UT(Object::UOther):
+		    {
+		      Object* c = heap.newDouble(n);
+		      if (!unifyOtherConst(xval, c, true)) BACKTRACK;
+		      break;
+		    }
+		  default:
+		    assert(false);
+		    break;
 		  }
 		StructurePointer++;
 	      }
@@ -3065,7 +3120,74 @@ assert(X[i]->variableDereference()->hasLegalSub());
 		StructurePointer++;
 	      }
 	  }
-	VMBREAK;
+	  VMBREAK;
+
+	case OPCODE(PUT_STRING, ARGS(register)):
+	  {
+	    const word32 i = getRegister(PC);
+	    char* c = (char*)PC;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    PC += size+1;
+
+	    X[i]= str;
+	  }
+	  VMBREAK;
+
+	case OPCODE(GET_STRING, ARGS(register)):
+	  {
+	    const word32 i = getRegister(PC);
+	    char* c = (char*)PC;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    PC += size+1;
+
+	    if (!unify(X[i], str))
+	      BACKTRACK;
+
+	    VMBREAK;
+	  }
+ 
+	case OPCODE(SET_STRING, ARGS()):
+	  {
+	    char* c = (char*)PC;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    PC += size+1;
+
+	    *StructurePointer = reinterpret_cast<heapobject>(str); 
+	    StructurePointer++;
+	  }
+	  VMBREAK; 
+
+
+	case OPCODE(UNIFY_STRING, ARGS()):
+	  {
+	    char* c = (char*)PC;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    PC += size+1;
+
+	    if (ReadMode)
+	      {
+		Object* xval = heap.dereference(reinterpret_cast<Object*>(*StructurePointer));
+		if (!unify(str, xval))
+		  BACKTRACK;
+
+		StructurePointer++;
+	      }
+	    else
+	      {
+		*StructurePointer = reinterpret_cast<heapobject>(str);
+		StructurePointer++;
+	      }
+	  }
+	  VMBREAK;
+
 
 
 	default:

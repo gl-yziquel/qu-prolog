@@ -179,18 +179,60 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
   assert(source_term->variableDereference()->hasLegalSub());
   source_term = dereference(source_term);
 
-  switch(source_term->utag())
+  switch(source_term->tTag())
     {
-    case Object::uVar:
+    case Object::tVar:
       return(copy_var(source_term, target_heap, var_rec_list));
       break;
 
-    case Object::uObjVar:
-      return(copy_object_variable(source_term, target_heap,
-				  object_variable_rec_list));
-      break;
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tString:
+      {
+	size_t size = source_term->size_dispatch();
+	heapobject* hcopy = target_heap.allocateHeapSpace(size);
+	heapobject* sterm = reinterpret_cast<heapobject*>(source_term);
+	Object* res = reinterpret_cast<Object*>(hcopy);
+	for (u_int i = 0; i <= size; i++)
+	  {
+	    *hcopy = *sterm;
+	    hcopy++;
+	    sterm++;
+	  }
+	return res;
+	break;
+      }
+    case Object::tAtom:
+      { 
+	return source_term;
+	break;
+      }
 
-    case Object::uCons:
+    case Object::tStruct:
+      {
+	Structure* source_struct = OBJECT_CAST(Structure*, source_term);
+	Structure* target_term
+	  = target_heap.newStructure(source_struct->getArity());
+	
+	heapobject* source_storage = source_term->storage();
+	heapobject* target_storage = target_term->storage();
+
+	for (size_t i = 0; i <= source_struct->getArity(); i++)
+	  {
+	    *target_storage =  reinterpret_cast<heapobject>
+	      (copy_term(reinterpret_cast<Object*>(*source_storage),
+			 target_heap, 
+			 var_rec_list,
+			 object_variable_rec_list));
+	    target_storage++;
+	    source_storage++;
+	  }
+	return(target_term);
+	break;
+      }
+
+    case Object::tCons:
       {
 	if (OBJECT_CAST(Cons*, source_term)->isSubstitutionBlockList())
 	  {
@@ -256,30 +298,31 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 	break;
       }
 
-    case Object::uStruct:
-      {
-	Structure* source_struct = OBJECT_CAST(Structure*, source_term);
-	Structure* target_term
-	  = target_heap.newStructure(source_struct->getArity());
-	
-	heapobject* source_storage = source_term->storage();
-	heapobject* target_storage = target_term->storage();
+    case Object::tObjVar:
+      return(copy_object_variable(source_term, target_heap,
+				  object_variable_rec_list));
+      break;
 
-	for (size_t i = 0; i <= source_struct->getArity(); i++)
-	  {
-	    *target_storage =  reinterpret_cast<heapobject>
-	      (copy_term(reinterpret_cast<Object*>(*source_storage),
-			 target_heap, 
-			 var_rec_list,
-			 object_variable_rec_list));
-	    target_storage++;
-	    source_storage++;
-	  }
+    case Object::tSubst:
+      {
+	Substitution* source_sub = OBJECT_CAST(Substitution*, source_term);
+	
+	Substitution* target_term = target_heap.newSubstitution();
+	target_term->setTerm(copy_term(source_sub->getTerm(),
+				       target_heap, var_rec_list,
+				       object_variable_rec_list));
+	Object* temp = copy_term(source_sub->getSubstitutionBlockList(), 
+				 target_heap,
+				 var_rec_list,
+				 object_variable_rec_list);
+        assert(temp->isCons());
+	target_term->setSubstitutionBlockList(temp);
+
 	return(target_term);
 	break;
       }
 
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* source_quant 
 	  = OBJECT_CAST(QuantifiedTerm*, source_term);
@@ -302,42 +345,6 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 	break;
       }
 
-    case Object::uConst:
-      {
-	if (source_term->isAtom())
-	  {
-	    return(source_term);
-	  }
-	else if (source_term->isInteger())
-	  {
-	    return(target_heap.newNumber(source_term->getNumber()));
-	  }
-        else
-	  {
-	    assert(source_term->isDouble());
-	    return(target_heap.newDouble(source_term->getDouble()));
-	  }
-	break;
-      }
-
-    case Object::uSubst:
-      {
-	Substitution* source_sub = OBJECT_CAST(Substitution*, source_term);
-	
-	Substitution* target_term = target_heap.newSubstitution();
-	target_term->setTerm(copy_term(source_sub->getTerm(),
-				       target_heap, var_rec_list,
-				       object_variable_rec_list));
-	Object* temp = copy_term(source_sub->getSubstitutionBlockList(), 
-				 target_heap,
-				 var_rec_list,
-				 object_variable_rec_list);
-        assert(temp->isCons());
-	target_term->setSubstitutionBlockList(temp);
-
-	return(target_term);
-	break;
-      }
 
     default:
       assert(false);
@@ -399,19 +406,45 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
   //
   // some copying required
   //
-  switch(source_term->utag())
+  switch(source_term->tTag())
     {
-    case Object::uVar:
-    case Object::uObjVar:
+    case Object::tVar:
+    case Object::tObjVar:
       assert(reinterpret_cast<heapobject*>(source_term) < high &&
                    reinterpret_cast<heapobject*>(source_term) >= low);
       return(source_term);
       break;
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       return(source_term);
       break;
 
-    case Object::uCons:
+    case Object::tStruct:
+      {
+	Structure* source_struct = OBJECT_CAST(Structure*, source_term);
+	Structure* target_term
+	  = target_heap.newStructure(source_struct->getArity());
+	
+	heapobject* source_storage = source_term->storage();
+	heapobject* target_storage = target_term->storage();
+
+	for (size_t i = 0; i <= source_struct->getArity(); i++)
+	  {
+	    *target_storage =  reinterpret_cast<heapobject>
+	      (copy_share_term(reinterpret_cast<Object*>(*source_storage),
+			       target_heap, low, high));
+
+	    target_storage++;
+	    source_storage++;
+	  }
+	return(target_term);
+	break;
+      }
+
+    case Object::tCons:
       {
 	
 	if (OBJECT_CAST(Cons*, source_term)->isSubstitutionBlockList())
@@ -461,29 +494,24 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
 	break;
       }
 
-    case Object::uStruct:
+    case Object::tSubst:
       {
-	Structure* source_struct = OBJECT_CAST(Structure*, source_term);
-	Structure* target_term
-	  = target_heap.newStructure(source_struct->getArity());
+	Substitution* source_sub = OBJECT_CAST(Substitution*, source_term);
 	
-	heapobject* source_storage = source_term->storage();
-	heapobject* target_storage = target_term->storage();
+	Substitution* target_term = target_heap.newSubstitution();
+	target_term->setTerm(copy_share_term(source_sub->getTerm(),
+					     target_heap, low, high));
+	Object* temp = copy_share_term(source_sub->getSubstitutionBlockList(), 
+				       target_heap, low, high);
 
-	for (size_t i = 0; i <= source_struct->getArity(); i++)
-	  {
-	    *target_storage =  reinterpret_cast<heapobject>
-	      (copy_share_term(reinterpret_cast<Object*>(*source_storage),
-			       target_heap, low, high));
+        assert(temp->isCons());
+	target_term->setSubstitutionBlockList(temp);
 
-	    target_storage++;
-	    source_storage++;
-	  }
 	return(target_term);
 	break;
       }
 
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* source_quant 
 	  = OBJECT_CAST(QuantifiedTerm*, source_term);
@@ -500,23 +528,6 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
 					target_heap, low, high));
 
 	return(target_quant);
-	break;
-      }
-
-    case Object::uSubst:
-      {
-	Substitution* source_sub = OBJECT_CAST(Substitution*, source_term);
-	
-	Substitution* target_term = target_heap.newSubstitution();
-	target_term->setTerm(copy_share_term(source_sub->getTerm(),
-					     target_heap, low, high));
-	Object* temp = copy_share_term(source_sub->getSubstitutionBlockList(), 
-				       target_heap, low, high);
-
-        assert(temp->isCons());
-	target_term->setSubstitutionBlockList(temp);
-
-	return(target_term);
 	break;
       }
 

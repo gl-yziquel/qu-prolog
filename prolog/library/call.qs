@@ -484,3 +484,140 @@ end('$call_clause'/2):
 
 
 
+'call_cleanup/2$0'/0:
+
+	try(0, $1)
+	trust($2)
+
+$1:
+	proceed
+
+$2:
+	fail
+end('call_cleanup/2$0'/0):
+
+
+
+'call_cleanup/2$1'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_variable(0, 2)
+	get_x_value(0, 1)
+	neck_cut
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	proceed
+end('call_cleanup/2$1'/3):
+
+
+
+'call_cleanup'/2:
+
+
+$1:
+	allocate(6)
+	get_y_variable(2, 0)
+	get_y_variable(5, 1)
+	get_y_level(1)
+	put_y_variable(3, 19)
+	put_y_variable(0, 19)
+	put_y_variable(4, 0)
+	call_predicate('$make_cleanup_cp_call', 1, 6)
+	call_predicate('call_cleanup/2$0', 0, 6)
+	put_y_value(3, 0)
+	call_predicate('thread_symbol', 1, 6)
+	put_structure(3, 0)
+	set_constant('$cleanup')
+	set_y_value(3)
+	set_y_value(4)
+	set_y_value(5)
+	call_predicate('assert', 1, 3)
+	pseudo_instr1(7, 0)
+	get_y_value(0, 0)
+	put_y_value(2, 0)
+	call_predicate('call', 1, 2)
+	call_predicate('$call_cleanup_2', 0, 2)
+	pseudo_instr1(7, 0)
+	get_x_variable(1, 0)
+	put_y_value(0, 0)
+	put_y_value(1, 2)
+	deallocate
+	execute_predicate('call_cleanup/2$1', 3)
+end('call_cleanup'/2):
+
+
+
+'$call_cleanup_2'/0:
+
+
+$1:
+	proceed
+end('$call_cleanup_2'/0):
+
+
+
+'$make_cleanup_cp_call'/1:
+
+
+$1:
+	pseudo_instr1(116, 1)
+	get_x_value(0, 1)
+	proceed
+end('$make_cleanup_cp_call'/1):
+
+
+
+'$do_cleanup/2$0'/1:
+
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('call', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+end('$do_cleanup/2$0'/1):
+
+
+
+'$do_cleanup'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	allocate(4)
+	get_y_variable(3, 1)
+	put_y_variable(1, 19)
+	put_y_variable(0, 19)
+	put_y_variable(2, 0)
+	call_predicate('thread_symbol', 1, 4)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	call_predicate('$cleanup', 3, 4)
+	pseudo_instr2(2, 23, 21)
+	put_structure(3, 0)
+	set_constant('$cleanup')
+	set_y_value(2)
+	set_y_value(1)
+	set_y_value(0)
+	call_predicate('retract', 1, 1)
+	put_y_value(0, 0)
+	call_predicate('$do_cleanup/2$0', 1, 0)
+	fail
+
+$2:
+	execute_predicate('call_predicate', 1)
+end('$do_cleanup'/2):
+
+
+

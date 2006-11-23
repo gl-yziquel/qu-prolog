@@ -232,7 +232,8 @@ end('$split_arg/4$1'/4):
 	retry($2)
 	retry($3)
 	retry($4)
-	trust($5)
+	retry($5)
+	trust($6)
 
 $1:
 	get_x_value(2, 3)
@@ -241,6 +242,12 @@ $1:
 	proceed
 
 $2:
+	get_x_value(2, 3)
+	pseudo_instr1(117, 0)
+	neck_cut
+	proceed
+
+$3:
 	allocate(6)
 	get_y_variable(3, 1)
 	get_y_variable(5, 2)
@@ -263,7 +270,7 @@ $2:
 	deallocate
 	execute_predicate('$split_arg', 4)
 
-$3:
+$4:
 	allocate(5)
 	get_y_variable(3, 0)
 	get_y_variable(2, 1)
@@ -279,7 +286,7 @@ $3:
 	deallocate
 	execute_predicate('$split_arg/4$1', 4)
 
-$4:
+$5:
 	get_x_variable(4, 0)
 	allocate(6)
 	get_y_variable(3, 1)
@@ -305,7 +312,7 @@ $4:
 	deallocate
 	execute_predicate('$split_arg', 4)
 
-$5:
+$6:
 	allocate(5)
 	get_y_variable(4, 0)
 	get_y_variable(3, 1)

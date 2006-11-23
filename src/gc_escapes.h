@@ -65,57 +65,46 @@ bool check_env(EnvLoc env);
 
 bool check_choice(ChoiceLoc choiceloc);
 
-bool check_ip_trail();
+bool check_trail();
 
 bool check_ips();
 
 bool check_name();
-
-bool check_obj_trail();
 
 bool check_heap2(Heap& heap);
 
 //
 // Check heap for correct pointers
 //
-bool check_heap(Heap&, AtomTable*);
+bool check_heap(Heap&, AtomTable*, GCBits&);
 #endif // DEBUG
 
 // Mark the registers
 
-void gc_mark_registers(word32, int32&);
+void gc_mark_registers(word32);
 
 // Mark the environmants
-void gc_mark_environments(EnvLoc, int32&);
+void gc_mark_environments(EnvLoc);
 
 // Mark the choicepoints
-void gc_mark_choicepoints(ChoiceLoc, int32&);
+void gc_mark_choicepoints(ChoiceLoc);
 
-// Mark the implicit parameter trail
-void gc_mark_ip_trail(int32&);
+// Mark the trail
+void gc_mark_trail();
 
 // Mark the implicit parameters
-void gc_mark_ips(int32&);
+void gc_mark_ips();
 
 // Mark the variable names
-void gc_mark_names(int32&);
-
-// Mark the required old values in object trail 
-void gc_mark_object_trail(int32&);
+void gc_mark_names();
 
 // Mark the heap
 
-void gc_marking_phase(word32, int32&);
+void gc_marking_phase(word32);
 
 void gc_sweep_registers(word32);
 
-void gc_sweep_binding_trail(void);
-
-void gc_sweep_tag_trail(void);
-
-void gc_sweep_object_trail(void);
-
-void gc_sweep_ip_trail(void);
+void gc_sweep_trail(void);
 
 void gc_sweep_names(void);
 
@@ -123,9 +112,9 @@ void gc_sweep_ips(void);
 
 void gc_sweep_environments(EnvLoc);
 
-void gc_sweep_choicepoints(ChoiceLoc, int32&);
+void gc_sweep_choicepoints(ChoiceLoc);
 
-void gc_compaction_phase(word32, int32&);
+void gc_compaction_phase(word32);
 
 
 // Do garbage collection

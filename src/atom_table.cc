@@ -122,6 +122,7 @@ Atom *AtomTable:: cneck_cut;
 Atom *AtomTable:: cut_ancestor;
 Atom *AtomTable:: allocate;
 Atom *AtomTable:: deallocate;
+Atom *AtomTable:: do_cleanup;
 Atom *AtomTable:: cproceed;
 Atom *AtomTable:: get_level_ancestor;
 Atom *AtomTable:: get_level;

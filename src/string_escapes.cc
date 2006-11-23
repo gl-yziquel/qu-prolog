@@ -89,7 +89,7 @@ Thread::psi_stream_to_chars(Object *& stream_arg,
 	{
 	  Cons* temp = heap.newCons();
 	  temp->setTail(tail);
-	  temp->setHead(heap.newNumber(data[i - 1]));
+	  temp->setHead(heap.newInteger(data[i - 1]));
 	  tail = temp;
 	}
     }
@@ -139,7 +139,237 @@ Thread::psi_stream_to_atom(Object *& stream_arg, Object *& atom_arg)
 }
 
 
+//
+// psi_stream_to_string(stream_index, variable)
+// Get a string from a string stream.
+//
+Thread::ReturnValue
+Thread::psi_stream_to_string(Object *& stream_arg, Object *& string_arg)
+{
+  Object* stream_object = heap.dereference(stream_arg);
+  
+  QPStream *stream;
+  DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
+
+  //
+  // Return the atom.
+  //
+  int size = static_cast<int>(stream->str().length());
+  if (size == 0)
+    {
+      string_arg = AtomTable::nil;
+    }
+  else
+    {
+      string data = stream->str();
+      char* buff = new char[size+1];
+      for (int i = 0; i < size; i++)
+	{
+	  buff[i] = data[i];
+	}
+      buff[size] = '\0';
+      string_arg = heap.newStringObject(buff);
+      delete buff;
+    }
+
+  return RV_SUCCESS;
+}
 
 
+//
+// psi_list_to_string(list, variable)
+// Convert a list into a string
+//
+Thread::ReturnValue
+Thread::psi_list_to_string(Object *& list_arg, Object *& string_arg)
+{
+  Object* list_object = heap.dereference(list_arg);
+
+  if (list_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (list_object->isNil()) 
+    {
+      string_arg = list_object;
+      return RV_SUCCESS;
+    }
+  string lchars;
+  while (!list_object->isNil())
+    {
+      if (!list_object->isCons())
+	{
+	  PSI_ERROR_RETURN(EV_TYPE, 1);
+	}
+      Cons* lst = OBJECT_CAST(Cons*, list_object);
+      Object* head = lst->getHead()->variableDereference();
+      if (!head->isInteger())
+	{
+	  PSI_ERROR_RETURN(EV_TYPE, 1);
+	}
+      int v = head->getInteger();
+      if ((v < 0) || (v > 127))
+	{
+	  PSI_ERROR_RETURN(EV_TYPE, 1);
+	}
+      lchars.push_back((char)v);
+      list_object = lst->getTail()->variableDereference();
+    }
+  string_arg = heap.newStringObject(lchars.c_str());
+  return RV_SUCCESS;
+}
 
 
+//
+// psi_string_to_atom(string, variable)
+// Convert a string into an atom
+//
+Thread::ReturnValue
+Thread::psi_string_to_atom(Object *& string_arg, Object *& atom_arg)
+{
+  Object* string_object = heap.dereference(string_arg);
+
+  if (string_object->isNil()) 
+    {
+      atom_arg = atoms->add("");
+      return RV_SUCCESS;
+    }
+  if (string_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (!string_object->isString())   
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  atom_arg = atoms->add(OBJECT_CAST(StringObject*, string_object)->getChars());
+  return RV_SUCCESS;
+}
+
+//
+// psi_atom_to_string(atom, variable)
+// Convert an atom into a string
+//
+Thread::ReturnValue
+Thread::psi_atom_to_string(Object *& atom_arg, Object *& string_arg)
+{
+  Object* atom_object = heap.dereference(atom_arg);
+
+  if (atom_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (!atom_object->isAtom())   
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  char* atomstring = atoms->getAtomString(atom_object);
+
+  if (*atomstring == '\0')
+    string_arg = AtomTable::nil;
+  else
+    string_arg = heap.newStringObject(atomstring);
+
+  return RV_SUCCESS;
+}
+
+//
+// psi_string_length(string, variable)
+// Get the length of a string
+//
+Thread::ReturnValue
+Thread::psi_string_length(Object *& string_arg, Object *& length_arg)
+{
+  Object* string_object = heap.dereference(string_arg);
+
+  if (string_object->isNil()) 
+    {
+      length_arg = heap.newInteger(0);
+      return RV_SUCCESS;
+    }
+  if (string_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (!string_object->isString())   
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  length_arg = heap.newInteger(strlen(OBJECT_CAST(StringObject*, string_object)->getChars()));
+
+  return RV_SUCCESS;
+}
+
+//
+// psi_string_concat(string, string, variable)
+// Concatentate 2 strings
+//
+Thread::ReturnValue
+Thread::psi_string_concat(Object *& string1_arg, Object *& string2_arg, 
+			  Object *& concat_arg)
+{
+  Object* string1_object = heap.dereference(string1_arg);
+  Object* string2_object = heap.dereference(string2_arg);
+
+  if (string1_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (string2_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 2);
+    }
+
+  if (!string1_object->isString() && !string1_object->isNil())   
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (!string2_object->isString() && !string2_object->isNil())   
+    {
+      PSI_ERROR_RETURN(EV_INST, 2);
+    }
+
+  if (string1_object->isNil())
+    {
+      concat_arg = string2_object;
+      return RV_SUCCESS;
+    }
+  if (string2_object->isNil())
+    {
+      concat_arg = string1_object;
+      return RV_SUCCESS;
+    }
+
+  string result(OBJECT_CAST(StringObject*, string1_object)->getChars());
+
+  result.append(OBJECT_CAST(StringObject*, string2_object)->getChars());
+
+  concat_arg = heap.newStringObject(result.c_str());
+  return RV_SUCCESS;
+}
+
+//
+// psi_split_string(string, integer, variable, variable)
+// Split a string at the given position
+//
+Thread::ReturnValue
+Thread::psi_split_string(Object *& string_arg, Object *& pos_arg, 
+			 Object *& split1_arg, Object *& split2_arg)
+{
+  Object* string_object = heap.dereference(string_arg);
+  int pos = pos_arg->variableDereference()->getInteger();
+
+  string stringstring(OBJECT_CAST(StringObject*, string_object)->getChars());
+  string substr1 = stringstring.substr(0, pos);
+  string substr2 = stringstring.substr(pos);
+
+  if (substr1.size() == 0)
+    split1_arg = AtomTable::nil;
+  else
+    split1_arg = heap.newStringObject(substr1.c_str());
+  if (substr2.size() == 0)
+    split2_arg = AtomTable::nil;
+  else
+    split2_arg = heap.newStringObject(substr2.c_str());
+  return RV_SUCCESS;
+}

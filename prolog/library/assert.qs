@@ -693,17 +693,17 @@ end('$assert_clause/3$0'/3):
 
 
 
-'$assert_clause/3$1'/3:
+'$assert_clause/3$1'/4:
 
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	call_predicate('$dbcompile', 3, 1)
+	call_predicate('$dbcompile', 4, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$assert_clause/3$1'/3):
+end('$assert_clause/3$1'/4):
 
 
 
@@ -713,38 +713,41 @@ end('$assert_clause/3$1'/3):
 	trust($2)
 
 $1:
-	allocate(6)
-	get_y_variable(4, 0)
-	get_y_variable(3, 1)
-	get_y_variable(0, 2)
-	get_y_level(5)
+	allocate(7)
+	get_y_variable(5, 0)
+	get_y_variable(4, 1)
+	get_y_variable(1, 2)
+	get_y_level(6)
+	put_y_variable(3, 19)
 	put_y_variable(2, 19)
-	put_y_variable(1, 19)
-	put_y_value(5, 2)
-	call_predicate('$assert_clause/3$0', 3, 5)
-	call_predicate('$ignore_delays', 0, 5)
+	put_y_variable(0, 19)
+	put_y_value(6, 2)
+	call_predicate('$assert_clause/3$0', 3, 6)
+	call_predicate('$ignore_delays', 0, 6)
 	put_integer(1, 0)
 	put_integer(0, 1)
 	pseudo_instr2(10, 0, 1)
 	put_x_variable(0, 1)
 	get_structure(',', 2, 1)
+	unify_y_value(5)
 	unify_y_value(4)
-	unify_y_value(3)
 	pseudo_instr1(52, 0)
-	put_y_value(4, 0)
-	put_y_value(2, 1)
-	call_predicate('$correct_name', 2, 4)
+	put_y_value(5, 0)
+	put_y_value(3, 1)
+	call_predicate('$correct_name', 2, 5)
 	put_x_variable(1, 2)
 	get_structure(',', 2, 2)
-	unify_y_value(2)
 	unify_y_value(3)
+	unify_y_value(4)
 	pseudo_instr2(95, 1, 0)
 	get_structure(',', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(1)
-	put_y_value(1, 2)
-	call_predicate('$assert_clause/3$1', 3, 3)
-	pseudo_instr4(12, 22, 21, 20, 0)
+	put_y_value(0, 2)
+	put_y_value(2, 3)
+	call_predicate('$assert_clause/3$1', 4, 4)
+	pseudo_instr4(12, 23, 22, 21, 0)
+	get_y_value(0, 0)
 	fail
 
 $2:
@@ -753,7 +756,7 @@ end('$assert_clause'/3):
 
 
 
-'$dbcompile/3$0'/4:
+'$dbcompile/4$0'/4:
 
 	try(4, $1)
 	trust($2)
@@ -806,39 +809,39 @@ $2:
 	unify_y_value(0)
 	deallocate
 	proceed
-end('$dbcompile/3$0'/4):
+end('$dbcompile/4$0'/4):
 
 
 
-'$dbcompile'/3:
+'$dbcompile'/4:
 
 
 $1:
-	allocate(5)
-	get_y_variable(4, 0)
+	allocate(6)
+	get_y_variable(5, 0)
 	get_x_variable(0, 1)
-	get_y_variable(0, 2)
-	put_y_variable(1, 19)
+	get_y_variable(1, 2)
+	get_y_variable(0, 3)
+	put_y_variable(2, 19)
 	put_x_variable(2, 2)
-	put_y_variable(3, 3)
+	put_y_variable(4, 3)
 	put_x_variable(5, 5)
 	put_x_variable(6, 6)
-	put_y_variable(2, 7)
+	put_y_variable(3, 7)
 	put_constant('no_cut', 1)
 	put_constant('[]', 4)
-	call_predicate('$db_internal_form', 8, 5)
-	put_y_value(2, 0)
-	put_y_value(1, 1)
-	put_y_value(4, 2)
-	put_y_value(3, 3)
-	call_predicate('$dbcompile/3$0', 4, 2)
+	call_predicate('$db_internal_form', 8, 6)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(5, 2)
+	put_y_value(4, 3)
+	call_predicate('$dbcompile/4$0', 4, 3)
 	put_constant('assert', 1)
-	put_x_variable(2, 2)
-	pseudo_instr4(13, 21, 1, 2, 0)
+	pseudo_instr4(13, 22, 1, 21, 0)
 	get_y_value(0, 0)
 	deallocate
 	proceed
-end('$dbcompile'/3):
+end('$dbcompile'/4):
 
 
 

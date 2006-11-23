@@ -89,6 +89,7 @@ Thread::InitThread(void)
   cutPoint = EMPTY_LOC;
   catchPoint = EMPTY_LOC;
 
+  minCleanupCP = 0xFFFF;
   metaCounter = 0;
   objectCounter = 0;
   ForeignFile = NULL;
@@ -132,10 +133,7 @@ Thread::Thread(Thread *pt,
 	       const word32 ScratchpadSize,
 	       const word32 HeapSize,
 	       const word32 BindingTrailSize,
-	       const word32 ObjectTrailSize,
-	       const word32 IPTrailSize,
-	       const word32 TagTrailSize,
-	       const word32 RefTrailSize,
+	       const word32 OtherTrailSize,
 	       const word32 EnvSize,
 	       const word32 ChoiceSize,
 	       const word32 NameSize,
@@ -147,11 +145,10 @@ Thread::Thread(Thread *pt,
     buffers(*(new HeapBufferManager(20))),
     heap(*(new Heap("heap", HeapSize, true))),
     scratchpad(*(new Heap("scratchpad", ScratchpadSize))),
-    bindingTrail(*(new BindingTrail(BindingTrailSize, 0))),
-    objectTrail(*(new UpdatableObjectTrail(ObjectTrailSize, 0, "updatable object trail"))),
-    ipTrail(*(new UpdatableObjectTrail(IPTrailSize, 0, "IP trail"))),
-    tagTrail(*(new UpdatableTagTrail(TagTrailSize, 0))),
-    refTrail(*(new RefTrail(RefTrailSize, 0))),
+    gcstack(*(new ObjectsStack(HeapSize*K/2))),
+    gcbits(*new GCBits(HeapSize*K)),
+    bindingTrail(*(new BindingTrail(BindingTrailSize))),
+    otherTrail(*(new OtherTrail(OtherTrailSize))),
     envStack(EnvSize),
     choiceStack(ChoiceSize)
 #ifdef QP_DEBUG
@@ -170,11 +167,10 @@ Thread::Thread(Thread *pt,
     buffers(*(new HeapBufferManager(20))),
     heap(*(new Heap("heap", thread_options.HeapSize(), true))),
     scratchpad(*(new Heap("scratchpad", thread_options.ScratchpadSize()))),
-    bindingTrail(*(new BindingTrail(thread_options.BindingTrailSize(), 0))),
-    objectTrail(*(new UpdatableObjectTrail(thread_options.ObjectTrailSize(),0,"updatable object trail"))),
-    ipTrail(*(new UpdatableObjectTrail(thread_options.IPTrailSize(),0,"IP trail"))),
-    tagTrail(*(new UpdatableTagTrail(thread_options.TagTrailSize(),0))),
-    refTrail(*(new RefTrail(thread_options.RefTrailSize(), 0))),
+    gcstack(*(new ObjectsStack(thread_options.HeapSize()*K/2))),
+    gcbits(*new GCBits(thread_options.HeapSize()*K)),
+    bindingTrail(*(new BindingTrail(thread_options.BindingTrailSize()))),
+    otherTrail(*(new OtherTrail(thread_options.OtherTrailSize()))),
     envStack(thread_options.EnvironmentStackSize()),
     choiceStack(thread_options.ChoiceStackSize())
 #ifdef QP_DEBUG
@@ -184,17 +180,17 @@ Thread::Thread(Thread *pt,
   InitThread();
 };
 
+
 Thread::Thread(Thread *pt,
 	       HeapBufferManager& SharedBuffers,
 	       Heap& SharedScratchpad,
 	       Heap& SharedHeap,
+	       ObjectsStack& SharedGCstack,
+	       GCBits& SharedGCBits,
 	       NameTable& SharedNames,
 	       IPTable& SharedIPTable,
 	       BindingTrail& SharedBindingTrail,
-	       UpdatableObjectTrail& SharedObjectTrail,
-	       UpdatableObjectTrail& SharedIPTrail,
-	       UpdatableTagTrail& SharedTagTrail,
-               RefTrail& SharedRefTrail,
+	       OtherTrail& SharedOtherTrail,
 	       const word32 EnvSize,
 	       const word32 ChoiceSize)
   : thread_info(pt),
@@ -204,11 +200,10 @@ Thread::Thread(Thread *pt,
     buffers(SharedBuffers),
     heap(SharedHeap),
     scratchpad(SharedScratchpad),
+    gcstack(SharedGCstack),
+    gcbits(SharedGCBits),
     bindingTrail(SharedBindingTrail),
-    objectTrail(SharedObjectTrail),
-    ipTrail(SharedIPTrail),
-    tagTrail(SharedTagTrail),
-    refTrail(SharedRefTrail),
+    otherTrail(SharedOtherTrail),
     envStack(EnvSize),
     choiceStack(ChoiceSize)
 #ifdef QP_DEBUG
@@ -217,6 +212,7 @@ Thread::Thread(Thread *pt,
 {
   InitThread();
 }
+
 
 Thread::~Thread(void)
 {
@@ -227,20 +223,19 @@ Thread::~Thread(void)
       delete &buffers;
       delete &scratchpad;
       delete &heap;
+      delete &gcstack;
+      delete &gcbits;
       delete &names;
       delete &ipTable;
       delete &bindingTrail;
-      delete &objectTrail;
-      delete &ipTrail;
-      delete &tagTrail;
-      delete &refTrail;
+      delete &otherTrail;
     }
 }
 
 ostream&
 operator<<(ostream& ostrm, Thread& thread)
 {
-  ostrm << (ThreadCondition) thread << endl;
+  ostrm << thread.getThreadCondition() << endl;
 
   return ostrm;
 }

@@ -137,7 +137,7 @@ ICMMessageChannel* icm_channel = NULL;
 ICMEnvironment* icm_environment = NULL;
 #endif
 int icm_port = 0;
-
+CodeLoc failblock;
 
 #ifdef ELVIN_DEF
 ElvinMessageChannel* elvin_channel = NULL;
@@ -196,6 +196,7 @@ main(int32 argc, char** argv)
 
   // Signal communication structure
   signals = new Signals;
+
 
 #ifdef WIN32
 (void) signal(SIGINT, handle_sigint);
@@ -277,6 +278,12 @@ main(int32 argc, char** argv)
   sockm = new SocketManager();
 
   scheduler_status = new SchedulerStatus;
+
+  failblock = new word8[4];
+  failblock[0] = TRUST;
+  failblock[1] = 0;
+  failblock[2] = 0;
+  failblock[3] = FAIL;
 
   // Thread table.
   thread_table = new ThreadTable(qem_options->ThreadTableSize());

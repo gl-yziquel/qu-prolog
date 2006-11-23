@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 7.2 Reference Manual - Built-in Predicates
+Qu-Prolog 7.4 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -69,6 +69,8 @@ Qu-Prolog 7.2 Reference Manual - Built-in Predicates
 <KBD>closed_list(Type)</KBD> : a closed list
 <LI>
 <KBD>open_list(Type)</KBD> : an open list			
+<LI>
+<KBD>string</KBD> : a string
 <LI>
 <KBD>nonvar</KBD> : any term other than a variable
 <LI>
@@ -430,6 +432,15 @@ Succeed if <KBD>Goal1</KBD> succeeds.  <KBD>Goal2</KBD> is executed after <KBD>G
 <BR><KBD>unwind_protect((assert(fact(a,b)), p), retract(fact(a,b)))</KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="call_cleanup"></a>call_cleanup(Goal1, Goal2)</KBD>
+ <BLOCKQUOTE>
+ Calls <KBD>Goal1</KBD> and whenever this call fails or succeeds deterministically,
+ then <KBD>Goal2</KBD> is called. It is similar to <KBD>unwind_protect</KBD>. The main difference is that <KBD>unwind_protect</KBD> is called on success
+ (even if choice points remain) whereas <KBD>call_cleanup</KBD> is called
+ on success only when <KBD>Goal1</KBD> has no more choices.
+
+</BLOCKQUOTE>
+
 <H2>
 <A NAME="Section3.3">3.3 Input / Output</A>
 </H2>
@@ -537,6 +548,8 @@ The possible values for <KBD>StringMode</KBD> are
 <KBD>write</KBD> - Output
 <LI>
 <KBD>read(Atom)</KBD> - Input obtained from the <KBD>Atom</KBD>
+<LI>
+<KBD>read(String)</KBD> - Input obtained from the <KBD>String</KBD>
 <LI>
 <KBD>read(CharCodeList)</KBD> - Input obtained from the <KBD>CharCodeList</KBD>
 </UL>
@@ -849,6 +862,28 @@ A property of <KBD>Stream</KBD> is <KBD>Property</KBD>. The possible values for 
 <BR>Hello = Hello
 <BR>World = World
 <BR>Atom = Hello World
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="stream_to_string"></a>stream_to_string(Stream, String)</KBD>
+
+<BLOCKQUOTE>
+<KBD>Stream</KBD> specifies the output string stream where <KBD>String</KBD> can be obtained.  When this predicate terminates successfully the stream is closed and any further writing to the stream is not possible.
+<BR><KBD>mode stream_to_string(@stream, -string)</KBD>
+
+<P>Example:
+<KBD>
+<P>| ?- open_string(write, Stream),
+<BR>write(Stream, Hello),
+<BR>write(Stream, ' '),
+<BR>write(Stream, World),
+<BR>stream_to_string(Stream, String).
+<BR>
+<BR>Stream = 3
+<BR>Hello = Hello
+<BR>World = World
+<BR>String = "Hello World"
+
 </KBD>
 </BLOCKQUOTE>
 
@@ -1904,15 +1939,15 @@ Get the next character from the current input stream, and unify it with <KBD>Cha
 </KBD>
 </BLOCKQUOTE>
 
-<P><KBD><a name="get_line"></a>get_line(CodeList)</KBD>
-<BR><KBD>get_line(Stream, CodeList)</KBD>
+<P><KBD><a name="get_line"></a>get_line(String)</KBD>
+<BR><KBD>get_line(Stream, String)</KBD>
 
 <BLOCKQUOTE>
-<KBD>CodeList</KBD> is the next line of character codes from 
+<KBD>String</KBD> is the next line from 
 <KBD>Stream</KBD> or the current input stream. The newline is consumed but
-is not part of the returned list. <KBD>CodeList</KBD> is instantiated to <KBD>-1</KBD> at EOF.
-<BR><KBD>mode get_line(?list(integer))</KBD>
-<BR><KBD>mode get_line(@stream, ?list(integer))</KBD>
+is not part of the returned list. <KBD>String</KBD> is instantiated to <KBD>-1</KBD> at EOF.
+<BR><KBD>mode get_line(?string)</KBD>
+<BR><KBD>mode get_line(@stream, ?string)</KBD>
 </BLOCKQUOTE>
 
 
@@ -1923,7 +1958,9 @@ is not part of the returned list. <KBD>CodeList</KBD> is instantiated to <KBD>-1
 <KBD>CodeList</KBD> is written to 
 <KBD>Stream</KBD> or the current output stream. A newline is added. 
 <BR><KBD>mode put_line(@list(integer))</KBD>
+<BR><KBD>mode put_line(@string)</KBD>
 <BR><KBD>mode put_line(@stream, @list(integer))</KBD>
+<BR><KBD>mode put_line(@stream, @string)</KBD>
 
 
 <P>Example:
@@ -1934,7 +1971,7 @@ is not part of the returned list. <KBD>CodeList</KBD> is instantiated to <KBD>-1
 <BR>
 <BR>abc
 <BR>
-<BR>L = [97, 98, 99]
+<BR>L = "abc"
 </KBD>
 </BLOCKQUOTE>
 
@@ -2533,6 +2570,26 @@ Succeed if <KBD>Term</KBD> is a structure or a list.
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="string"></a>string(Term)</KBD>
+
+<BLOCKQUOTE>
+<KBD>Term</KBD> is a string.
+<BR><KBD>mode string(@term)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- string([40,41]).
+<BR>
+<BR>no
+<BR>
+<BR>| ?- string("ab").
+<BR>
+<BR>yes
+<BR>
+</KBD>
+</BLOCKQUOTE>
+
 <P><KBD><a name="quant"></a>quant(Term)</KBD>
 
 <BLOCKQUOTE>
@@ -3090,6 +3147,141 @@ Succeed when <KBD>Term1</KBD> and <KBD>Term2</KBD> are both atomic or compound a
 <BR>N = 2
 </KBD>
 </BLOCKQUOTE>
+
+<P><KBD><a name="string_to_list"></a>string_to_list(String, List)</KBD>
+<BLOCKQUOTE>
+<KBD>List</KBD> is the ASCII list corresponding to <KBD>String</KBD>.
+<BR><KBD>mode string_to_list(@string, ?list(integer))</KBD>
+<BR><KBD>mode string_to_list(-string, @list(integer))</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- string_to_list("ab", L).
+<BR>
+<BR>L = [97, 98]
+<BR>
+<BR>| ?- string_to_list(S, [97,98]).
+<BR>
+<BR>S = "ab"
+<BR>
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="string_to_atom"></a>string_to_atom(String, Atom)</KBD>
+<BLOCKQUOTE>
+<KBD>Atom</KBD> is the atom whose name is <KBD>String</KBD>.
+<BR><KBD>mode string_to_list(@string, ?list(integer))</KBD>
+<BR><KBD>mode string_to_list(-string, @list(integer))</KBD>
+
+<P>Example:
+<KBD>
+<P>| ?- string_to_atom("ab", A).
+<BR>
+<BR>A = ab
+<BR>
+<BR>| ?- string_to_atom(S, ab).
+<BR>
+<BR>S = "ab"
+<BR>
+</KBD>
+</BLOCKQUOTE>
+
+
+
+<P><KBD><a name="string_concat"></a>string_concat(String1, String2, String3)</KBD>
+
+<BLOCKQUOTE>
+<KBD>String3</KBD> is the string formed by concatenating the characters of <KBD>String1</KBD> and the characters of <KBD>String2</KBD>.
+<BR><KBD>mode string_concat(@string, @string, -string)</KBD>
+<BR><KBD>mode string_concat(?string, ?string, @string)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- string_concat("ab", "cd", String).
+<BR>
+<BR>String = "abcd"
+<BR>
+<BR>| ?- string_concat(String1, String2, "ab").
+<BR>
+<BR>String1 = []
+<BR>String2 = "ab";
+<BR>
+<BR>String1 = "a"
+<BR>String2 = "b";
+<BR>
+<BR>String1 = "ab"
+<BR>String2 = [];
+<BR>
+<BR>no
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="string_length"></a>string_length(String, N)</KBD>
+
+<BLOCKQUOTE>
+<KBD>Length</KBD> is the number of characters in <KBD>String</KBD>.
+<BR><KBD>mode string_length(@string, ?integer)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- string_length("abc", Len).
+<BR>
+<BR>Len = 3
+</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="sub_string"></a>sub_string(String, Start, Length, After, SubString)</KBD>
+
+<BLOCKQUOTE>
+<KBD>SubString</KBD> is the substring of <KBD>String</KBD> starting at 
+position <KBD>Start</KBD> and of length <KBD>Length</KBD>. 
+<KBD>After</KBD> is the number of characters 
+remaining in <KBD>String</KBD> after the end of <KBD>SubString</KBD>.
+<BR><KBD>mode sub_string(@string, ?integer, ?integer, ?integer, ?string)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- sub_string("ab", S, L, A, SS).
+<BR>
+<BR>S = 0
+<BR>L = 0
+<BR>A = 2
+<BR>SS = [];
+<BR>
+<BR>S = 0
+<BR>L = 1
+<BR>A = 1
+<BR>SS = "a";
+<BR>
+<BR>S = 0
+<BR>L = 2
+<BR>A = 0
+<BR>SS = "ab";
+<BR>
+<BR>S = 1
+<BR>L = 0
+<BR>A = 1
+<BR>SS = [];
+<BR>
+<BR>S = 1
+<BR>L = 1
+<BR>A = 0
+<BR>SS = "b";
+<BR>
+<BR>S = 2
+<BR>L = 0
+<BR>A = 0
+<BR>SS = [];
+<BR>
+<BR>no
+<BR>
+</KBD>
+</BLOCKQUOTE>
+
 
 <P><KBD><a name="quantify"></a>quantify(Quantified, Quantifier, VarList, Body)</KBD>
 
@@ -5382,28 +5574,10 @@ The size in kilobytes of the  binding trail used by the compiler.
 <BR>(Default: 32.)
 </BLOCKQUOTE>
 
-<BR><KBD>compiler_object_trail(Integer)</KBD>
+<BR><KBD>compiler_other_trail(Integer)</KBD>
 <BLOCKQUOTE>
-The size in kilobytes of the  object trail used by the compiler.
-<BR>(Default: 16.)
-</BLOCKQUOTE>
-
-<BR><KBD>compiler_ip_trail(Integer)</KBD>
-<BLOCKQUOTE>
-The size in kilobytes of the  implicit parameter trail used by the compiler.
-<BR>(Default: 8.)
-</BLOCKQUOTE>
-
-<BR><KBD>compiler_tag_trail(Integer)</KBD>
-<BLOCKQUOTE>
-The size in kilobytes of the  tag trail used by the compiler.
-<BR>(Default: 8.)
-</BLOCKQUOTE>
-
-<BR><KBD>compiler_ref_trail(Integer)</KBD>
-<BLOCKQUOTE>
-The size in kilobytes of the reference trail used by the compiler.
-<BR>(Default: 8.)
+The size in kilobytes of the  other trail used by the compiler.
+<BR>(Default: 32.)
 </BLOCKQUOTE>
 
 <BR><KBD>compiler_choice_point_stack(Integer)</KBD>
@@ -7282,20 +7456,10 @@ Fails if <KBD>ThreadID</KBD> is not a current thread.
 <BR>Unit: words.
 <BR>Meaning: Used and free space and the maximum usage in the binding trail.
 <LI>
-<KBD>object_trail</KBD>
+<KBD>other_trail</KBD>
 <BR>Value: [Used, Free, MaxUsage].
 <BR>Unit: words.
-<BR>Meaning: Used and free space and the maximum usage in the object trail.
-<LI>
-<KBD>ip_trail</KBD>
-<BR>Value: [Used, Free, MaxUsage].
-<BR>Unit: words.
-<BR>Meaning: Used and free space and the maximum usage in the implicit parameter trail.
-<LI>
-<KBD>tag_trail</KBD>
-<BR>Value: [Used, Free, MaxUsage].
-<BR>Unit: words.
-<BR>Meaning: Used and free space and the maximum usage in the tag trail.
+<BR>Meaning: Used and free space and the maximum usage in the other trail.
 <LI>
 <KBD>code</KBD>
 <BR>Value: <KBD>[Used, Free]</KBD>.
@@ -7343,9 +7507,7 @@ Fails if <KBD>ThreadID</KBD> is not a current thread.
 <BR>local&nbsp;stack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;65536&nbsp;&nbsp;&nbsp;101&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;65435&nbsp;&nbsp;&nbsp;107
 <BR>choice&nbsp;stack&nbsp;&nbsp;&nbsp;&nbsp;65536&nbsp;&nbsp;&nbsp;107&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;65429&nbsp;&nbsp;&nbsp;171
 <BR>binding&nbsp;trail&nbsp;&nbsp;&nbsp;32768&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32768&nbsp;&nbsp;&nbsp;3
-<BR>object&nbsp;trail&nbsp;&nbsp;&nbsp;&nbsp;16384&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;16384&nbsp;&nbsp;&nbsp;0
-<BR>IP&nbsp;trail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8192&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8186&nbsp;&nbsp;&nbsp;&nbsp;47
-<BR>tag&nbsp;trail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8192&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8192&nbsp;&nbsp;&nbsp;&nbsp;2
+<BR>other&nbsp;trail&nbsp;&nbsp;&nbsp;&nbsp;32768&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32768&nbsp;&nbsp;&nbsp;0
 <BR>code&nbsp;area&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;409600&nbsp;&nbsp;321343&nbsp;&nbsp;88257&nbsp;&nbsp;&nbsp;321343
 <BR>string&nbsp;area&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;65536&nbsp;&nbsp;&nbsp;51337&nbsp;&nbsp;&nbsp;14199&nbsp;&nbsp;&nbsp;51337
 <BR>number&nbsp;table&nbsp;&nbsp;&nbsp;&nbsp;4096&nbsp;&nbsp;&nbsp;&nbsp;840&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3256
@@ -7823,25 +7985,13 @@ will generate a name.
 <BR><KBD>Integer</KBD> is the size of the binding trail in K words.
 <BR>Default: <KBD>32</KBD>
 <LI>
-<KBD>object_trail_size(Integer)</KBD>
-<BR><KBD>Integer</KBD> is the size of the object trail in K words.
-<BR>Default: <KBD>16</KBD>
-<LI>
-<KBD>ip_trail_size(Integer)</KBD>
-<BR><KBD>Integer</KBD> is the size of the IP trail in K words.
-<BR>Default: <KBD>8</KBD>
-<LI>
-<KBD>tag_trail_size(Integer)</KBD>
-<BR><KBD>Integer</KBD> is the size of the tag trail in K words.
-<BR>Default: <KBD>8</KBD>
-<LI>
-<KBD>ref_trail_size(Integer)</KBD>
-<BR><KBD>Integer</KBD> is the size of the reference trail in K words.
-<BR>Default: <KBD>8</KBD>
+<KBD>other_trail_size(Integer)</KBD>
+<BR><KBD>Integer</KBD> is the size of the other trail in K words.
+<BR>Default: <KBD>32</KBD>
 <LI>
 <KBD>scratchpad_size(Integer)</KBD>
 <BR><KBD>Integer</KBD> is the size of the scratchpad heap in K words.
-<BR>Default: <KBD>10</KBD>
+<BR>Default: <KBD>100</KBD>
 <LI>
 <KBD>name_table_size(Integer)</KBD>
 <BR><KBD>Integer</KBD> is the size of the name table.

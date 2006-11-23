@@ -104,7 +104,7 @@ Heap::yield(Object *term,
 
 	      if ((range.getTerm()->isVariable() && 
 		   (status.testHeatWave() ||
-		    ! OBJECT_CAST(Reference *, range.getTerm())->isFrozen())) || 
+		    ! OBJECT_CAST(Variable*, range.getTerm())->isFrozen())) || 
 		  (*cond)(this, range, term) ||
 		  (range.getTerm()->isObjectVariable() &&
 		   yield(term, range.getSubstitutionBlockList(), cond, status)))
@@ -210,7 +210,7 @@ Heap::yieldObjectVariable(Object *object_variable,
 
 	  if ((range.getTerm()->isVariable() && 
 	       (status.testHeatWave() || 
-		! OBJECT_CAST(Reference *, range.getTerm())->isFrozen())) || 
+		! OBJECT_CAST(Variable*, range.getTerm())->isFrozen())) || 
 	      (range.getTerm()->isObjectVariable() &&
 	       (! range.getTerm()->distinctFrom(object_variable) ||
 		yieldObjectVariable(object_variable,

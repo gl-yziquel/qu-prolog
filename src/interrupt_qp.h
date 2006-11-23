@@ -80,6 +80,8 @@ CodeLoc UndefinedPred(Object* goal);
 //
 CodeLoc HandleFastRetry(Object* goal);
 
+CodeLoc HandleCleanup(Object* goal, word32 cp );
+
 //
 // Set up the arguments to call exception/1 in Qu-Prolog.
 //

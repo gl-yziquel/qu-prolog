@@ -41,7 +41,6 @@ linda_thread(A) :-
 %
 thread_loop(A) :-
 	repeat,
-errornl(aaaaa),
 	message_choice
 	(
 	    out(T) <<- A ->  % an out message is received from the client

@@ -52,13 +52,16 @@ repeat,
 %%
 ans_gen(Query, Address) :-
     generator ->> Address, % handshake so that the client knows my address
-    call(Query),
-    next <<= Address,
-    next_soln(Query) ->> Address,
-    fail.
-ans_gen(Query, Address) :-
-    next <<= Address,
-    next_soln(fail) ->> Address.
+    ( call(Query), QueryAns = Query ; QueryAns = fail ; true),
+    message_choice 
+    (
+      next <<- Address ->
+          next_soln(QueryAns) ->> Address,
+          fail
+  ;
+      die <<- Address ->
+          true
+    ).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,18 +94,18 @@ eager_client_query(Query) :-
 %%
 %% lazy_client_query(Query) asks the server to return answers one at a time
 %% on request.
-%%
+%% The call_cleanup will send the 'die' message as soon as get_an_answer
+%% fails or succeeds deterministically - deleting the server thread created
+%% to manage this query.
 lazy_client_query(Query) :-
     stand_by(Query) ->> db_thread:db_server,
     generator <<= Generator_address,   % now I know the server threads address
-    get_an_answer(Query, Generator_address).
+    call_cleanup(get_an_answer(Query, Generator_address), 
+                 die ->> Generator_address).
 
 %%
 %% get_an_answer(Query, Generator_address), on backtracking, requests
 %% the next solution to the query.
-%%
-%% WARNING: If not all the solutions are requested then the server thread
-%% created for this purpose will remain alive waiting for messages.
 %%
 get_an_answer(Query, Generator_address) :-
     next ->> Generator_address,

@@ -224,7 +224,7 @@ ICMMessage::constructMessageTerm(Thread& thread, AtomTable& atoms,
   Heap& heap = thread.TheHeap();
   for (int i = data.size-1; i >= 0 ; i--)
     {
-      Object* entry = heap.newNumber(data.data[i]);
+      Object* entry = heap.newInteger(data.data[i]);
       Cons* list = heap.newCons(entry, message_cell);
       message_cell = list;
     }

@@ -177,19 +177,19 @@ ReturnValue psi_dynamic(Object*& object1, Object*& object2,
 ReturnValue psi_get_dynamic_chain(Object*& object1, Object*& object2);
 
 //
-// psi_get_first_clause(chain, ref, more)
+// psi_get_first_clause(chain, time, ref, more)
 // Get the first linkblock ptr for the chain
 // more is true if there are subsequent clauses
 //
 ReturnValue psi_get_first_clause(Object*& object1, Object*& object2,
-				 Object*& object3);
+				 Object*& object3, Object*& object4);
 //
-// psi_get_next_clause(ptr, next, more)
+// psi_get_next_clause(ptr, time, next, more)
 // Get the next linkblock ptr for ptr.
 // mode(in, out, out)
 //
 ReturnValue psi_get_next_clause(Object*& object1, Object*& object2,
-				Object*& object3);
+				Object*& object3, Object*& object4);
 
 
 //

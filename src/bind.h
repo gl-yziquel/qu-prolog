@@ -77,6 +77,31 @@ void bindObjectVariables(ObjectVariable *, ObjectVariable *);
 // Some thread methods involving trailing.
 //
 
+inline void bindVarVar(Object* var1, Object* var2)
+{
+  assert(var1 != var2);
+  assert(var1->isVariable());
+  assert(var2->isVariable());
+  assert(!OBJECT_CAST(Reference*, var1)->hasExtraInfo());
+  assert(!OBJECT_CAST(Reference*, var2)->hasExtraInfo());
+  assert(!OBJECT_CAST(Variable*, var1)->isFrozen());
+  assert(!OBJECT_CAST(Variable*, var2)->isFrozen());
+  if (reinterpret_cast<heapobject*>(var1) >= heap.getSavedTop())
+    {
+      *(var1->storage()) = reinterpret_cast<heapobject>(var2);
+    }
+  else if (reinterpret_cast<heapobject*>(var2) >= heap.getSavedTop())
+    {
+      *(var2->storage()) = reinterpret_cast<heapobject>(var1);
+    }
+  else
+    {
+      bindingTrail.push(reinterpret_cast<heapobject*>(var1));
+      *(var1->storage()) = reinterpret_cast<heapobject>(var2);
+    }
+
+}
+
 inline void bindAndTrail(Object* var, Object* value)
 {
   assert(var != NULL);
@@ -89,7 +114,7 @@ inline void bindAndTrail(Object* var, Object* value)
   if (reinterpret_cast<heapobject*>(var) < heap.getSavedTop() &&
       reinterpret_cast<heapobject*>(var) >= heap.getBase())
     {
-      bindingTrail.trail(reinterpret_cast<heapobject*>(var));
+      bindingTrail.push(reinterpret_cast<heapobject*>(var));
     }
   *(var->storage()) = 
     reinterpret_cast<heapobject>(value); 
@@ -104,8 +129,8 @@ inline void updateAndTrailObject(heapobject* ptr, Object* value, u_int offset)
   //
   if (ptr < heap.getSavedTop() || ptr >= heap.getTop())
     {
-      UpdatableObject t(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
-      objectTrail.trail(t);
+      assert(((heapobject*)(*(ptr+offset)) == NULL) || !reinterpret_cast<Object*>(*(ptr+offset))->isSubstitutionBlock());
+      otherTrail.push(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
     }
   *(ptr+offset) = reinterpret_cast<heapobject>(value); 
 }
@@ -113,7 +138,7 @@ inline void updateAndTrailObject(heapobject* ptr, Object* value, u_int offset)
 //
 // Update and trail an implicit parameter entry
 //
-inline void Thread::updateAndTrailIP(heapobject* ptr, Object* value,
+inline void updateAndTrailIP(heapobject* ptr, Object* value,
                                      u_int offset = 0)
 {
   assert(ptr != NULL);
@@ -123,8 +148,7 @@ inline void Thread::updateAndTrailIP(heapobject* ptr, Object* value,
   //
   if (ptr < heap.getSavedTop() || ptr >= heap.getTop())
     {
-      UpdatableObject t(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
-      ipTrail.trail(t);
+      otherTrail.push(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
     }
   *(ptr+offset) = reinterpret_cast<heapobject>(value); 
 }
@@ -138,9 +162,8 @@ inline void trailTag(Object* o)
   if (reinterpret_cast<heapobject*>(o) < heap.getSavedTop() ||
       reinterpret_cast<heapobject*>(o) >= heap.getTop())
     {
-      UpdatableTag t(reinterpret_cast<heapobject*>(o), 
-		     *(reinterpret_cast<heapobject*>(o)));
-      tagTrail.trail(t);
+      otherTrail.push(reinterpret_cast<heapobject*>(o), 
+		 *(reinterpret_cast<heapobject*>(o)));
     }
 }
 
@@ -151,7 +174,7 @@ inline void trailTag(Object* o)
 inline void bind(Variable *var , Object *object)
 {
   assert(var == var->variableDereference());
-  
+  assert(var->isAnyVariable());
   //
   // Wake up any delayed problems associated with cell1.
   //

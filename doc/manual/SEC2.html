@@ -2,13 +2,13 @@
 <HEAD>
 <!-- Created by texi2html 1.56k from main.tex on 30 November 1999 -->
 
-<TITLE>Qu-Prolog 7.2 Reference Manual - Syntax</TITLE>
+<TITLE>Qu-Prolog 7.4 Reference Manual - Syntax</TITLE>
 </HEAD>
 <BODY>
 
 <H1><A NAME="Section2" >2 Syntax</A></H1>
 
-<P>This section describes the concrete syntax of Qu-Prolog 7.2
+<P>This section describes the concrete syntax of Qu-Prolog 7.4
 
 <H2><A NAME="Section2.1">2.1 Constants</A></H2>
 
@@ -261,15 +261,30 @@ When the '<KBD>_</KBD>' is used, the object variable is said to be <EM>anonymous
 
 <P>The atom <KBD>[]</KBD> represents the empty list.
 
-<P>Any sequence of characters enclosed by "<KBD>"</KBD>" is considered as a list of character codes.  The escape convention used in quoted atoms is applicable here, and "<KBD>"</KBD>" can appear in the sequence by writing the quote twice.
-
-<P>For example, the following are identical.
-<BR><KBD>"hello world"</KBD>
-<BR><KBD>[104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]</KBD>
-
-
 <!-- Section 2.3.4 -->
-<H3><A NAME="Section2.3.4">2.3.4 <KBD>{}</KBD>-Lists</A></H3>
+<H3><A NAME="Section2.3.4">2.3.4 Strings</A></H3>
+
+<P>Any sequence of characters enclosed by "<KBD>"</KBD>" is considered as a 
+strings. Strings are semantically the same as lists of ASCII codes but are
+stored more efficiently. 
+Consequently the empty string (<KBD>""</KBD>) is parsed as the empty list (<KBD>[]</KBD>) 
+and strings can unify with lists.
+<P>Example:
+<KBD>
+<BR>| ?- X = "hello", X = [H|T].
+<BR>
+<BR>X = "hello"
+<BR>H = 104
+<BR>T = [101, 108, 108, 111]
+<BR>
+<BR>| ?- X = "".
+<BR>
+<BR>X = []
+</KBD>
+
+
+<!-- Section 2.3.5 -->
+<H3><A NAME="Section2.3.5">2.3.5 <KBD>{}</KBD>-Lists</A></H3>
 
 <P> A special syntactic form recognized by the Qu-Prolog parser is that of
 <KBD>{}</KBD>-lists. The syntax for a <KBD>{}</KBD>-list is a '<KBD>{</KBD>'

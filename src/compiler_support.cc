@@ -76,7 +76,7 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
   assert(firststr->getArgument(1)->isNumber());
   int offset = 1;
 
-  for (int i = 0; i < firststr->getArgument(1)->getNumber(); i++)
+  for (int i = 0; i < firststr->getArgument(1)->getInteger(); i++)
     {
       xregisters.add(i, 0);
     }
@@ -96,7 +96,7 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
 	  else if (estruct->getFunctor() == AtomTable::xreg)
 	    {
 	      assert(estruct->getArgument(1)->variableDereference()->isNumber());
-	      int xreg = estruct->getArgument(1)->variableDereference()->getNumber();
+	      int xreg = estruct->getArgument(1)->variableDereference()->getInteger();
 	      xregisters.add(xreg, offset);
 	      continue;
 	    }
@@ -122,7 +122,7 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
       else
 	{
 	  assert(entry->isInteger());
-	  for (int i = 0; i < entry->getNumber(); i++)
+	  for (int i = 0; i < entry->getInteger(); i++)
 	    {
 	      xregisters.add(i, offset);
 	    }
@@ -226,7 +226,7 @@ bool is_xreg(Object* arg, int& reg)
     {
       assert(argstr->getArity() == 1);
       assert(argstr->getArgument(1)->variableDereference()->isInteger());
-      reg = argstr->getArgument(1)->variableDereference()->getNumber();
+      reg = argstr->getArgument(1)->variableDereference()->getInteger();
       return true;
     }
   return false;
@@ -256,7 +256,7 @@ int yreg_num(Object* reg)
   Structure* regstr = OBJECT_CAST(Structure*, reg);
   assert(regstr->getFunctor() == AtomTable::yreg);
   assert(regstr->getArgument(1)->variableDereference()->isInteger());
-  return(regstr->getArgument(1)->variableDereference()->getNumber());
+  return(regstr->getArgument(1)->variableDereference()->getInteger());
 }
 
 // Test if both terms represent equal registers. 
@@ -279,8 +279,8 @@ bool equal_regs(Object* reg1, Object* reg2)
       return false;
     }
   return (s1->getFunctor() == s2->getFunctor() &&
-	  s1->getArgument(1)->variableDereference()->getNumber() ==
-	  s2->getArgument(1)->variableDereference()->getNumber());
+	  s1->getArgument(1)->variableDereference()->getInteger() ==
+	  s2->getArgument(1)->variableDereference()->getInteger());
 }
 
 //
@@ -372,9 +372,9 @@ void make_live(Object* reg, Object* other, Object** xreg_life)
     {
       Object* arg = regstr->getArgument(1)->variableDereference();
       assert(arg->isInteger());
-      assert(arg->getNumber() >= 0);
-      assert((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
-      xreg_life[arg->getNumber()] = other;
+      assert(arg->getInteger() >= 0);
+      assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
+      xreg_life[arg->getInteger()] = other;
     }
   else
     {
@@ -394,9 +394,9 @@ void make_dead(Object* reg, Object** xreg_life)
     {
       Object* arg = regstr->getArgument(1)->variableDereference();
       assert(arg->isInteger());
-      assert(arg->getNumber() >= 0);
-      assert((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
-      xreg_life[arg->getNumber()] = AtomTable::failure;
+      assert(arg->getInteger() >= 0);
+      assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
+      xreg_life[arg->getInteger()] = AtomTable::failure;
     }
 }
 
@@ -410,15 +410,15 @@ bool is_live(Object* reg, Object* other, Object** xreg_life)
     {
       Object* arg = regstr->getArgument(1)->variableDereference();
       assert(arg->isInteger());
-      assert(arg->getNumber() >= 0);
-      assert((u_int)(arg->getNumber()) < NUMBER_X_REGISTERS);
+      assert(arg->getInteger() >= 0);
+      assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
       if (other == AtomTable::failure)
 	{
-	  return (xreg_life[arg->getNumber()] == other);
+	  return (xreg_life[arg->getInteger()] == other);
 	}
       else
 	{
-	  return (equal_regs(xreg_life[arg->getNumber()], other));
+	  return (equal_regs(xreg_life[arg->getInteger()], other));
 	}
     }
   else
@@ -627,9 +627,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  *stream << "\tcall_predicate('";
 	  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg1)), stream);
 	  *stream << "', ";
-	  *stream << arg2->getNumber();
+	  *stream << arg2->getInteger();
 	  *stream << ", ";
-	  *stream << arg3->getNumber();
+	  *stream << arg3->getInteger();
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::execute_pred)
@@ -642,7 +642,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  *stream << "\texecute_predicate('"; 
 	  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg1)), stream);
 	  *stream << "', ";
-	  *stream << arg2->getNumber();
+	  *stream << arg2->getInteger();
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::checkBinder)
@@ -662,7 +662,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tallocate("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::deallocate)
@@ -722,7 +722,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr0("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ")\n";
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
@@ -731,7 +731,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr1("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ", ";
 	  *stream << psi_reg(tstruct->getArgument(2));
 	  *stream << ")\n";
@@ -742,7 +742,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr2("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ", ";
 	  *stream << psi_reg(tstruct->getArgument(2));
 	  *stream << ", ";
@@ -755,7 +755,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr3("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ", "; 
 	  *stream << psi_reg(tstruct->getArgument(2));
 	  *stream << ", ";
@@ -770,7 +770,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr4("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ", ";
 	  *stream << psi_reg(tstruct->getArgument(2));
 	  *stream << ", ";
@@ -787,7 +787,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  assert(arg1->isInteger());
 	  *stream << "\tpseudo_instr5("; 
-	  *stream << arg1->getNumber();
+	  *stream << arg1->getInteger();
 	  *stream << ", ";
 	  *stream << psi_reg(tstruct->getArgument(2));
 	  *stream << ", ";
@@ -833,7 +833,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      if (arg3->isInteger())
 		{
                   *stream << "integer(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		  *stream << ", ";
 		}
 	      else if (arg3->isDouble())
@@ -842,6 +842,15 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << arg3->getDouble();
 		  *stream << ", ";
 		}
+	      else if (arg3->isString())
+		{
+                  *stream << "string(";
+		  *(stream) << "\"";
+		  *(stream) << OBJECT_CAST(StringObject*, arg3)->getChars();
+		  *(stream) << "\"";
+		  *stream << ", ";
+		}
+
 	      else
 		{
 		  assert(arg3->isAtom());
@@ -861,7 +870,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      assert(arg3->isNumber());
 	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
-	      *stream << arg3->getNumber();
+	      *stream << arg3->getInteger();
 	      *stream << ", ";
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -915,7 +924,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      *stream << "substitution(";
 	      assert(is_xreg(arg4, reg2));
 	      assert(arg3->isNumber());
-	      *stream << arg3->getNumber();
+	      *stream << arg3->getInteger();
 	      *stream << ", ";
 	      (void)is_xreg(arg4, reg2);
 	      *stream << reg2;
@@ -984,13 +993,21 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      if (arg3->isInteger())
 		{
 	          *stream << "integer(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		  *stream << ", ";
 		}
 	      else if (arg3->isDouble())
 		{
 	          *stream << "double(";
 		  *stream << arg3->getDouble();
+		  *stream << ", ";
+		}
+	      else if (arg3->isString())
+		{
+                  *stream << "string(";
+		  *(stream) << "\"";
+		  *(stream) << OBJECT_CAST(StringObject*, arg3)->getChars();
+		  *(stream) << "\"";
 		  *stream << ", ";
 		}
 	      else
@@ -1015,7 +1032,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      (void)is_xreg(arg4, reg2);
 	      writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg2)), stream);
 	      *stream << "', ";
-	      *stream << arg3->getNumber();
+	      *stream << arg3->getInteger();
 	      *stream << ", ";
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -1026,7 +1043,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      assert(arg3->isInteger());
 	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
-	      *stream << arg3->getNumber();
+	      *stream << arg3->getInteger();
 	      *stream << ", ";
 	      *stream << reg2;
 	      *stream << ")\n";
@@ -1101,12 +1118,19 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      if (arg3->isInteger())
 		{
 	          *stream << "integer(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		}
 	      else if (arg3->isDouble())
 		{
 	          *stream << "double(";
 		  *stream << arg3->getDouble();
+		}
+	      else if (arg3->isString())
+		{
+                  *stream << "string(";
+		  *(stream) << "\"";
+		  *(stream) << OBJECT_CAST(StringObject*, arg3)->getChars();
+		  *(stream) << "\"";
 		}
 	      else
 		{
@@ -1124,7 +1148,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		{
 		  assert(arg3->isInteger());
 		  *stream << "void(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		  *stream << ")\n";
 		}
 	      else
@@ -1182,12 +1206,19 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      if (arg3->isInteger())
 		{
 	          *stream << "integer(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		}
 	      else if (arg3->isDouble())
 		{
 	          *stream << "double(";
 		  *stream << arg3->getDouble();
+		}
+	      else if (arg3->isString())
+		{
+                  *stream << "string(";
+		  *(stream) << "\"";
+		  *(stream) << OBJECT_CAST(StringObject*, arg3)->getChars();
+		  *(stream) << "\"";
 		}
 	      else
 		{
@@ -1205,7 +1236,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		{
 		  assert(arg3->isInteger());
 		  *stream << "void(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		  *stream << ")\n";
 		}
 	      else
@@ -1233,7 +1264,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		{
 		  assert(arg3->isInteger());
 		  *stream << "object_void(";
-		  *stream << arg3->getNumber();
+		  *stream << arg3->getInteger();
 		  *stream << ")\n";
 		}
 	      else
@@ -1305,20 +1336,31 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		{
 		  updateInstruction(pc, PUT_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
-		  updateInteger(pc,arg3->getNumber());
+		  updateInteger(pc,arg3->getInteger());
 		  pc += Code::SIZE_OF_INTEGER;
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
-              else
+              else if (arg3->isDouble())
 		{
-		  assert(arg3->isDouble());
 		  updateInstruction(pc, PUT_DOUBLE);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
 		  updateDouble(pc,arg3->getDouble());
 		  pc += Code::SIZE_OF_DOUBLE;
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
+		}
+	      else
+		{
+		  assert(arg3->isString());
+		  updateInstruction(pc, PUT_STRING);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  updateRegister(pc, reg2);
+		  pc += Code::SIZE_OF_REGISTER;
+		  char* c = OBJECT_CAST(StringObject*, arg3)->getChars();
+		  int size = strlen(c);
+		  strcpy((char*)pc, c);
+		  pc += size+1;
 		}
 	    }
 	  else if (arg1 == AtomTable::structure)
@@ -1328,7 +1370,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_STRUCTURE);
 	      pc += Code::SIZE_OF_INSTRUCTION; 
-	      updateNumber(pc, arg3->getNumber());
+	      updateNumber(pc, arg3->getInteger());
 	      pc += Code::SIZE_OF_NUMBER;
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
@@ -1389,7 +1431,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, PUT_SUBSTITUTION);
 	      pc += Code::SIZE_OF_INSTRUCTION;
-	      updateNumber(pc, arg3->getNumber());
+	      updateNumber(pc, arg3->getInteger());
 	      pc += Code::SIZE_OF_NUMBER;
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
@@ -1503,14 +1545,13 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		{ 
 		  updateInstruction(pc, GET_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION;
-		  updateInteger(pc,arg3->getNumber());
+		  updateInteger(pc,arg3->getInteger());
 		  pc += Code::SIZE_OF_INTEGER;
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
-	      else
+	      else if (arg3->isDouble())
 		{ 
-		  assert(arg3->isDouble());
 		  updateInstruction(pc, GET_DOUBLE);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateDouble(pc,arg3->getDouble());
@@ -1518,6 +1559,19 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  updateRegister(pc, reg2);
 		  pc += Code::SIZE_OF_REGISTER;
 		}
+	      else
+		{
+		  assert(arg3->isString());
+		  updateInstruction(pc, GET_STRING);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  updateRegister(pc, reg2);
+		  pc += Code::SIZE_OF_REGISTER;
+		  char* c = OBJECT_CAST(StringObject*, arg3)->getChars();
+		  int size = strlen(c);
+		  strcpy((char*)pc, c);
+		  pc += size+1;
+		}
+
 	    }
 	  else if (arg1 == AtomTable::structure)
 	    {
@@ -1529,7 +1583,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	      pc += Code::SIZE_OF_INSTRUCTION;
 	      updateConstant(pc,arg2);
               pc += Code::SIZE_OF_CONSTANT;
-	      updateNumber(pc, arg3->getNumber());
+	      updateNumber(pc, arg3->getInteger());
 	      pc += Code::SIZE_OF_NUMBER;
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
@@ -1541,7 +1595,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	      (void)is_xreg(arg4, reg2);
 	      updateInstruction(pc, GET_STRUCTURE_FRAME);
 	      pc += Code::SIZE_OF_INSTRUCTION;
-	      updateNumber(pc, arg3->getNumber());
+	      updateNumber(pc, arg3->getInteger());
 	      pc += Code::SIZE_OF_NUMBER;
 	      updateRegister(pc, reg2);
 	      pc += Code::SIZE_OF_REGISTER;
@@ -1659,16 +1713,25 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		{
 		  updateInstruction(pc, UNIFY_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION;
-		  updateInteger(pc,arg3->getNumber());
+		  updateInteger(pc,arg3->getInteger());
 		  pc += Code::SIZE_OF_INTEGER;
 		}
-	      else
+	      else if (arg3->isDouble())
 		{
-		  assert(arg3->isDouble());
 		  updateInstruction(pc, UNIFY_DOUBLE);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateDouble(pc,arg3->getDouble());
 		  pc += Code::SIZE_OF_DOUBLE;
+		}
+	      else
+		{
+		  assert(arg3->isString());
+		  updateInstruction(pc, UNIFY_STRING);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  char* c = OBJECT_CAST(StringObject*, arg3)->getChars();
+		  int size = strlen(c);
+		  strcpy((char*)pc, c);
+		  pc += size+1;
 		}
 	    }
 	  else if (arg1 == AtomTable::meta)
@@ -1678,7 +1741,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  assert(arg3->isNumber());
 		  updateInstruction(pc, UNIFY_VOID);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
-		  updateNumber(pc, arg3->getNumber());
+		  updateNumber(pc, arg3->getInteger());
 		  pc += Code::SIZE_OF_NUMBER;
 		}
 	      else
@@ -1743,16 +1806,25 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		{
 		  updateInstruction(pc, SET_INTEGER);
 		  pc += Code::SIZE_OF_INSTRUCTION;
-		  updateInteger(pc,arg3->getNumber());
+		  updateInteger(pc,arg3->getInteger());
 		  pc += Code::SIZE_OF_INTEGER;
 		}
-	      else
+	      else if (arg3->isDouble())
 		{
-		  assert(arg3->isDouble());
 		  updateInstruction(pc, SET_DOUBLE);
 		  pc += Code::SIZE_OF_INSTRUCTION;
 		  updateDouble(pc,arg3->getDouble());
 		  pc += Code::SIZE_OF_DOUBLE;
+		}
+	      else
+		{
+		  assert(arg3->isString());
+		  updateInstruction(pc, SET_STRING);
+		  pc += Code::SIZE_OF_INSTRUCTION;
+		  char* c = OBJECT_CAST(StringObject*, arg3)->getChars();
+		  int size = strlen(c);
+		  strcpy((char*)pc, c);
+		  pc += size+1;
 		}
 	    }
 	  else if (arg1 == AtomTable::meta)
@@ -1762,7 +1834,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  assert(arg3->isNumber());
 		  updateInstruction(pc, SET_VOID);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
-		  updateNumber(pc, arg3->getNumber());
+		  updateNumber(pc, arg3->getInteger());
 		  pc += Code::SIZE_OF_NUMBER;
 		}
 	      else
@@ -1808,7 +1880,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 		  assert(arg3->isNumber());
 		  updateInstruction(pc, SET_OBJECT_VOID);
 		  pc += Code::SIZE_OF_INSTRUCTION; 
-		  updateNumber(pc, arg3->getNumber());
+		  updateNumber(pc, arg3->getInteger());
 		  pc += Code::SIZE_OF_NUMBER;
 		}
 	      else
@@ -1866,9 +1938,9 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateConstant(pc, arg1);
 	  pc += Code::SIZE_OF_CONSTANT;
-	  updateNumber(pc, arg2->getNumber());
+	  updateNumber(pc, arg2->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
-	  updateNumber(pc, arg3->getNumber());
+	  updateNumber(pc, arg3->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	}
       else if (tstruct->getFunctor() == AtomTable::execute_pred)
@@ -1882,7 +1954,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateConstant(pc, arg1);
 	  pc += Code::SIZE_OF_CONSTANT;
-	  updateNumber(pc, arg2->getNumber());
+	  updateNumber(pc, arg2->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	}
       else if (tstruct->getFunctor() == AtomTable::checkBinder)
@@ -1904,7 +1976,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, ALLOCATE);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	}
       else if (tstruct->getFunctor() == AtomTable::deallocate)
@@ -1972,7 +2044,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR0);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
@@ -1982,7 +2054,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR1);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	  updateRegister(pc, psi_reg(tstruct->getArgument(2)));
 	  pc += Code::SIZE_OF_REGISTER; 
@@ -1994,7 +2066,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR2);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	  updateRegister(pc, psi_reg(tstruct->getArgument(2)));
 	  pc += Code::SIZE_OF_REGISTER;
@@ -2008,7 +2080,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR3);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	  updateRegister(pc, psi_reg(tstruct->getArgument(2)));
 	  pc += Code::SIZE_OF_REGISTER;
@@ -2024,7 +2096,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR4);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	  updateRegister(pc, psi_reg(tstruct->getArgument(2)));
 	  pc += Code::SIZE_OF_REGISTER;
@@ -2042,7 +2114,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  assert(arg1->isNumber());
 	  updateInstruction(pc, PSEUDO_INSTR5);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
-	  updateNumber(pc, arg1->getNumber());
+	  updateNumber(pc, arg1->getInteger());
 	  pc += Code::SIZE_OF_NUMBER;
 	  updateRegister(pc, psi_reg(tstruct->getArgument(2)));
 	  pc += Code::SIZE_OF_REGISTER;
@@ -2083,17 +2155,8 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	}
     }
   size_t codeLen = pc - code;
-  size_t blockSize;
-  if (codeLen < (Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_ADDRESS))
-    {
-      blockSize = Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_ADDRESS;
-    }
-  else
-    {
-      blockSize = codeLen;
-    }
 
-  CodeLoc result = new word8[blockSize];
+  CodeLoc result = new word8[codeLen];
   memcpy(result, code, codeLen);
   return result;
 }

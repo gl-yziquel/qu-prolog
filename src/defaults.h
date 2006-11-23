@@ -90,11 +90,8 @@ const word32 NAME_TABLE_SIZE  = 10000;
 const word32 HEAP_SIZE  = 400;			// K
 const word32 ENVIRONMENT_STACK_SIZE = 64;	// K
 const word32 CHOICE_STACK_SIZE  = 64;		// K
-const word32 BINDING_TRAIL_SIZE  = 32;	       	// K
-const word32 IP_TRAIL_SIZE = 8; 		// K
-const word32 OBJECT_TRAIL_SIZE = 16;		// K
-const word32 TAG_TRAIL_SIZE = 8;		// K
-const word32 REF_TRAIL_SIZE = 8;		// K
+const word32 BINDING_TRAIL_SIZE  = 64;	       	// K
+const word32 OTHER_TRAIL_SIZE = 32;		// K
 const word32 SCRATCHPAD_SIZE = 100;             // K
 const word32 IP_TABLE_SIZE = 10000;                 
 

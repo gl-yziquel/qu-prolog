@@ -99,7 +99,7 @@ extern char *process_symbol;
       {									  \
 	PSI_ERROR_RETURN(EV_TYPE, arg_num);				  \
       }									  \
-    reference = reinterpret_cast<list<Message *>::iterator *> (object->getNumber()); \
+    reference = reinterpret_cast<list<Message *>::iterator *> (object->getInteger()); \
   } while (0)
 
 #define DECODE_NONNEG_INT_ARG(heap, object, arg_num, val)	\
@@ -112,11 +112,11 @@ extern char *process_symbol;
       {							\
 	PSI_ERROR_RETURN(EV_TYPE, arg_num);		\
       }							\
-    else if (object->getNumber() < 0)			\
+    else if (object->getInteger() < 0)			\
       {							\
 	PSI_ERROR_RETURN(EV_TYPE, arg_num);		\
       }							\
-    val = object->getNumber();  			\
+    val = object->getInteger();  			\
   } while (0)
 
 // --------------------------------------------------------------------------
@@ -201,7 +201,7 @@ Thread::psi_ipc_send(Object *& message_cell,
              {
                PSI_ERROR_RETURN(EV_TYPE, 1);
              }
-           int c = head->getNumber();
+           int c = head->getInteger();
 	   if ((c < 0) || (c > 255))
              {
                PSI_ERROR_RETURN(EV_TYPE, 1);
@@ -290,7 +290,7 @@ Thread::psi_make_iterator(Object *& reference_cell)
 
   Structure* iterstr = heap.newStructure(1);
   iterstr->setFunctor(AtomTable::dollar);
-  iterstr->setArgument(1, heap.newNumber(reinterpret_cast<unsigned> (iter)));
+  iterstr->setArgument(1, heap.newInteger(reinterpret_cast<unsigned> (iter)));
   reference_cell = iterstr;
 
   return RV_SUCCESS;
@@ -454,7 +454,7 @@ Thread::psi_ipc_open(Object *& level_cell)
     }
 
   icm_level++;
-  level_cell = heap.newNumber(icm_level);
+  level_cell = heap.newInteger(icm_level);
 
   return RV_SUCCESS;
 #else // ICM_DEF_XXX

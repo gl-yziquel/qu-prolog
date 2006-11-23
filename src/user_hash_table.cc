@@ -14,7 +14,7 @@ void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
   bool isint;
   if (h2->isInteger())
     {
-      sh2 = (word32)(h2->getNumber());
+      sh2 = (word32)(h2->getInteger());
       isint = true;
     }
   else
@@ -67,7 +67,7 @@ bool UserHashState::lookupEntry(Object* h1, Object* h2, Object*& ret, Heap& heap
   bool isint;
   if (h2->isInteger())
     {
-      sh2 = (word32)(h2->getNumber());
+      sh2 = (word32)(h2->getInteger());
       isint = true;
     }
   else
@@ -89,7 +89,7 @@ bool UserHashState::removeEntry(Object* h1, Object* h2)
   bool isint;
   if (h2->isInteger())
     {
-      sh2 = (word32)(h2->getNumber());
+      sh2 = (word32)(h2->getInteger());
       isint = true;
     }
   else
@@ -118,7 +118,7 @@ bool UserHashState::hashIterNext(Object*& a, Object*& b, Object*& c,
   a = (Object*)(entry.getFstEntry());
   if (entry.getIsInt())
     {
-      b = heap.newNumber((int)(entry.getSndEntry()));
+      b = heap.newInteger((int)(entry.getSndEntry()));
     }
   else
     {

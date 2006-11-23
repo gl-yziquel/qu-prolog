@@ -102,17 +102,16 @@ Thread::initialise(Object* query, const word32 arity, va_list ap)
 			  buffers,
 			  scratchpad,
 			  heap,
+			  gcstack,
+			  gcbits,
 			  names,
 			  ipTable,
 			  bindingTrail,
-			  objectTrail,
-			  ipTrail,
-			  tagTrail,
-			  refTrail,
+			  otherTrail,
 			  qem_options->EnvironmentStackSize(),
 			  qem_options->ChoiceStackSize());
 
-  //
+
   // Create a choice point to hold the state and the alternative is set
   // to the predicate that handles failure from the query.
   //

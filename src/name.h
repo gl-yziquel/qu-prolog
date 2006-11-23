@@ -61,6 +61,11 @@
 #define	NAME_H
 
 public:
+
+//void addEscapes(string& str, char quote);
+
+//void removeEscapes(string& str, char quote);
+
 //
 // psi_atom_codes(atom, var)
 // Convert an atom to a list of character codes.

@@ -73,10 +73,7 @@ private:
   Option<word32> environment_stack_size;
   Option<word32> choice_stack_size;
   Option<word32> binding_trail_size;
-  Option<word32> object_trail_size;
-  Option<word32> ip_trail_size;
-  Option<word32> tag_trail_size;
-  Option<word32> ref_trail_size;
+  Option<word32> other_trail_size;
 public:
   word32 NameTableSize(void) const { return name_table_size.Value(); }
   word32 IPTableSize(void) const { return ip_table_size.Value(); }
@@ -85,10 +82,7 @@ public:
   word32 EnvironmentStackSize(void) const { return environment_stack_size.Value(); }
   word32 ChoiceStackSize(void) const { return choice_stack_size.Value(); }
   word32 BindingTrailSize(void) const { return binding_trail_size.Value(); }
-  word32 ObjectTrailSize(void) const { return object_trail_size.Value(); }
-  word32 IPTrailSize(void) const { return ip_trail_size.Value(); }
-  word32 TagTrailSize(void) const { return tag_trail_size.Value(); }
-  word32 RefTrailSize(void) const { return ref_trail_size.Value(); }
+  word32 OtherTrailSize(void) const { return other_trail_size.Value(); }
 
   void NameTableSize(const word32 nts) { name_table_size = nts; }
   void IPTableSize(const word32 its) { ip_table_size = its; }
@@ -97,10 +91,8 @@ public:
   void EnvironmentStackSize(const word32 ess) { environment_stack_size = ess; }
   void ChoiceStackSize(const word32 css) { choice_stack_size = css; }
   void BindingTrailSize(const word32 ts) { binding_trail_size = ts; }
-  void ObjectTrailSize(const word32 ts) { object_trail_size = ts; }
-  void IPTrailSize(const word32 ts) { ip_trail_size = ts; }
-  void TagTrailSize(const word32 ts) { tag_trail_size = ts; }
-  void RefTrailSize(const word32 ts) { ref_trail_size = ts; }
+  void OtherTrailSize(const word32 ts) { other_trail_size = ts; }
+
 
   ThreadOptions(const word32 ntas,
 		const word32 itas,
@@ -109,21 +101,16 @@ public:
 		const word32 ess,
 		const word32 css,
 		const word32 bts,
-		const word32 ots,
-		const word32 its,
-		const word32 tts,
-                const word32 rts)
+		const word32 ots)
     : name_table_size(ntas),
-      ip_table_size(itas),
-      heap_size(hs),
-      scratchpad_size(ss),
-      environment_stack_size(ess),
-      choice_stack_size(css),
-      binding_trail_size(bts),
-      object_trail_size(ots),
-      ip_trail_size(its),
-      tag_trail_size(tts),
-      ref_trail_size(rts) {}
+    ip_table_size(itas),
+    heap_size(hs),
+    scratchpad_size(ss),
+    environment_stack_size(ess),
+    choice_stack_size(css),
+    binding_trail_size(bts),
+    other_trail_size(ots) {}
+
 
   ThreadOptions(const QemOptions& qem_opts)
     : name_table_size(qem_opts.NameTableSize()),
@@ -133,10 +120,8 @@ public:
       environment_stack_size(qem_opts.EnvironmentStackSize()),
       choice_stack_size(qem_opts.ChoiceStackSize()),
       binding_trail_size(qem_opts.BindingTrailSize()),
-      object_trail_size(qem_opts.ObjectTrailSize()),
-      ip_trail_size(qem_opts.IPTrailSize()),
-      tag_trail_size(qem_opts.TagTrailSize()),
-      ref_trail_size(qem_opts.RefTrailSize()) {}
+      other_trail_size(qem_opts.OtherTrailSize())
+      {}
 };
 
 #endif // THREAD_OPTIONS_H

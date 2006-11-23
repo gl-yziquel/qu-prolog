@@ -195,6 +195,15 @@ Thread::HandleFastRetry(Object* goal)
 }
 
 
+CodeLoc 
+Thread::HandleCleanup(Object* goal, word32 cp )
+{
+  X[0] = goal;
+  X[1] = heap.newInteger(cp);
+  return(predicates->getCode(predicates->lookUp(AtomTable::do_cleanup,
+                              2, atoms, code)).getPredicate(code));
+}
+
 //
 // Build the goal to be executed at the current PC.
 // Fails if PC not at {CALL,EXECUTE}_{PREDICATE,ADDRESS,ESCAPE}

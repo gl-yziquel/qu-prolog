@@ -65,6 +65,8 @@ public:
 //
 // Fetch execute cycle.
 //
+
+bool initializeDPcall(DynamicPredicate* dp, int arity, CodeLoc& PC);
 ReturnValue Execute(void);
 
 #endif	// EXECUTE_H

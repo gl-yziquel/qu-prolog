@@ -68,7 +68,8 @@ Thread::bindVariables(Variable *variable1, Variable *variable2)
 {
   assert(variable1 == variable1->variableDereference());
   assert(variable2 == variable2->variableDereference());
-
+  assert(variable1->isVariable());
+  assert(variable2->isVariable());
   Variable *junior;
   Variable *senior;
   
@@ -76,7 +77,7 @@ Thread::bindVariables(Variable *variable1, Variable *variable2)
   // Find which variable is "younger", and which is "older".
   //
 
-  assert(variable1->isThawed() || variable2->isThawed());
+  assert(variable1->isThawed() || variable2->isThawed() || !status.testHeatWave());
   if (variable1->isFrozen())
     {
       junior = variable2;

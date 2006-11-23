@@ -67,21 +67,21 @@
 // | VARIABLE   |                   +------------+   +------------+
 // +------------+                   | STRUCTURE	-+-> |     ,/2    |
 // | DELAY LIST | ----------------> | LIST     | |   | REFERENCE -+-> (status)
-// +------------+   		    +----------+-+   |		 -+-> (problem)
-//      ^	            		       |     +------------+
-//      |		         	       v
-//      |		        	       ...
+// +------------+   		        +----------+-+   |		     -+-> (problem)
+//      ^	            		               |     +------------+
+//      |		         	                   v
+//      |		        	                   ...
 //      |
-//      |	        	+------------+
-//      |		        |     ,/2    |<-+
+//      |	        	        +------------+
+//      |		                |     ,/2    |<-+
 //      |             (status)<-+- REFERENCE |  |
-//	+-----------------------+- REFERENCE |  |
-//				+------------+  |
-//						|
-//			+-------+   +-----------++
+//	    +-----------------------+- REFERENCE |  |
+//				                +------------+  |
+//						                        |
+//			            +-------+   +-----------++
 // $delayed_problems =	| LIST -+-> | STRUCTURE	||
-//			+-------+   | LIST      -+--> ...
-//				    +------------+
+//			            +-------+   | LIST      -+--> ...
+//				                    +------------+
 //
 // New delayed problem is added to the front of list associated with 
 // the variable.
@@ -171,9 +171,9 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
       heap.prologValueDereference(sub_t);
       Object* term = sub_t.getTerm();
       bool makenfi = false;
-      switch(term->utag()) 
+      switch(term->tTag()) 
 	{
-	case Object::uVar:
+	case Object::tVar:
 	  {
 	    makenfi = 
 	      (term->isFrozenVariable() &&
@@ -181,21 +181,21 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
 				   status));
 	  }
 	  break;
-	case Object::uCons:
+	case Object::tCons:
 	  {
 	    makenfi = 
 	      (!heap.yieldList(term, var2.getSubstitutionBlockList(),
 			       status));
 	  }
 	  break;
-	case Object::uStruct:
+	case Object::tStruct:
 	  {
 	    makenfi = 
 	      (!heap.yieldStructure(term, var2.getSubstitutionBlockList(),
 				    status));
 	  }
 	  break;
-	case Object::uQuant:
+	case Object::tQuant:
 	  {
 	    makenfi =
 	      (!heap.yieldQuantifier(term, 
@@ -203,7 +203,11 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
 				     status));
 	  }
 	  break;
-	case Object::uConst:
+	case Object::tShort:
+	case Object::tLong:
+	case Object::tDouble:
+	case Object::tAtom:
+	case Object::tString:
 	  {
 	    makenfi = 
 	      (!heap.yieldConstant(term, var2.getSubstitutionBlockList(),
@@ -571,24 +575,22 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
   heap.prologValueDereference(term);
   // Generate object_variable not_free_in all vars of term.term.
   Object* tm = term.getTerm();
-  switch (tm ->utag())
+  switch (tm ->tTag())
     {
-    case Object::uVar:
-    case Object::uObjVar:
+    case Object::tVar:
+    case Object::tObjVar:
       {
 	PrologValue t(tm);
 	(void)(notFreeIn(object_variable, t));
       }
       break;
-    case Object::uCons:
-      {
-	PrologValue h(OBJECT_CAST(Cons*, tm)->getHead());
-        generateNFIConstraints(object_variable, h);
-       	PrologValue t(OBJECT_CAST(Cons*, tm)->getTail());
-        generateNFIConstraints(object_variable, t); 
-      }
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       break;
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* st = OBJECT_CAST(Structure*, tm);
 	for (size_t i = 0; i <= st->getArity(); i++)
@@ -598,10 +600,16 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
 	  }
       }
       break;
-    case Object::uConst:
+    case Object::tCons:
+      {
+	PrologValue h(OBJECT_CAST(Cons*, tm)->getHead());
+        generateNFIConstraints(object_variable, h);
+       	PrologValue t(OBJECT_CAST(Cons*, tm)->getTail());
+        generateNFIConstraints(object_variable, t); 
+      }
       break;
 
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* q = OBJECT_CAST(QuantifiedTerm*, tm);
 	PrologValue qt(q->getQuantifier());
@@ -851,7 +859,6 @@ Thread::wakeUpDelayedProblems(Object *ref)
   assert(ref == ref->variableDereference());
 
   assert(! OBJECT_CAST(Reference*, ref)->getDelays()->isNil());
-
   //
   // Mark the variable that has woken delayed problems.
   // i.e. Switch the status to thaw.
@@ -871,9 +878,11 @@ Thread::wakeUpDelayedProblems(Object *ref)
       if (delay->getArgument(2)->variableDereference() == ref)
 	{
 	  // The variable is located - change the status
-	  Reference *dstatus = OBJECT_CAST(Reference*, delay->getArgument(1));
+	  assert(delay->getArgument(1)->isVariable());
+	  Variable *dstatus = OBJECT_CAST(Variable*, delay->getArgument(1));
 	  trailTag(dstatus);
 	  dstatus->thaw();
+	  assert(!dstatus->isFrozen());
 	  break;
 	}
     }
@@ -956,7 +965,8 @@ Thread::retry_delays(delaytype type)
 		  heap.prologValueDereference(pval1);
 		  heap.prologValueDereference(pval2);
 		  trailTag(vdstatus);
-		  OBJECT_CAST(Reference*, vdstatus)->thaw();
+		  OBJECT_CAST(Variable*, vdstatus)->thaw();
+		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
                   int counter = 0;
 		  if (equalEqual(pval1, pval2, counter))
 		    {
@@ -977,7 +987,8 @@ Thread::retry_delays(delaytype type)
               if (both || (type == NFI))
                 {
 		  trailTag(vdstatus);
-		  OBJECT_CAST(Reference*, vdstatus)->thaw();
+		  OBJECT_CAST(Variable*, vdstatus)->thaw();
+		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
 		  // Simplify first
 		  if (notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval))
 		    {
@@ -997,7 +1008,8 @@ Thread::retry_delays(delaytype type)
 	      if (pval.getSubstitutionBlockList()->isNil())
 		{
 		  trailTag(vdstatus);
-		  OBJECT_CAST(Reference*, vdstatus)->thaw();
+		  OBJECT_CAST(Variable*, vdstatus)->thaw();
+		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
 		  if (!notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval))
 		    {
 		      return false;
@@ -1019,7 +1031,8 @@ Thread::retry_delays(delaytype type)
 		  assert(newsub->isLegalSub());
 		  PrologValue pvalcopy(newsub, pval.getTerm());
 		  trailTag(vdstatus);
-		  OBJECT_CAST(Reference*, vdstatus)->thaw();
+		  OBJECT_CAST(Variable*, vdstatus)->thaw();
+		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
 		  if (!notFreeInVarSimp(OBJECT_CAST(ObjectVariable*, obvar), 
 					pvalcopy))
 		    {

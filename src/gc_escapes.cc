@@ -63,65 +63,12 @@
  
 #ifdef QP_DEBUG
 
-bool 
-Thread::check_env(EnvLoc env)
-{
-  while ((env != envStack.firstEnv()))
-    {
-      assert(!envStack.gc_isMarkedEnv(env) );
-      for (int i = (int)(envStack.getNumYRegs(env))-1; i >= 0; i--)
-	{
-	  if ( envStack.yReg(env, i) == NULL || 
-	       !heap.isHeapPtr(reinterpret_cast<heapobject*>(envStack.yReg(env, i)))) continue;
-	  if (!check_term(envStack.yReg(env, i))) 
-	    {
-	      Object* start = envStack.yReg(env, i);
-	      cerr << "CE = " << currentEnvironment << " env = " << env << endl;
-	      cerr << " i = " << i << " loc = " << (word32)start << " offset = "<< reinterpret_cast<heapobject*>(start) - heap.getBase() << endl;
-for (int i = -10; i < 10; i++)
-cerr << (word32)((reinterpret_cast<heapobject*>(start) + i)) << " : " << (word32)(*(reinterpret_cast<heapobject*>(start) + i))  << endl;
-cerr << endl;
-
-	      return false;
-	    }
-	}
-      env = envStack.getPreviousEnv(env);
-    }
-  return true;
-}
 
 bool 
-Thread::check_choice(ChoiceLoc choiceloc)
+Thread::check_trail()
 {
-  while (true)
-    { 
-      if (!check_env(choiceStack.currentEnv(choiceloc))) return false;
-      for (int i =  (int)(choiceStack.getNumArgs(choiceloc))-1; i >= 0; i--)
-	{
-	    if ( choiceStack.getXreg(choiceloc, i)== NULL || 
-		!heap.isHeapPtr(reinterpret_cast<heapobject*>(choiceStack.getXreg(choiceloc, i)))) continue;
-	  if (!check_term(choiceStack.getXreg(choiceloc, i))) return false;
-	}
-      if (choiceloc == choiceStack.firstChoice())
-	{
-	  return true;
-	}
-      choiceloc = choiceStack.previousChoicePoint(choiceloc);
-    }
-  return true;
-}
-
-bool 
-Thread::check_ip_trail()
-{
-  for (int i = 0; i < (int)(ipTrail.getTop()); i++)
-    {
-      UpdatableObject uobj = ipTrail.getEntry(i);
-      if (uobj.getOldValue() == NULL || 
-	  !heap.isHeapPtr(reinterpret_cast<heapobject*>(uobj.getOldValue()))) continue;
-      if (!check_term(uobj.getOldValue())) return false;;
-    }
-  return true;
+  return (bindingTrail.check(heap) &&
+	  otherTrail.check(heap));
 }
 
 bool 
@@ -155,26 +102,6 @@ Thread::check_name()
 }
 
 bool 
-Thread::check_obj_trail()
-{
-  for (int i = 0; i < (int)(objectTrail.getTop()); i++)
-    {
-      UpdatableObject uobj = objectTrail.getEntry(i);
-      if (!heap.isHeapPtr(uobj.getAddress()))
-        {
-          // Must be  a name table entry
-          continue;
-        }
-      // It's a heap pointer
-      if (heap.isHeapPtr(reinterpret_cast<heapobject*>(uobj.getOldValue())))
-	{
-	  if (!check_term(uobj.getOldValue())) return false;
-	}
-    }
-  return true;
-}
-
-bool 
 Thread::check_heap2(Heap& heap)
 {
   for (heapobject* ptr = heap.getBase(); ptr < heap.getTop(); )
@@ -184,57 +111,54 @@ Thread::check_heap2(Heap& heap)
       ptr += term->size_dispatch();
     }
 
-  assert(check_env(currentEnvironment));
-  assert(check_choice(currentChoicePoint));
-  assert(check_ip_trail());
   assert(check_ips());
   assert(check_name());
-  assert(check_obj_trail());
-  return true;
-
+  return check_trail();
 }
 
 //
 // Check heap for correct pointers
 //
-bool Thread::check_heap(Heap& heap, AtomTable* atoms)
+bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
 {
   heapobject* atombase = reinterpret_cast<heapobject*>(atoms->getAddress(0));
   heapobject* atomtop = reinterpret_cast<heapobject*>(atoms->getAddress(atoms->size()));
   for (heapobject* ptr = heap.getBase(); ptr < heap.getTop(); )
     {
+      
       int size = reinterpret_cast<Object*>(ptr)->size_dispatch();
       Object* var = reinterpret_cast<Object*>(ptr);
       ptr++;
       for (int i = 1; i < size; i++)
         {
+	  if (var->isLong())
+	    {
+	      ptr++;
+	      continue;
+	    }
+	  if (var->isDouble())
+	    {
+	      ptr += 2;
+	      continue;
+	    }
+	  if (var->isAnyVariable() && (i == 2))
+	    {
+	      ptr++;
+	      continue;
+	    }
+	  if (var->isSubstitutionBlock() && (*ptr == 0))
+	    {
+	      ptr++;
+	      continue;
+	    }
+	  
           heapobject* ptrval = reinterpret_cast<heapobject*>(*ptr);
           if (((ptrval < heap.getBase()) || (ptrval > heap.getTop())) 
               && ((ptrval < atombase) || (ptrval > atomtop)))
             {
-              if (var->isLong())
-                {
-                  ptr++;
-                  continue;
-                }
-              if (var->isDouble())
-                {
-                  ptr += 2;
-                  continue;
-                }
-              if (var->isAnyVariable() && (i == 2))
-                {
-                  ptr++;
-                  continue;
-                }
-	      if (var->isSubstitutionBlock() && (*ptr == 0))
-                {
-                  ptr++;
-                  continue;
-                }
-		      
-              cerr << hex << (word32)(ptr - i) << endl;
-              for (int j = 0; j < size; j++)
+ 		      
+              cerr << hex << (word32)(ptr - i) << " size = " << size << endl;
+              for (int j = 0; j <= i; j++)
                 {
                   cerr << hex << (word32)(ptr - i + j)  << " : " << (word32)(*(ptr -i + j)) << endl;
                 }
@@ -267,14 +191,59 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms)
   return true;
 }
 
+bool check_heap_marked(Heap& heap, GCBits& gcbits)
+{
+  int index = 0;
+  heapobject* hptr = heap.getBase();
+  while (hptr < heap.getTop())
+    {
+      Object* term = reinterpret_cast<Object*>(hptr);
+      int size = term->size_dispatch();
+      if (gcbits.isSet(index))
+	{
+	  if (!term->isNumber())
+	    {
+	      for (int i = 1; i < size; i++)
+		{
+		  heapobject* argp = reinterpret_cast<heapobject*>(*hptr);
+		  if ((argp != NULL) && heap.isHeapPtr(argp))
+		    {
+		      if (!gcbits.isSet(argp - heap.getBase() )) 
+			{
+			  cerr << "xxx" << endl;
+			  return false;
+			}
+		    }
+		}
+	    }
+	}
+      index++;
+      for (int i = 1; i < size; i++)
+	{
+	  if (gcbits.isSet(index))
+	    {
+	      cerr << "val = " << (u_int)(*hptr) << endl;
+	      cerr << "val+1 = " << (u_int)(*(hptr+1)) << endl;
+	      cerr << "heap offset = " << (hptr - heap.getBase());
+	      cerr << "  index = " << index << endl;
+	      return false;
+	    }
+	  index++;
+	}
+      hptr += size;
+    }
+  return true;
+}
+
 #endif // DEBUG
 
 void
-Thread::gc_mark_registers(word32 arity, int32& total_marked)
+Thread::gc_mark_registers(word32 arity)
 {
   for (u_int i = 0; i < arity; i++)
     {
-      gc_mark_pointer(X[i], total_marked, heap);
+      assert(!X[i]->isSubstitutionBlock());
+      gc_mark_pointer(X[i], heap, gcstack, gcbits);
     }
   for (u_int i = arity; i < NUMBER_X_REGISTERS; i++)
     {
@@ -283,7 +252,7 @@ Thread::gc_mark_registers(word32 arity, int32& total_marked)
 }
 
 void 
-Thread::gc_mark_environments(EnvLoc env, int32& total_marked)
+Thread::gc_mark_environments(EnvLoc env)
 {
   while (true)
     {
@@ -293,7 +262,8 @@ Thread::gc_mark_environments(EnvLoc env, int32& total_marked)
 	}
       for (int i = (int)(envStack.getNumYRegs(env))-1; i >= 0; i--)
 	{
-	  gc_mark_pointer(envStack.yReg(env, i), total_marked, heap);
+	  assert(!envStack.yReg(env, i)->isSubstitutionBlock());
+	  gc_mark_pointer(envStack.yReg(env, i), heap, gcstack, gcbits);
 	}
       envStack.gc_markEnv(env);
       if (env == envStack.firstEnv())
@@ -305,15 +275,16 @@ Thread::gc_mark_environments(EnvLoc env, int32& total_marked)
 }
 
 void
-Thread::gc_mark_choicepoints(ChoiceLoc choiceloc, int32& total_marked)
+Thread::gc_mark_choicepoints(ChoiceLoc choiceloc)
 {
   while (true)
     { 
-      gc_mark_environments(choiceStack.currentEnv(choiceloc), total_marked);
+      gc_mark_environments(choiceStack.currentEnv(choiceloc));
       for (int i =  (int)(choiceStack.getNumArgs(choiceloc))-1; i >= 0; i--)
 	{
+	  assert(!choiceStack.getXreg(choiceloc, i)->isSubstitutionBlock());
 	  gc_mark_pointer(choiceStack.getXreg(choiceloc, i), 
-			  total_marked, heap);
+			  heap, gcstack, gcbits);
 	}
       if (choiceloc == choiceStack.firstChoice())
 	{
@@ -324,78 +295,60 @@ Thread::gc_mark_choicepoints(ChoiceLoc choiceloc, int32& total_marked)
 }
 
 void
-Thread::gc_mark_ip_trail(int32& total_marked)
+Thread::gc_mark_trail()
 {
-  for (int i = 0; i < (int)(ipTrail.getTop()); i++)
-    {
-      UpdatableObject uobj = ipTrail.getEntry(i);
-      gc_mark_pointer(uobj.getOldValue(), total_marked, heap);
-    }
+  otherTrail.gc_mark(heap, gcstack, gcbits);
 }
 
 void
-Thread::gc_mark_ips(int32& total_marked)
+Thread::gc_mark_ips()
 {
   for (int i = 0; i < (int)(ipTable.allocatedSize()); i++)
     {
       if (! ipTable.getEntry(i).isEmpty())
 	{
-	  gc_mark_pointer(ipTable.getEntry(i).getValue(), total_marked, heap);
+	  assert(!ipTable.getEntry(i).getValue()->isSubstitutionBlock());
+	  gc_mark_pointer(ipTable.getEntry(i).getValue(), 
+			  heap, gcstack, gcbits);
 	}
     }
 }
 
 void 
-Thread:: gc_mark_names(int32& total_marked)
+Thread:: gc_mark_names()
 {
   for (int i = 0; i < (int)(names.allocatedSize()); i++)
     {
       if (! names.getEntry(i).isEmpty())
 	{
-	  gc_mark_pointer(names.getEntry(i).getValue(), total_marked, heap);
+	  assert(!names.getEntry(i).getValue()->isSubstitutionBlock());
+	  gc_mark_pointer(names.getEntry(i).getValue(), 
+			  heap, gcstack, gcbits);
 	}
     }
 }
 
-void
-Thread::gc_mark_object_trail(int32& total_marked)
-{
-  for (int i = 0; i < (int)(objectTrail.getTop()); i++)
-    {
-      UpdatableObject uobj = objectTrail.getEntry(i);
-      if (!heap.isHeapPtr(uobj.getAddress()))
-        {
-          // Must be  a name table entry
-          continue;
-        }
-  assert(uobj.getAddress() < heap.getTop());
-      // It's a heap pointer
-      if (reinterpret_cast<Object*>(uobj.getAddress())->gc_isMarked())
-        {
-          if (heap.isHeapPtr(reinterpret_cast<heapobject*>(uobj.getOldValue()))
-               && !uobj.getOldValue()->gc_isMarked())
-            {
-  assert(reinterpret_cast<heapobject*>(uobj.getOldValue()) < heap.getTop());
-              gc_mark_pointer(uobj.getOldValue(), total_marked, heap);
-            }
-        }
-    }
-}
+
 
 void 
-Thread::gc_marking_phase(word32 arity, int32& total_marked)
+Thread::gc_marking_phase(word32 arity)
 {
+  assert(check_heap_marked(heap, gcbits));
   Object* tmp = heap.newShort(0);
-  tmp->gc_mark();
-  total_marked++;
-  gc_mark_registers(arity, total_marked);
-  gc_mark_environments(currentEnvironment, total_marked);
-  //assert(check_env(currentEnvironment));
-  gc_mark_choicepoints(currentChoicePoint, total_marked);
-  gc_mark_ip_trail(total_marked);
-  gc_mark_ips(total_marked);
-  gc_mark_names(total_marked);
-  gc_mark_object_trail(total_marked);
+  gcbits.set((heapobject*)tmp - heap.getBase());
+  assert(check_heap_marked(heap, gcbits));
+  gc_mark_registers(arity);
+  assert(check_heap_marked(heap, gcbits));
+  gc_mark_environments(currentEnvironment);
+  assert(check_heap_marked(heap, gcbits));
+  gc_mark_choicepoints(currentChoicePoint);
+  assert(check_heap_marked(heap, gcbits));
+  gc_mark_ips();
+  assert(check_heap_marked(heap, gcbits));
+  gc_mark_names();
+  assert(check_heap_marked(heap, gcbits));
+  gc_mark_trail();
+  assert(check_heap_marked(heap, gcbits));
 }
 
 void
@@ -405,106 +358,30 @@ Thread::gc_sweep_registers(word32 arity)
     {
       if (heap.isHeapPtr(reinterpret_cast<heapobject*>(X[i])))
 	{
-  assert(reinterpret_cast<heapobject*>(X[i]) < heap.getTop());
-	  into_relocation_chain(reinterpret_cast<heapobject*>(X[i]),
-				reinterpret_cast<heapobject*>(X+i));
+	  threadGC(reinterpret_cast<heapobject*>(X+i));
 	}
     }
 }
 
 void
-Thread::gc_sweep_binding_trail(void)
+Thread::gc_sweep_trail(void)
 {
-  for (int i = (int)(bindingTrail.getTop())-1; i >= 0; i--)
-    {
-      assert(heap.isHeapPtr(bindingTrail.getEntry(i)));
-  assert(bindingTrail.getEntry(i) < heap.getTop());
-      assert(reinterpret_cast<Object*>(bindingTrail.getEntry(i))->gc_isMarked());
-      into_relocation_chain(bindingTrail.getEntry(i),
-			    reinterpret_cast<heapobject*>(bindingTrail.fetchAddr(i)));
-    }
-}
-
-void
-Thread::gc_sweep_tag_trail(void)
-{
-  for (int i = (int)(tagTrail.getTop())-1; i >= 0; i--)
-    {
-       if (tagTrail.getEntry(i).getAddress() != NULL && reinterpret_cast<Object*>(tagTrail.getEntry(i).getAddress())->gc_isMarked())
-	{
-	  into_relocation_chain(tagTrail.getEntry(i).getAddress(), tagTrail.getEntry(i).getAddressAddr());
-	}
-      else
-	{
-	  tagTrail.getEntry(i).setAddress(NULL);
-	}
-    }
-}
-
-void
-Thread::gc_sweep_object_trail(void)
-{
-  for (int i = (int)(objectTrail.getTop())-1; i >= 0; i--)
-    {
-      if (!heap.isHeapPtr(objectTrail.getEntry(i).getAddress()))
-	{
-	  // Must be  a name table entry
-	  continue;
-	}
-  assert(objectTrail.getEntry(i).getAddress() < heap.getTop());
-      // It's a heap pointer     
-      if (reinterpret_cast<Object*>(objectTrail.getEntry(i).getAddress())->gc_isMarked())
-	{
-	  into_relocation_chain(objectTrail.getEntry(i).getAddress(), 
-				objectTrail.getEntry(i).getAddressAddr());
-	  if (heap.isHeapPtr(reinterpret_cast<heapobject*>(objectTrail.getEntry(i).getOldValue())))
-	    {
-  assert(reinterpret_cast<heapobject*>(objectTrail.getEntry(i).getOldValue()) < heap.getTop());
-	      assert(objectTrail.getEntry(i).getOldValue()->gc_isMarked());
-	      into_relocation_chain(reinterpret_cast<heapobject*>(objectTrail.getEntry(i).getOldValue()), objectTrail.getEntry(i).getOldVAddr());
-	    }
-	}
-      else
-	{
-	  objectTrail.getEntry(i).setAddress(NULL);
-	  objectTrail.getEntry(i).setOldValue(NULL);
-	}
-    }
-}
-
-void
-Thread::gc_sweep_ip_trail(void)
-{
-  for (int i = (int)(ipTrail.getTop())-1; i >= 0; i--)
-    {
-      if(heap.isHeapPtr(ipTrail.getEntry(i).getAddress()))
-        {
-          assert(ipTrail.getEntry(i).getAddress() < heap.getTop());
-          assert(reinterpret_cast<Object*>(ipTrail.getEntry(i).getAddress())->gc_isMarked());
-          into_relocation_chain(ipTrail.getEntry(i).getAddress(), 
-			        ipTrail.getEntry(i).getAddressAddr());
-        }
-      
-      if (ipTrail.getEntry(i).getOldValue() != NULL &&
-	  heap.isHeapPtr(reinterpret_cast<heapobject*>(ipTrail.getEntry(i).getOldValue())))
-	{
-	  assert(reinterpret_cast<heapobject*>(ipTrail.getEntry(i).getOldValue()) < heap.getTop());
-	  assert(ipTrail.getEntry(i).getOldValue()->gc_isMarked());
-	  into_relocation_chain(reinterpret_cast<heapobject*>(ipTrail.getEntry(i).getOldValue()), ipTrail.getEntry(i).getOldVAddr());
-	}
-    }
+  bindingTrail.gc_sweep(heap, gcbits);
+  otherTrail.gc_sweep(heap, gcbits);
 }
 
 void
 Thread::gc_sweep_names(void)
 {
+  int last = heap.getTop() - heap.getBase();
   for (int i = 0; i < (int)(names.allocatedSize()); i++)
     {
       if (! names.getEntry(i).isEmpty())
 	{
-	  if (names.getEntry(i).getValue()->gc_isMarked())
+	  int index = reinterpret_cast<heapobject*>(names.getEntry(i).getValue()) - heap.getBase();
+	  if ((index >= 0) && (index < last) && gcbits.isSet(index))
 	    {
-	      into_relocation_chain(reinterpret_cast<heapobject*>(names.getEntry(i).getValue()), reinterpret_cast<heapobject*>(names.getEntry(i).getValueAddr()));
+	      threadGC(reinterpret_cast<heapobject*>(names.getEntry(i).getValueAddr()));
 	    }
 	  else
 	    {
@@ -521,8 +398,7 @@ Thread::gc_sweep_ips(void)
     {
       if (! ipTable.getEntry(i).isEmpty())
 	{
-	  assert(ipTable.getEntry(i).getValue()->gc_isMarked());
-	  into_relocation_chain(reinterpret_cast<heapobject*>(ipTable.getEntry(i).getValue()), reinterpret_cast<heapobject*>(ipTable.getEntry(i).getValueAddr()));
+	  threadGC(reinterpret_cast<heapobject*>(ipTable.getEntry(i).getValueAddr()));
 	}
     }
 }
@@ -541,9 +417,8 @@ Thread::gc_sweep_environments(EnvLoc env)
 	{
 	  if (heap.isHeapPtr(reinterpret_cast<heapobject*>(envStack.yReg(env,i))))
 	    {
-  assert(reinterpret_cast<heapobject*>(envStack.yReg(env,i)) < heap.getTop());
-	      assert(envStack.yReg(env,i)->gc_isMarked());
-	      into_relocation_chain(reinterpret_cast<heapobject*>(envStack.yReg(env,i)), envStack.yRegAddr(env,i));
+	      assert(gcbits.isSet(reinterpret_cast<heapobject*>(envStack.yReg(env,i)) - heap.getBase()));
+	      threadGC(envStack.yRegAddr(env,i));
 	    }
 	}
       if (env == envStack.firstEnv())
@@ -555,7 +430,7 @@ Thread::gc_sweep_environments(EnvLoc env)
 }
 
 void
-Thread::gc_sweep_choicepoints(ChoiceLoc choiceloc, int32& total_marked)
+Thread::gc_sweep_choicepoints(ChoiceLoc choiceloc)
 {
   while (true)
     {
@@ -564,24 +439,24 @@ Thread::gc_sweep_choicepoints(ChoiceLoc choiceloc, int32& total_marked)
 	{
 	  if (heap.isHeapPtr(reinterpret_cast<heapobject*>(choiceStack.getXreg(choiceloc, i))))
 	    {
-  assert(reinterpret_cast<heapobject*>(choiceStack.getXreg(choiceloc, i)) < heap.getTop());
-	      assert(choiceStack.getXreg(choiceloc, i)->gc_isMarked());
-	      into_relocation_chain(reinterpret_cast<heapobject*>(choiceStack.getXreg(choiceloc, i)), choiceStack.getXregAddr(choiceloc, i));
+	      assert(gcbits.isSet(reinterpret_cast<heapobject*>(choiceStack.getXreg(choiceloc, i)) - heap.getBase()));
+	      threadGC(choiceStack.getXregAddr(choiceloc, i));
 	    }
 	}
 
-      if (!reinterpret_cast<Object*>(choiceStack.getHeapAndTrailsState(choiceloc).getSavedTop())->gc_isMarked())
+      if (!gcbits.isSet(choiceStack.getHeapAndTrailsState(choiceloc).getSavedTop() - heap.getBase()))
 	{
 	  int32 size = static_cast<int32>(reinterpret_cast<Object*>(choiceStack.getHeapAndTrailsState(choiceloc).getSavedTop())->size_dispatch());
-	  *(choiceStack.getHeapAndTrailsState(choiceloc).getSavedTop()) = Short::Zero | Object::GC_M;
+
           heapobject* ptr = choiceStack.getHeapAndTrailsState(choiceloc).getSavedTop();
-	  for (int i = 1; i < size; i++)
+
+	  gcbits.set(ptr - heap.getBase());
+	  for (int i = 0; i < size; i++)
 	    {
 	      *(ptr+i) = Short::Zero;
 	    }
-	  total_marked++;
 	}
-      into_relocation_chain(choiceStack.getHeapAndTrailsState(choiceloc).getSavedTop(), choiceStack.getHeapAndTrailsState(choiceloc).getSavedTopAddr()); 
+      threadGC(choiceStack.getHeapAndTrailsState(choiceloc).getSavedTopAddr()); 
 
       if (choiceloc == choiceStack.firstChoice())
 	{
@@ -593,24 +468,22 @@ Thread::gc_sweep_choicepoints(ChoiceLoc choiceloc, int32& total_marked)
 
 
 void
-Thread::gc_compaction_phase(word32 arity, int32& total_marked)
+Thread::gc_compaction_phase(word32 arity)
 {
   gc_sweep_registers(arity);
-  gc_sweep_binding_trail();
-  gc_sweep_tag_trail();
-  gc_sweep_object_trail();
-  gc_sweep_ip_trail();
+  gc_sweep_trail();
   gc_sweep_names();
   gc_sweep_ips(); 
   gc_sweep_environments(currentEnvironment);
-   gc_sweep_choicepoints(currentChoicePoint, total_marked);
-   if (!reinterpret_cast<Object*>(heap.getSavedTop())->gc_isMarked())
+  gc_sweep_choicepoints(currentChoicePoint);
+  if (!gcbits.isSet(heap.getSavedTop() - heap.getBase()))
     {
-	  *(heap.getSavedTop()) = Short::Zero | Object::GC_M;
-	  total_marked++;
+	  *(heap.getSavedTop()) = Short::Zero;
+	  gcbits.set(heap.getSavedTop() - heap.getBase());
     }
-  into_relocation_chain(heap.getSavedTop(), heap.getSavedTopAddr());
-  gc_compact_heap(total_marked, heap);
+  threadGC(heap.getSavedTopAddr());
+  update_forward_pointers(heap, gcbits);
+  update_backward_pointers(heap, gcbits);
 }
 
 #ifdef QP_DEBUG
@@ -655,6 +528,7 @@ Thread::dump_areas(word32 arity)
   cerr << endl << "=========== The CP stack  ==========" << endl;
   dump_choices(currentChoicePoint);
 
+#if 0
   cerr << endl << "=========== The binding trail ======" << endl;
   bindingTrail.printMe(*atoms);
 
@@ -666,7 +540,7 @@ Thread::dump_areas(word32 arity)
 
   cerr << endl << "=========== The tag trail ==========" << endl;
   tagTrail.printMe(*atoms);
-
+#endif
   cerr << endl << "=========== The name table =========" << endl;
   names.printMe(*atoms);
 
@@ -677,87 +551,6 @@ Thread::dump_areas(word32 arity)
 heap.printMe(*atoms);
 }
 
-//
-// Check that after the mark phase no F bits are set and M bits are set
-// only on tag words.
-//
-bool check_after_mark_GC(Heap &heap)
-{
-  for (heapobject* tp = heap.getBase(); tp < heap.getBase() + 188593; )
-    {
-      if (!(tp < heap.getTop()))
-	{
-	  cerr << "over top" << endl;
-	  break;
-	}
-      int32 size = reinterpret_cast<Object*>(tp)->size_dispatch();
-      cerr << hex << (word32)(tp) << " : " << (word32)(*tp) << " size = " << dec << size << endl;
-      if (tp > heap.getBase() + 188500)
-	{
-	  cerr << "---------------------" << endl;
-	  cerr << hex << (word32)(tp) << " : " << (word32)(*tp) << " size = " << dec << size << endl;
-	  for (int32 i = 1; i < size; i++)
-	    {
-	      cerr << hex << (word32)(tp+i) << " : " << (word32)(*(tp+i)) << dec << endl;
-	    }
-	}
-      tp += size;
-    }
-  cerr << "..............." << endl;
-  for (heapobject* ptr = heap.getBase(); ptr < heap.getTop(); )
-    {
-      if (ptr > heap.getBase() + 188575)
-	{
-	  heapobject* tp = ptr;
-	  while (tp < heap.getBase() + 188593)
-	    {
-	      int32 size = reinterpret_cast<Object*>(tp)->size_dispatch();
-	      cerr << "---------------------" << endl;
-	      cerr << hex << (word32)(tp) << " : " << (word32)(*tp) << " size = " << dec << size << endl;
-	      for (int32 i = 1; i < size; i++)
-		{
-		  cerr << hex << (word32)(tp+i) << " : " << (word32)(*(tp+i)) << dec << endl;
-		}
-	      tp += size;
-	    }
-	}
-      if ((*ptr & Object::GC_Mask) == 0)
-	{
-	  // Unmarked object - check args
-	  int32 size = reinterpret_cast<Object*>(ptr)->size_dispatch();
-	  for (int32 i = 1; i < size; i++)
-	    {
-	      if ((*(ptr+i) & Object::GC_Mask) != 0)
-		{
-		  cerr << "Bit set in unmarked object size = " << size << endl;
-		  cerr << hex << (word32)(heap.getBase()) << dec << endl;
-		  cerr << hex << (word32)(ptr+i) << " : " << (word32)(*(ptr+i)) << dec << endl;
-		  return false;
-		}
-	    }
-	  ptr += size;
-	}
-      else
-	{
-	  if ((*ptr & Object::GC_F) != 0)
-	    {
-	      cerr << "F bit set" << (word32)(*ptr) << endl;
-	      return false;
-	    }
-	  int32 size = reinterpret_cast<Object*>(ptr)->size_dispatch();
-	  for (int32 i = 1; i < size; i++)
-	    {
-	      if ((*(ptr+i) & Object::GC_Mask) != 0)
-		{
-		  cerr << "Bit set in marked object" << endl;
-		  return false;
-		}
-	    }
-	  ptr += size;
-	}
-    }
-  return true;
-}
 
 #endif //DEBUG
 
@@ -765,7 +558,6 @@ void
 Thread::gc(word32 arity)
 {
   status.resetDoGC();
-  int32 total_marked = 0;
 
   bool print_gc_stats = (getenv("QP_GC") != NULL);
 
@@ -775,17 +567,19 @@ Thread::gc(word32 arity)
          << (word32)(heap.getTop() - heap.getBase()) << endl;
     }
 
-  assert(check_heap(heap, atoms));
+  assert(check_heap(heap, atoms, gcbits));
   //  assert(check_env(currentEnvironment));
   // assert(check_heap2(heap));
-  gc_marking_phase(arity, total_marked);
+  assert(otherTrail.check(heap));
+  gc_marking_phase(arity);
 
-  assert(check_heap(heap, atoms));
-  gc_compaction_phase(arity, total_marked);
+  assert(otherTrail.check(heap));
+  assert(check_heap(heap, atoms, gcbits));
+  gc_compaction_phase(arity);
 
-  assert(check_heap(heap, atoms));
+  assert(check_heap(heap, atoms, gcbits));
   //assert(check_env(currentEnvironment));
-  //assert(check_heap2(heap));
+  assert(check_heap2(heap));
 
 
   if (print_gc_stats)

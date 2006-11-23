@@ -61,6 +61,27 @@
 #include "thread_qp.h"
 
 //
+// Copy the first n substitutions
+//
+Object*
+Heap::copySubSpineN(Object *input_list, int n)
+{
+  assert(input_list != NULL);
+  assert((input_list->isNil() && (n == 0)) ||
+	(input_list->isCons() && 
+	 OBJECT_CAST(Cons*, input_list)->isSubstitutionBlockList()));
+  if (n == 0)
+    return AtomTable::nil;
+
+  // Copy the rest of substitution.
+  Object *copy_list = 
+    copySubSpineN(OBJECT_CAST(Cons *, input_list)->getTail(), n - 1); 
+  
+  assert(OBJECT_CAST(Cons*, input_list)->getHead()->isSubstitutionBlock());
+  return newSubstitutionBlockList(OBJECT_CAST(SubstitutionBlock*, OBJECT_CAST(Cons *, input_list)->getHead()), copy_list);
+}
+
+//
 // Copy the spine of a list of substitutions up to the stop point.
 // tail_list specifies the new tail of copied version.
 //
@@ -511,6 +532,7 @@ Heap::dropSubFromTerm(Thread& th, PrologValue& pterm)
 		  //for (int p = k-1; p >= 0; p--)
 		    {
 		      assert(doms[k] == doms[k]->variableDereference());
+		      assert(doms[p]->isObjectVariable());
 		      if (doms[p] == NULL)
 			{
 			  continue;

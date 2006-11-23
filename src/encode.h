@@ -108,6 +108,7 @@ public:
   static const word8 ENCODE_NAME =             12;
   static const word8 ENCODE_REF_OFFSET =       13;
   static const word8 ENCODE_DOUBLE =          14;
+  static const word8 ENCODE_STRING =          15;
 
   //
   // Add.
@@ -221,10 +222,16 @@ private:
   bool writeEncodeDouble(QPStream&, const double);
     
   //
+  // Encode the atom and write the result to the stream.
+  //
+  bool	encodeWriteAtom(QPStream&, Atom*, AtomTable& atoms);
+
+  //
   // Encode the string and write the result to the stream.
   //
-  bool	encodeWriteString(QPStream&, Atom*, AtomTable& atoms);
-  
+
+  bool	encodeWriteString(QPStream&, char*);
+
   //
   // Encode the variable name and sent it over.
   //
@@ -250,7 +257,7 @@ public:
 
 class EncodeRead : public EncodeBase {
 private:
-  char *string;
+  char *stringbuff;
 
   //
   // Read a character.
@@ -260,7 +267,12 @@ private:
   //
   // Read from a stream and decode back to a string.
   //
-  bool encodeReadString(QPStream&, Atom*&, AtomTable&);
+  bool encodeReadString(QPStream&, Object*&, Heap&);
+
+  //
+  // Read from a stream and decode back to an atom.
+  //
+  bool encodeReadAtom(QPStream&, Atom*&, AtomTable&);
 
   //
   // Read a number.
@@ -291,7 +303,7 @@ public:
 	     const bool remember,
 	     NameTable& names,
 	     Object*& name_list)
-    : string(new char[ATOM_LENGTH])
+    : stringbuff(new char[ATOM_LENGTH])
   {
     success = encodeReadTerm(th, heap, stream, term, atoms, remember, names);
 
@@ -304,7 +316,7 @@ public:
 
   ~EncodeRead(void)
     {
-      delete [] string;
+      delete [] stringbuff;
     }
 
  

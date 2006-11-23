@@ -85,12 +85,12 @@ end('statistics'/3):
 
 '$stat_key'/1:
 
-	switch_on_term(0, $23, 'fail', 'fail', 'fail', 'fail', $22)
+	switch_on_term(0, $20, 'fail', 'fail', 'fail', 'fail', $19)
 
-$22:
-	switch_on_constant(0, 64, ['$default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'program':$7, 'runtime':$8, 'stack_shifts':$9, 'binding_trail':$10, 'object_trail':$11, 'ip_trail':$12, 'tag_trail':$13, 'ref_trail':$14, 'code':$15, 'string':$16, 'name':$17, 'ip_table':$18, 'scratchpad':$19, 'atom':$20, 'predicate':$21])
+$19:
+	switch_on_constant(0, 64, ['$default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'program':$7, 'runtime':$8, 'stack_shifts':$9, 'binding_trail':$10, 'other_trail':$11, 'code':$12, 'string':$13, 'name':$14, 'ip_table':$15, 'scratchpad':$16, 'atom':$17, 'predicate':$18])
 
-$23:
+$20:
 	try(1, $1)
 	retry($2)
 	retry($3)
@@ -108,10 +108,7 @@ $23:
 	retry($15)
 	retry($16)
 	retry($17)
-	retry($18)
-	retry($19)
-	retry($20)
-	trust($21)
+	trust($18)
 
 $1:
 	get_constant('choice', 0)
@@ -154,46 +151,34 @@ $10:
 	proceed
 
 $11:
-	get_constant('object_trail', 0)
+	get_constant('other_trail', 0)
 	proceed
 
 $12:
-	get_constant('ip_trail', 0)
-	proceed
-
-$13:
-	get_constant('tag_trail', 0)
-	proceed
-
-$14:
-	get_constant('ref_trail', 0)
-	proceed
-
-$15:
 	get_constant('code', 0)
 	proceed
 
-$16:
+$13:
 	get_constant('string', 0)
 	proceed
 
-$17:
+$14:
 	get_constant('name', 0)
 	proceed
 
-$18:
+$15:
 	get_constant('ip_table', 0)
 	proceed
 
-$19:
+$16:
 	get_constant('scratchpad', 0)
 	proceed
 
-$20:
+$17:
 	get_constant('atom', 0)
 	proceed
 
-$21:
+$18:
 	get_constant('predicate', 0)
 	proceed
 end('$stat_key'/1):
@@ -231,12 +216,12 @@ end('$statistics/3$0'/1):
 
 '$statistics'/3:
 
-	switch_on_term(0, $24, 'fail', 'fail', 'fail', 'fail', $23)
+	switch_on_term(0, $21, 'fail', 'fail', 'fail', 'fail', $20)
 
-$23:
-	switch_on_constant(0, 64, ['$default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'memory':$7, 'program':$8, 'runtime':$9, 'stack_shifts':$10, 'binding_trail':$11, 'object_trail':$12, 'ip_trail':$13, 'tag_trail':$14, 'ref_trail':$15, 'code':$16, 'string':$17, 'name':$18, 'ip_table':$19, 'scratchpad':$20, 'atom':$21, 'predicate':$22])
+$20:
+	switch_on_constant(0, 64, ['$default':'fail', 'choice':$1, 'core':$2, 'garbage_collection':$3, 'global_stack':$4, 'heap':$5, 'local_stack':$6, 'memory':$7, 'program':$8, 'runtime':$9, 'stack_shifts':$10, 'binding_trail':$11, 'other_trail':$12, 'code':$13, 'string':$14, 'name':$15, 'ip_table':$16, 'scratchpad':$17, 'atom':$18, 'predicate':$19])
 
-$24:
+$21:
 	try(3, $1)
 	retry($2)
 	retry($3)
@@ -255,10 +240,7 @@ $24:
 	retry($16)
 	retry($17)
 	retry($18)
-	retry($19)
-	retry($20)
-	retry($21)
-	trust($22)
+	trust($19)
 
 $1:
 	get_constant('choice', 0)
@@ -432,7 +414,7 @@ $11:
 	proceed
 
 $12:
-	get_constant('object_trail', 0)
+	get_constant('other_trail', 0)
 	get_list(2)
 	unify_x_variable(0)
 	unify_x_ref(2)
@@ -452,66 +434,6 @@ $12:
 	proceed
 
 $13:
-	get_constant('ip_trail', 0)
-	get_list(2)
-	unify_x_variable(0)
-	unify_x_ref(2)
-	get_list(2)
-	unify_x_variable(2)
-	unify_x_ref(3)
-	get_list(3)
-	unify_x_variable(3)
-	unify_constant('[]')
-	neck_cut
-	pseudo_instr3(60, 1, 4, 5)
-	put_x_value(4, 1)
-	get_structure('stat', 3, 1)
-	unify_x_value(0)
-	unify_x_value(2)
-	unify_x_value(3)
-	proceed
-
-$14:
-	get_constant('tag_trail', 0)
-	get_list(2)
-	unify_x_variable(0)
-	unify_x_ref(2)
-	get_list(2)
-	unify_x_variable(2)
-	unify_x_ref(3)
-	get_list(3)
-	unify_x_variable(3)
-	unify_constant('[]')
-	neck_cut
-	pseudo_instr3(61, 1, 4, 5)
-	put_x_value(4, 1)
-	get_structure('stat', 3, 1)
-	unify_x_value(0)
-	unify_x_value(2)
-	unify_x_value(3)
-	proceed
-
-$15:
-	get_constant('ref_trail', 0)
-	get_list(2)
-	unify_x_variable(0)
-	unify_x_ref(2)
-	get_list(2)
-	unify_x_variable(2)
-	unify_x_ref(3)
-	get_list(3)
-	unify_x_variable(3)
-	unify_constant('[]')
-	neck_cut
-	pseudo_instr3(65, 1, 4, 5)
-	put_x_value(4, 1)
-	get_structure('stat', 3, 1)
-	unify_x_value(0)
-	unify_x_value(2)
-	unify_x_value(3)
-	proceed
-
-$16:
 	get_constant('code', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -525,7 +447,7 @@ $16:
 	get_x_value(1, 3)
 	proceed
 
-$17:
+$14:
 	get_constant('string', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -545,7 +467,7 @@ $17:
 	unify_x_value(2)
 	proceed
 
-$18:
+$15:
 	get_constant('name', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -561,7 +483,7 @@ $18:
 	unify_x_value(2)
 	proceed
 
-$19:
+$16:
 	get_constant('ip_table', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -577,7 +499,7 @@ $19:
 	unify_x_value(2)
 	proceed
 
-$20:
+$17:
 	get_constant('scratchpad', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -597,7 +519,7 @@ $20:
 	unify_x_value(3)
 	proceed
 
-$21:
+$18:
 	get_constant('atom', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -612,7 +534,7 @@ $21:
 	unify_x_value(1)
 	proceed
 
-$22:
+$19:
 	get_constant('predicate', 0)
 	get_list(2)
 	unify_x_variable(0)
@@ -652,13 +574,7 @@ $1:
 	put_y_value(0, 0)
 	call_predicate('$statistics_binding_trail', 1, 1)
 	put_y_value(0, 0)
-	call_predicate('$statistics_object_trail', 1, 1)
-	put_y_value(0, 0)
-	call_predicate('$statistics_IP_trail', 1, 1)
-	put_y_value(0, 0)
-	call_predicate('$statistics_tag_trail', 1, 1)
-	put_y_value(0, 0)
-	call_predicate('$statistics_ref_trail', 1, 1)
+	call_predicate('$statistics_other_trail', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('$statistics_code_area', 1, 1)
 	put_y_value(0, 0)
@@ -870,7 +786,7 @@ end('$statistics_binding_trail'/1):
 
 
 
-'$statistics_object_trail'/1:
+'$statistics_other_trail'/1:
 
 
 $1:
@@ -884,7 +800,7 @@ $1:
 	pseudo_instr3(2, 22, 21, 0)
 	get_y_variable(3, 0)
 	pseudo_instr1(28, 0)
-	put_constant('object trail	', 1)
+	put_constant('other trail	', 1)
 	call_predicate('write_atom', 2, 4)
 	put_y_value(3, 0)
 	call_predicate('write', 1, 3)
@@ -905,124 +821,7 @@ $1:
 	call_predicate('write', 1, 0)
 	deallocate
 	execute_predicate('nl', 0)
-end('$statistics_object_trail'/1):
-
-
-
-'$statistics_IP_trail'/1:
-
-
-$1:
-	pseudo_instr3(60, 0, 1, 2)
-	put_x_value(1, 0)
-	get_structure('stat', 3, 0)
-	allocate(4)
-	unify_y_variable(2)
-	unify_y_variable(1)
-	unify_y_variable(0)
-	pseudo_instr3(2, 22, 21, 0)
-	get_y_variable(3, 0)
-	pseudo_instr1(28, 0)
-	put_constant('IP trail	', 1)
-	call_predicate('write_atom', 2, 4)
-	put_y_value(3, 0)
-	call_predicate('write', 1, 3)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 3)
-	put_y_value(2, 0)
-	call_predicate('write', 1, 2)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 2)
-	put_y_value(1, 0)
-	call_predicate('write', 1, 1)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 1)
-	put_y_value(0, 0)
-	call_predicate('write', 1, 0)
-	deallocate
-	execute_predicate('nl', 0)
-end('$statistics_IP_trail'/1):
-
-
-
-'$statistics_tag_trail'/1:
-
-
-$1:
-	pseudo_instr3(61, 0, 1, 2)
-	put_x_value(1, 0)
-	get_structure('stat', 3, 0)
-	allocate(4)
-	unify_y_variable(2)
-	unify_y_variable(1)
-	unify_y_variable(0)
-	pseudo_instr3(2, 22, 21, 0)
-	get_y_variable(3, 0)
-	pseudo_instr1(28, 0)
-	put_constant('tag trail	', 1)
-	call_predicate('write_atom', 2, 4)
-	put_y_value(3, 0)
-	call_predicate('write', 1, 3)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 3)
-	put_y_value(2, 0)
-	call_predicate('write', 1, 2)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 2)
-	put_y_value(1, 0)
-	call_predicate('write', 1, 1)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 1)
-	put_y_value(0, 0)
-	call_predicate('write', 1, 0)
-	deallocate
-	execute_predicate('nl', 0)
-end('$statistics_tag_trail'/1):
-
-
-
-'$statistics_ref_trail'/1:
-
-
-$1:
-	pseudo_instr3(65, 0, 1, 2)
-	put_x_value(1, 0)
-	get_structure('stat', 3, 0)
-	allocate(4)
-	unify_y_variable(2)
-	unify_y_variable(1)
-	unify_y_variable(0)
-	pseudo_instr3(2, 22, 21, 0)
-	get_y_variable(3, 0)
-	pseudo_instr1(28, 0)
-	put_constant('ref trail	', 1)
-	call_predicate('write_atom', 2, 4)
-	put_y_value(3, 0)
-	call_predicate('write', 1, 3)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 3)
-	put_y_value(2, 0)
-	call_predicate('write', 1, 2)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 2)
-	put_y_value(1, 0)
-	call_predicate('write', 1, 1)
-	pseudo_instr1(28, 0)
-	put_constant('	', 1)
-	call_predicate('write_atom', 2, 1)
-	put_y_value(0, 0)
-	call_predicate('write', 1, 0)
-	deallocate
-	execute_predicate('nl', 0)
-end('$statistics_ref_trail'/1):
+end('$statistics_other_trail'/1):
 
 
 

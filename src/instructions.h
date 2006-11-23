@@ -106,6 +106,10 @@ const word8 PUT_DOUBLE = 91;
 const word8 GET_DOUBLE = 92;
 const word8 SET_DOUBLE = 93;
 const word8 UNIFY_DOUBLE = 94;
+const word8 PUT_STRING = 95;
+const word8 GET_STRING = 96;
+const word8 SET_STRING = 97;
+const word8 UNIFY_STRING = 98;
 
 // Opcode names
 extern const char *opnames[];

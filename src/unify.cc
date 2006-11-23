@@ -62,10 +62,10 @@
 //
 // The following define is used to constract a big switch statement
 // in unify for the possible types of the terms being unified.
-// !!!WARNING!!! This idea requires that 8 > Object::uSubst 
+// !!!WARNING!!! This idea requires that 8 > Object::UOther 
 // (the highest tag)
 //
-#define CrossTag(t1, t2)	8 * (t1) + (t2)
+#define CrossTag(t1, t2)	(t1 << 3) | (t2 >> 1)
 
 //
 // Extend open bound variable list. Extend shorter to match longer one.
@@ -398,6 +398,8 @@ Thread::makeQuantSubs(Object*& sub1, Object*& sub2,
     }
   sub1 = heap.newSubstitutionBlockList(block1, qsub1); 
   sub2 = heap.newSubstitutionBlockList(block2, qsub2);
+  assert(sub1->isLegalSub());
+  assert(sub2->isLegalSub());
 }
 
 //
@@ -637,9 +639,9 @@ Thread::unifyObjectVariableTerm(PrologValue& objectVariable, PrologValue& term)
     {
       heap.dropSubFromTerm(*this, objectVariable);
     }
-  switch(term.getTerm()->utag())
+  switch(term.getTerm()->tTag())
     {
-    case Object::uCons:	 
+    case Object::tCons:	 
       if (heap.yieldList(term.getTerm(), 
 		    objectVariable.getSubstitutionBlockList(), status))
 	{
@@ -659,7 +661,7 @@ Thread::unifyObjectVariableTerm(PrologValue& objectVariable, PrologValue& term)
 	}
       break;
       
-    case Object::uStruct:	 
+    case Object::tStruct:	 
       if (heap.yieldStructure(term.getTerm(), 
 			 objectVariable.getSubstitutionBlockList(), 
 			 status))
@@ -680,7 +682,11 @@ Thread::unifyObjectVariableTerm(PrologValue& objectVariable, PrologValue& term)
 	}
       break;
       
-    case Object::uConst:	 
+    case Object::tShort:	 
+    case Object::tLong:	 
+    case Object::tDouble:	 
+    case Object::tAtom:	 
+    case Object::tString:	 
       if (heap.yieldConstant(term.getTerm(), 
 			objectVariable.getSubstitutionBlockList(), 
 			status))
@@ -701,7 +707,10 @@ Thread::unifyObjectVariableTerm(PrologValue& objectVariable, PrologValue& term)
 	}
       break;
       
-    case Object::uQuant:	 
+    case Object::tObjVar:
+      return  unifyObjectVariables(objectVariable, term);
+      break;
+    case Object::tQuant:	 
       if (heap.yieldQuantifier(term.getTerm(), 
 			  objectVariable.getSubstitutionBlockList(), 
 			  status))
@@ -738,6 +747,8 @@ Thread::unifyObjectVariableObjectVariable(Object* objectVariable1,
 {
   assert(objectVariable1->isObjectVariable());
   assert(objectVariable1 == objectVariable1->variableDereference());
+  assert(objectVariable2.getTerm()->isObjectVariable());
+  assert(objectVariable2.getTerm() == objectVariable2.getTerm()->variableDereference());
 
   if (heap.yieldObjectVariable(OBJECT_CAST(ObjectVariable*, objectVariable1), 
 			  objectVariable2.getSubstitutionBlockList(), 
@@ -788,6 +799,7 @@ Thread::unifyObjectVariables(PrologValue& objectVariable1,
     {
       heap.dropSubFromTerm(*this, objectVariable2);
     }
+  assert(objectVariable2.getTerm()->isObjectVariable());
   if (objectVariable1.getTerm() == objectVariable2.getTerm())
     {
       if(objectVariable1.getSubstitutionBlockList() == 
@@ -821,8 +833,8 @@ Thread::unifyObjectVariables(PrologValue& objectVariable1,
 	}
     }
   else if (!status.testHeatWave() && 
-	   OBJECT_CAST(Reference*, objectVariable1.getTerm())->isFrozen() && 
-	   OBJECT_CAST(Reference*, objectVariable2.getTerm())->isFrozen())
+	   OBJECT_CAST(ObjectVariable*, objectVariable1.getTerm())->isFrozen() && 
+	   OBJECT_CAST(ObjectVariable*, objectVariable2.getTerm())->isFrozen())
     {
       return(unifyFrozenFrozenObjectVariables(objectVariable1,
 					      objectVariable2));
@@ -1279,9 +1291,10 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
   else
     {
       Object* dummy;
-      switch(term.getTerm()->utag())
+      switch(term.getTerm()->tTag())
 	{
-	case Object::uCons:	 
+	case Object::tString:	 
+	case Object::tCons:	 
 	  if (heap.yieldList(term.getTerm(), 
 			     variable.getSubstitutionBlockList(),
 			     status))
@@ -1308,7 +1321,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	    }
 	  break;
 	  
-	case Object::uStruct:	 
+	case Object::tStruct:	 
 	  if (heap.yieldStructure(term.getTerm(), 
 				  variable.getSubstitutionBlockList(),
 				  status))
@@ -1335,7 +1348,10 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	    }
 	  break;
 	  
-	case Object::uConst:	 
+	case Object::tShort:	 
+	case Object::tLong:	 
+	case Object::tDouble:	 
+	case Object::tAtom:	 
 	  if (heap.yieldConstant(term.getTerm(), 
 				 variable.getSubstitutionBlockList(),
 				 status))
@@ -1356,7 +1372,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	    }
 	  break;
 	  
-	case Object::uObjVar:	 
+	case Object::tObjVar:	 
 	  if (term.getTerm()->isLocalObjectVariable())
 	    {
 	      Object *domElem, *newEnd;
@@ -1413,7 +1429,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	    }
 	  break;
 	  
-	case Object::uQuant:	 
+	case Object::tQuant:	 
 	  if (heap.yieldQuantifier(term.getTerm(), 
 				   variable.getSubstitutionBlockList(),
 				   status))
@@ -1482,104 +1498,148 @@ bool
 Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2, 
 			  bool in_quant)
 {
+  assert(term1.getSubstitutionBlockList()->isLegalSub());
+  assert(term2.getSubstitutionBlockList()->isLegalSub());
   if (term1.getTerm() == term2.getTerm() &&
       term1.getSubstitutionBlockList() == term2.getSubstitutionBlockList())
     {
       return(true);
     }
 
-  assert(term1.getTerm()->utag() < 8);
-  assert(term2.getTerm()->utag() < 8);
-  switch (CrossTag(term1.getTerm()->utag(), term2.getTerm()->utag()))
+  u_int ut1 = term1.getTerm()->getTag() & Object::UnifyMask;
+  u_int ut2 = term2.getTerm()->getTag() & Object::UnifyMask;
+
+  assert((ut1>>1) < 8);
+  assert((ut2>>1) < 8);
+  switch (CrossTag(ut1, ut2))
     {
       //
       // term1 is a variable
       //
-    case CrossTag(Object::uVar, Object::uVar):
-      return(unifyVarVar(term1, term2, in_quant));
+    case CrossTag(Object::UVar, Object::UVar):
+    case CrossTag(Object::UVar, Object::UVarOC):
+      return(unifyVariableVariable(term1, term2, in_quant));
       break;
-
-    case CrossTag(Object::uVar, Object::uObjVar):
-    case CrossTag(Object::uVar, Object::uCons):
-    case CrossTag(Object::uVar, Object::uStruct):
-    case CrossTag(Object::uVar, Object::uQuant):
-    case CrossTag(Object::uVar, Object::uConst):
-      return(unifyVariableTerm(term1, term2, in_quant));
+    case CrossTag(Object::UVar, Object::UNumber):
+    case CrossTag(Object::UVar, Object::UAtom):
+    case CrossTag(Object::UVar, Object::UString):
+    case CrossTag(Object::UVar, Object::UStruct):
+    case CrossTag(Object::UVar, Object::UCons):
+    case CrossTag(Object::UVar, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVarVar(term1, term2, in_quant));
+      else
+	return(unifyVariableTerm(term1, term2, in_quant));
       break;
-
+      
+    case CrossTag(Object::UVarOC, Object::UVar):
+    case CrossTag(Object::UVarOC, Object::UVarOC):
+      return(unifyVariableVariable(term1, term2, in_quant));
+      break;
+    case CrossTag(Object::UVarOC, Object::UNumber):
+    case CrossTag(Object::UVarOC, Object::UAtom):
+    case CrossTag(Object::UVarOC, Object::UString):
+    case CrossTag(Object::UVarOC, Object::UStruct):
+    case CrossTag(Object::UVarOC, Object::UCons):
+    case CrossTag(Object::UVarOC, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVarVar(term1, term2, in_quant));
+      else
+	return(unifyVariableTerm(term1, term2, in_quant));
+      break;
+      
       //
-      // term1 is an object variable
-      //      
-    case CrossTag(Object::uObjVar, Object::uVar):
+      // term1 is a number
+      //
+    case CrossTag(Object::UNumber, Object::UVar):
+    case CrossTag(Object::UNumber, Object::UVarOC):
       return(unifyVariableTerm(term2, term1, in_quant));
       break;
-
-    case CrossTag(Object::uObjVar, Object::uObjVar):
-      return(unifyObjectVariables(term1, term2));
+    case CrossTag(Object::UNumber, Object::UNumber):
+      return (term1.getTerm()->equalUninterp(term2.getTerm()));
       break;
-
-    case CrossTag(Object::uObjVar, Object::uCons):
-    case CrossTag(Object::uObjVar, Object::uStruct):
-    case CrossTag(Object::uObjVar, Object::uQuant):
-    case CrossTag(Object::uObjVar, Object::uConst):
-      return(unifyObjectVariableTerm(term1, term2));
+    case CrossTag(Object::UNumber, Object::UAtom):
+    case CrossTag(Object::UNumber, Object::UString):
+    case CrossTag(Object::UNumber, Object::UStruct):
+    case CrossTag(Object::UNumber, Object::UCons):
+      return false;
       break;
-
+    case CrossTag(Object::UNumber, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVariableTerm(term2, term1, in_quant));
+      if (term2.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term2, term1));
+      return false;
+      break;
+      
       //
-      // term1 is a list
+      // term1 is an atom
       //
-
-    case CrossTag(Object::uCons, Object::uVar):
+    case CrossTag(Object::UAtom, Object::UVar):
+    case CrossTag(Object::UAtom, Object::UVarOC):
       return(unifyVariableTerm(term2, term1, in_quant));
       break;
-
-    case CrossTag(Object::uCons, Object::uObjVar):
-      return(unifyObjectVariableTerm(term2, term1));
+    case CrossTag(Object::UAtom, Object::UNumber):
+    case CrossTag(Object::UAtom, Object::UString):
+    case CrossTag(Object::UAtom, Object::UStruct):
+    case CrossTag(Object::UAtom, Object::UCons):
+      return false;
+      break;
+    case CrossTag(Object::UAtom, Object::UAtom):
+      return false;
+      break;
+    case CrossTag(Object::UAtom, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVariableTerm(term2, term1, in_quant));
+      if (term2.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term2, term1));
+      return false;
       break;
 
-    case CrossTag(Object::uCons, Object::uCons):
+      //
+      // term1 is an string
+      //
+    case CrossTag(Object::UString, Object::UVar):
+    case CrossTag(Object::UString, Object::UVarOC):
+      return(unifyVariableTerm(term2, term1, in_quant));
+      break;
+    case CrossTag(Object::UString, Object::UNumber):
+    case CrossTag(Object::UString, Object::UAtom):
+    case CrossTag(Object::UString, Object::UStruct):
+      return false;
+      break;
+    case CrossTag(Object::UString, Object::UCons):
       {
-	Cons* list1 = OBJECT_CAST(Cons*, term1.getTerm());
-	Cons* list2 = OBJECT_CAST(Cons*, term2.getTerm());
-	PrologValue head1(term1.getSubstitutionBlockList(), list1->getHead());
-	PrologValue head2(term2.getSubstitutionBlockList(), list2->getHead());
-	heap.prologValueDereference(head1);
-	heap.prologValueDereference(head2);
-	if (!unifyPrologValues(head1, head2, in_quant))
-	  {
-	    return(false);
-	  }
-	PrologValue tail1(term1.getSubstitutionBlockList(), list1->getTail());
-	PrologValue tail2(term2.getSubstitutionBlockList(), list2->getTail());
-	heap.prologValueDereference(tail1);
-	heap.prologValueDereference(tail2);
-	return (unifyPrologValues(tail1, tail2, in_quant));
+	StringObject* so = OBJECT_CAST(StringObject*, term1.getTerm());
+	PrologValue sval(heap.newCons(so->getChars()));
+	return (unifyPrologValues(sval, term2));
 	break;
       }
-
-    case CrossTag(Object::uCons, Object::uStruct):
-    case CrossTag(Object::uCons, Object::uQuant):
-    case CrossTag(Object::uCons, Object::uConst):
-      return(false);
+    case CrossTag(Object::UString, Object::UString):
+      return (term1.getTerm()->equalUninterp(term2.getTerm()));
+      break;
+    case CrossTag(Object::UString, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVariableTerm(term2, term1, in_quant));
+      if (term2.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term2, term1));
+      return false;
       break;
 
       //
       // term1 is a structure
       //
-
-    case CrossTag(Object::uStruct, Object::uVar):
+    case CrossTag(Object::UStruct, Object::UVar):
+    case CrossTag(Object::UStruct, Object::UVarOC):
       return(unifyVariableTerm(term2, term1, in_quant));
       break;
-
-    case CrossTag(Object::uStruct, Object::uObjVar):
-      return(unifyObjectVariableTerm(term2, term1));
+    case CrossTag(Object::UStruct, Object::UNumber):
+    case CrossTag(Object::UStruct, Object::UAtom):
+    case CrossTag(Object::UStruct, Object::UString):
+    case CrossTag(Object::UStruct, Object::UCons):
+      return false;
       break;
-
-    case CrossTag(Object::uStruct, Object::uCons):
-      return(false);
-      break;
-
-    case CrossTag(Object::uStruct, Object::uStruct):
+    case CrossTag(Object::UStruct, Object::UStruct):
       {
 	Structure* struct1 = OBJECT_CAST(Structure*, term1.getTerm());
 	Structure* struct2 = OBJECT_CAST(Structure*, term2.getTerm());
@@ -1615,60 +1675,227 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
 	  }
 	break;
       }
-
-    case CrossTag(Object::uStruct, Object::uQuant):
-    case CrossTag(Object::uStruct, Object::uConst):
-      return(false);
+    case CrossTag(Object::UStruct, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVariableTerm(term2, term1, in_quant));
+      if (term2.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term2, term1));
+      return false;
       break;
 
+
       //
-      // term1 is a quantified term
+      // term1 is a cons
       //
-    case CrossTag(Object::uQuant, Object::uVar):
+    case CrossTag(Object::UCons, Object::UVar):
+    case CrossTag(Object::UCons, Object::UVarOC):
       return(unifyVariableTerm(term2, term1, in_quant));
       break;
+    case CrossTag(Object::UCons, Object::UNumber):
+    case CrossTag(Object::UCons, Object::UAtom):
+    case CrossTag(Object::UCons, Object::UStruct):
+      return false;
+      break;
+    case CrossTag(Object::UCons, Object::UString):
+      {
+	StringObject* so = OBJECT_CAST(StringObject*, term2.getTerm());
+	PrologValue sval(heap.newCons(so->getChars()));
+	return (unifyPrologValues(sval, term1));
+	break;
+      }
 
-    case CrossTag(Object::uQuant, Object::uObjVar):
-      return(unifyObjectVariableTerm(term2, term1));
+    case CrossTag(Object::UCons, Object::UCons):
+       {
+	Cons* list1 = OBJECT_CAST(Cons*, term1.getTerm());
+	Cons* list2 = OBJECT_CAST(Cons*, term2.getTerm());
+	PrologValue head1(term1.getSubstitutionBlockList(), list1->getHead());
+	PrologValue head2(term2.getSubstitutionBlockList(), list2->getHead());
+	heap.prologValueDereference(head1);
+	heap.prologValueDereference(head2);
+	if (!unifyPrologValues(head1, head2, in_quant))
+	  {
+	    return(false);
+	  }
+	PrologValue tail1(term1.getSubstitutionBlockList(), list1->getTail());
+	PrologValue tail2(term2.getSubstitutionBlockList(), list2->getTail());
+	heap.prologValueDereference(tail1);
+	heap.prologValueDereference(tail2);
+	return (unifyPrologValues(tail1, tail2, in_quant));
+	break;
+      }
+
+    case CrossTag(Object::UCons, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return(unifyVariableTerm(term2, term1, in_quant));
+      if (term2.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term2, term1));
+      return false;
       break;
 
-    case CrossTag(Object::uQuant, Object::uCons):
-    case CrossTag(Object::uQuant, Object::uStruct):
-      return(false);
-      break;
 
-    case CrossTag(Object::uQuant, Object::uQuant):
+      //
+      // term1 is an other type {obvar quant var}
+      //
+    case CrossTag(Object::UOther, Object::UVar):
+    case CrossTag(Object::UOther, Object::UVarOC):
+      if (term1.getTerm()->isVariable())
+	return(unifyVarVar(term1, term2, in_quant));
+      else
+	return(unifyVariableTerm(term2, term1, in_quant));
+      break;
+    case CrossTag(Object::UOther, Object::UNumber):
+    case CrossTag(Object::UOther, Object::UAtom):
+    case CrossTag(Object::UOther, Object::UString):
+    case CrossTag(Object::UOther, Object::UStruct):
+    case CrossTag(Object::UOther, Object::UCons):
+      if (term1.getTerm()->isVariable())
+	return(unifyVariableTerm(term1, term2, in_quant));
+      if (term1.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term1, term2));
+      return false;
+      break;
+    case CrossTag(Object::UOther, Object::UOther):
+      if (term1.getTerm()->isVariable())
+	if (term2.getTerm()->isVariable())
+	  return unifyVarVar(term1, term2, in_quant);
+	else
+	  return(unifyVariableTerm(term1, term2, in_quant));
+      if (term2.getTerm()->isVariable())
+	return(unifyVariableTerm(term2, term1, in_quant));
+      if (term1.getTerm()->isObjectVariable())
+	if (term2.getTerm()->isObjectVariable())
+	  return unifyObjectVariables(term1, term2);
+	else
+	  return(unifyObjectVariableTerm(term1, term2));
+      if (term2.getTerm()->isObjectVariable())
+	return(unifyObjectVariableTerm(term2, term1));
+      assert(term1.getTerm()->isQuantifiedTerm());
+      assert(term2.getTerm()->isQuantifiedTerm());
       return(unifyQuantifiers(term1, term2, in_quant));
-      break;
-
-    case CrossTag(Object::uQuant, Object::uConst):
-      return(false);
-      break;
-  
-      //
-      // term1 is a constant
-      //
-    case CrossTag(Object::uConst, Object::uVar):
-      return(unifyVariableTerm(term2, term1, in_quant));
-      break;
-
-    case CrossTag(Object::uConst, Object::uObjVar):
-      return(unifyObjectVariableTerm(term2, term1));
-      break;
-
-    case CrossTag(Object::uConst, Object::uCons):
-    case CrossTag(Object::uConst, Object::uStruct):
-    case CrossTag(Object::uConst, Object::uQuant):
-      return (false);
-      break;
-
-    case CrossTag(Object::uConst, Object::uConst):
-      return (term1.getTerm()->equalConstants(term2.getTerm()));
       break;
 
     default:
       assert(false);
       return(false);
+    }
+  return(true);
+}
+
+inline bool
+Thread::unifyAsPrologValues(Object* term1, Object* term2, bool in_quant)
+{
+  PrologValue pterm1(term1);
+  PrologValue pterm2(term2);
+  heap.prologValueDereference(pterm1);
+  heap.prologValueDereference(pterm2);
+  return(unifyPrologValues(pterm1, pterm2, in_quant));
+}
+
+bool
+Thread::unifyOtherConst(Object* term1, Object* term2, bool in_quant)
+{
+  if (term1->isVariable())
+    {
+      Variable* var1 = OBJECT_CAST(Variable*, term1);
+
+      if (var1->isThawed() || status.testHeatWave())
+	{
+	  Variable* var1 = OBJECT_CAST(Variable*, term1);
+	  bind(var1, term2);
+	  return true;
+	}
+      else
+	{
+	  return false;
+	}
+    }
+  if (term1->isSubstitution())
+    {
+      return unifyAsPrologValues(term1, term2, in_quant);
+    }
+  return false;
+}
+
+bool
+Thread::unifyOtherTerm(Object* term1, Object* term2, bool in_quant)
+{
+  if (term1->isVariable())
+    {
+      Variable* var1 = OBJECT_CAST(Variable*, term1);
+
+      if (var1->isThawed() || status.testHeatWave())
+	{
+	  return unifyOtherVarTerm(term1, term2, in_quant);
+	}
+      else
+	{
+	  return false;
+	}
+    }
+  if (term1->isSubstitution())
+    {
+      return unifyAsPrologValues(term1, term2, in_quant);
+    }
+  return false;
+}
+
+inline bool 
+Thread::unifyVarOCTerm(Object* term1, Object* term2, bool in_quant)
+{
+  assert(term1->isVariable());
+  Variable* var1 = OBJECT_CAST(Variable*, term1);
+  Object* simpterm;
+  truth3 flag = occursCheck(ALL_CHECK, var1, term2, simpterm);
+  if (flag == false)
+    {
+      if (simpterm->isVariable())
+	{
+	  Variable* simpvar = OBJECT_CAST(Variable*, simpterm);
+	  bindVariables(var1, simpvar);
+	}
+      else
+	{
+	  assert(!OBJECT_CAST(Reference*, var1)->hasExtraInfo());
+	  bindAndTrail(var1, simpterm);
+	}
+    }
+  else if (flag == true)
+    {
+      return(false);
+    } 
+  else
+    {
+      return unifyAsPrologValues(term1, term2, in_quant);
+    }
+  return(true);
+}
+
+inline bool 
+Thread::unifyOtherVarTerm(Object* term1, Object* term2, bool in_quant)
+{
+  assert(term1->isVariable());
+  Variable* var1 = OBJECT_CAST(Variable*, term1);
+  Object* simpterm;
+  truth3 flag = occursCheck(ALL_CHECK, var1, term2, simpterm);
+  if (flag == false)
+    {
+      if (simpterm->isVariable())
+	{
+	  Variable* simpvar = OBJECT_CAST(Variable*, simpterm);
+	  bindVariables(var1, simpvar);
+	}
+      else
+	{
+	  bind(var1, simpterm);
+	}
+    }
+  else if (flag == true)
+    {
+      return(false);
+    } 
+  else
+    {
+      return unifyAsPrologValues(term1, term2, in_quant);
     }
   return(true);
 }
@@ -1683,8 +1910,8 @@ Thread::unify(Object* term1, Object* term2, bool in_quant)
   //
   // Do the full dereference.
   //
-assert(term1->variableDereference()->hasLegalSub());
-assert(term2->variableDereference()->hasLegalSub());
+  assert(term1->variableDereference()->hasLegalSub());
+  assert(term2->variableDereference()->hasLegalSub());
   term1 = heap.dereference(term1);
   term2 = heap.dereference(term2);
   if (term1 == term2)
@@ -1694,300 +1921,140 @@ assert(term2->variableDereference()->hasLegalSub());
   //
   // At this point the terms are different.
   //
-  assert(term1->utag() < 8);
-  assert(term2->utag() < 8);
-  switch (CrossTag(term1->utag(), term2->utag()))
+  u_int ut1 = term1->getTag() & Object::UnifyMask;
+  u_int ut2 = term2->getTag() & Object::UnifyMask;
+
+  assert((ut1>>1) < 8);
+  assert((ut2>>1) < 8);
+  switch (CrossTag(ut1, ut2))
     {
       //
       // term1 is a variable
       //
-    case CrossTag(Object::uVar, Object::uVar):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1);
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	if (var1->isFrozen() && var2->isFrozen() 
-	    && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	bindVariables(var1, var2);
-	return(true);
-	break;
-      }
-	
-      case CrossTag(Object::uVar, Object::uObjVar):
-	{	
-	  Variable* var1 = OBJECT_CAST(Variable*, term1);
-	  if (var1->isFrozen() && !status.testHeatWave())
-	    {
-	      return(false);
-	    }
-	  bind(var1, term2);
-	  return(true);
-	  break;
-	}
-
-    case CrossTag(Object::uVar, Object::uCons):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1);
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var1, term2, simpterm);
-	if (flag == false)
-	  {
-	    bind(var1, simpterm);
-	  }
-	else if (flag == true)
-	  {
-	    return(false);
-	  } 
-	else
-	  {
-	    bindToSkelList(var1);
-	    return(unify(var1, term2, in_quant));
-	  }
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uVar, Object::uStruct):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1);
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var1, term2, simpterm);
-	if (flag == false)
-	  {
-	    bind(var1, simpterm);
-	  }
-	else if (flag == true)
-	  {
-	    return(false);
-	  } 
-	else
-	  {
-	    bindToSkelStruct(var1, term2);
-	    return(unify(var1, term2, in_quant));
-	  }
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uVar, Object::uQuant):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1);
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var1, term2, simpterm);
-	if (flag == false)
-	  {
-	    bind(var1, simpterm);
-	  }
-	else if (flag == true)
-	  {
-	    return(false);
-	  } 
-	else
-	  {
-	    bindToSkelQuant(var1);
-	    return(unify(var1, term2, in_quant));
-	  }
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uVar, Object::uConst):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1);
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	bind(var1, term2);
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uVar, Object::uSubst):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	Variable* var1 = OBJECT_CAST(Variable*, term1);
-	Object* simpterm;
-	if( (var1->isThawed() || status.testHeatWave())
-	    && occursCheck(ALL_CHECK, var1, term2, simpterm) == false)
-	  {
-	    bind(var1, simpterm);
-	    return true;
-	  }
-	else
-	  {
-	    PrologValue pterm1(term1);
-	    PrologValue pterm2(term2);
-	    heap.prologValueDereference(pterm1);
-	    heap.prologValueDereference(pterm2);
-	    return(unifyPrologValues(pterm1, pterm2));
-	  }
-	break;
-      }
-
-      //
-      // term1 is an object variable
-      //      
-    case CrossTag(Object::uObjVar, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	bind(var2, term1);
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uObjVar, Object::uObjVar):
-      {
-	ObjectVariable* obvar1 = OBJECT_CAST(ObjectVariable*, term1);
-	ObjectVariable* obvar2 = OBJECT_CAST(ObjectVariable*, term2);
-	if ((obvar1->isFrozen() && obvar2->isFrozen() 
-	    && !status.testHeatWave()) 
-	    ||
-	    obvar1->distinctFrom(obvar2))
-	  {
-	    return(false);
-	  }
-	bindObjectVariables(obvar1,obvar2);
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uObjVar, Object::uCons):
-    case CrossTag(Object::uObjVar, Object::uStruct):
-    case CrossTag(Object::uObjVar, Object::uQuant):
-    case CrossTag(Object::uObjVar, Object::uConst):
-      return(false);
+    case CrossTag(Object::UVar, Object::UVar):
+      assert(!OBJECT_CAST(Reference*, term2)->hasExtraInfo());
+      bindVarVar(term1, term2);
+      return(true);
+      break;
+    case CrossTag(Object::UVar, Object::UVarOC):
+      bindAndTrail(term1, term2);
+      return(true);
+      break;
+    case CrossTag(Object::UVar, Object::UNumber):
+    case CrossTag(Object::UVar, Object::UAtom):
+    case CrossTag(Object::UVar, Object::UString):
+    case CrossTag(Object::UVar, Object::UStruct):
+    case CrossTag(Object::UVar, Object::UCons):
+    case CrossTag(Object::UVar, Object::UOther):
+      assert(!OBJECT_CAST(Reference*, term1)->hasExtraInfo());
+      bindAndTrail(term1, term2);
+      return(true);
       break;
 
-    case CrossTag(Object::uObjVar, Object::uSubst):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	heap.prologValueDereference(pterm1);
-	heap.prologValueDereference(pterm2);
-	return(unifyPrologValues(pterm1, pterm2));
-	break;
-      } 
-      
       //
-      // term1 is a list
+      // term1 is a variable with OC set
       //
-
-    case CrossTag(Object::uCons, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	Object* simpterm;
-       	truth3 flag = occursCheck(ALL_CHECK, var2, term1, simpterm);
-	if (flag == false)
-	  {
-	    bind(var2, simpterm);
-	  }
-	else if (flag == true)
-	  {
-	    return(false);
-	  } 
-	else
-	  {
-	    bindToSkelList(var2);
-	    return(unify(var2, term1, in_quant));
-	  }
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uCons, Object::uObjVar):
-      return(false);
+    case CrossTag(Object::UVarOC, Object::UVar):
+      bindAndTrail(term2, term1);
+      return(true);
+      break;
+    case CrossTag(Object::UVarOC, Object::UVarOC):
+      assert(!OBJECT_CAST(Reference*, term2)->hasExtraInfo());
+      bindVarVar(term1, term2);
+      return(true);
+      break;
+    case CrossTag(Object::UVarOC, Object::UNumber):
+    case CrossTag(Object::UVarOC, Object::UAtom):
+    case CrossTag(Object::UVarOC, Object::UString):
+      bindAndTrail(term1, term2);
+      return(true);
+      break;
+    case CrossTag(Object::UVarOC, Object::UStruct):
+    case CrossTag(Object::UVarOC, Object::UCons):
+    case CrossTag(Object::UVarOC, Object::UOther):
+      return unifyVarOCTerm(term1, term2, in_quant);
       break;
 
-    case CrossTag(Object::uCons, Object::uCons):
-      {
-	Cons* list1 = OBJECT_CAST(Cons*, term1);
-	Cons* list2 = OBJECT_CAST(Cons*, term2);
-	return (unify(list1->getHead(), list2->getHead(), in_quant) &&
-		unify(list1->getTail(), list2->getTail(), in_quant));
-	break;
-      }
-
-    case CrossTag(Object::uCons, Object::uStruct):
-    case CrossTag(Object::uCons, Object::uQuant):
-    case CrossTag(Object::uCons, Object::uConst):
+      //
+      // term1 is a number
+      //
+    case CrossTag(Object::UNumber, Object::UVar):
+    case CrossTag(Object::UNumber, Object::UVarOC):
+      bindAndTrail(term2, term1);
+      return(true);
+      break;
+    case CrossTag(Object::UNumber, Object::UNumber):
+      return term1->equalUninterp(term2);
+      break;
+    case CrossTag(Object::UNumber, Object::UAtom):
+    case CrossTag(Object::UNumber, Object::UString):
+    case CrossTag(Object::UNumber, Object::UStruct):
+    case CrossTag(Object::UNumber, Object::UCons):
       return(false);
       break;
+    case CrossTag(Object::UNumber, Object::UOther):
+      return unifyOtherConst(term2, term1, in_quant);
+      break;
+      //
+      // term1 is an atom
+      //
+    case CrossTag(Object::UAtom, Object::UVar):
+    case CrossTag(Object::UAtom, Object::UVarOC):
+      bindAndTrail(term2, term1);
+      return(true);
+      break;
+    case CrossTag(Object::UAtom, Object::UNumber):
+    case CrossTag(Object::UAtom, Object::UAtom):
+    case CrossTag(Object::UAtom, Object::UString):
+    case CrossTag(Object::UAtom, Object::UStruct):
+    case CrossTag(Object::UAtom, Object::UCons):
+      return(false);
+      break;
+    case CrossTag(Object::UAtom, Object::UOther):
+      return unifyOtherConst(term2, term1, in_quant);
+      break;
 
-    case CrossTag(Object::uCons, Object::uSubst):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	heap.prologValueDereference(pterm1);
-	heap.prologValueDereference(pterm2);
-	return(unifyPrologValues(pterm1, pterm2));
-	break;
-      }
-
+      //
+      // term1 is an string
+      //
+    case CrossTag(Object::UString, Object::UVar):
+    case CrossTag(Object::UString, Object::UVarOC):
+      bindAndTrail(term2, term1);
+      return(true);
+      break;
+    case CrossTag(Object::UString, Object::UNumber):
+    case CrossTag(Object::UString, Object::UAtom):
+    case CrossTag(Object::UString, Object::UStruct):
+      return(false);
+      break;
+    case CrossTag(Object::UString, Object::UString):
+      return (term1->equalUninterp(term2));
+      break;
+    case CrossTag(Object::UString, Object::UCons):
+      return (unify(heap.newCons(OBJECT_CAST(StringObject*, term1)->getChars()), term2, in_quant));
+      break;
+    case CrossTag(Object::UString, Object::UOther):
+      return unifyOtherTerm(term2, term1, in_quant);
+      break;
 
       //
       // term1 is a structure
       //
-
-    case CrossTag(Object::uStruct, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var2, term1, simpterm);
-	if (flag == false)
-	  {
-	    bind(var2, simpterm);
-	  }
-	else if (flag == true)
-	  {
-	    return(false);
-	  } 
-	else
-	  {
-	    bindToSkelStruct(var2, term1);
-	    return(unify(var2, term1, in_quant));
-	  }
-	return(true);
-	break;
-      }
-	
-    case CrossTag(Object::uStruct, Object::uObjVar):
-    case CrossTag(Object::uStruct, Object::uCons):
+    case CrossTag(Object::UStruct, Object::UVar):
+      assert(!OBJECT_CAST(Reference*, term2)->hasExtraInfo());
+      bindAndTrail(term2, term1);
+      return(true);
+      break;
+    case CrossTag(Object::UStruct, Object::UVarOC):
+      return unifyVarOCTerm(term2, term1, in_quant);
+      break;
+    case CrossTag(Object::UStruct, Object::UNumber):
+    case CrossTag(Object::UStruct, Object::UAtom):
+    case CrossTag(Object::UStruct, Object::UString):
+    case CrossTag(Object::UStruct, Object::UCons):
       return(false);
       break;
-
-    case CrossTag(Object::uStruct, Object::uStruct):
+    case CrossTag(Object::UStruct, Object::UStruct):
       {
 	Structure* struct1 = OBJECT_CAST(Structure*, term1);
 	Structure* struct2 = OBJECT_CAST(Structure*, term2);
@@ -1997,7 +2064,9 @@ assert(term2->variableDereference()->hasLegalSub());
 	  {
 	    return(false);
 	  }
-	if (!unify(struct1->getFunctor(), struct2->getFunctor(), in_quant))
+	Object* funct1 = struct1->getFunctor();
+	Object* funct2 = struct2->getFunctor();
+	if ((funct1 != funct2) && !unify(funct1, funct2, in_quant))
 	  {
 	    return(false);
 	  }
@@ -2013,164 +2082,62 @@ assert(term2->variableDereference()->hasLegalSub());
 	break;
       }
 
-    case CrossTag(Object::uStruct, Object::uQuant):
-    case CrossTag(Object::uStruct, Object::uConst):
+    case CrossTag(Object::UStruct, Object::UOther):
+      return unifyOtherTerm(term2, term1, in_quant);
+      break;
+
+      //
+      // term1 is a cons
+      //
+    case CrossTag(Object::UCons, Object::UVar):
+      bindAndTrail(term2, term1);
+      return(true);
+      break;
+     case CrossTag(Object::UCons, Object::UVarOC):
+      return unifyVarOCTerm(term2, term1, in_quant);
+      break;
+    case CrossTag(Object::UCons, Object::UNumber):
+    case CrossTag(Object::UCons, Object::UAtom):
+    case CrossTag(Object::UCons, Object::UStruct):
       return(false);
       break;
-
-    case CrossTag(Object::uStruct, Object::uSubst):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	heap.prologValueDereference(pterm1);
-	heap.prologValueDereference(pterm2);
-	return(unifyPrologValues(pterm1, pterm2));
-	break;
-      }
-
-      //
-      // term1 is a quantified term
-      //
-    case CrossTag(Object::uQuant, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var2, term1, simpterm);
-	if (flag == false)
-	  {
-	    bind(var2, simpterm);
-	  }
-	else if (flag == true)
-	  {
-	    return(false);
-	  } 
-	else
-	  {
-	    bindToSkelQuant(var2);
-	    return(unify(var2, term1, in_quant));
-	  }
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uQuant, Object::uObjVar):
-    case CrossTag(Object::uQuant, Object::uCons):
-    case CrossTag(Object::uQuant, Object::uStruct):
-      return(false);
+    case CrossTag(Object::UCons, Object::UString):
+      return (unify(heap.newCons(OBJECT_CAST(StringObject*, term2)->getChars()), term1, in_quant));
       break;
-  
-    case CrossTag(Object::uQuant, Object::uQuant):
+    case CrossTag(Object::UCons, Object::UCons):
       {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	return(unifyQuantifiers(pterm1, pterm2, false));
+	Cons* list1 = OBJECT_CAST(Cons*, term1);
+	Cons* list2 = OBJECT_CAST(Cons*, term2);
+	return (unify(list1->getHead(), list2->getHead(), in_quant) &&
+		unify(list1->getTail(), list2->getTail(), in_quant));
 	break;
       }
-      
-    case CrossTag(Object::uQuant, Object::uConst):
-      return(false);
+    case CrossTag(Object::UCons, Object::UOther):
+      return unifyOtherTerm(term2, term1, in_quant);
       break;
 
-    case CrossTag(Object::uQuant, Object::uSubst):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	heap.prologValueDereference(pterm1);
-	heap.prologValueDereference(pterm2);
-	return(unifyPrologValues(pterm1, pterm2));
-	break;
-      }
-
       //
-      // term1 is a constant.
+      // term1 is other {sub, obvar, quant, other_var}
       //
-
-    case CrossTag(Object::uConst, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	bind(var2, term1);
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uConst, Object::uObjVar):
-    case CrossTag(Object::uConst, Object::uCons):
-    case CrossTag(Object::uConst, Object::uStruct):
-    case CrossTag(Object::uConst, Object::uQuant):
-      return(false);
+    case CrossTag(Object::UOther, Object::UVar):
+      bindAndTrail(term2, term1);
+      return(true);
       break;
-
-    case CrossTag(Object::uConst, Object::uConst):
-      return (term1->equalConstants(term2));
+    case CrossTag(Object::UOther, Object::UVarOC):
+      return unifyVarOCTerm(term2, term1, in_quant);
       break;
-
-    case CrossTag(Object::uConst, Object::uSubst):
+    case CrossTag(Object::UOther, Object::UNumber):
+    case CrossTag(Object::UOther, Object::UAtom):
+      return unifyOtherConst(term1, term2, in_quant);
+      break;
+    case CrossTag(Object::UOther, Object::UString):
+    case CrossTag(Object::UOther, Object::UStruct):
+    case CrossTag(Object::UOther, Object::UCons):
+      return unifyOtherTerm(term1, term2, in_quant);
+      break;
+    case CrossTag(Object::UOther, Object::UOther):
       {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	
-	heap.prologValueDereference(pterm2);
-	return(unifyPrologValues(pterm1, pterm2));
-	break;
-      }
-
-      //
-      // term1 is a substitution.
-      //
-
-    case CrossTag(Object::uSubst, Object::uVar):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	Variable* var2 = OBJECT_CAST(Variable*, term2);
-	Object* simpterm;
-	if( (var2->isThawed() || status.testHeatWave())
-	    && occursCheck(ALL_CHECK, var2, term1, simpterm) == false)
-	  {
-	    bind(var2, simpterm);
-	    return true;
-	  }
-	else
-	  {
-	    PrologValue pterm1(term1);
-	    PrologValue pterm2(term2);
-	    heap.prologValueDereference(pterm1);
-	    heap.prologValueDereference(pterm2);
-	    return(unifyPrologValues(pterm1, pterm2));
-	  }
-	break;
-      }
-
-    case CrossTag(Object::uSubst, Object::uObjVar):
-    case CrossTag(Object::uSubst, Object::uCons):
-    case CrossTag(Object::uSubst, Object::uStruct):   
-    case CrossTag(Object::uSubst, Object::uQuant):
-    case CrossTag(Object::uSubst, Object::uConst):
-    case CrossTag(Object::uSubst, Object::uSubst):
-      {
-        assert(term1->hasLegalSub());
-        assert(term2->hasLegalSub());
-	PrologValue pterm1(term1);
-	PrologValue pterm2(term2);
-	heap.prologValueDereference(pterm1);
-	heap.prologValueDereference(pterm2);
-	return(unifyPrologValues(pterm1, pterm2));
+	return unifyAsPrologValues(term1, term2, in_quant);
 	break;
       }
 
@@ -2223,6 +2190,389 @@ Thread::structuralUnifySubs(Object* sub1, Object* sub2)
   return (sub1->isNil() && sub2->isNil());
 }
 
+bool
+Thread::structuralUnifyVarVar(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isVariable());
+  assert(term2.getTerm()->isVariable());
+
+  if (term1.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term1);
+    }
+  if (term2.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term2);
+    }
+  
+  Object* sub1 = term1.getSubstitutionBlockList();
+  Object* sub2 = term2.getSubstitutionBlockList();
+  Object* t1 = term1.getTerm();
+  Object* t2 = term2.getTerm();
+  
+  Variable* var1 = OBJECT_CAST(Variable*, t1);
+  Variable* var2 = OBJECT_CAST(Variable*, t2);
+  
+  // Walk through the subs
+  int size1 = 0;
+  for ( ;
+	sub1->isCons();
+	sub1 = OBJECT_CAST(Cons *, sub1)->getTail() ) size1++;
+
+  int size2 = 0;
+  for ( ;
+	sub2->isCons();
+	sub2 = OBJECT_CAST(Cons *, sub2)->getTail() ) size2++;
+
+
+  // sub2 is longer than sub1
+  if (size2 > size1)
+    {
+      if (var1->isFrozen() && !status.testHeatWave())
+	{
+	  return(false);
+	}
+      Object* newsub = 
+	heap.copySubSpineN(term2.getSubstitutionBlockList(), size2 - size1);
+
+      assert(newsub->isCons());
+      Object* newterm = heap.newSubstitution(newsub,t2);
+      
+      Object* simpterm;
+      truth3 flag = occursCheck(ALL_CHECK, var1, newterm, simpterm);
+      if (flag == false)
+	{
+	  bind(var1, simpterm);
+	}
+      else
+	{
+	  return(false);
+	}
+      heap.prologValueDereference(term1);
+    }
+  // sub1 is longer than sub2
+  else if (size1 > size2)
+    {
+      if (var2->isFrozen() && !status.testHeatWave())
+	{
+	  return(false);
+	}
+      Object* newsub =
+	heap.copySubSpineN(term1.getSubstitutionBlockList(), size1 - size2);
+
+      assert(newsub->isCons());
+      Object* newterm = heap.newSubstitution(newsub,t1);
+      
+      Object* simpterm;
+      truth3 flag = occursCheck(ALL_CHECK, var2, newterm, simpterm);
+      if (flag == false)
+	{
+	  bind(var2, simpterm);
+	}
+      else
+	{
+	  return(false);
+	}
+      heap.prologValueDereference(term2);
+    }
+  else
+    {
+      assert(size1 == size2);
+      if (term1.getTerm() != term2.getTerm())
+	{
+	  if (var1->isFrozen() && var2->isFrozen() && !status.testHeatWave())
+	    {
+	      return(false);
+	    }
+	  bindVariables(var1, var2);
+	  heap.prologValueDereference(term1);
+	  heap.prologValueDereference(term2);
+	}
+    }
+  
+  assert(term1.getTerm() == term2.getTerm());
+  sub1 = term1.getSubstitutionBlockList();
+  sub2 = term2.getSubstitutionBlockList();
+  return structuralUnifySubs(sub1, sub2);
+}
+
+bool
+Thread::structuralUnifyVarQuantifier(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isVariable());
+  assert(term2.getTerm()->isQuantifiedTerm());
+
+  Object* t1 = term1.getTerm();
+  Variable* var1 = OBJECT_CAST(Variable*, t1);
+  if (var1->isFrozen() && !status.testHeatWave())
+    {
+      return(false);
+    }
+
+  if (term1.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term1);
+    }
+  if (term2.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term2);
+    }
+  
+  Object* sub1 = term1.getSubstitutionBlockList();
+  Object* sub2 = term2.getSubstitutionBlockList();
+  Object* t2 = term2.getTerm();
+  
+  
+  // Walk through the subs
+  int size1 = 0;
+  for ( ;
+	sub1->isCons();
+	sub1 = OBJECT_CAST(Cons *, sub1)->getTail() ) size1++;
+
+  int size2 = 0;
+  for ( ;
+	sub2->isCons();
+	sub2 = OBJECT_CAST(Cons *, sub2)->getTail() ) size2++;
+
+
+  // sub2 is longer than sub1
+  if (size2 > size1)
+    {
+
+
+      Object* newsub = 
+	heap.copySubSpineN(term2.getSubstitutionBlockList(), size2 - size1);
+
+      assert(newsub->isCons());
+      Object* newterm = heap.newSubstitution(newsub,t2);
+      
+      Object* simpterm;
+      truth3 flag = occursCheck(ALL_CHECK, var1, newterm, simpterm);
+      if (flag == false)
+	{
+	  QuantifiedTerm* newQuant = heap.newQuantifiedTerm();
+	  Variable* q = heap.newVariable();
+	  Variable* bv = heap.newVariable();
+	  Variable* b = heap.newVariable();
+	  q->setOccursCheck();
+	  bv->setOccursCheck();
+	  b->setOccursCheck();
+	  newQuant->setQuantifier(q);
+	  newQuant->setBoundVars(bv);
+	  newQuant->setBody(b);
+	  Object* skelterm = heap.newSubstitution(newsub,newQuant);
+
+	  bind(var1, skelterm);
+	  return structuralUnify(term1, term2);
+	}
+      else
+	{
+	  return(false);
+	}
+    }
+  // sub1 is longer than sub2
+  else if (size1 > size2)
+    {
+      return false;
+     }
+  else
+    {
+      assert(size1 == size2);
+      bindToSkelQuant(var1);
+      return structuralUnify(term1, term2);
+    }
+}
+
+
+bool
+Thread::structuralUnifyVarStruct(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isVariable());
+  assert(term2.getTerm()->isStructure());
+
+  Object* t1 = term1.getTerm();
+  Variable* var1 = OBJECT_CAST(Variable*, t1);
+  if (var1->isFrozen() && !status.testHeatWave())
+    {
+      return(false);
+    }
+  if (term1.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term1);
+    }
+  Object* simpterm;
+  truth3 flag = occursCheck(ALL_CHECK, var1,
+			    heap.prologValueToObject(term2), simpterm);
+  if (flag == false)
+    {
+      if (term1.getSubstitutionBlockList()->isCons())
+	{
+	  bindToSkelStruct(var1, term2.getTerm());
+	  return structuralUnify(term1, term2);
+	}
+      else
+	{
+	  bind(var1, simpterm);
+	  return(true);
+	}
+    }
+  else
+    {
+      return(false);
+    }
+}
+
+bool
+Thread::structuralUnifyVarCons(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isVariable());
+  assert(term2.getTerm()->isCons());
+
+  Object* t1 = term1.getTerm();
+  Variable* var1 = OBJECT_CAST(Variable*, t1);
+  if (var1->isFrozen() && !status.testHeatWave())
+    {
+      return(false);
+    }
+  if (term1.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term1);
+    }
+  Object* simpterm;
+  truth3 flag = occursCheck(ALL_CHECK, var1,
+			    heap.prologValueToObject(term2), simpterm);
+  if (flag == false)
+    {
+      if (term1.getSubstitutionBlockList()->isCons())
+	{
+	  bindToSkelList(var1);
+	  return structuralUnify(term1, term2);
+	}
+      else
+	{
+	  bind(var1, simpterm);
+	  return(true);
+	}
+    }
+  else
+    {
+      return(false);
+    }
+}
+
+inline bool
+Thread::structuralUnifyVarConst(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isVariable());
+  Variable* var1 = OBJECT_CAST(Variable*, term1.getTerm());
+  if (var1->isFrozen() && !status.testHeatWave())
+    {
+      return(false);
+    }
+  bind(var1, term2.getTerm());
+  return(true);
+}
+
+inline bool
+Thread::structuralUnifyObjVarObjVar(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isObjectVariable());
+  assert(term2.getTerm()->isObjectVariable());
+  if (!structuralUnifySubs(term1.getSubstitutionBlockList(), 
+			   term2.getSubstitutionBlockList()))
+    return false;
+
+  ObjectVariable* obvar1 = OBJECT_CAST(ObjectVariable*, term1.getTerm());
+  ObjectVariable* obvar2 = OBJECT_CAST(ObjectVariable*, term2.getTerm());
+  if ((obvar1->isFrozen() && obvar2->isFrozen() && !status.testHeatWave())
+      || obvar1->distinctFrom(obvar2))
+    {
+      return(false);
+    }
+  bindObjectVariables(obvar1,obvar2);
+  return(true);
+}
+
+bool
+Thread::structuralUnifyVarObjVar(PrologValue& term1, PrologValue& term2)
+{
+  assert(term1.getTerm()->isVariable());
+  assert(term2.getTerm()->isObjectVariable());
+
+   Object* t1 = term1.getTerm();
+  Variable* var1 = OBJECT_CAST(Variable*, t1);
+  if (var1->isFrozen() && !status.testHeatWave())
+    {
+      return(false);
+    }
+
+  if (term1.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term1);
+    }
+  if (term2.getSubstitutionBlockList()->isCons())
+    {
+      heap.dropSubFromTerm(*this, term2);
+    }
+  
+  Object* sub1 = term1.getSubstitutionBlockList();
+  Object* sub2 = term2.getSubstitutionBlockList();
+  Object* t2 = term2.getTerm();
+  
+  
+  // Walk through the subs
+  int size1 = 0;
+  for ( ;
+	sub1->isCons();
+	sub1 = OBJECT_CAST(Cons *, sub1)->getTail() ) size1++;
+
+  int size2 = 0;
+  for ( ;
+	sub2->isCons();
+	sub2 = OBJECT_CAST(Cons *, sub2)->getTail() ) size2++;
+
+
+  // sub2 is longer than sub1
+  if (size2 > size1)
+    {
+
+
+      Object* newsub = 
+	heap.copySubSpineN(term2.getSubstitutionBlockList(), size2 - size1);
+
+      assert(newsub->isCons());
+      Object* newterm = heap.newSubstitution(newsub,t2);
+      
+      Object* simpterm;
+      truth3 flag = occursCheck(ALL_CHECK, var1, newterm, simpterm);
+      if (flag == false)
+	{
+	  bind(var1, simpterm);
+	}
+      else
+	{
+	  return(false);
+	}
+    }
+  // sub1 is longer than sub2
+  else if (size1 > size2)
+    {
+      return false;
+     }
+  else
+    {
+      assert(size1 == size2);
+      bind(var1, t2);
+    }
+  heap.prologValueDereference(term1);
+  assert(term1.getTerm() == term2.getTerm());
+  sub1 = term1.getSubstitutionBlockList();
+  sub2 = term2.getSubstitutionBlockList();
+  
+  return structuralUnifySubs(sub1, sub2);
+
+}
+
 //
 // Structural unify. This unifies two terms as "structures" - i.e.
 // Quantified terms and terms with substitutions are considered
@@ -2244,524 +2594,129 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
   //
   // At this point the terms are different.
   //
-  assert(term1.getTerm()->utag() < 8);
-  assert(term2.getTerm()->utag() < 8);
-  switch (CrossTag(term1.getTerm()->utag(), term2.getTerm()->utag()))
+
+  u_int ut1 = term1.getTerm()->getTag() & Object::UnifyMask;
+  u_int ut2 = term2.getTerm()->getTag() & Object::UnifyMask;
+
+  assert((ut1>>1) < 8);
+  assert((ut2>>1) < 8);
+  switch (CrossTag(ut1, ut2))
     {
       //
       // term1 is a variable
       //
-    case CrossTag(Object::uVar, Object::uVar):
-      {
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-	
-	Object* sub1 = term1.getSubstitutionBlockList();
-	Object* sub2 = term2.getSubstitutionBlockList();
-	Object* t1 = term1.getTerm();
-	Object* t2 = term2.getTerm();
-	
-	Variable* var1 = OBJECT_CAST(Variable*, t1);
-	Variable* var2 = OBJECT_CAST(Variable*, t2);
-	
-	// Walk through the subs
-	for ( ;
-	      sub1->isCons() && sub2->isCons();
-	      sub1 = OBJECT_CAST(Cons *, sub1)->getTail(),
-		sub2 = OBJECT_CAST(Cons *, sub2)->getTail())
-	  {}
-	
-	// sub2 is longer than sub1
-	if (sub1->isNil() && !sub2->isNil())
-	  {
-	    if (var1->isFrozen() 
-		&& !status.testHeatWave())
-	      {
-		return(false);
-	      }
-	    Object* newsub = 
-	      heap.copySubSpine(term2.getSubstitutionBlockList(),
-				OBJECT_CAST(Cons *, sub2)->getTail(), 
-                                AtomTable::nil);
-            assert(newsub->isCons());
-	    Object* newterm = heap.newSubstitution(newsub,t2);
-	    
-	    Object* simpterm;
-	    truth3 flag = occursCheck(ALL_CHECK, var1, newterm, simpterm);
-	    if (flag == false)
-	      {
-		bind(var1, simpterm);
-	      }
-	    else
-	      {
-		return(false);
-	      } 
-	    heap.prologValueDereference(term1);
-	  }
-	// sub1 is longer than sub2
-	else if (sub2->isNil() && !sub1->isNil())
-	  {
-	    if (var2->isFrozen() 
-		&& !status.testHeatWave())
-	      {
-		return(false);
-	      }
-	    Object* newsub = 
-	      heap.copySubSpine(term1.getSubstitutionBlockList(),
-				OBJECT_CAST(Cons *, sub1)->getTail(), 
-                                AtomTable::nil);
-            assert(newsub->isCons());
-	    Object* newterm = heap.newSubstitution(newsub,t1);
-	    
-	    Object* simpterm;
-	    truth3 flag = occursCheck(ALL_CHECK, var2, newterm, simpterm);
-	    if (flag == false)
-	      {
-		bind(var2, simpterm);
-	      }
-	    else
-	      {
-		return(false);
-	      } 
-	    heap.prologValueDereference(term2);
-	  }
-	else
-	  {
-	    assert(sub1->isNil() && sub2->isNil());
-	    if (term1.getTerm() != term2.getTerm())
-	      {
-		if (var1->isFrozen() && var2->isFrozen() 
-		    && !status.testHeatWave())
-		  {
-		    return(false);
-		  }
-		bindVariables(var1, var2);
-		heap.prologValueDereference(term1);
-		heap.prologValueDereference(term2);
-	      }
-	  }
-	
-	assert(term1.getTerm() == term2.getTerm());
-	sub1 = term1.getSubstitutionBlockList();
-	sub2 = term2.getSubstitutionBlockList();
-	
-	return structuralUnifySubs(sub1, sub2);
-	
-	break;
-      }
+    case CrossTag(Object::UVar, Object::UVar):
+    case CrossTag(Object::UVar, Object::UVarOC):
+    case CrossTag(Object::UVarOC, Object::UVar):
+    case CrossTag(Object::UVarOC, Object::UVarOC):
+      return structuralUnifyVarVar(term1, term2);
+      break;
       
-    case CrossTag(Object::uVar, Object::uObjVar):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1.getTerm());
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-	
-	Object* sub1 = term1.getSubstitutionBlockList();
-	Object* sub2 = term2.getSubstitutionBlockList();
-	Object* t2 = term2.getTerm();
-	
-	// Walk through the subs
-	for ( ;
-	      sub1->isCons() && sub2->isCons();
-	      sub1 = OBJECT_CAST(Cons *, sub1)->getTail(),
-		sub2 = OBJECT_CAST(Cons *, sub2)->getTail())
-	  {}
-	
-	// sub2 is longer than sub1
-	if (sub1->isNil() && !sub2->isNil())
-	  {
-	    Object* newsub = 
-	      heap.copySubSpine(term2.getSubstitutionBlockList(),
-				OBJECT_CAST(Cons *, sub2)->getTail(), 
-                                AtomTable::nil);
-            assert(newsub->isCons());
-	    Object* newterm = heap.newSubstitution(newsub,t2);
-	    
-	    Object* simpterm;
-	    truth3 flag = occursCheck(ALL_CHECK, var1, newterm, simpterm);
-	    if (flag == false)
-	      {
-		bind(var1, simpterm);
-	      }
-	    else
-	      {
-		return(false);
-	      } 
-	    heap.prologValueDereference(term1);
-	  }
-	else if (sub1->isNil() && sub2->isNil())
-	  {
-	    bind(var1, t2);
-	    heap.prologValueDereference(term1);
-	  }
-	else
-	  {
-	    return false;
-	  }
-	
-	assert(term1.getTerm() == term2.getTerm());
-	sub1 = term1.getSubstitutionBlockList();
-	sub2 = term2.getSubstitutionBlockList();
-	
-	return structuralUnifySubs(sub1, sub2);
-	
-	break;
-      }
+    case CrossTag(Object::UVar, Object::UOther):
+    case CrossTag(Object::UVarOC, Object::UOther):
+      if (term2.getTerm()->isVariable())
+	return structuralUnifyVarVar(term1, term2);
+      else if (term2.getTerm()->isObjectVariable())
+	return structuralUnifyVarObjVar(term1, term2);
+      else
+	return structuralUnifyVarQuantifier(term1, term2);
+      break;
       
-    case CrossTag(Object::uVar, Object::uCons):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1.getTerm());
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var1,  
-				  heap.prologValueToObject(term2), simpterm);
-	if (flag == false)
-	  {
-	    if (term1.getSubstitutionBlockList()->isCons())
-	      {
-		bindToSkelList(var1);
-		return structuralUnify(term1, term2);
-	      }
-	    else
-	      {
-		bind(var1, simpterm);
-		return(true);
-	      }
-	  }
-	else 
-	  {
-	    return(false);
-	  } 
-	break;
-      }
-      
-    case CrossTag(Object::uVar, Object::uStruct):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1.getTerm());
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var1, 
-				  heap.prologValueToObject(term2), simpterm);
-	if (flag == false)
-	  {
-	    if (term1.getSubstitutionBlockList()->isCons())
-	      {
-		bindToSkelStruct(var1, term2.getTerm());
-		return structuralUnify(term1, term2);
-	      }
-	    else
-	      {
-		bind(var1, simpterm);
-		return(true);
-	      }
-	  }
-	else
-	  {
-	    return(false);
-	  } 
-	break;
-      }
-
-    case CrossTag(Object::uVar, Object::uQuant):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1.getTerm());
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var1, 
-				  heap.prologValueToObject(term2), simpterm);
-	if (flag == false)
-	  {
-	    if (term1.getSubstitutionBlockList()->isCons())
-	      {
-		bindToSkelQuant(var1);
-		return structuralUnify(term1, term2);
-	      }
-	    else
-	      {
-		bind(var1, simpterm);
-		return(true);
-	      }
-	  }
-	else
-	  {
-	    return(false);
-	  } 
-	break;
-      }
-
-    case CrossTag(Object::uVar, Object::uConst):
-      {
-	Variable* var1 = OBJECT_CAST(Variable*, term1.getTerm());
-	if (var1->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	bind(var1, term2.getTerm());
-	return(true);
-	break;
-      }
-
-      //
-      // term1 is an object variable
-      //      
-    case CrossTag(Object::uObjVar, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2.getTerm());
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-	
-	Object* sub1 = term1.getSubstitutionBlockList();
-	Object* sub2 = term2.getSubstitutionBlockList();
-	Object* t1 = term1.getTerm();
-	
-	// Walk through the subs
-	for ( ;
-	      sub1->isCons() && sub2->isCons();
-	      sub1 = OBJECT_CAST(Cons *, sub1)->getTail(),
-		sub2 = OBJECT_CAST(Cons *, sub2)->getTail())
-	  {}
-	
-	// sub1 is longer than sub2
-	if (sub2->isNil() && !sub1->isNil())
-	  {
-	    Object* newsub = 
-	      heap.copySubSpine(term1.getSubstitutionBlockList(),
-				OBJECT_CAST(Cons *, sub1)->getTail(), 
-                                AtomTable::nil);
-            assert(newsub->isCons());
-	    Object* newterm = heap.newSubstitution(newsub,t1);
-	    
-	    Object* simpterm;
-	    truth3 flag = occursCheck(ALL_CHECK, var2, newterm, simpterm);
-	    if (flag == false)
-	      {
-		bind(var2, simpterm);
-	      }
-	    else
-	      {
-		return(false);
-	      } 
-	    heap.prologValueDereference(term2);
-	  }
-	else if (sub1->isNil() && sub2->isNil())
-	  {
-	    bind(var2, t1);
-	    heap.prologValueDereference(term2);
-	  }
-	else
-	  {
-	    return false;
-	  }
-	
-	assert(term1.getTerm() == term2.getTerm());
-	sub1 = term1.getSubstitutionBlockList();
-	sub2 = term2.getSubstitutionBlockList();
-	
-	return structuralUnifySubs(sub1, sub2);
-	
-	break;
-      }
-
-    case CrossTag(Object::uObjVar, Object::uObjVar):
-      {
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-	
-	Object* sub1 = term1.getSubstitutionBlockList();
-	Object* sub2 = term2.getSubstitutionBlockList();
-	Object* t1 = term1.getTerm();
-	Object* t2 = term2.getTerm();
-
-	ObjectVariable* obvar1 = OBJECT_CAST(ObjectVariable*, t1);
-	ObjectVariable* obvar2 = OBJECT_CAST(ObjectVariable*, t2);
-	if (obvar1 != obvar2)
-	  {
-	    if ((obvar1->isFrozen() && obvar2->isFrozen() 
-		 && !status.testHeatWave()) 
-		||
-		obvar1->distinctFrom(obvar2))
-	      {
-		return(false);
-	      }
-	    bindObjectVariables(obvar1,obvar2);
-	  }
-	return structuralUnifySubs(sub1, sub2);
-
-	break;
-      }
-
-    case CrossTag(Object::uObjVar, Object::uCons):
-    case CrossTag(Object::uObjVar, Object::uStruct):
-    case CrossTag(Object::uObjVar, Object::uQuant):
-    case CrossTag(Object::uObjVar, Object::uConst):
-      return(false);
+    case CrossTag(Object::UVar, Object::UStruct):
+    case CrossTag(Object::UVarOC, Object::UStruct):
+      return structuralUnifyVarStruct(term1, term2);
+      break;
+    case CrossTag(Object::UVar, Object::UCons):
+    case CrossTag(Object::UVarOC, Object::UCons):
+      return structuralUnifyVarCons(term1, term2);
+      break;
+    case CrossTag(Object::UVar, Object::UNumber):
+    case CrossTag(Object::UVar, Object::UAtom):
+    case CrossTag(Object::UVar, Object::UString):
+    case CrossTag(Object::UVarOC, Object::UNumber):
+    case CrossTag(Object::UVarOC, Object::UAtom):
+    case CrossTag(Object::UVarOC, Object::UString):
+      return structuralUnifyVarConst(term1, term2);
       break;
 
       //
-      // term1 is a list
+      // term1 is a number
       //
-
-    case CrossTag(Object::uCons, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2.getTerm());
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var2, 
-				  heap.prologValueToObject(term1), simpterm);
-	if (flag == false)
-	  {
-	    if (term2.getSubstitutionBlockList()->isCons())
-	      {
-		bindToSkelList(var2);
-		return structuralUnify(term1, term2);
-	      }
-	    else
-	      {
-		bind(var2, simpterm);
-		return(true);
-	      }
-	  }
-	else 
-	  {
-	    return(false);
-	  } 
-	break;
-      }
-
-    case CrossTag(Object::uCons, Object::uObjVar):
-      return(false);
+    case CrossTag(Object::UNumber, Object::UVar):
+    case CrossTag(Object::UNumber, Object::UVarOC):
+      return structuralUnifyVarConst(term2, term1);
+      break;
+    case CrossTag(Object::UNumber, Object::UNumber):
+      return term1.getTerm()->equalUninterp(term2.getTerm());
+      break;
+    case CrossTag(Object::UNumber, Object::UAtom):
+    case CrossTag(Object::UNumber, Object::UString):
+    case CrossTag(Object::UNumber, Object::UStruct):
+    case CrossTag(Object::UNumber, Object::UCons):
+      return false;
+      break;
+    case CrossTag(Object::UNumber, Object::UOther):
+      return (term2.getTerm()->isVariable() &&
+	      structuralUnifyVarConst(term2, term1));
       break;
 
-    case CrossTag(Object::uCons, Object::uCons):
+      //
+      // term1 is an atom
+      //
+    case CrossTag(Object::UAtom, Object::UVar):
+    case CrossTag(Object::UAtom, Object::UVarOC):
+      return structuralUnifyVarConst(term2, term1);
+      break;
+    case CrossTag(Object::UAtom, Object::UAtom):
+    case CrossTag(Object::UAtom, Object::UString):
+    case CrossTag(Object::UAtom, Object::UStruct):
+    case CrossTag(Object::UAtom, Object::UCons):
+      return false;
+      break;
+    case CrossTag(Object::UAtom, Object::UOther):
+      return (term2.getTerm()->isVariable() &&
+	      structuralUnifyVarConst(term2, term1));
+      break;
+      //
+      // term1 is a string
+      //
+    case CrossTag(Object::UString, Object::UVar):
+    case CrossTag(Object::UString, Object::UVarOC):
+      return structuralUnifyVarConst(term2, term1);
+      break;
+    case CrossTag(Object::UString, Object::UAtom):
+      return false;
+      break;
+    case CrossTag(Object::UString, Object::UString):
+      return term1.getTerm()->equalUninterp(term2.getTerm());
+      break;
+    case CrossTag(Object::UString, Object::UStruct):
+      return false;
+      break;
+    case CrossTag(Object::UString, Object::UCons):
       {
-	Cons* list1 = OBJECT_CAST(Cons*, term1.getTerm());
-	Cons* list2 = OBJECT_CAST(Cons*, term2.getTerm());
-	PrologValue head1(term1.getSubstitutionBlockList(), list1->getHead());
-	PrologValue head2(term2.getSubstitutionBlockList(), list2->getHead());
-	PrologValue tail1(term1.getSubstitutionBlockList(),list1->getTail() );
-	PrologValue tail2(term2.getSubstitutionBlockList(), list2->getTail());
-	
-	return (structuralUnify(head1, head2) &&
-		structuralUnify(tail1, tail2));
-	break;
+	PrologValue term3(heap.newCons(OBJECT_CAST(StringObject*, term1.getTerm())->getChars()));
+	return structuralUnify(term3, term2);
+      break;
       }
-      
-    case CrossTag(Object::uCons, Object::uStruct):
-    case CrossTag(Object::uCons, Object::uQuant):
-    case CrossTag(Object::uCons, Object::uConst):
-      return(false);
+    case CrossTag(Object::UString, Object::UOther):
+      return (term2.getTerm()->isVariable() &&
+	      structuralUnifyVarConst(term2, term1));
       break;
 
       //
       // term1 is a structure
       //
-
-    case CrossTag(Object::uStruct, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2.getTerm());
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var2, 
-				  heap.prologValueToObject(term1), simpterm);
-	if (flag == false)
-	  {
-	    if (term2.getSubstitutionBlockList()->isCons())
-	      {
-		bindToSkelStruct(var2, term1.getTerm());
-		return structuralUnify(term1, term2);
-	      }
-	    else
-	      {
-		bind(var2, simpterm);
-		return(true);
-	      }
-	  }
-	else
-	  {
-	    return(false);
-	  } 
-	break;
-      }
-	
-    case CrossTag(Object::uStruct, Object::uObjVar):
-    case CrossTag(Object::uStruct, Object::uCons):
-      return(false);
+    case CrossTag(Object::UStruct, Object::UVar):
+    case CrossTag(Object::UStruct, Object::UVarOC):
+      return structuralUnifyVarStruct(term2, term1);
       break;
-
-    case CrossTag(Object::uStruct, Object::uStruct):
+    case CrossTag(Object::UStruct, Object::UNumber):
+    case CrossTag(Object::UStruct, Object::UAtom):
+    case CrossTag(Object::UStruct, Object::UString):
+      return false;
+      break;
+    case CrossTag(Object::UStruct, Object::UStruct):
       {
 	Structure* struct1 = OBJECT_CAST(Structure*, term1.getTerm());
 	Structure* struct2 = OBJECT_CAST(Structure*, term2.getTerm());
@@ -2787,72 +2742,96 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	return(true);
 	break;
       }
-
-    case CrossTag(Object::uStruct, Object::uQuant):
-    case CrossTag(Object::uStruct, Object::uConst):
-      return(false);
+    case CrossTag(Object::UStruct, Object::UCons):
+      return false;
+      break;
+    case CrossTag(Object::UStruct, Object::UOther):
+      return (term2.getTerm()->isVariable() &&
+	      structuralUnifyVarStruct(term2, term1));
       break;
 
       //
-      // term1 is a quantified term
+      // term1 is a cons
       //
-    case CrossTag(Object::uQuant, Object::uVar):
+    case CrossTag(Object::UCons, Object::UVar):
+    case CrossTag(Object::UCons, Object::UVarOC):
+      return structuralUnifyVarCons(term2, term1);
+      break;
+    case CrossTag(Object::UCons, Object::UNumber):
+    case CrossTag(Object::UCons, Object::UAtom):
+    case CrossTag(Object::UCons, Object::UStruct):
+      return false;
+      break;
+    case CrossTag(Object::UCons, Object::UString):
       {
-	Variable* var2 = OBJECT_CAST(Variable*, term2.getTerm());
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-
-	Object* simpterm;
-	truth3 flag = occursCheck(ALL_CHECK, var2, 
-				  heap.prologValueToObject(term1), simpterm);
-	if (flag == false)
-	  {
-	    if (term2.getSubstitutionBlockList()->isCons())
-	      {
-		bindToSkelQuant(var2);
-		return structuralUnify(term1, term2);
-	      }
-	    else
-	      {
-		bind(var2, simpterm);
-		return(true);
-	      }
-	  }
-	else
-	  {
-	    return(false);
-	  } 
+	PrologValue term3(heap.newCons(OBJECT_CAST(StringObject*, term2.getTerm())->getChars()));
+	return structuralUnify(term3, term1);
+      break;
+      }
+    case CrossTag(Object::UCons, Object::UCons):
+      {
+	Cons* list1 = OBJECT_CAST(Cons*, term1.getTerm());
+	Cons* list2 = OBJECT_CAST(Cons*, term2.getTerm());
+	PrologValue head1(term1.getSubstitutionBlockList(), list1->getHead());
+	PrologValue head2(term2.getSubstitutionBlockList(), list2->getHead());
+	PrologValue tail1(term1.getSubstitutionBlockList(),list1->getTail() );
+	PrologValue tail2(term2.getSubstitutionBlockList(), list2->getTail());
+	
+	return (structuralUnify(head1, head2) &&
+		structuralUnify(tail1, tail2));
 	break;
       }
-
-    case CrossTag(Object::uQuant, Object::uObjVar):
-    case CrossTag(Object::uQuant, Object::uCons):
-    case CrossTag(Object::uQuant, Object::uStruct):
-      return(false);
+    case CrossTag(Object::UCons, Object::UOther):
+      return (term2.getTerm()->isVariable() &&
+	      structuralUnifyVarCons(term2, term1));
       break;
-  
-    case CrossTag(Object::uQuant, Object::uQuant):
-      {
-	if (term1.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term1);
-	  }
-	if (term2.getSubstitutionBlockList()->isCons())
-	  {
-	    heap.dropSubFromTerm(*this, term2);
-	  }
-	if (!structuralUnifySubs(term1.getSubstitutionBlockList(),
-				 term2.getSubstitutionBlockList()))
-	  {
-	    return false;
-	  }
+      //
+      // term1 is a var, object variable or quant
+      //      
+    case CrossTag(Object::UOther, Object::UVar):
+    case CrossTag(Object::UOther, Object::UVarOC):
+      if (term1.getTerm()->isVariable())
+	return structuralUnifyVarVar(term2, term1);
+      else if (term1.getTerm()->isObjectVariable())
+	return structuralUnifyVarObjVar(term2, term1);
+      else
+	return structuralUnifyVarQuantifier(term2, term1);
+      break;
 
+    case CrossTag(Object::UOther, Object::UNumber):
+    case CrossTag(Object::UOther, Object::UAtom):
+    case CrossTag(Object::UOther, Object::UString):
+      return (term1.getTerm()->isVariable() &&
+	      structuralUnifyVarConst(term1, term2));
+      break;
+    case CrossTag(Object::UOther, Object::UStruct):
+      return (term1.getTerm()->isVariable() &&
+	      structuralUnifyVarStruct(term1, term2));
+      break;
+    case CrossTag(Object::UOther, Object::UCons):
+      return (term1.getTerm()->isVariable() &&
+	      structuralUnifyVarCons(term1, term2));
+      break;
+    case CrossTag(Object::UOther, Object::UOther):
+      {
+	if (term1.getTerm()->isVariable())
+	  if (term2.getTerm()->isVariable())
+	    return structuralUnifyVarVar(term1, term2);
+	  else if (term2.getTerm()->isObjectVariable())
+	    return structuralUnifyVarObjVar(term1, term2);
+	  else
+	    return structuralUnifyVarQuantifier(term1, term2);
+	if (term2.getTerm()->isVariable())
+	  if (term1.getTerm()->isObjectVariable())
+	    return structuralUnifyVarObjVar(term2, term1);
+	  else
+	    return structuralUnifyVarQuantifier(term2, term1);
+	if (term1.getTerm()->isObjectVariable())
+	  return (term2.getTerm()->isObjectVariable() &&
+		  structuralUnifyObjVarObjVar(term1, term2));
+
+	assert(term1.getTerm()->isQuantifiedTerm());
+	assert(term2.getTerm()->isQuantifiedTerm());
 	QuantifiedTerm* q1 = OBJECT_CAST(QuantifiedTerm*, term1.getTerm());
 	QuantifiedTerm* q2 = OBJECT_CAST(QuantifiedTerm*, term2.getTerm());
 	PrologValue qu1(q1->getQuantifier());
@@ -2861,52 +2840,17 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
 	PrologValue bv2(q2->getBoundVars());
 	PrologValue body1(q1->getBody());
 	PrologValue body2(q2->getBody());
-	return (structuralUnify(qu1, qu2)
+	return (structuralUnifySubs(term1.getSubstitutionBlockList(), 
+				    term2.getSubstitutionBlockList())
+		&& structuralUnify(qu1, qu2)
 		&& structuralUnify(bv1, bv2)
 		&& structuralUnify(body1, body2));
+
+
 	break;
       }
-      
-    case CrossTag(Object::uQuant, Object::uConst):
-      return(false);
-      break;
-
-      //
-      // term1 is a constant.
-      //
-
-    case CrossTag(Object::uConst, Object::uVar):
-      {
-	Variable* var2 = OBJECT_CAST(Variable*, term2.getTerm());
-	if (var2->isFrozen() && !status.testHeatWave())
-	  {
-	    return(false);
-	  }
-	bind(var2, term1.getTerm());
-	return(true);
-	break;
-      }
-
-    case CrossTag(Object::uConst, Object::uObjVar):
-    case CrossTag(Object::uConst, Object::uCons):
-    case CrossTag(Object::uConst, Object::uStruct):
-    case CrossTag(Object::uConst, Object::uQuant):
-      return(false);
-      break;
-
-    case CrossTag(Object::uConst, Object::uConst):
-      return (term1.getTerm()->equalConstants(term2.getTerm()));
-      break;
-
-    default:
-#ifndef NDEBUG
-      cerr << "Unmatched case in structuralUnify" << endl;
-      heap.prologValueToObject(term1)->printMe_dispatch(*atoms);
-      heap.prologValueToObject(term2)->printMe_dispatch(*atoms);
-#endif
-      assert(false);
-      return(false);
     }
+
   assert(false);
   return(false);
 }

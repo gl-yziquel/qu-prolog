@@ -146,6 +146,7 @@ Thread::generateDistinction(ObjectVariable *object_variable,
 	  ObjectVariable *domain 
 	    = OBJECT_CAST(ObjectVariable*, 
 			  sub_block->getDomain(i)->variableDereference());
+	  assert(domain->isObjectVariable());
 	  if (object_variable == domain)
 	    {
 	      return false;

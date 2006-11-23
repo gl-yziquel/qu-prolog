@@ -69,25 +69,25 @@
 StringLoc
 StringTab::add(const char *string)
 {
-	StringLoc	start = allocateBlock(static_cast<word32>(strlen(string) + 1));
+  StringLoc   start = allocateBlock(static_cast<word32>(strlen(string) + 1));
 
-	if (start == EMPTY_LOC)
-	{
-		//
-		// Hopefully we should never get here, so we return an
-		// "arbitrary" value.  OutOfPage in allocateBlock
-		// should recover the program in the appropriate manner.
-		//
-		return(EMPTY_LOC);
-	}
-	else
-	{
-		//
-		// Save the string in the string table.
-		//
-		strcpy(fetchAddr(start), string);
-		return(start);
-	}
+  if (start == EMPTY_LOC)
+    {
+      //
+      // Hopefully we should never get here, so we return an
+      // "arbitrary" value.  OutOfPage in allocateBlock
+      // should recover the program in the appropriate manner.
+      //
+      return(EMPTY_LOC);
+    }
+  else
+    {
+      //
+      // Save the string in the string table.
+      //
+      strcpy(fetchAddr(start), string);
+      return(start);
+    }
 }
 
 

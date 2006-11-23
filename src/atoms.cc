@@ -110,7 +110,7 @@ Thread::psi_atom_concat2(Object *& object1, Object *& object2,
     }
   else if (a1->isNumber())
     {
-      strm << a1->getNumber();
+      strm << a1->getInteger();
     }
   else
     {
@@ -122,7 +122,7 @@ Thread::psi_atom_concat2(Object *& object1, Object *& object2,
     }
   else if (a2->isNumber())
     {
-      strm << a2->getNumber();
+      strm << a2->getInteger();
     }
   else
     {
@@ -158,7 +158,7 @@ Thread::psi_concat_atom(Object *& object1, Object *& object2)
 	}
       else if (head->isNumber())
 	{
-	  strm << head->getNumber();
+	  strm << head->getInteger();
 	}
       else if (head->isSubstitution())
 	{
@@ -171,7 +171,7 @@ Thread::psi_concat_atom(Object *& object1, Object *& object2)
 	    }
 	  else if (head->isNumber())
 	    {
-	      strm << head->getNumber();
+	      strm << head->getInteger();
 	    }
 	  else
 	    {
@@ -223,7 +223,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
     }
   else if (val2->isNumber())
     {
-      strm1 << val2->getNumber();
+      strm1 << val2->getInteger();
     }
   else if (val2->isVariable())
     {
@@ -258,7 +258,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
 	}
       else if (head->isNumber())
 	{
-	  strm << head->getNumber();
+	  strm << head->getInteger();
 	}
       else if (head->isSubstitution())
 	{
@@ -271,7 +271,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
 	    }
 	  else if (head->isNumber())
 	    {
-	      strm << head->getNumber();
+	      strm << head->getInteger();
 	    }
 	  else
 	    {
@@ -318,7 +318,7 @@ Thread::psi_atom_search(Object *& object1, Object *& object2,
   if (val1->isAtom() && val2->isShort() && val3->isAtom())
     {
       const char *string1 = atoms->getAtomString(val1);
-      const char *substring = strstr(string1 + val2->getNumber() - 1,
+      const char *substring = strstr(string1 + val2->getInteger() - 1,
 				     atoms->getAtomString(val3));
       if (substring == NULL)
 	{
@@ -326,7 +326,7 @@ Thread::psi_atom_search(Object *& object1, Object *& object2,
 	}
       else
 	{
-	  object4 = heap.newNumber(static_cast<long>(strlen(string1) - strlen(substring)+1));
+	  object4 = heap.newInteger(static_cast<long>(strlen(string1) - strlen(substring)+1));
 	  return(RV_SUCCESS);
 	}
     }
@@ -375,9 +375,9 @@ Thread::psi_sub_atom(Object *& object1, Object *& object2,
   assert(val2->isShort());
   assert(val3->isShort());
   
-  length = val3->getNumber();
+  length = val3->getInteger();
   strncpy(atom_buf1,
-	  atoms->getAtomString(val1) + val2->getNumber() - 1, 
+	  atoms->getAtomString(val1) + val2->getInteger() - 1, 
 	  length);
   atom_buf1[length] = '\0';
   object4 = atoms->add(atom_buf1);

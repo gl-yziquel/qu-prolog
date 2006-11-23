@@ -54,7 +54,7 @@
 // 
 // ##Copyright##
 //
-// $Id: pseudo_instr_arrays.cc,v 1.64 2006/04/04 01:56:36 qp Exp $
+// $Id: psi_gen.pl,v 1.2 2000/12/14 23:50:16 qp Exp $
 
 #include "thread_qp.h"
 
@@ -195,7 +195,9 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_float,	0,	"psi_float"}, 
 	{&Thread::psi_srandom,	0,	"psi_srandom"}, 
 	{&Thread::psi_random_float,	1,	"psi_random_float"}, 
-	{&Thread::psi_icm_ping,	0,	"psi_icm_ping"}
+	{&Thread::psi_icm_ping,	0,	"psi_icm_ping"}, 
+	{&Thread::psi_make_cleanup_cp,	1,	"psi_make_cleanup_cp"}, 
+	{&Thread::psi_string,	0,	"psi_string"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -314,7 +316,15 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_is_not_free_in,	0,	"psi_is_not_free_in"}, 
 	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
 	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}, 
-	{&Thread::psi_write_float,	0,	"psi_write_float"}
+	{&Thread::psi_write_float,	0,	"psi_write_float"}, 
+	{&Thread::psi_select,	1,	"psi_select"}, 
+	{&Thread::psi_write_string,	0,	"psi_write_string"}, 
+	{&Thread::psi_writeq_string,	0,	"psi_writeq_string"}, 
+	{&Thread::psi_string_length,	1,	"psi_string_length"}, 
+	{&Thread::psi_stream_to_string,	1,	"psi_stream_to_string"}, 
+	{&Thread::psi_list_to_string,	1,	"psi_list_to_string"}, 
+	{&Thread::psi_string_to_atom,	1,	"psi_string_to_atom"}, 
+	{&Thread::psi_atom_to_string,	1,	"psi_atom_to_string"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -331,7 +341,7 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_stat_binding_trail,	3,	"psi_stat_binding_trail"}, 
 	{&Thread::psi_stat_code,	7,	"psi_stat_code"}, 
 	{&Thread::psi_stat_string,	7,	"psi_stat_string"}, 
-	{&Thread::psi_get_next_clause,	3,	"psi_get_next_clause"}, 
+	{&Thread::psi_random_range,	1,	"psi_random_range"}, 
 	{&Thread::psi_icm_register,	0,	"psi_icm_register"}, 
 	{&Thread::psi_set_domain,	0,	"psi_set_domain"}, 
 	{&Thread::psi_set_range,	0,	"psi_set_range"}, 
@@ -377,21 +387,17 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_thread_fork,	0,	"psi_thread_fork"}, 
 	{&Thread::psi_decompile,	1,	"psi_decompile"}, 
 	{&Thread::psi_make_sub_from_buffer,	1,	"psi_make_sub_from_buffer"}, 
-	{&Thread::psi_stat_object_trail,	3,	"psi_stat_object_trail"}, 
-	{&Thread::psi_stat_ip_trail,	3,	"psi_stat_ip_trail"}, 
-	{&Thread::psi_stat_tag_trail,	3,	"psi_stat_tag_trail"}, 
+	{&Thread::psi_stat_other_trail,	3,	"psi_stat_other_trail"}, 
+	{&Thread::psi_simplify_term3,	3,	"psi_simplify_term3"}, 
+	{&Thread::psi_get_double,	4,	"psi_get_double"}, 
 	{&Thread::psi_stat_scratchpad,	3,	"psi_stat_scratchpad"}, 
 	{&Thread::psi_get_delays,	4,	"psi_get_delays"}, 
 	{&Thread::psi_atom_concat2,	1,	"psi_atom_concat2"}, 
-	{&Thread::psi_stat_ref_trail,	3,	"psi_stat_ref_trail"}, 
-	{&Thread::psi_get_first_clause,	3,	"psi_get_first_clause"}, 
+	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}, 
+	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
 	{&Thread::psi_get_integer,	4,	"psi_get_integer"}, 
 	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}, 
-	{&Thread::psi_simplify_term3,	3,	"psi_simplify_term3"}, 
-	{&Thread::psi_get_double,	4,	"psi_get_double"}, 
-	{&Thread::psi_random_range,	1,	"psi_random_range"}, 
-	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
-	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}
+	{&Thread::psi_string_concat,	1,	"psi_string_concat"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {
@@ -410,7 +416,10 @@ pseudo_instr4_data pseudo_instr4_array[] =
 	{&Thread::psi_assert,	1,	"psi_assert"}, 
 	{&Thread::psi_ccompile,	1,	"psi_ccompile"}, 
 	{&Thread::psi_set_domains_apart,	0,	"psi_set_domains_apart"}, 
-	{&Thread::psi_new_sub,	1,	"psi_new_sub"}
+	{&Thread::psi_new_sub,	1,	"psi_new_sub"}, 
+	{&Thread::psi_get_first_clause,	3,	"psi_get_first_clause"}, 
+	{&Thread::psi_get_next_clause,	3,	"psi_get_next_clause"}, 
+	{&Thread::psi_split_string,	3,	"psi_split_string"}
 };
 pseudo_instr5_data pseudo_instr5_array[] =
 {

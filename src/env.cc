@@ -68,6 +68,7 @@
 #include "pred_table.h"
 #include "signals.h"
 #include "thread_qp.h"
+#include "execute.h"
 
 extern AtomTable *atoms;
 extern Object** lib_path;
@@ -126,7 +127,7 @@ Thread::call_predicate(int32 noargs, ...)
 	{
 	  PredCodeLoc = predicates->lookUp(AtomTable::call_exception, 1,
 					   atoms, code);
-	                                        // "$call_exception"
+	  // "$call_exception"
 	  arity = 0;
 	}
       else
@@ -169,6 +170,9 @@ Thread::call_predicate(int32 noargs, ...)
       return(RV_SUCCESS);
     }
   
+  // Save arity
+  int save_arity = arity;
+
   //
   // Get parameters of the predicate.
   //
@@ -222,16 +226,12 @@ Thread::call_predicate(int32 noargs, ...)
   else if (PredAddr.type() == PredCode::DYNAMIC_PRED)
     {
       DynamicPredicate* dp = PredAddr.getDynamicPred();
-      const word8 arg = dp->getIndexedArg();
-      ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]);
-      CodeLoc block = chain->first();
-      if (block == NULL)
-        {
-           return(RV_FAIL);
-        }
-      programCounter = block;
+      if( !initializeDPcall(dp, save_arity, programCounter))
+	{
+	  return(RV_FAIL);
+	}
       return(RV_SUCCESS);
-    }       
+    }
   else
     {
       programCounter = PredAddr.getPredicate(code);
@@ -252,24 +252,24 @@ Thread::psi_set_flag(Object *& object1, Object *& object2)
 
   assert(val1->isShort());
   assert(val2->isShort());
-  assert((val2->getNumber() == 1) || (val2->getNumber() == 0));
+  assert((val2->getInteger() == 1) || (val2->getInteger() == 0));
 
-  switch (val1->getNumber())
+  switch (val1->getInteger())
     {
     case 0: 
-      (val2->getNumber() == 1) ? status.setFastRetry() : status.resetFastRetry();
-      break;
+      (val2->getInteger() == 1) ? status.setFastRetry() : status.resetFastRetry();
+	break;
     case 1: 
-      val2->getNumber() == 1 
+      val2->getInteger() == 1 
 	? status.setOccursCheck() 
 	: status.resetOccursCheck();
-      break;
+	break;
     case 2: 
-      (val2->getNumber() == 1) ? status.setHeatWave() : status.resetHeatWave();
-      break;
+      (val2->getInteger() == 1) ? status.setHeatWave() : status.resetHeatWave();
+	break;
     case 3: 
 #if 0
-      if (val2->getNumber() == 1)
+      if (val2->getInteger() == 1)
 	{
 	  MachStatus.setEnableSignals();
 	  for (u_int i = 1; i < NSIG + 1; i++)
@@ -288,12 +288,12 @@ Thread::psi_set_flag(Object *& object1, Object *& object2)
 #endif //0
       break;
     case 4: 
-      val2->getNumber() == 1 
+      val2->getInteger() == 1 
 	? status.setDoingRetry() 
 	: status.resetDoingRetry();
-      break;
+	break;
     case 5:
-      if (val2->getNumber() == 1)
+      if (val2->getInteger() == 1)
 	{
 	  if (!status.testTimeslicing())
 	    {
@@ -332,7 +332,7 @@ Thread::psi_get_flag(Object *& object1, Object *& object2)
 
   assert(val1->isShort());
 
-  switch (val1->getNumber())
+  switch (val1->getInteger())
     {
     case 0: 
       state	= status.testFastRetry() ? 1 : 0;
@@ -355,7 +355,7 @@ Thread::psi_get_flag(Object *& object1, Object *& object2)
     default: 
       assert(false);
     }
-  object2 = heap.newNumber(state);
+  object2 = heap.newInteger(state);
   return(RV_SUCCESS);
 }
 
@@ -479,74 +479,80 @@ Thread::psi_get_qplibpath(Object *& object1)
 Thread::ReturnValue
 Thread::psi_uncurry(Object *& object1, Object *& object2)
 {
-        int32           i;
-        word32          arity;          // arity of the term.
+  int32           i;
+  word32          arity;          // arity of the term.
 
-        PrologValue     pval1(object1);
+  PrologValue     pval1(object1);
 
-        heap.prologValueDereference(pval1);
-        arity = 0;
+  heap.prologValueDereference(pval1);
+  arity = 0;
 
-        //
-        // Get predicate name and arity.
-        //
-        if (!pval1.getTerm()->isStructure())
-        {
-            object2 = object1;
-            return(RV_SUCCESS);
-        }
-        //
-        // pval1 is a structure
-        //
-	PrologValue 
-	  functor(pval1.getSubstitutionBlockList(), 
-		  OBJECT_CAST(Structure*, pval1.getTerm())->getFunctor());
-        heap.prologValueDereference(functor);
-        if (!functor.getTerm()->isStructure())
-        {
-            object2 = object1;
-            return(RV_SUCCESS);
-        }
-        //
-        // pval1 is higher order
-        //
-	PrologValue hi_func(pval1.getSubstitutionBlockList(), pval1.getTerm());
+  //
+  // Get predicate name and arity.
+  //
+  if (!pval1.getTerm()->isStructure())
+    {
+      object2 = object1;
+      return(RV_SUCCESS);
+    }
+  //
+  // pval1 is a structure
+  //
+  PrologValue 
+    functor(pval1.getSubstitutionBlockList(), 
+	    OBJECT_CAST(Structure*, pval1.getTerm())->getFunctor());
+  heap.prologValueDereference(functor);
+  if (!functor.getTerm()->isStructure())
+    {
+      object2 = object1;
+      return(RV_SUCCESS);
+    }
+  //
+  // pval1 is higher order
+  //
+  PrologValue hi_func(pval1.getSubstitutionBlockList(), pval1.getTerm());
 
-	assert(hi_func.getTerm()->isStructure());
-        do
-        {
-	  arity += static_cast<word32>(OBJECT_CAST(Structure*, hi_func.getTerm())->getArity());
-	  hi_func.setTerm(OBJECT_CAST(Structure*,
-				       hi_func.getTerm())->getFunctor());
-	  heap.prologValueDereference(hi_func);
-        } while (hi_func.getTerm()->isStructure());
+  assert(hi_func.getTerm()->isStructure());
+  do
+    {
+      arity += static_cast<word32>(OBJECT_CAST(Structure*, hi_func.getTerm())->getArity());
+      hi_func.setTerm(OBJECT_CAST(Structure*,
+				  hi_func.getTerm())->getFunctor());
+      heap.prologValueDereference(hi_func);
+    } while (hi_func.getTerm()->isStructure());
 
-	Structure* str = heap.newStructure(arity);
-	str->setFunctor(heap.prologValueToObject(hi_func));
+  Structure* str = heap.newStructure(arity);
+  str->setFunctor(heap.prologValueToObject(hi_func));
 
-	PrologValue term(pval1.getSubstitutionBlockList(), pval1.getTerm());
-        while (arity > 0)
-        {
-                heap.prologValueDereference(term);
-                for (i = static_cast<int32>(OBJECT_CAST(Structure*, term.getTerm())->getArity()) 
-		       ; i > 0; i--)
-                {
-		  PrologValue arg(term.getSubstitutionBlockList(),
-				  OBJECT_CAST(Structure*, 
-					      term.getTerm())->getArgument(i));
-		  str->setArgument(arity, heap.prologValueToObject(arg));
-		  arity--;
+  PrologValue term(pval1.getSubstitutionBlockList(), pval1.getTerm());
+  while (arity > 0)
+    {
+      heap.prologValueDereference(term);
+      for (i = static_cast<int32>(OBJECT_CAST(Structure*, term.getTerm())->getArity()) 
+	     ; i > 0; i--)
+	{
+	  PrologValue arg(term.getSubstitutionBlockList(),
+			  OBJECT_CAST(Structure*, 
+				      term.getTerm())->getArgument(i));
+	  str->setArgument(arity, heap.prologValueToObject(arg));
+	  arity--;
 
-                }
-		term.setTerm(OBJECT_CAST(Structure*, 
-					 term.getTerm())->getFunctor());
-        }
-	object2 = str;
-        return(RV_SUCCESS);
+	}
+      term.setTerm(OBJECT_CAST(Structure*, 
+			       term.getTerm())->getFunctor());
+    }
+  object2 = str;
+  return(RV_SUCCESS);
 } 
 
+extern CodeLoc failblock;
 
-
-
+Thread::ReturnValue 
+Thread::psi_make_cleanup_cp(Object *& object1)
+{
+      otherTrail.push(currentChoicePoint, getCleanupMinCPAddr());
+      object1 = heap.newInteger(cutPoint);
+      return(RV_SUCCESS);
+}
 
 

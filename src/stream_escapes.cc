@@ -87,7 +87,7 @@ Thread::psi_get_open_streams(Object *& result)
     {
       if (iom->GetStream(i) != NULL)
 	{
-	  Cons* list = heap.newCons(heap.newNumber(i), result);
+	  Cons* list = heap.newCons(heap.newInteger(i), result);
 	  result = list;
 	}
     }
@@ -124,7 +124,7 @@ Thread::psi_open(Object *& filename_arg,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  const word32 mode = argAM->getNumber();
+  const word32 mode = argAM->getInteger();
   
   if (!(mode <= AM_APPEND))
     {
@@ -163,7 +163,7 @@ Thread::psi_open(Object *& filename_arg,
 	//
 	// Return index of the stream.
 	//
-	stream_arg = heap.newNumber(iom->OpenStream(stream));
+	stream_arg = heap.newInteger(iom->OpenStream(stream));
 	return RV_SUCCESS;
       }
       break;
@@ -180,7 +180,7 @@ Thread::psi_open(Object *& filename_arg,
 	//
 	// Return index of the stream.
 	//
-	stream_arg = heap.newNumber(iom->OpenStream(stream));
+	stream_arg = heap.newInteger(iom->OpenStream(stream));
 	return RV_SUCCESS;
       }
       break;
@@ -197,7 +197,7 @@ Thread::psi_open(Object *& filename_arg,
 	//
 	// Return index of the stream.
 	//
-	stream_arg = heap.newNumber(iom->OpenStream(stream));
+	stream_arg = heap.newInteger(iom->OpenStream(stream));
 	return RV_SUCCESS;
 	break;
       }
@@ -229,7 +229,7 @@ Thread::psi_open_string(Object *& string_arg,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  word32 mode = argAM->getNumber();
+  word32 mode = argAM->getInteger();
   
   if (!(mode <= AM_APPEND))
     {
@@ -248,7 +248,7 @@ Thread::psi_open_string(Object *& string_arg,
 	  {
 	    PSI_ERROR_RETURN(EV_INST, 1);
 	  }
-	if (!argS->isAtom() && !argS->isCons())
+	if (!argS->isAtom() && !argS->isCons() && !argS->isString())
 	  {
 	    PSI_ERROR_RETURN(EV_TYPE, 1);
 	  }
@@ -262,17 +262,17 @@ Thread::psi_open_string(Object *& string_arg,
 	    PSI_ERROR_RETURN(EV_TYPE, 3);
 	  }
 	
-	if (argT->getNumber() == 0)
+	if (argT->getInteger() == 0)
 	  {
 	    QPistringstream *stream = new QPistringstream(atoms->getAtomString(OBJECT_CAST(Atom*, argS)));
 	    
 	    //
 	    // Return the index of the stream.
 	    //
-	    stream_arg = heap.newNumber(iom->OpenStream(stream));
+	    stream_arg = heap.newInteger(iom->OpenStream(stream));
 	    return RV_SUCCESS;
 	  }
-	else if (argT->getNumber() == 1)
+	else if (argT->getInteger() == 1)
 	  {
 	    //
 	    // Open strstream for converting a list of characters
@@ -294,7 +294,7 @@ Thread::psi_open_string(Object *& string_arg,
 		  }
 		
 		if (strstr->good() &&
-		    strstr->put(head->getNumber()).fail())
+		    strstr->put(head->getInteger()).fail())
 		  {
 		    delete strstr;
 		    return RV_FAIL;
@@ -309,9 +309,19 @@ Thread::psi_open_string(Object *& string_arg,
 	    //
 	    // Return the index of the stream.
 	    //
-	    stream_arg = heap.newNumber(iom->OpenStream(stream));
+	    stream_arg = heap.newInteger(iom->OpenStream(stream));
 	    return RV_SUCCESS;
 	  }
+
+	else if (argT->getInteger() == 2)
+	  {
+	    assert(argS->isString());
+	    QPistringstream *stream = 
+	      new QPistringstream(OBJECT_CAST(StringObject*, argS)->getChars());
+            //  Return the index of the stream.
+	    stream_arg = heap.newInteger(iom->OpenStream(stream));
+	    return RV_SUCCESS;
+          }
 	else
 	  {
 	    PSI_ERROR_RETURN(EV_VALUE, 3);
@@ -324,7 +334,7 @@ Thread::psi_open_string(Object *& string_arg,
 	//
 	// Return the index of the stream.
 	//
-	stream_arg = heap.newNumber(iom->OpenStream(stream));
+	stream_arg = heap.newInteger(iom->OpenStream(stream));
 	return RV_SUCCESS;
       }
     break;
@@ -359,14 +369,14 @@ Thread::psi_close(Object *& stream_arg,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
   
-  const word32 force_val = force->getNumber();     // PJR used??
+  const word32 force_val = force->getInteger();     // PJR used??
   if (!(force_val <= 1))
     {
       PSI_ERROR_RETURN(EV_VALUE, 2);
     }
   
   //stream->close();
-  return BOOL_TO_RV(iom->CloseStream(strm->getNumber()));
+  return BOOL_TO_RV(iom->CloseStream(strm->getInteger()));
 }
 
 //
@@ -376,7 +386,7 @@ Thread::psi_close(Object *& stream_arg,
 Thread::ReturnValue
 Thread::psi_current_input(Object *& stream_arg)
 {
-  stream_arg = heap.newNumber(iom->CurrentInput());
+  stream_arg = heap.newInteger(iom->CurrentInput());
   return RV_SUCCESS;
 }
 
@@ -387,7 +397,7 @@ Thread::psi_current_input(Object *& stream_arg)
 Thread::ReturnValue
 Thread::psi_current_output(Object *& stream_arg)
 {
-  stream_arg = heap.newNumber((word32) iom->CurrentOutput());
+  stream_arg = heap.newInteger((word32) iom->CurrentOutput());
   return RV_SUCCESS;
 }
 
@@ -406,7 +416,7 @@ Thread::psi_set_input(Object *& stream_arg)
   //
   // Change stream.
   //
-  iom->SetCurrentInput(stream_object->getNumber());
+  iom->SetCurrentInput(stream_object->getInteger());
   
   return RV_SUCCESS;
 }
@@ -428,7 +438,7 @@ Thread::psi_set_output(Object *& stream_arg)
   //
   // Change stream.
   //
-  iom->SetCurrentOutput(stream_object->getNumber());
+  iom->SetCurrentOutput(stream_object->getInteger());
   
   return RV_SUCCESS;
 }
@@ -592,7 +602,7 @@ Thread::psi_stream_position(Object *& stream_arg, Object *& pos_arg)
   //
   // Return the position.
   //
-  pos_arg = heap.newNumber(pos);
+  pos_arg = heap.newInteger(pos);
   return RV_SUCCESS;
 }
 
@@ -614,7 +624,7 @@ Thread::psi_set_stream_position(Object *& stream_arg, Object *& pos_arg)
 
   CHECK_NUMBER_ARG(pos_object, 2);
 
-  int32 pos = pos_object->getNumber();
+  int32 pos = pos_object->getInteger();
   if (pos < 0)
     {
       PSI_ERROR_RETURN(EV_RANGE, 2);
@@ -653,7 +663,7 @@ Thread::psi_line_number(Object *& stream_arg, Object *& line_num_arg)
   //
   // Get position and return the position.
   //
-  line_num_arg = heap.newNumber(stream->lineNumber());
+  line_num_arg = heap.newInteger(stream->lineNumber());
   return RV_SUCCESS;
 }
 
@@ -665,7 +675,7 @@ Thread::psi_line_number(Object *& stream_arg, Object *& line_num_arg)
 Thread::ReturnValue 
 Thread::psi_stdin(Object *& stream_object)
 {
-  stream_object = heap.newNumber(reinterpret_cast<word32>(iom->StdIn()));
+  stream_object = heap.newInteger(reinterpret_cast<word32>(iom->StdIn()));
 
   return RV_SUCCESS;
 }
@@ -677,7 +687,7 @@ Thread::psi_stdin(Object *& stream_object)
 Thread::ReturnValue 
 Thread::psi_stdout(Object *& stream_object)
 {
-  stream_object = heap.newNumber(reinterpret_cast<word32>(iom->StdOut()));
+  stream_object = heap.newInteger(reinterpret_cast<word32>(iom->StdOut()));
 
   return RV_SUCCESS;
 }
@@ -689,7 +699,7 @@ Thread::psi_stdout(Object *& stream_object)
 Thread::ReturnValue 
 Thread::psi_stderr(Object *& stream_object)
 {
-  stream_object = heap.newNumber(reinterpret_cast<word32>(iom->StdErr()));
+  stream_object = heap.newInteger(reinterpret_cast<word32>(iom->StdErr()));
 
   return RV_SUCCESS;
 }
@@ -720,7 +730,7 @@ Thread::psi_open_msgstream(Object *& address,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  word32 mode = argAM->getNumber();
+  word32 mode = argAM->getInteger();
   
   if (!(mode < AM_APPEND))
     {
@@ -737,7 +747,7 @@ Thread::psi_open_msgstream(Object *& address,
 	//
 	int iom_fd = iom->OpenStream(stream);
 	stream->setFD(iom_fd);
-	stream_arg = heap.newNumber(iom_fd);
+	stream_arg = heap.newInteger(iom_fd);
 	return RV_SUCCESS;
       }
     break;
@@ -747,7 +757,7 @@ Thread::psi_open_msgstream(Object *& address,
 	//
 	// Return the index of the stream.
 	//
-	stream_arg = heap.newNumber(iom->OpenStream(stream));
+	stream_arg = heap.newInteger(iom->OpenStream(stream));
 	return RV_SUCCESS;
       }
     break;
@@ -795,7 +805,7 @@ Thread::psi_get_stream_properties(Object *& stream_num, Object *& prop)
 
   assert(strnum->isNumber());
 
-  u_int snum = strnum->getNumber();
+  u_int snum = strnum->getInteger();
 
   if (snum >= NUM_OPEN_STREAMS || iom->GetStream(snum) == NULL)
     {
@@ -834,7 +844,7 @@ Thread::psi_set_std_stream(Object *& std_stream_num, Object *& new_stream_num)
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  if (iom->set_std_stream(std_num->getNumber(), new_num->getNumber()))
+  if (iom->set_std_stream(std_num->getInteger(), new_num->getInteger()))
     {
       return RV_SUCCESS;
     }
@@ -860,7 +870,7 @@ Thread::psi_reset_std_stream(Object *& std_stream_num)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  if (iom->reset_std_stream(std_num->getNumber()))
+  if (iom->reset_std_stream(std_num->getInteger()))
     {
       return RV_SUCCESS;
     }
@@ -886,7 +896,7 @@ Thread::psi_get_msgstream_handle(Object *& stream_num, Object *& handle_object)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  u_int num = snum->getNumber();
+  u_int num = snum->getInteger();
   if (num >= NUM_OPEN_STREAMS)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);

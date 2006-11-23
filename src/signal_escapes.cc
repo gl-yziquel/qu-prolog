@@ -86,7 +86,7 @@ Thread::psi_clear_signal(Object *& object1)
 
   assert(val1->isShort());
 
-  signals->Clear(val1->getNumber());
+  signals->Clear(val1->getInteger());
 
   return(RV_SUCCESS);
 }
@@ -119,7 +119,7 @@ Thread::psi_default_signal_handler(Object *& object1)
 
   assert(val1->isShort());
 
-  int sig = val1->getNumber();
+  int sig = val1->getInteger();
 
 #ifdef WIN32
   TerminateProcess(GetCurrentProcess(), 0);

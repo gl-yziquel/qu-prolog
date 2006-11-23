@@ -314,6 +314,19 @@ Thread::psi_list(Object *& object1)
   return(BOOL_TO_RV(pval1.getTerm()->isList()));
 }
 
+// psi_string(term)
+// True if term is a string, false otherwise
+// mode(in)
+//
+Thread::ReturnValue
+Thread::psi_string(Object *& object1)
+{
+  assert(object1->variableDereference()->hasLegalSub());
+  Object* val1 = heap.dereference(object1);
+
+  return(BOOL_TO_RV(val1->isString() || (val1 == AtomTable::nil)));
+}
+
 //
 // psi_fast_simplify(term, simpterm)
 // do a simple term simplification

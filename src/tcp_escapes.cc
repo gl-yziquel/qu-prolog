@@ -140,7 +140,7 @@ decode_socket(Heap& heap,
     }
   else if (socket_cell->isNumber())
     {
-      const int socket_number = socket_cell->getNumber();
+      const int socket_number = socket_cell->getInteger();
       if (socket_number < 0 || socket_number >= (int)NUM_OPEN_SOCKETS)
 	{
 	  return EV_TYPE;
@@ -188,9 +188,9 @@ decode_port(Heap& heap,
     {
       return EV_INST;
     }
-  else if (port_cell->isNumber())
+  else if (port_cell->isInteger())
     {
-      port = htons((u_short)(port_cell->getNumber()));
+      port = htons((u_short)(port_cell->getInteger()));
       return EV_NO_ERROR;
     }
   else
@@ -222,9 +222,9 @@ machine_ip_address(Heap& heap,
 		   AtomTable& atoms,
 		   Object * addr)
 {
-  if (addr->isNumber())
+  if (addr->isInteger())
     {
-      return(htonl((u_long)(addr->getNumber())));
+      return(htonl((u_long)(addr->getInteger())));
     }
   else if (addr->isAtom())
     {
@@ -238,6 +238,15 @@ machine_ip_address(Heap& heap,
 	    }
 	}
       // PORT
+      hostent *hp = gethostbyname(hostname);
+      if (hp == NULL)
+      {
+        struct in_addr in;
+        in.s_addr = inet_addr(hostname);
+       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+    }
+	  
+      /*
       hostent *hp = NULL;
       if (hp != gethostbyname(hostname))
         {
@@ -245,6 +254,7 @@ machine_ip_address(Heap& heap,
           in.s_addr = inet_addr(hostname);
           hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
         }
+	*/
 #ifndef WIN32
       endhostent();
 #endif
@@ -283,7 +293,7 @@ decode_ip_address(Heap& heap, AtomTable& atoms,
       return EV_INST;
     }
 
-  if (ip_address_cell->isNumber() || ip_address_cell->isAtom())
+  if (ip_address_cell->isInteger() || ip_address_cell->isAtom())
     {
       if (ip_address_cell == AtomTable::inaddr_any)
         {
@@ -333,8 +343,8 @@ Thread::ReturnValue
 Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg, 
 			       Object *& stream_arg)
 {
-  assert(mode_arg->variableDereference()->isNumber());
-  int mode = mode_arg->variableDereference()->getNumber();
+  assert(mode_arg->variableDereference()->isInteger());
+  int mode = mode_arg->variableDereference()->getInteger();
 
   Object* argS = socket_arg->variableDereference();
 
@@ -353,7 +363,7 @@ Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg,
         //
 	int streamno = iom->OpenStream(stream);
 	socket->setIStream(streamno);
-        stream_arg = heap.newNumber(streamno);
+        stream_arg = heap.newInteger(streamno);
         return RV_SUCCESS;
       }
       break;
@@ -367,7 +377,7 @@ Thread::psi_open_socket_stream(Object *& socket_arg, Object *& mode_arg,
         //
 	int streamno = iom->OpenStream(stream);
 	socket->setOStream(streamno);
-        stream_arg = heap.newNumber(streamno);
+        stream_arg = heap.newInteger(streamno);
         return RV_SUCCESS;
       }
       break;
@@ -451,6 +461,7 @@ Thread::psi_tcp_socket(
       PSI_ERROR_RETURN(EV_TYPE, 3);
     }
 
+
   const int fd = static_cast<const int>(socket(AF_INET, type, protocol));
   if (fd < 0)
     {
@@ -461,7 +472,7 @@ Thread::psi_tcp_socket(
 
   socket->setSocket();
 
-  socket_arg = heap.newNumber(sockm->OpenSocket(socket));
+  socket_arg = heap.newInteger(sockm->OpenSocket(socket));
 
   return RV_SUCCESS;
 }
@@ -570,9 +581,9 @@ Thread::psi_tcp_setsockopt(Object *& socket_arg, Object *& option_arg,
   
   int val;
 
-  if (argV->isNumber())
+  if (argV->isInteger())
     {
-      val = argV->getNumber();
+      val = argV->getInteger();
     }
   else
     {
@@ -705,7 +716,7 @@ Thread::psi_tcp_getsockopt(
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
 
-  value_arg = heap.newNumber(val);
+  value_arg = heap.newInteger(val);
 
   return RV_SUCCESS;
 }
@@ -845,9 +856,9 @@ Thread::psi_tcp_accept(Object *& socket_arg,
   
   Socket *newsocket = new Socket(0, 0, newsockfd);
   socket->setAccepted(newsocket, newsockfd);
-  new_socket_arg = heap.newNumber(sockm->OpenSocket(newsocket));
-  port_arg = heap.newNumber(ntohs(add.sin_port));
-  ip_address_arg = heap.newNumber(ntohl(add.sin_addr.s_addr));
+  new_socket_arg = heap.newInteger(sockm->OpenSocket(newsocket));
+  port_arg = heap.newInteger(ntohs(add.sin_port));
+  ip_address_arg = heap.newInteger(ntohl(add.sin_addr.s_addr));
 
   return RV_SUCCESS;
 }
@@ -1003,7 +1014,7 @@ Thread::psi_tcp_close(
     }
 
   socket->closeSocket();
-  sockm->CloseSocket(argS->getNumber());
+  sockm->CloseSocket(argS->getInteger());
 
   delete socket;
 
@@ -1050,8 +1061,8 @@ Thread::psi_tcp_getsockname(
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
 
-  port_arg = heap.newNumber(ntohs(addr.sin_port));
-  ip_address_arg = heap.newNumber(ntohl(*(int *)hp->h_addr_list[0]));
+  port_arg = heap.newInteger(ntohs(addr.sin_port));
+  ip_address_arg = heap.newInteger(ntohl(*(int *)hp->h_addr_list[0]));
 
   return RV_SUCCESS;
 }
@@ -1085,9 +1096,9 @@ Thread::psi_tcp_getpeername(
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
 
-  port_arg = heap.newNumber(ntohs(addr.sin_port));
+  port_arg = heap.newInteger(ntohs(addr.sin_port));
 
-  ip_address_arg = heap.newNumber(ntohl(addr.sin_addr.s_addr));
+  ip_address_arg = heap.newInteger(ntohl(addr.sin_addr.s_addr));
 
   return RV_SUCCESS;
 }
@@ -1141,7 +1152,7 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
 
- ip_address_arg =  heap.newNumber(ntohl(*(int *)hp->h_addr_list[0]));
+ ip_address_arg =  heap.newInteger(ntohl(*(int *)hp->h_addr_list[0]));
 
   return RV_SUCCESS;
 }
@@ -1216,7 +1227,7 @@ Thread::psi_tcp_service_to_proto_port(
       return RV_FAIL;
     }
   
-  port_arg = heap.newNumber(ntohs(sp->s_port));
+  port_arg = heap.newInteger(ntohs(sp->s_port));
   proto_arg = atoms->add(sp->s_proto);
   
   return RV_SUCCESS;
@@ -1267,8 +1278,8 @@ Thread::psi_tcp_service_proto_to_port(
       return RV_FAIL;
     }
   
-  //port_arg = heap.newNumber(sp->s_port);
-  port_arg = heap.newNumber(ntohs(sp->s_port));
+  //port_arg = heap.newInteger(sp->s_port);
+  port_arg = heap.newInteger(ntohs(sp->s_port));
 
   return RV_SUCCESS;
 }
@@ -1335,14 +1346,14 @@ Thread::psi_tcp_service_proto_from_port(
 //    {
 //      PSI_ERROR_RETURN(EV_INST, 2);
 //    }
-//  if (!argPo->isNumber())
+//  if (!argPo->isInteger())
 //    {
 //      PSI_ERROR_RETURN(EV_TYPE, 2);
 //    }
 
   const char *proto = NULL;
 
-//  const u_short port = (u_short)argPo->getNumber();
+//  const u_short port = (u_short)argPo->getInteger();
   servent *sp = getservbyport(port, proto);
 #ifndef WIN32
   (void) endservent();
@@ -1377,3 +1388,50 @@ Thread::psi_tcp_is_socket(Object *& socket_arg)
   return ev == EV_NO_ERROR ? RV_SUCCESS : RV_FAIL;
 }
 
+
+Thread::ReturnValue 
+Thread::psi_select(Object *& in, Object *& out)
+{
+  Object* sockets = in->variableDereference();
+  Object* next = sockets;
+  fd_set fds;
+
+  FD_ZERO(&fds);
+  int max_fd = 0;
+
+  while (next->isCons())
+    {
+      Cons* lst = OBJECT_CAST(Cons*, next);
+      Object* head = lst->getHead()->variableDereference();
+      next = lst->getTail()->variableDereference();
+      Socket *socket;
+      
+      DECODE_SOCKET_ARG(heap, head, 1, socket);
+      int fd = socket->getFD();
+      if (fd > max_fd) max_fd = fd;
+      FD_SET(fd, &fds);
+    }
+  if (max_fd == 0) return RV_FAIL;
+  int result = select(max_fd+1, &fds, NULL, NULL, NULL);
+  if (result <= 0) return RV_FAIL;
+
+  out = AtomTable::nil;
+  next = sockets;
+  while (next->isCons())
+    {
+      Cons* lst = OBJECT_CAST(Cons*, next);
+      Object* head = lst->getHead()->variableDereference();
+      next = lst->getTail()->variableDereference();
+      Socket *socket;
+      
+      DECODE_SOCKET_ARG(heap, head, 1, socket);
+      int fd = socket->getFD();
+
+      if (FD_ISSET(fd, &fds) != 0)
+	{
+	  Cons* tmp = heap.newCons(head, out);
+	  out = tmp;
+	}
+    }
+  return RV_SUCCESS;
+}

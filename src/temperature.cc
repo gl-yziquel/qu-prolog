@@ -97,26 +97,50 @@ Thread::freeze_thaw_term(Object* term, Object*& varlist,
 			 bool do_freeze, bool get_vars)
 {
   term = heap.dereference(term);
-  switch (term->utag())
+  switch (term->tTag())
     {
-    case Object::uVar:
-    case Object::uObjVar:
+    case Object::tVar:
       if (!term->isLocalObjectVariable())
 	{
-	  if (do_freeze && OBJECT_CAST(Reference*, term)->isThawed())
+	  if (do_freeze && OBJECT_CAST(Variable*, term)->isThawed())
 	    {
 	      trailTag(term);
-	      OBJECT_CAST(Reference*, term)->freeze();
+	      OBJECT_CAST(Variable*, term)->freeze();
 	      if (get_vars)
 		{
 		  Cons* temp = heap.newCons(term, varlist);
 		  varlist = temp;
 		}
 	    }
-	  else if (!do_freeze && OBJECT_CAST(Reference*, term)->isFrozen())
+	  else if (!do_freeze && OBJECT_CAST(Variable*, term)->isFrozen())
 	    {
 	      trailTag(term);
-	      OBJECT_CAST(Reference*, term)->thaw();
+	      OBJECT_CAST(Variable*, term)->thaw();
+	      if (get_vars)
+		{
+		  Cons* temp = heap.newCons(term, varlist);
+		  varlist = temp;
+		}
+	    }
+	}
+      break;
+    case Object::tObjVar:
+      if (!term->isLocalObjectVariable())
+	{
+	  if (do_freeze && OBJECT_CAST(ObjectVariable*, term)->isThawed())
+	    {
+	      trailTag(term);
+	      OBJECT_CAST(ObjectVariable*, term)->freeze();
+	      if (get_vars)
+		{
+		  Cons* temp = heap.newCons(term, varlist);
+		  varlist = temp;
+		}
+	    }
+	  else if (!do_freeze && OBJECT_CAST(ObjectVariable*, term)->isFrozen())
+	    {
+	      trailTag(term);
+	      OBJECT_CAST(ObjectVariable*, term)->thaw();
 	      if (get_vars)
 		{
 		  Cons* temp = heap.newCons(term, varlist);
@@ -126,7 +150,7 @@ Thread::freeze_thaw_term(Object* term, Object*& varlist,
 	}
       break;
 
-    case Object::uCons:
+    case Object::tCons:
       {
 	Object* list = term;
 	for (; list->isCons();
@@ -142,7 +166,7 @@ Thread::freeze_thaw_term(Object* term, Object*& varlist,
       }
       break;
 
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* str = OBJECT_CAST(Structure*, term);
 	if (!str->getFunctor()->isConstant())
@@ -158,7 +182,7 @@ Thread::freeze_thaw_term(Object* term, Object*& varlist,
       }
       break;
 
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant = OBJECT_CAST(QuantifiedTerm*, term);
 	if (!quant->getQuantifier()->isConstant())
@@ -171,10 +195,14 @@ Thread::freeze_thaw_term(Object* term, Object*& varlist,
       }
 	break;
 
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       break;
 
-    case Object::uSubst:
+    case Object::tSubst:
       freeze_thaw_sub(OBJECT_CAST(Substitution*, 
 				   term)->getSubstitutionBlockList(), 
 		      varlist, do_freeze, get_vars);
@@ -272,11 +300,19 @@ Thread::psi_freeze_var(Object *& object1)
     }
 
   Object* object = pval1.getTerm();
-  if (OBJECT_CAST(Reference *, object)->isThawed())
-    {
-      trailTag(object);
-      OBJECT_CAST(Reference*, object)->freeze();
-    }
+  if (object->isVariable())
+    if (OBJECT_CAST(Variable*, object)->isThawed())
+      {
+	trailTag(object);
+	OBJECT_CAST(Variable*, object)->freeze();
+      }
+    else
+    if (OBJECT_CAST(ObjectVariable*, object)->isThawed())
+      {
+	trailTag(object);
+	OBJECT_CAST(ObjectVariable*, object)->freeze();
+      }
+
 
   return RV_SUCCESS;
 }
@@ -304,12 +340,24 @@ Thread::psi_thaw_var(Object *& object1)
     }
 
   Object* object = pval1.getTerm();
-  if (OBJECT_CAST(Reference *, object)->isFrozen())
-    {     
-      trailTag(object);
-      OBJECT_CAST(Reference*, object)->thaw();
+  if (object->isVariable())
+    {
+      if (OBJECT_CAST(Variable*, object)->isFrozen())
+	{     
+	  trailTag(object);
+	  OBJECT_CAST(Variable*, object)->thaw();
+	}
+      return RV_SUCCESS;
     }
-  return RV_SUCCESS;
+  else
+    {
+      if (OBJECT_CAST(ObjectVariable*, object)->isFrozen())
+	{     
+	  trailTag(object);
+	  OBJECT_CAST(ObjectVariable*, object)->thaw();
+	}
+      return RV_SUCCESS;
+    }
 }
 
 //
@@ -323,8 +371,12 @@ Thread::psi_frozen_var(Object *& object1)
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
 
-  return BOOL_TO_RV(pval1.getTerm()->isAnyVariable() &&
-		    OBJECT_CAST(Reference *, pval1.getTerm())->isFrozen());
+  if (!pval1.getTerm()->isAnyVariable()) return RV_FAIL;
+
+  if (pval1.getTerm()->isVariable())
+    return BOOL_TO_RV(OBJECT_CAST(Variable *, pval1.getTerm())->isFrozen());
+  else
+    return BOOL_TO_RV(OBJECT_CAST(ObjectVariable *, pval1.getTerm())->isFrozen()); 
 }
 
 //
@@ -337,9 +389,12 @@ Thread::psi_thawed_var(Object *& object1)
 {
   PrologValue pval1(object1);
   heap.prologValueDereference(pval1);
+  if (!pval1.getTerm()->isAnyVariable()) return RV_FAIL;
 
-  return BOOL_TO_RV(pval1.getTerm()->isAnyVariable() &&
-		    OBJECT_CAST(Reference *, pval1.getTerm())->isThawed());
+  if (pval1.getTerm()->isVariable())
+    return BOOL_TO_RV(OBJECT_CAST(Variable *, pval1.getTerm())->isThawed());
+  else
+    return BOOL_TO_RV(OBJECT_CAST(ObjectVariable *, pval1.getTerm())->isThawed()); 
 }
 
 

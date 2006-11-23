@@ -1346,6 +1346,27 @@ end('$icm_ping'/1):
 
 
 
+'$make_cleanup_cp'/1:
+
+
+$1:
+	pseudo_instr1(116, 1)
+	get_x_value(0, 1)
+	proceed
+end('$make_cleanup_cp'/1):
+
+
+
+'string'/1:
+
+
+$1:
+	pseudo_instr1(117, 0)
+	proceed
+end('string'/1):
+
+
+
 'is'/2:
 
 
@@ -2577,6 +2598,92 @@ end('$write_float'/2):
 
 
 
+'select'/2:
+
+
+$1:
+	pseudo_instr2(116, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('select'/2):
+
+
+
+'$write_string'/2:
+
+
+$1:
+	pseudo_instr2(117, 0, 1)
+	proceed
+end('$write_string'/2):
+
+
+
+'$writeq_string'/2:
+
+
+$1:
+	pseudo_instr2(118, 0, 1)
+	proceed
+end('$writeq_string'/2):
+
+
+
+'string_length'/2:
+
+
+$1:
+	pseudo_instr2(119, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('string_length'/2):
+
+
+
+'$stream_to_string'/2:
+
+
+$1:
+	pseudo_instr2(120, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$stream_to_string'/2):
+
+
+
+'$list_to_string'/2:
+
+
+$1:
+	pseudo_instr2(121, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$list_to_string'/2):
+
+
+
+'$string_to_atom'/2:
+
+
+$1:
+	pseudo_instr2(122, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$string_to_atom'/2):
+
+
+
+'$atom_to_string'/2:
+
+
+$1:
+	pseudo_instr2(123, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$atom_to_string'/2):
+
+
+
 'functor'/3:
 
 
@@ -2727,15 +2834,14 @@ end('$stat_string'/3):
 
 
 
-'$get_next_clause'/3:
+'random'/3:
 
 
 $1:
-	pseudo_instr3(13, 0, 3, 4)
-	get_x_value(1, 3)
-	get_x_value(2, 4)
+	pseudo_instr3(13, 0, 1, 3)
+	get_x_value(2, 3)
 	proceed
-end('$get_next_clause'/3):
+end('random'/3):
 
 
 
@@ -3228,7 +3334,7 @@ end('$make_sub_from_buffer'/3):
 
 
 
-'$stat_object_trail'/3:
+'$stat_other_trail'/3:
 
 
 $1:
@@ -3236,11 +3342,11 @@ $1:
 	get_x_value(1, 3)
 	get_x_value(2, 4)
 	proceed
-end('$stat_object_trail'/3):
+end('$stat_other_trail'/3):
 
 
 
-'$stat_ip_trail'/3:
+'simplify_term'/3:
 
 
 $1:
@@ -3248,19 +3354,18 @@ $1:
 	get_x_value(1, 3)
 	get_x_value(2, 4)
 	proceed
-end('$stat_ip_trail'/3):
+end('simplify_term'/3):
 
 
 
-'$stat_tag_trail'/3:
+'$get_double'/3:
 
 
 $1:
-	pseudo_instr3(61, 0, 3, 4)
-	get_x_value(1, 3)
-	get_x_value(2, 4)
+	pseudo_instr3(61, 3, 1, 2)
+	get_x_value(0, 3)
 	proceed
-end('$stat_tag_trail'/3):
+end('$get_double'/3):
 
 
 
@@ -3298,27 +3403,24 @@ end('atom_concat2'/3):
 
 
 
-'$stat_ref_trail'/3:
+'hash_table_insert'/3:
 
 
 $1:
-	pseudo_instr3(65, 0, 3, 4)
-	get_x_value(1, 3)
-	get_x_value(2, 4)
+	pseudo_instr3(65, 0, 1, 2)
 	proceed
-end('$stat_ref_trail'/3):
+end('hash_table_insert'/3):
 
 
 
-'$get_first_clause'/3:
+'$predicate_stamp'/3:
 
 
 $1:
-	pseudo_instr3(66, 0, 3, 4)
-	get_x_value(1, 3)
-	get_x_value(2, 4)
+	pseudo_instr3(66, 0, 1, 3)
+	get_x_value(2, 3)
 	proceed
-end('$get_first_clause'/3):
+end('$predicate_stamp'/3):
 
 
 
@@ -3337,66 +3439,21 @@ end('$get_integer'/3):
 
 
 $1:
-	get_x_value(0, 2)
-	pseudo_instr3(68, 0, 1, 2)
-	get_x_value(0, 2)
+	pseudo_instr3(68, 0, 1, 3)
+	get_x_value(2, 3)
 	proceed
 end('$ipc_first'/3):
 
 
 
-'simplify_term'/3:
+'$string_concat'/3:
 
 
 $1:
-	pseudo_instr3(69, 0, 3, 4)
-	get_x_value(1, 3)
-	get_x_value(2, 4)
-	proceed
-end('simplify_term'/3):
-
-
-
-'$get_double'/3:
-
-
-$1:
-	pseudo_instr3(70, 3, 1, 2)
-	get_x_value(0, 3)
-	proceed
-end('$get_double'/3):
-
-
-
-'random'/3:
-
-
-$1:
-	pseudo_instr3(71, 0, 1, 3)
+	pseudo_instr3(69, 0, 1, 3)
 	get_x_value(2, 3)
 	proceed
-end('random'/3):
-
-
-
-'$predicate_stamp'/3:
-
-
-$1:
-	pseudo_instr3(72, 0, 1, 3)
-	get_x_value(2, 3)
-	proceed
-end('$predicate_stamp'/3):
-
-
-
-'hash_table_insert'/3:
-
-
-$1:
-	pseudo_instr3(73, 0, 1, 2)
-	proceed
-end('hash_table_insert'/3):
+end('$string_concat'/3):
 
 
 
@@ -3573,6 +3630,42 @@ $1:
 	get_x_value(3, 4)
 	proceed
 end('$new_sub'/4):
+
+
+
+'$get_first_clause'/4:
+
+
+$1:
+	pseudo_instr4(16, 0, 1, 4, 5)
+	get_x_value(2, 4)
+	get_x_value(3, 5)
+	proceed
+end('$get_first_clause'/4):
+
+
+
+'$get_next_clause'/4:
+
+
+$1:
+	pseudo_instr4(17, 0, 1, 4, 5)
+	get_x_value(2, 4)
+	get_x_value(3, 5)
+	proceed
+end('$get_next_clause'/4):
+
+
+
+'$split_string'/4:
+
+
+$1:
+	pseudo_instr4(18, 0, 1, 4, 5)
+	get_x_value(2, 4)
+	get_x_value(3, 5)
+	proceed
+end('$split_string'/4):
 
 
 

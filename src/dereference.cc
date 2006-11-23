@@ -165,6 +165,7 @@ Heap::substitutionDereference(Object *& sublist, Object *& term)
 		  Object* domain = subblock->getDomain(i);
  		  domain = domain->variableDereference();
                   Object* range = subblock->getRange(i)->variableDereference();
+		  assert(domain->isObjectVariable());
 		  if (term == domain && (!saved || save == range))
 		    {
 		      //

@@ -102,7 +102,7 @@ Heap::alloc_registers(WordArray& life, xreglife& xregisters,
 		  excess = excess || (reg >= NUMBER_X_REGISTERS);
 		  Structure* xr = newStructure(1);
 		  xr->setFunctor(AtomTable::xreg);
-		  xr->setArgument(1, newNumber(reg));
+		  xr->setArgument(1, newInteger(reg));
 		  *(var->storage()) = reinterpret_cast<heapobject>(xr);
 		  break;
 		}
@@ -318,7 +318,7 @@ Heap::envsize(WordArray& instr, int& size)
       if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
 	  assert(tstruct->getArgument(3)->variableDereference()->isVariable());
-	  tstruct->setArgument(3, newNumber(size));
+	  tstruct->setArgument(3, newInteger(size));
 	}
       else if (tstruct->getFunctor() == AtomTable::ccut ||
 	       tstruct->getFunctor() == AtomTable::cut_ancestor)
@@ -419,7 +419,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	  voidstr->setFunctor(AtomTable::unify);
 	  voidstr->setArgument(1, AtomTable::meta);
 	  voidstr->setArgument(2, atoms->add("void"));
-	  voidstr->setArgument(3, newNumber(voids));
+	  voidstr->setArgument(3, newInteger(voids));
 	  newinstr.addEntry(reinterpret_cast<word32>(voidstr));
 	  i--;
 	  continue;
@@ -450,7 +450,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	      voidstr->setFunctor(AtomTable::set);
 	      voidstr->setArgument(1, type);
 	      voidstr->setArgument(2, atoms->add("void"));
-	      voidstr->setArgument(3, newNumber(voids));
+	      voidstr->setArgument(3, newInteger(voids));
 	      newinstr.addEntry(reinterpret_cast<word32>(voidstr));
 	      i--;
 	      continue;
@@ -483,7 +483,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 		    {
 		      Structure* lastreg = newStructure(1);
 		      lastreg->setFunctor(AtomTable::xreg);
-		      lastreg->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+		      lastreg->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 		      tstruct->setArgument(3, lastreg);
 		      tstruct->setArgument(4, lastreg);
 		      *(a->storage()) = reinterpret_cast<heapobject>(lastreg);
@@ -517,7 +517,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 		 {
 		  Structure* lastreg = newStructure(1);
 		  lastreg->setFunctor(AtomTable::xreg);
-		  lastreg->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+		  lastreg->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 		  *(a->storage()) = reinterpret_cast<heapobject>(lastreg);
 		  a = lastreg;
 		  tstruct->setArgument(3, lastreg);
@@ -528,7 +528,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	     {
 	       Structure* lastreg = newStructure(1);
 	       lastreg->setFunctor(AtomTable::xreg);
-	       lastreg->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+	       lastreg->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 	       *(tstruct->getArgument(4)->variableDereference()->storage()) = reinterpret_cast<heapobject>(lastreg);
 	       tstruct->setArgument(4, lastreg);
 	     }
@@ -555,7 +555,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 		 {
 		  Structure* lastreg = newStructure(1);
 		  lastreg->setFunctor(AtomTable::xreg);
-		  lastreg->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+		  lastreg->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 		  *(a->storage()) = reinterpret_cast<heapobject>(lastreg);
 		  a = lastreg;
 		  tstruct->setArgument(3, a);
@@ -566,7 +566,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	     {
 	       Structure* lastreg = newStructure(1);
 	       lastreg->setFunctor(AtomTable::xreg);
-	       lastreg->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+	       lastreg->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 	       *(tstruct->getArgument(4)->variableDereference()->storage()) = reinterpret_cast<heapobject>(lastreg);
 	       tstruct->setArgument(4, lastreg);
 	     }
@@ -788,8 +788,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  assert(arg1->isNumber());
-	  int m = pseudo_instr1_array[arg1->getNumber()].mode;
+	  assert(arg1->isInteger());
+	  int m = pseudo_instr1_array[arg1->getInteger()].mode;
 	  if (m & 1)
 	    {
 	      make_dead(tstruct->getArgument(2)->variableDereference(), 
@@ -800,8 +800,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr2)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  assert(arg1->isNumber());
-	  int m = pseudo_instr2_array[arg1->getNumber()].mode;
+	  assert(arg1->isInteger());
+	  int m = pseudo_instr2_array[arg1->getInteger()].mode;
 	  if (m & 2)
 	    {
 	      make_dead(tstruct->getArgument(2)->variableDereference(), 
@@ -817,8 +817,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr3)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  assert(arg1->isNumber());
-	  int m = pseudo_instr3_array[arg1->getNumber()].mode;
+	  assert(arg1->isInteger());
+	  int m = pseudo_instr3_array[arg1->getInteger()].mode;
 	  if (m & 4)
 	    {
 	      make_dead(tstruct->getArgument(2)->variableDereference(), 
@@ -839,8 +839,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr4)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  assert(arg1->isNumber());
-	  int m = pseudo_instr4_array[arg1->getNumber()].mode;
+	  assert(arg1->isInteger());
+	  int m = pseudo_instr4_array[arg1->getInteger()].mode;
 	  if (m & 8)
 	    {
 	      make_dead(tstruct->getArgument(2)->variableDereference(), 
@@ -866,8 +866,8 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr5)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  assert(arg1->isNumber());
-	  int m = pseudo_instr5_array[arg1->getNumber()].mode;
+	  assert(arg1->isInteger());
+	  int m = pseudo_instr5_array[arg1->getInteger()].mode;
 	  if (m & 16)
 	    {
 	      make_dead(tstruct->getArgument(2)->variableDereference(), 
@@ -937,7 +937,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	    {
 	      Structure* a = newStructure(1);
 	      a->setFunctor(AtomTable::allocate);
-	      a->setArgument(1, newNumber(esize));
+	      a->setArgument(1, newInteger(esize));
 	      final.addEntry(reinterpret_cast<word32>(a));
 	      alloc = true;
 	    }
@@ -988,7 +988,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 		{
 		  Structure* a = newStructure(1);
 		  a->setFunctor(AtomTable::allocate);
-		  a->setArgument(1, newNumber(esize));
+		  a->setArgument(1, newInteger(esize));
 		  final.addEntry(reinterpret_cast<word32>(a));
 		  alloc = true;
 		}
@@ -1004,7 +1004,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	{
 	  Structure* a = newStructure(1);
 	  a->setFunctor(AtomTable::allocate);
-	  a->setArgument(1, newNumber(esize));
+	  a->setArgument(1, newInteger(esize));
 	  final.addEntry(reinterpret_cast<word32>(a));
 	  alloc = true;
 	}
@@ -1053,7 +1053,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 		{
 		  Structure* lastx = newStructure(1);
 		  lastx->setFunctor(AtomTable::xreg);
-		  lastx->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+		  lastx->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 		  tstruct->setArgument(4, lastx);
 		  final.addEntry(reinterpret_cast<word32>(tstruct));
 		  continue;
@@ -1073,7 +1073,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      Structure* lstr = newStructure(4);
 	      Structure* lastx = newStructure(1);
 	      lastx->setFunctor(AtomTable::xreg);
-	      lastx->setArgument(1, newNumber(NUMBER_X_REGISTERS-1));
+	      lastx->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 	      lstr->setFunctor(AtomTable::put);
 	      lstr->setArgument(1, AtomTable::meta);
 	      lstr->setArgument(2, AtomTable::value);

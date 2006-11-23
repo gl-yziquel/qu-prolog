@@ -2584,7 +2584,8 @@ end('$write_term/5$1'/4):
 	retry($7)
 	retry($8)
 	retry($9)
-	trust($10)
+	retry($10)
+	trust($11)
 
 $1:
 	allocate(5)
@@ -2659,6 +2660,11 @@ $8:
 	execute_predicate('write_float', 2)
 
 $9:
+	pseudo_instr1(117, 1)
+	neck_cut
+	execute_predicate('write_string', 3)
+
+$10:
 	allocate(1)
 	get_y_level(0)
 	call_predicate('$write_structure', 5, 1)
@@ -2666,7 +2672,7 @@ $9:
 	deallocate
 	proceed
 
-$10:
+$11:
 	put_constant('fail in $write_term/5', 0)
 	allocate(0)
 	call_predicate('errornl', 1, 0)
@@ -3980,7 +3986,8 @@ end('$write_function'/6):
 '$write_functor'/4:
 
 	try(4, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
 	get_x_variable(5, 0)
@@ -4001,6 +4008,14 @@ $1:
 	proceed
 
 $2:
+	get_x_variable(4, 0)
+	get_x_variable(0, 1)
+	pseudo_instr1(2, 4)
+	neck_cut
+	put_x_value(4, 1)
+	execute_predicate('$write_atom', 3)
+
+$3:
 	get_x_variable(5, 0)
 	get_x_variable(0, 1)
 	get_x_variable(4, 3)
@@ -5697,6 +5712,123 @@ $4:
 	put_integer(1, 1)
 	execute_predicate('type_exception', 3)
 end('write_float'/2):
+
+
+
+'write_string'/3:
+
+	try(3, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	pseudo_instr1(3, 0)
+	neck_cut
+	execute_predicate('$write_string_aux', 3)
+
+$2:
+	get_x_variable(3, 0)
+	pseudo_instr1(1, 3)
+	neck_cut
+	put_structure(2, 0)
+	set_constant('write_string')
+	set_x_value(3)
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('stream')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('string')
+	put_structure(2, 3)
+	set_constant('write_string')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$3:
+	allocate(3)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	put_y_variable(0, 1)
+	call_predicate('$streamnum', 2, 3)
+	put_y_value(0, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	deallocate
+	execute_predicate('$write_string_aux', 3)
+end('write_string'/3):
+
+
+
+'$write_string_aux/3$0'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
+	get_y_level(2)
+	call_predicate('$do_quote', 1, 3)
+	cut(2)
+	pseudo_instr2(118, 21, 20)
+	deallocate
+	proceed
+
+$2:
+	pseudo_instr2(117, 1, 2)
+	proceed
+end('$write_string_aux/3$0'/3):
+
+
+
+'$write_string_aux'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	get_x_variable(3, 0)
+	get_x_variable(4, 1)
+	get_x_variable(0, 2)
+	pseudo_instr2(101, 3, 1)
+	get_structure('$prop', 7, 1)
+	unify_void(1)
+	unify_constant('output')
+	unify_void(5)
+	neck_cut
+	put_x_value(3, 1)
+	put_x_value(4, 2)
+	execute_predicate('$write_string_aux/3$0', 3)
+
+$2:
+	get_x_variable(3, 0)
+	put_structure(2, 0)
+	set_constant('write_string')
+	set_x_value(3)
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('stream')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('string')
+	put_structure(2, 3)
+	set_constant('write_string')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('type_exception', 3)
+end('$write_string_aux'/3):
 
 
 

@@ -104,9 +104,9 @@ Thread::name_term_vars(Object* term, Object*& varlist,
 {
   assert(term->variableDereference()->hasLegalSub());
   term = heap.dereference(term);
-  switch (term->utag())
+  switch (term->tTag())
     {
-    case Object::uVar:
+    case Object::tVar:
       if (OBJECT_CAST(Reference*, term)->getName() == NULL)
 	{
 	  if (get_vars)
@@ -123,7 +123,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
 	}
       break;
 
-    case Object::uObjVar:
+    case Object::tObjVar:
       if (!term->isLocalObjectVariable() &&
 	  OBJECT_CAST(Reference*, term)->getName() == NULL)
 	{
@@ -140,7 +140,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
 	}
       break;
 
-    case Object::uCons:
+    case Object::tCons:
       {
 	Object* list = term;
 	for (; list->isCons();
@@ -156,7 +156,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
       }
       break;
 
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* str = OBJECT_CAST(Structure*, term);
 	if (!str->getFunctor()->isConstant())
@@ -173,7 +173,7 @@ Thread::name_term_vars(Object* term, Object*& varlist,
       }
       break;
 
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant = OBJECT_CAST(QuantifiedTerm*, term);
 	if (!quant->getQuantifier()->isConstant())
@@ -187,10 +187,14 @@ Thread::name_term_vars(Object* term, Object*& varlist,
       }
       break;
 
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       break;
 
-    case Object::uSubst:
+    case Object::tSubst:
       name_term_vars_sub(OBJECT_CAST(Substitution*, 
 				     term)->getSubstitutionBlockList(), 
 			 varlist, do_name, get_vars);

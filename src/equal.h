@@ -60,16 +60,6 @@
 #define	EQUAL_H
 
 public:
-//
-// Call $equal_var/2 which is defined in Prolog.
-//
-bool equalVariable(PrologValue& var1, PrologValue& var2);
-
-//
-// Call $equal_object_variable/2 which is defined in Prolog.
-//
-bool equalObjectVariable(PrologValue&, PrologValue&);
-
 
 //
 // C-level implementation of ==

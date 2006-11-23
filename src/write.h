@@ -97,6 +97,19 @@ ReturnValue psi_write_integer(Object *& , Object *& );
 //
 ReturnValue psi_write_float(Object *& , Object *& );
 
+//
+// psi_write_string(stream_index, string)
+// Write for strings.
+// mode(in,in)
+//
+ReturnValue psi_write_string(Object *& object1, Object *& object2);
+
+//
+// psi_writeq_string(stream_index, string)
+// Write for strings - quotes added.
+// mode(in,in)
+//
+ReturnValue psi_writeq_string(Object *& object1, Object *& object2);
 
 //
 // Different specialised versions of write for variables.

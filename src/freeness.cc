@@ -383,26 +383,30 @@ Thread::notFreeIn(ObjectVariable *object_variable, PrologValue& term,
       heap.dropSubFromTerm(*this, term);
     }
 
-  switch (term.getTerm()->utag())
+  switch (term.getTerm()->tTag())
     {
-    case Object::uVar:
-    case Object::uObjVar:
+    case Object::tVar:
+    case Object::tObjVar:
       return notFreeInVar(object_variable, term, gen_delays);
       break;
 
-    case Object::uCons:
+    case Object::tCons:
       return notFreeInList(object_variable, term, gen_delays);
       break;
 
-    case Object::uStruct:
+    case Object::tStruct:
       return notFreeInStructure(object_variable, term, gen_delays);
       break;
 
-    case Object::uQuant:
+    case Object::tQuant:
       return notFreeInQuantifier(object_variable, term, gen_delays);
       break;
 
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       return true;
       break;
 
@@ -685,6 +689,7 @@ Thread::notFreeInVarSimp(ObjectVariable *object_variable,
   // sub = [tn/xn,...,t1/x1] - if ti = $ and xi distinct from object_variable 
   // then ti/xi can be safely removed provided xi distinct from xn,..,x(i+1).
   //
+  assert(object_variable->isObjectVariable());
   for (int i = size-1; i >= 0; i--)
     {
       assert(doms[i] != NULL);
@@ -975,19 +980,23 @@ Thread::addExtraInfoToVars(Object *term)
   assert(term->variableDereference()->hasLegalSub());
   term = heap.dereference(term);
 
-  switch (term->utag())
+  switch (term->tTag())
     {
-    case Object::uConst:
-    case Object::uObjVar:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
+    case Object::tObjVar:
       break;
-    case Object::uVar:
+    case Object::tVar:
       (void)addExtraInfo(OBJECT_CAST(Variable*, term));
       break;
-    case Object::uCons:
+    case Object::tCons:
       addExtraInfoToVars(OBJECT_CAST(Cons*, term)->getHead());
       addExtraInfoToVars(OBJECT_CAST(Cons*, term)->getTail());
       break;
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* structure = OBJECT_CAST(Structure*, term);
 	addExtraInfoToVars(structure->getFunctor());
@@ -997,21 +1006,21 @@ Thread::addExtraInfoToVars(Object *term)
 	  }
       }
       break;
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant = OBJECT_CAST(QuantifiedTerm*, term);
 	addExtraInfoToVars(quant->getQuantifier());
 	addExtraInfoToVars(quant->getBody());
       }
       break;
-    case Object::uSubst:
+    case Object::tSubst:
       {
 	Substitution* sterm = OBJECT_CAST(Substitution*, term);
 	addExtraInfoToVars(sterm->getSubstitutionBlockList());
 	addExtraInfoToVars(sterm->getTerm());
       }
       break;
-    case Object::uSubsBlock:
+    case Object::tSubBlock:
       {
         assert(term->isSubstitutionBlock());
 	SubstitutionBlock* sub_block = OBJECT_CAST(SubstitutionBlock*, term);
@@ -1120,14 +1129,18 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 {
   assert(obvar == obvar->variableDereference());
   heap.prologValueDereference(term);
-  switch (term.getTerm()->utag())
+  switch (term.getTerm()->tTag())
     {
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       {
 	return false;
 	break;
       }
-    case Object::uCons:
+    case Object::tCons:
       {
 	PrologValue head(term.getSubstitutionBlockList(), 
 			 OBJECT_CAST(Cons*, term.getTerm())->getHead());
@@ -1146,7 +1159,7 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 	  }
 	break;
       }
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* termstruct = OBJECT_CAST(Structure*, term.getTerm());
 	u_int arity = static_cast<u_int>(termstruct->getArity());
@@ -1169,19 +1182,19 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 	return result;
 	break;
       }
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	assert(obvar == obvar->variableDereference());
 	return freeness_test_quant(obvar, term);
 	break;
       }
-    case Object::uVar:
+    case Object::tVar:
       {
 	assert(obvar == obvar->variableDereference());
 	return freeness_test_var(obvar, term);
 	break;
       }
-    case Object::uObjVar:
+    case Object::tObjVar:
       {
 	assert(obvar == obvar->variableDereference());
 	return freeness_test_obvar(obvar, term);
@@ -1313,10 +1326,7 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
   heapobject* savesavedtop = heap.getSavedTop();
   heapobject* savedHT = heap.getTop();
   TrailLoc savedBindingTrailTop = bindingTrail.getTop();
-  TrailLoc savedObjectTrailTop = objectTrail.getTop();
-  TrailLoc savedIPTrailTop = ipTrail.getTop();
-  TrailLoc savedTagTrailTop = tagTrail.getTop();
-  TrailLoc savedRefTrailTop = refTrail.getTop();
+  TrailLoc savedOtherTrailTop = otherTrail.getTop();
   heap.setSavedTop(savedHT);
 
   // save old top of push down stack
@@ -1379,12 +1389,11 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 	      result = (result || freeness_test(obvar, newterm));
 	    }
 	  // Restore state
-	  bindingTrail.backtrackTo(savedBindingTrailTop);
-	  objectTrail.backtrackTo(savedObjectTrailTop);
-	  ipTrail.backtrackTo(savedIPTrailTop);
-	  tagTrail.backtrackTo(savedTagTrailTop);
-	  refTrail.backtrackTo(savedRefTrailTop);
 	  heap.setTop(savedHT);
+	  bindingTrail.backtrackTo(savedBindingTrailTop);
+	  assert(bindingTrail.check(heap));
+	  otherTrail.backtrackTo(savedOtherTrailTop);
+	  assert(otherTrail.check(heap));
 	  if (result != false)
 	    {
 	      break;
@@ -1397,6 +1406,7 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
     }
   if (result != false)
     {
+      heap.setSavedTop(savesavedtop);
       pushDownStack.popNEntries(pushDownStack.size() - old_size);
       return truth3::UNSURE;
     }
@@ -1436,14 +1446,13 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 	}
     }
   // Restore state
-  bindingTrail.backtrackTo(savedBindingTrailTop);
-  objectTrail.backtrackTo(savedObjectTrailTop);
-  ipTrail.backtrackTo(savedIPTrailTop);
-  tagTrail.backtrackTo(savedTagTrailTop);
-  refTrail.backtrackTo(savedRefTrailTop);
   heap.setTop(savedHT);
-  pushDownStack.popNEntries(pushDownStack.size() - old_size);
   heap.setSavedTop(savesavedtop);
+  bindingTrail.backtrackTo(savedBindingTrailTop);
+  assert(bindingTrail.check(heap));
+  otherTrail.backtrackTo(savedOtherTrailTop);
+  assert(otherTrail.check(heap));
+  pushDownStack.popNEntries(pushDownStack.size() - old_size);
   if (result == false)
     {
       return false;
@@ -1466,6 +1475,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
     {
       heap.dropSubFromTerm(*this, term);
     }
+  assert(term.getTerm()->isObjectVariable());
   assert(obvar == obvar->variableDereference());
   if (term.getSubstitutionBlockList()->isNil())
     {
@@ -1489,10 +1499,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
   heapobject* savesavedtop = heap.getSavedTop();
   heapobject* savedHT = heap.getTop();
   TrailLoc savedBindingTrailTop = bindingTrail.getTop();
-  TrailLoc savedObjectTrailTop = objectTrail.getTop();
-  TrailLoc savedIPTrailTop = ipTrail.getTop();
-  TrailLoc savedTagTrailTop = tagTrail.getTop();
-  TrailLoc savedRefTrailTop = refTrail.getTop();
+  TrailLoc savedOtherTrailTop = otherTrail.getTop();
   heap.setSavedTop(savedHT);
 
   // save old top of push down stack
@@ -1546,6 +1553,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 	    }
 	  pushDownStack.push(dom);
 	  assert(dom == dom->variableDereference());
+	  assert(term.getTerm()->isObjectVariable());
 	  if (retry_delays() &&
 	      !dom->distinctFrom(OBJECT_CAST(ObjectVariable*, term.getTerm())))
 	    {
@@ -1563,12 +1571,11 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 		}
 	    }
 	  // Restore state
-	  bindingTrail.backtrackTo(savedBindingTrailTop);
-	  objectTrail.backtrackTo(savedObjectTrailTop);
-	  ipTrail.backtrackTo(savedIPTrailTop);
-	  tagTrail.backtrackTo(savedTagTrailTop);
-	  refTrail.backtrackTo(savedRefTrailTop);
 	  heap.setTop(savedHT);
+	  bindingTrail.backtrackTo(savedBindingTrailTop);
+	  assert(bindingTrail.check(heap));
+	  otherTrail.backtrackTo(savedOtherTrailTop);
+	  assert(otherTrail.check(heap));
 	  if ((result != false) && (free_in_all != true))
 	    {
 	      break;
@@ -1582,6 +1589,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
   if ((result != false) && (free_in_all != true))
     {
       pushDownStack.popNEntries(pushDownStack.size() - old_size);
+      heap.setSavedTop(savesavedtop);
       return truth3::UNSURE;
     }
   // add extra test for obvar
@@ -1613,6 +1621,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 	    }
 	}
       assert(dom == dom->variableDereference());
+      assert(term.getTerm()->isObjectVariable());
       if (retry_delays() &&
 	  !dom->distinctFrom(OBJECT_CAST(ObjectVariable*, term.getTerm())))
 	{
@@ -1631,14 +1640,13 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 	}
     }
   // Restore state
-  bindingTrail.backtrackTo(savedBindingTrailTop);
-  objectTrail.backtrackTo(savedObjectTrailTop);
-  ipTrail.backtrackTo(savedIPTrailTop);
-  tagTrail.backtrackTo(savedTagTrailTop);
-  refTrail.backtrackTo(savedRefTrailTop);
   heap.setTop(savedHT);
-  pushDownStack.popNEntries(pushDownStack.size() - old_size);
   heap.setSavedTop(savesavedtop);
+  bindingTrail.backtrackTo(savedBindingTrailTop);
+  assert(bindingTrail.check(heap));
+  otherTrail.backtrackTo(savedOtherTrailTop);
+  assert(otherTrail.check(heap));
+  pushDownStack.popNEntries(pushDownStack.size() - old_size);
   if (result == false)
     {
       return false;
@@ -1663,14 +1671,18 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
 {
   assert(obvar == obvar->variableDereference());
   assert(term == term->variableDereference());
-  switch (term->utag())
+  switch (term->tTag())
     {
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       {
 	return true;
 	break;
       }
-    case Object::uCons:
+    case Object::tCons:
       {
 	return(fastNFITerm(obvar, OBJECT_CAST(Cons*, term)->getHead()->variableDereference())
 	       &&
@@ -1678,7 +1690,7 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
 	       );
 	break;
       }
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* termstruct = OBJECT_CAST(Structure*, term);
 	u_int arity = static_cast<u_int>(termstruct->getArity());
@@ -1692,7 +1704,7 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
 	return true;
 	break;
       }
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* qterm = OBJECT_CAST(QuantifiedTerm*, term);
 	if (!fastNFITerm(obvar, qterm->getQuantifier()->variableDereference()))
@@ -1744,17 +1756,18 @@ Thread::fastNFITerm(ObjectVariable* obvar, Object* term)
 	return (fastNFITerm(obvar, qterm->getBody()->variableDereference()));
 	break;
       }
-    case Object::uVar:
+    case Object::tVar:
       {
 	return (isDelayNFI(obvar, term));
 	break;
       }
-    case Object::uObjVar:
+    case Object::tObjVar:
       {
+        assert(term->isObjectVariable());
 	return OBJECT_CAST(ObjectVariable*, obvar)->distinctFrom(term);
 	break;
       }
-    case Object::uSubst:
+    case Object::tSubst:
       {
 	Substitution* sterm = OBJECT_CAST(Substitution*, term);
 	bool found = false;

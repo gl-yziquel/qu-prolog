@@ -602,7 +602,7 @@ Heap::fastEqualTerm(Object *t1, Object *t2)
       return(truth3::UNSURE);
     }
   
-  if (t1->utag() != t2->utag())
+  if (t1->tTag() != t2->tTag())
     {
       return false;
     }
@@ -610,9 +610,9 @@ Heap::fastEqualTerm(Object *t1, Object *t2)
   //
   // The terms are the same type but the pointers are still not equal.
   //
-  switch(t1->utag())
+  switch(t1->tTag())
     {
-    case Object::uVar:
+    case Object::tVar:
       //
       // If the previous test didnt work, then fastEqual has failed.
       //
@@ -620,37 +620,47 @@ Heap::fastEqualTerm(Object *t1, Object *t2)
       return false;
       break;
       
-    case Object::uStruct:
+    case Object::tStruct:
       //
       // Use fastEqualStruct to test the structures.
       //
       return(fastEqualStruct(t1, t2));
       break; 
       
-    case Object::uCons:
+    case Object::tCons:
       //
       // Use fastEqualList to test the lists.
       //
       return(fastEqualCons(t1, t2));
       break; 
       
-    case Object::uQuant:
+    case Object::tQuant:
       //
       // Use fastEqualQuant to test the quantifiers.
       //
       return(fastEqualQuant(t1, t2));
       break;
-    case Object::uConst:
-      //
-      // equal constants
-      //
-      if (t1->isAtom() || t2->isAtom())
+    case Object::tShort:
+    case Object::tAtom:
 	{
 	  assert(t1 != t2);
 	  return(false);
 	}
-      assert(t1->isNumber() && t2->isNumber());
-      return(t1->getNumber() == t2->getNumber());
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tString:
+      {
+	size_t size = t1->size_dispatch();
+	heapobject* ptr1 = reinterpret_cast<heapobject*>(t1);
+	heapobject* ptr2 = reinterpret_cast<heapobject*>(t2);
+	for (u_int i = 0; i < size; i++)
+	  {
+	    ptr1++;
+	    ptr2++;
+	    if (*ptr1 != *ptr2) return false;
+	  }
+	return true;
+      }
       break;
     default:
       assert(false);
@@ -700,6 +710,28 @@ truth3 Heap::fastEqual(PrologValue& t1, PrologValue& t2)
 }
 
 
+Cons*
+Heap::newCons(char* s)
+{
+  char* c = s;
+  assert(*c != '\0');
 
+  Cons* list = newCons();
+  Cons* result = list;
+  while (true)
+    {
+      list->setHead(newInteger((int)(*c)));
+      c++;
+      if (*c == '\0')
+        {
+          list->setTail(AtomTable::nil);
+          break;
+        }
+      Cons* list_tmp = newCons();
+      list->setTail(list_tmp);
+      list = list_tmp;
+    }
+  return result;
+}
 
 

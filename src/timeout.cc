@@ -65,9 +65,13 @@ Heap::IsTimeout(Object* cell)
     {
       return (cell == AtomTable::block);
     }
-  else
+  else if (cell->isNumber())
     {
-      return cell->isNumber() && cell->getNumber() >= 0;
+      return cell->getInteger() >= 0;
+    }
+  else 
+    {
+      return (cell->isDouble() && (cell->getInteger() >= 0));
     }
 }
 
@@ -85,9 +89,9 @@ Heap::DecodeTimeout(Object* cell)
 	  assert(false);
 	}
     }
-  else if (cell->isInteger() && cell->getNumber() >= 0)
+  else if (cell->isInteger() && cell->getInteger() >= 0)
     {
-      return (cell->getNumber());
+      return (cell->getInteger());
     }
   else if (cell->isDouble() && cell->getDouble() >= 0)
     {

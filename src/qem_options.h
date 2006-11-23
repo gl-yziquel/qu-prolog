@@ -79,10 +79,7 @@ private:
   Option<word32> environment_stack_size;
   Option<word32> choice_stack_size;
   Option<word32> binding_trail_size;
-  Option<word32> object_trail_size;
-  Option<word32> ip_trail_size;
-  Option<word32> tag_trail_size;
-  Option<word32> ref_trail_size;
+  Option<word32> other_trail_size;
   Option<word32> string_map_size;
   Option<word32> ip_table_size;
   Option<word32> scratchpad_size;
@@ -109,10 +106,7 @@ public:
   word32 EnvironmentStackSize(void) const { return environment_stack_size.Value(); }
   word32 ChoiceStackSize(void) const { return choice_stack_size.Value(); }
   word32 BindingTrailSize(void) const { return binding_trail_size.Value(); }
-  word32 ObjectTrailSize(void) const { return object_trail_size.Value(); }
-  word32 IPTrailSize(void) const { return ip_trail_size.Value(); }
-  word32 TagTrailSize(void) const { return tag_trail_size.Value(); }
-  word32 RefTrailSize(void) const { return ref_trail_size.Value(); }
+  word32 OtherTrailSize(void) const { return other_trail_size.Value(); }
   word32 StringMapSize(void) const { return string_map_size.Value(); }
   word32 ThreadTableSize(void) const { return thread_table_size.Value(); }
 

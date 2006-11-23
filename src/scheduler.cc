@@ -360,7 +360,7 @@ Scheduler::Schedule(void)
 	{
 	  Thread& thread = **iter;
 	  
-	  if (thread.Condition() == Thread::EXITED)
+	  if (thread.Condition() == ThreadCondition::EXITED)
 	    {
 	      // remove from blocked queue
 	      for (list<BlockingObject *>::iterator biter 
@@ -767,7 +767,7 @@ Scheduler::HandleSignal(void)
   thread->programCounter = thread->HandleInterrupt(problem);
   thread->TInfo().Goal() =  sig_atom;
   thread_table.IncLive();
-  thread->Condition(Thread::RUNNABLE);
+  thread->Condition(ThreadCondition::RUNNABLE);
 
 #ifdef DEBUG_SCHED
   cerr << __FUNCTION__ << "  Start execution of signal handler" << endl;

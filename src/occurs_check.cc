@@ -146,25 +146,22 @@ Thread::simpleOccursCheck(Object* term, Object* var)
 
   Object* t = term->variableDereference();
 
-  switch (t->utag())
+  switch (t->tTag())
     {
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       return false;
       break;
-    case Object::uVar:
-      if (var == t)
-	{
-	  return true;
-	}
-      else
-	{
-	  return false;
-	}
+    case Object::tVar:
+      return (var == t);
       break;
-    case Object::uObjVar:
+    case Object::tObjVar:
       return false;
       break;
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* s = OBJECT_CAST(Structure*, t);
 	truth3 flag = false;
@@ -180,7 +177,7 @@ Thread::simpleOccursCheck(Object* term, Object* var)
 	return flag;
       }
       break;
-    case Object::uCons:
+    case Object::tCons:
       {
 	truth3 flag = false;
 	for ( ; t->isCons(); 
@@ -196,7 +193,7 @@ Thread::simpleOccursCheck(Object* term, Object* var)
 	return (simpleOccursCheck(t, var) || flag);
       }
       break;
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* q = OBJECT_CAST(QuantifiedTerm*, t);
 	return ( simpleOccursCheck(q->getBody(), var) ||
@@ -204,7 +201,7 @@ Thread::simpleOccursCheck(Object* term, Object* var)
 		 simpleOccursCheck(q->getQuantifier(), var));
       }
       break;
-    case Object::uSubst:
+    case Object::tSubst:
       {
 	Substitution* s = OBJECT_CAST(Substitution*, t);
 	truth3 flag = simpleOccursCheck(s->getTerm(), var);
@@ -242,13 +239,17 @@ Thread::occursCheckAndSimplify(const CheckType type,
 {
   PrologValue tmpterm(term.getSubstitutionBlockList(), term.getTerm());
   heap.prologValueDereference(tmpterm);
-  switch (tmpterm.getTerm()->utag())
+  switch (tmpterm.getTerm()->tTag())
     {
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       simpterm = tmpterm.getTerm();
       return false;
       break;
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* s = OBJECT_CAST(Structure*, tmpterm.getTerm());
 	Structure* news = heap.newStructure(s->getArity());
@@ -269,7 +270,7 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	return flag;
       }
       break;
-    case Object::uCons:
+    case Object::tCons:
       {
 	Cons* c = OBJECT_CAST(Cons*, tmpterm.getTerm());
 	Object* head;
@@ -283,7 +284,7 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	return flag;
       }
       break;
-    case Object::uVar:
+    case Object::tVar:
       if (var == tmpterm.getTerm())
 	{
 	  return true;
@@ -318,7 +319,7 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	  return flag;
 	}
       break;
-    case Object::uObjVar:
+    case Object::tObjVar:
       if (type == DIRECT) 
 	{
 	  if (tmpterm.getSubstitutionBlockList()->isCons())
@@ -349,7 +350,7 @@ Thread::occursCheckAndSimplify(const CheckType type,
 	  return flag;
 	}
       break;
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* q = OBJECT_CAST(QuantifiedTerm*, tmpterm.getTerm());
 	PrologValue pvq(q->getQuantifier());

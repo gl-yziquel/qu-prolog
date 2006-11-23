@@ -80,7 +80,7 @@ Thread::psi_compare_var(Object *& object1, Object *& object2, Object *& object3)
   
   assert(val1->isAnyVariable());
   assert(val2->isAnyVariable());
-  assert(val1->utag() == val2->utag());
+  assert(val1->tTag() == val2->tTag());
   
   if (reinterpret_cast<void*>(val1) < reinterpret_cast<void*>(val2))
     {

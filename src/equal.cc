@@ -60,24 +60,6 @@
 #include "thread_qp.h"
 #include "truth3.h"
 extern AtomTable *atoms;
-//
-// Call $equal_var/2 which is defined in Prolog.
-//
-bool
-Thread::equalVariable(PrologValue& var1, PrologValue& var2)
-{
-  return false;
-}
-
-//
-// Call $equal_object_variable/2 which is defined in Prolog.
-//
-bool
-Thread::equalObjectVariable(PrologValue& object_variable1,
-			    PrologValue& object_variable2)
-{
-  return false;
-}
 
 
 //
@@ -87,7 +69,7 @@ Thread::equalObjectVariable(PrologValue& object_variable1,
 bool 
 Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 {
-  if (term1.getTerm()->utag() != term2.getTerm()->utag())
+  if (term1.getTerm()->tTag() != term2.getTerm()->tTag())
     {
       // different types
       return false;
@@ -100,13 +82,21 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
       return true;
     }
 
-  assert(term1.getTerm()->utag() == term2.getTerm()->utag());
-  switch (term1.getTerm()->utag())
+  assert(term1.getTerm()->tTag() == term2.getTerm()->tTag());
+  switch (term1.getTerm()->tTag())
     {
-    case Object::uConst:
-      return (term1.getTerm()->equalConstants(term2.getTerm()));
+    case Object::tShort:
+      return term1.getTerm()->getTag() == term2.getTerm()->getTag();
       break;
-    case Object::uCons:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tString:
+      return (term1.getTerm()->equalUninterp(term2.getTerm()));
+      break;
+    case Object::tAtom:
+      return false;
+      break;
+    case Object::tCons:
       {
 	Cons* list1 = OBJECT_CAST(Cons*, term1.getTerm());
 	Cons* list2 = OBJECT_CAST(Cons*, term2.getTerm());
@@ -125,7 +115,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	return (equalEqual(tail1, tail2, counter));
 	break;
       }
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* struct1 = OBJECT_CAST(Structure*, term1.getTerm());
 	Structure* struct2 = OBJECT_CAST(Structure*, term2.getTerm());
@@ -150,7 +140,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	return true;
 	break;
       }
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant1 = OBJECT_CAST(QuantifiedTerm*, term1.getTerm());
 	QuantifiedTerm* quant2 = OBJECT_CAST(QuantifiedTerm*, term2.getTerm());
@@ -236,7 +226,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	    Object* o1 = pushDownStack.pop()->variableDereference();
 	    Structure* ranstruct = heap.newStructure(1);
 	    ranstruct->setFunctor(atoms->add("$$quant"));
-	    ranstruct->setArgument(1, heap.newNumber(counter++));
+	    ranstruct->setArgument(1, heap.newInteger(counter++));
 	    assert(o1->isObjectVariable());
 	    assert(o2->isObjectVariable());
 	    block2->setDomain(i, OBJECT_CAST(ObjectVariable*, o2));
@@ -254,7 +244,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	return (equalEqual(body1, body2, counter));
 	break;
       }
-    case Object::uVar:
+    case Object::tVar:
       {
 	if (term1.getTerm() != term2.getTerm())
 	  {
@@ -278,10 +268,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	heapobject* savesavedtop = heap.getSavedTop();
 	heapobject* savedHT = heap.getTop();
         TrailLoc savedBindingTrailTop = bindingTrail.getTop();
-	TrailLoc savedObjectTrailTop = objectTrail.getTop();
-	TrailLoc savedIPTrailTop = ipTrail.getTop();
-	TrailLoc savedTagTrailTop = tagTrail.getTop();
-	TrailLoc savedRefTrailTop = refTrail.getTop();
+        TrailLoc savedOtherTrailTop = otherTrail.getTop();
 	heap.setSavedTop(savedHT);
 
 	bool result;
@@ -295,17 +282,16 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	result = equalEqual(pt1, pt2, counter);
 
 	// Restore state
-	bindingTrail.backtrackTo(savedBindingTrailTop);
-	objectTrail.backtrackTo(savedObjectTrailTop);
-	ipTrail.backtrackTo(savedIPTrailTop);
-	tagTrail.backtrackTo(savedTagTrailTop);
-	refTrail.backtrackTo(savedRefTrailTop);
 	heap.setTop(savedHT);
 	heap.setSavedTop(savesavedtop);
+	bindingTrail.backtrackTo(savedBindingTrailTop);
+	assert(bindingTrail.check(heap));
+	otherTrail.backtrackTo(savedOtherTrailTop);
+	assert(otherTrail.check(heap));
 	return result;
 	break;
       }
-    case Object::uObjVar:
+    case Object::tObjVar:
       {
 	if (term1.getSubstitutionBlockList()->isCons())
 	  {
@@ -334,6 +320,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	    for (size_t i = 1; i <= size; i++)
 	      {
 		domain = sub_block->getDomain(i)->variableDereference();
+		assert(term->isObjectVariable());
 		if(!OBJECT_CAST(ObjectVariable*, domain)->distinctFrom(OBJECT_CAST(ObjectVariable*, term)))
 		  {
 		    break;
@@ -353,6 +340,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	    for (size_t i = 1; i <= size; i++)
 	      {
 		domain = sub_block->getDomain(i)->variableDereference();
+		assert(term->isObjectVariable());
 		if(!OBJECT_CAST(ObjectVariable*, domain)->distinctFrom(OBJECT_CAST(ObjectVariable*, term)))
 		  {
 		    break;
@@ -364,10 +352,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	heapobject* savesavedtop = heap.getSavedTop();
 	heapobject* savedHT = heap.getTop();
         TrailLoc savedBindingTrailTop = bindingTrail.getTop();
-	TrailLoc savedObjectTrailTop = objectTrail.getTop();
-	TrailLoc savedIPTrailTop = ipTrail.getTop();
-	TrailLoc savedTagTrailTop = tagTrail.getTop();
-	TrailLoc savedRefTrailTop = refTrail.getTop();
+        TrailLoc savedOtherTrailTop = otherTrail.getTop();
 	heap.setSavedTop(savedHT);
 
 	bool result;
@@ -386,12 +371,11 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	  }
 
 	// Restore state
-	bindingTrail.backtrackTo(savedBindingTrailTop);
-	objectTrail.backtrackTo(savedObjectTrailTop);
-	ipTrail.backtrackTo(savedIPTrailTop);
-	tagTrail.backtrackTo(savedTagTrailTop);
-	refTrail.backtrackTo(savedRefTrailTop);
 	heap.setTop(savedHT);
+	bindingTrail.backtrackTo(savedBindingTrailTop);
+	assert(bindingTrail.check(heap));
+	otherTrail.backtrackTo(savedOtherTrailTop);
+	assert(otherTrail.check(heap));
 	
 	if (!result)
 	  {
@@ -401,6 +385,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	assert(domain->isObjectVariable());
 	assert(term->isObjectVariable());
 	assert(domain == domain->variableDereference());
+	assert(term->isObjectVariable());
 	assert(!OBJECT_CAST(ObjectVariable*, domain)->distinctFrom(OBJECT_CAST(ObjectVariable*, term)));
 	setDistinct(OBJECT_CAST(ObjectVariable*, domain),
 		    OBJECT_CAST(ObjectVariable*, term));
@@ -417,13 +402,12 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	    result = equalEqual(pt1, pt2, counter);
 	  }
 	// Restore state
-	bindingTrail.backtrackTo(savedBindingTrailTop);
-	objectTrail.backtrackTo(savedObjectTrailTop);
-	ipTrail.backtrackTo(savedIPTrailTop);
-	tagTrail.backtrackTo(savedTagTrailTop);
-	refTrail.backtrackTo(savedRefTrailTop);
 	heap.setTop(savedHT);
 	heap.setSavedTop(savesavedtop);
+	bindingTrail.backtrackTo(savedBindingTrailTop);
+	assert(bindingTrail.check(heap));
+	otherTrail.backtrackTo(savedOtherTrailTop);
+	assert(otherTrail.check(heap));
 
 	return result;
 	break;
@@ -445,15 +429,19 @@ bool
 Thread::simplify_term(PrologValue& term, Object*& simpterm)
 {
   heap.prologValueDereference(term);
-  switch (term.getTerm()->utag())
+  switch (term.getTerm()->tTag())
     {
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       {
 	simpterm = term.getTerm();
 	return false;
 	break;
       }
-    case Object::uCons:
+    case Object::tCons:
       {
 	PrologValue head(term.getSubstitutionBlockList(), OBJECT_CAST(Cons*, term.getTerm())->getHead());
 	PrologValue tail(term.getSubstitutionBlockList(), OBJECT_CAST(Cons*, term.getTerm())->getTail());
@@ -473,7 +461,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 	  }
 	break;
       }
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* termstruct = OBJECT_CAST(Structure*, term.getTerm());
 	u_int arity = static_cast<u_int>(termstruct->getArity());
@@ -504,7 +492,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 	  }
 	break;
       }
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant = 
 	  OBJECT_CAST(QuantifiedTerm*, term.getTerm());
@@ -541,7 +529,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 	  }
 	break;
       }
-    case Object::uVar:
+    case Object::tVar:
       {
 	Object* savedsub = term.getSubstitutionBlockList();
 	if (savedsub->isCons())
@@ -560,7 +548,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 		|| is_simplified);
 	break;
       }
-    case Object::uObjVar:
+    case Object::tObjVar:
       {
 	Object* savedsub = term.getSubstitutionBlockList();
 	if (savedsub->isCons())
@@ -577,7 +565,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 	heap.prologValueDereference(term);
 	is_simplified = (savedsub != 
 			 term.getSubstitutionBlockList());
-	if (term.getTerm()->utag() != Object::uObjVar)
+	if (term.getTerm()->tTag() != Object::tObjVar)
 	  {
 	    (void)simplify_term(term, simpterm);
 	    return true;
@@ -600,16 +588,13 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 {
   // allocate buffer
   Object* index = 
-    heap.newNumber(buffers.allocate(heap.getTop(), scratchpad.getTop()));
+    heap.newInteger(buffers.allocate(heap.getTop(), scratchpad.getTop()));
  
   // Save state
   heapobject* savesavedtop = heap.getSavedTop();
   heapobject* savedHT = heap.getTop();
   TrailLoc savedBindingTrailTop = bindingTrail.getTop();
-  TrailLoc savedObjectTrailTop = objectTrail.getTop();
-  TrailLoc savedIPTrailTop = ipTrail.getTop();
-  TrailLoc savedTagTrailTop = tagTrail.getTop();
-  TrailLoc savedRefTrailTop = refTrail.getTop();
+  TrailLoc savedOtherTrailTop = otherTrail.getTop();
   heap.setSavedTop(savedHT);
 
   // save old top of push down stack
@@ -665,12 +650,11 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 	  pushDownStack.push(dom);
 	  if (!retry_delays())
 	    {
-	      bindingTrail.backtrackTo(savedBindingTrailTop);
-	      objectTrail.backtrackTo(savedObjectTrailTop);
-	      ipTrail.backtrackTo(savedIPTrailTop);
-	      tagTrail.backtrackTo(savedTagTrailTop);
-	      refTrail.backtrackTo(savedRefTrailTop);
 	      heap.setTop(savedHT);
+	      bindingTrail.backtrackTo(savedBindingTrailTop);
+	      assert(bindingTrail.check(heap));
+	      otherTrail.backtrackTo(savedOtherTrailTop);
+	      assert(otherTrail.check(heap));
 	      continue;
 	    }
 	  if (term.getTerm()->isObjectVariable())
@@ -730,12 +714,11 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 		} 
 	    }
 	  // Restore state
-	  bindingTrail.backtrackTo(savedBindingTrailTop);
-	  objectTrail.backtrackTo(savedObjectTrailTop);
-	  ipTrail.backtrackTo(savedIPTrailTop);
-	  tagTrail.backtrackTo(savedTagTrailTop);
-	  refTrail.backtrackTo(savedRefTrailTop);
 	  heap.setTop(savedHT);
+	  bindingTrail.backtrackTo(savedBindingTrailTop);
+	  assert(bindingTrail.check(heap));
+	  otherTrail.backtrackTo(savedOtherTrailTop);
+	  assert(otherTrail.check(heap));
 	}	   
     }
   pushDownStack.popNEntries(pushDownStack.size() - old_size);

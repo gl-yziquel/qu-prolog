@@ -114,10 +114,7 @@ decode_defaults(Heap& heap, Object * sizes,
 		Object *& heap_size,
 		Object *& scratchpad_size,
 		Object *& binding_trail_size,
-		Object *& object_trail_size,
-		Object *& ip_trail_size,
-		Object *& tag_trail_size,
-		Object *& ref_trail_size,
+		Object *& other_trail_size,
 		Object *& env_size,
 		Object *& choice_size,
 		Object *& name_table_size,
@@ -129,10 +126,7 @@ decode_defaults(Heap& heap,
 		int& heap_size,
 		int& scratchpad_size,
 		int& binding_trail_size,
-		int& object_trail_size,
-		int& ip_trail_size,
-		int& tag_trail_size,
-		int& ref_trail_size,
+		int& other_trail_size,
 		int& env_size,
 		int& choice_size,
 		int& name_table_size,
@@ -141,11 +135,8 @@ decode_defaults(Heap& heap,
 #define DECODE_DEFAULTS_ARG(heap, cell, arg_num,	\
 			    heap_size,			\
 			    scratchpad_size,		\
-			    binding_trail_size,			\
-			    object_trail_size,			\
-			    ip_trail_size,			\
-			    tag_trail_size,			\
-			    ref_trail_size,			\
+			    binding_trail_size,	       	\
+			    other_trail_size,	       	\
 			    env_size,			\
 			    choice_size,		\
 			    name_table_size,		\
@@ -156,10 +147,7 @@ do {							\
 		    heap_size,				\
 		    scratchpad_size,				\
 		    binding_trail_size,				\
-		    object_trail_size,				\
-		    ip_trail_size,				\
-		    tag_trail_size,				\
-		    ref_trail_size,				\
+		    other_trail_size,				\
 		    env_size,				\
 		    choice_size,			\
 		    name_table_size,			\

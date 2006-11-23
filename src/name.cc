@@ -62,6 +62,119 @@
 
 extern AtomTable *atoms;
 
+/*
+void
+Thread::addEscapes(string& str, char quote)
+{
+  string tmp;
+  for (string::iterator iter = str.begin(); iter != str.end(); iter++)
+    {
+      char c = *iter;
+      switch ((int)c)
+	{
+	case 7:  // \a
+	  tmp.push_back('\\');
+	  tmp.push_back('a');
+	  break;
+	case 8:  // \b
+	  tmp.push_back('\\');
+	  tmp.push_back('b');
+	  break;
+	case 9:  // \t
+	  tmp.push_back('\\');
+	  tmp.push_back('t');
+	  break;
+	case 10:  // \n
+	  tmp.push_back('\\');
+	  tmp.push_back('n');
+	  break;
+	case 11:  // \v
+	  tmp.push_back('\\');
+	  tmp.push_back('v');
+	  break;
+	case 12:  // \f
+	  tmp.push_back('\\');
+	  tmp.push_back('f');
+	  break;
+	case 13:  // \r
+	  tmp.push_back('\\');
+	  tmp.push_back('r');
+	  break;
+	case 92:  
+	  tmp.push_back('\\');
+	  tmp.push_back('\\');
+	  break;
+	default:
+	  if (c == quote)
+	    {
+	      tmp.push_back('\\');
+	      tmp.push_back('c');
+	    }
+	  else
+	      tmp.push_back('c');
+	  break;
+	}
+    }
+  str = tmp;
+}
+
+void
+Thread::removeEscapes(string& str, char quote)
+{
+  string tmp;
+  for (string::iterator iter = str.begin(); iter != str.end(); iter++)
+    {
+      char c = *iter;
+      if (c == '\\')
+	{
+	  iter++;
+	  assert(iter != str.end());
+	  char d = *iter;
+	  switch (d)
+	    {  
+	    case 'a':  // \a
+	      tmp.push_back('\a');
+	      break;
+	    case 'b':  // \b
+	      tmp.push_back('\b');
+	      break;
+	    case 't':  // \t
+	      tmp.push_back('\t');
+	      break;
+	    case 'n':  // \n
+	      tmp.push_back('\n');
+	      break;
+	    case 'v':  // \v
+	      tmp.push_back('\v');
+	      break;
+	    case 'f':  // \f
+	      tmp.push_back('\f');
+	      break;
+	    case 'r':  // \r
+	      tmp.push_back('\r');
+	      break;
+	    case '\\': 
+	      tmp.push_back('\\');
+	      break;
+	    default:
+	      tmp.push_back('c');
+	      break;
+	    }
+	}
+      else if (c == quote)
+	{
+	  iter++;
+	  assert(iter != str.end());
+	  assert(*iter == quote);
+	  tmp.push_back(c);
+	}
+      else
+	tmp.push_back(c);
+    }
+  str = tmp;
+}
+*/
+
 //
 // psi_atom_codes(atom, var)
 // Convert an atom to a list of character codes.
@@ -76,11 +189,12 @@ Thread::psi_atom_codes(Object *& object1, Object *& object2)
   assert(val1->isAtom());
  
   Object* tail = AtomTable::nil;
-  const char *string = atoms->getAtomString(val1);
-
-  for (int i = static_cast<int>(strlen(string)) - 1; i >= 0; i--)
+  string atomstring(atoms->getAtomString(val1));
+  
+  for (string::reverse_iterator iter = atomstring.rbegin();
+       iter != atomstring.rend(); iter++)
     {
-      Object* head = heap.newNumber(string[i]);
+      Object* head = heap.newInteger(*iter);
       Cons* temp = heap.newCons(head, tail);
       tail = temp;
     }
@@ -97,19 +211,17 @@ Thread::psi_atom_codes(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_codes_atom(Object *& object1, Object *& object2)
 {
-  char		*s;
   Object* list = object1->variableDereference();
-
-  for (s = atom_buf1; list->isCons(); s++)
+  string atomname;
+  while (list->isCons())
     {
       Cons* clist = OBJECT_CAST(Cons*, list);
       Object* head = clist->getHead()->variableDereference();
       list = clist->getTail()->variableDereference();
       assert(head->isShort());
-      *s = head->getNumber();
+      atomname.push_back(head->getInteger());
     }
-  *s = '\0';
-  object2 = atoms->add(atom_buf1);
+  object2 = atoms->add(atomname.c_str());
   return(RV_SUCCESS);
 }
 
@@ -152,7 +264,7 @@ Thread::psi_code_char(Object *& object1, Object *& object2)
 
   assert(val1->isShort());
   
-  string[0] = val1->getNumber();
+  string[0] = val1->getInteger();
   string[1] = '\0';
   object2 = atoms->add(string);
   return(RV_SUCCESS);
@@ -173,7 +285,7 @@ Thread::psi_number_codes(Object *& object1, Object *& object2)
   if (val1->isDouble())
     strm << val1->getDouble();
   else
-    strm << val1->getNumber();
+    strm << val1->getInteger();
 
   const char* code_list = strm.str().data();
 
@@ -188,7 +300,7 @@ Thread::psi_number_codes(Object *& object1, Object *& object2)
       
   while (true)
     {
-      list->setHead(heap.newNumber((int)(*code_list)));
+      list->setHead(heap.newInteger((int)(*code_list)));
       code_list++;
       if (*code_list == '\0')
         {
@@ -218,7 +330,7 @@ Thread::psi_codes_number(Object *& object1, Object *& object2)
       Cons* list = OBJECT_CAST(Cons*, arg);
       if (!(list->getHead()->variableDereference()->isInteger()))
           return(RV_FAIL);
-      str << (char)(list->getHead()->variableDereference()->getNumber());
+      str << (char)(list->getHead()->variableDereference()->getInteger());
       arg = list->getTail()->variableDereference();
     }
   if (!arg->isNil())  return(RV_FAIL);
@@ -270,6 +382,6 @@ Thread::psi_codes_number(Object *& object1, Object *& object2)
     if (has_dot || has_e)
       object2 = TheHeap().newDouble(atof(numstr));
     else
-      object2 = TheHeap().newNumber(atoi(numstr));
+      object2 = TheHeap().newInteger(atoi(numstr));
     return(RV_SUCCESS);
 }

@@ -120,7 +120,7 @@ NumberMap::loadNumbers(istream& istrm, Heap& number_heap)
        size > 0; size--)
     {
       int32 i = IntLoad<Code::AddressSizedType>(istrm);
-      pushElement(number_heap.newNumber(i));
+      pushElement(number_heap.newInteger(i));
       
     }
   return(true);

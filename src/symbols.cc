@@ -77,14 +77,14 @@ Thread::psi_get_atom_from_atom_table(Object *& object1, Object *& object2,
   Object* val1 = heap.dereference(object1);
   assert(val1->isNumber());
 
-  i = val1->getNumber();
+  i = val1->getInteger();
 
   while (++i < (signed) atoms->size())
     {
       if (! atoms->isEntryEmpty((AtomLoc)(i))) 
 	{
 	  object2 = atoms->getAtom((AtomLoc)(i));
-	  object3 = heap.newNumber(i);
+	  object3 = heap.newInteger(i);
 	  return(RV_SUCCESS);
 	}
     }
@@ -102,17 +102,17 @@ Thread::psi_get_pred_from_pred_table(Object *& object1, Object *& object2,
 {
   int32		i;
   Object* val1 = heap.dereference(object1);
-  assert(val1->isNumber());
+  assert(val1->isInteger());
 
-  i = val1->getNumber();
+  i = val1->getInteger();
 
   while (++i < (signed) predicates->size())
     {
       if (! predicates->isEmpty((PredLoc)(i))) 
 	{
 	  object2 = predicates->getPredName((PredLoc)(i), atoms);
-	  object3 = heap.newNumber(predicates->getArity((PredLoc)(i)));
-	  object4 = heap.newNumber(i);
+	  object3 = heap.newInteger(predicates->getArity((PredLoc)(i)));
+	  object4 = heap.newInteger(i);
 	  return(RV_SUCCESS);
 	}
     }
@@ -137,13 +137,13 @@ Thread::psi_symtype(Object *& object1, Object *& object2, Object *& object3)
     assert(val2->isShort());
 
     PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, val1), 
-				     val2->getNumber(), atoms, code);
+				     val2->getInteger(), atoms, code);
     if (loc == EMPTY_LOC) 
       {
 	//
 	// It does not have an entry point defined.
 	//
-	object3 = heap.newNumber(0);
+	object3 = heap.newInteger(0);
       }
     else
       {
@@ -151,13 +151,13 @@ Thread::psi_symtype(Object *& object1, Object *& object2, Object *& object3)
 	switch (pred.type())
 	  {
 	  case PredCode::ESCAPE_PRED:
-	    object3 = heap.newNumber(3);
+	    object3 = heap.newInteger(3);
 	    break;
 	  case PredCode::STATIC_PRED:
-	    object3 = heap.newNumber(2);
+	    object3 = heap.newInteger(2);
 	    break;
 	  case PredCode::DYNAMIC_PRED:
-	    object3 = heap.newNumber(1);
+	    object3 = heap.newInteger(1);
 	    break;
 	  }
       }

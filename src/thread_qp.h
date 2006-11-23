@@ -123,10 +123,12 @@ public:
   void Clear(void) { clear(); }
 };
 
+
+
 //
 // Qu-Prolog thread
 //
-class Thread : public ThreadCondition
+class Thread
 {
 #ifdef QP_DEBUG
   // The Trace class may gaze into a Thread's soul.
@@ -135,9 +137,11 @@ class Thread : public ThreadCondition
   friend class Scheduler;
 
 private:
+  ThreadCondition thread_condition;
   CodeLoc programCounter;		// PC
   BlockStatus block_status;
   RestartStatus restart_status;
+  word32 minCleanupCP;
 
   void InitThread(void);
 
@@ -158,12 +162,11 @@ private:
   HeapBufferManager& buffers;
   Heap& heap;
   Heap& scratchpad;
+  ObjectsStack& gcstack;
+  GCBits& gcbits;
 
   BindingTrail& bindingTrail;
-  UpdatableObjectTrail& objectTrail;
-  UpdatableObjectTrail& ipTrail;
-  UpdatableTagTrail& tagTrail;
-  RefTrail& refTrail;
+  OtherTrail& otherTrail;
   
   CodeLoc continuationInstr;	// CP
   EnvLoc currentEnvironment;	// CE
@@ -230,7 +233,20 @@ private:
   void RestoreXRegisters(void);
 
 public:
-  RefTrail& getRefTrail(void) { return refTrail; }
+
+  word32 getCleanupMinCP() const { return minCleanupCP; }
+
+  void resetCleanupMinCP() { minCleanupCP = 0xFFFF; }
+
+  word32*  getCleanupMinCPAddr() { return &minCleanupCP; }
+
+  ThreadCondition::ThreadConditionValue Condition() const 
+  { return thread_condition.Condition(); }
+
+ void Condition(const ThreadCondition::ThreadConditionValue tcv) 
+ { thread_condition.Condition(tcv); }
+
+ ThreadCondition& getThreadCondition() { return thread_condition; }
 
   // Pending IPC messages.
   list<Message *>& MessageQueue(void) { return message_queue; }
@@ -253,8 +269,7 @@ public:
   // Save the state of the heap and trails for choice pointes.
   void saveHeapAndTrails(HeapAndTrailsChoice& state)
     {
-      state.save(heap.getTop(), bindingTrail.getTop(), objectTrail.getTop(),
-		 ipTrail.getTop(), tagTrail.getTop(), refTrail.getTop());
+      state.save(heap.getTop(), bindingTrail.getTop(), otherTrail.getTop());
       heap.setSavedTop(heap.getTop());
     }
 
@@ -264,22 +279,12 @@ public:
     {
       heapobject* savedHT;
       TrailLoc savedBindingTrailTop;
-      TrailLoc savedObjectTrailTop;
-      TrailLoc savedIPTrailTop;
-      TrailLoc savedTagTrailTop;
-      TrailLoc savedRefTrailTop;
-
-      state.restore(savedHT, savedBindingTrailTop, 
-		    savedObjectTrailTop,
-		    savedIPTrailTop, savedTagTrailTop,
-                    savedRefTrailTop);
-      bindingTrail.backtrackTo(savedBindingTrailTop);
-      objectTrail.backtrackTo(savedObjectTrailTop);
-      ipTrail.backtrackTo(savedIPTrailTop);
-      tagTrail.backtrackTo(savedTagTrailTop);
-      refTrail.backtrackTo(savedRefTrailTop);
+      TrailLoc savedOtherTrailTop;
+      state.restore(savedHT, savedBindingTrailTop, savedOtherTrailTop); 
       heap.setSavedTop(savedHT);
       heap.setTop(savedHT);
+      bindingTrail.backtrackTo(savedBindingTrailTop);
+      otherTrail.backtrackTo(savedOtherTrailTop);
     }
 
   void changeTimeslice(bool makeSet);
@@ -315,19 +320,11 @@ public:
     {
       heapobject* savedHT;
       TrailLoc savedBindingTrailTop;
-      TrailLoc savedObjectTrailTop;
-      TrailLoc savedIPTrailTop;
-      TrailLoc savedTagTrailTop;
-      TrailLoc savedRefTrailTop;
+      TrailLoc savedOtherTrailTop;
 
-      state.restore(savedHT, savedBindingTrailTop, 
-		    savedObjectTrailTop,
-		    savedIPTrailTop, savedTagTrailTop, savedRefTrailTop);
+      state.restore(savedHT, savedBindingTrailTop, savedOtherTrailTop); 
       bindingTrail.tidyUpTrail(savedBindingTrailTop, savedHT);
-      objectTrail.tidyUpTrail(savedObjectTrailTop, heap);
-      ipTrail.tidyUpTrail(savedIPTrailTop, heap);
-      tagTrail.tidyUpTrail(savedTagTrailTop, heap);
-      refTrail.tidyUpTrail(savedRefTrailTop, currentChoicePoint);
+      otherTrail.tidyUpTrail(savedOtherTrailTop, savedHT, heap);
       heap.setSavedTop(savedHT);
     }
 
@@ -356,6 +353,7 @@ public:
       {
 	choice->X[i] = X[i];
       }
+    choice->setTimestamp(0);
   }
 
   //
@@ -395,7 +393,6 @@ public:
 	finter = new ForeignInterface(this);
       return finter;
     }
-
 
   // Declarations for many of the thread methods, most notably, the
   // pseudo-instructions.
@@ -473,33 +470,48 @@ public:
   // is given.
   // NOTE: The state is not reset.
   //
-#ifdef QP_DEBUG
-  void Backtrack(Thread& th, 
-		 const CodeLoc pc)
-  {
-    trace.TraceBacktrack(th, pc);
-
-  programCounter = choiceStack.nextClause(currentChoicePoint);
-  cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
-  //  choiceStack.getNextAlternative(*this, currentChoicePoint);
-  }
-#else	// QP_DEBUG
   void Backtrack(CodeLoc& PC)
   {
-  PC = choiceStack.nextClause(currentChoicePoint);
-  cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
-//    choiceStack.getNextAlternative(*this, currentChoicePoint);
+    Choice* currChoice = choiceStack.fetchChoice(currentChoicePoint);
+    int time = currChoice->getTimestamp();
+    if (time <= 0)
+    {
+       PC = choiceStack.nextClause(currentChoicePoint);
+       cutPoint = currChoice->getCutPoint();
+    }
+    else
+    {
+      DBBacktrack(PC, currChoice, time);
+    }
   }
-#endif	// QP_DEBUG
+
+  void DBBacktrack(CodeLoc& PC, Choice* currChoice, int time)
+  {
+    LinkedClause* nextClause = (LinkedClause*)(currChoice->getNextClause());
+    LinkedClause* nextNextClause = nextClause->nextNextAlive(time);
+    assert(nextClause != NULL);
+    if (nextNextClause == NULL)
+      { 
+	PC = nextClause->getCodeBlock()->getCode();
+	backtrackTo(choiceStack.fetchChoice(currentChoicePoint)); 
+	currentChoicePoint = choiceStack.pop(currentChoicePoint); 
+	tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+	cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
+      }
+    else
+      {
+	currChoice->getNextClause() = (CodeLoc)nextNextClause;
+	PC = nextClause->getCodeBlock()->getCode();
+	backtrackTo(choiceStack.fetchChoice(currentChoicePoint));
+	cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
+      } 
+  }               
 
   Thread(Thread *parent,
 	 const word32 ScratchpadSize,
 	 const word32 HeapSize,
 	 const word32 BindingTrailSize,
-	 const word32 ObjectTrailSize,
-	 const word32 IPTrailSize,
-	 const word32 TagTrailSize,
-	 const word32 RefTrailSize,
+	 const word32 OtherTrailSize,
 	 const word32 EnvSize,
 	 const word32 ChoiceSize,
 	 const word32 NameSize,
@@ -512,16 +524,15 @@ public:
 	 HeapBufferManager& SharedBuffers,
 	 Heap& SharedScratchpad,
 	 Heap& SharedHeap,
+         ObjectsStack& SharedGCstack,
+         GCBits& SharedGCBits,
 	 NameTable& SharedNames,
 	 IPTable& SharedIPTable,
 	 BindingTrail& SharedBindingTrail,
-	 UpdatableObjectTrail& SharedObjectTrail,
-	 UpdatableObjectTrail& SharedIPTrail,
-	 UpdatableTagTrail& SharedTagTrail,
-	 RefTrail& SharedRefTrail,
+	 OtherTrail& SharedOtherTrail,
 	 const word32 EnvSize,
 	 const word32 ChoiceSize);
-
+ 
   ~Thread(void);
 
   bool operator==(const Thread& th) const
@@ -544,10 +555,7 @@ public:
   Heap& TheHeap(void) { return heap; }
   Heap& TheScratchpad(void) { return scratchpad; }
   BindingTrail& TheBindingTrail(void) { return bindingTrail; }
-  UpdatableObjectTrail& TheObjectTrail(void) { return objectTrail; }
-  UpdatableObjectTrail& TheIPTrail(void) { return ipTrail; }
-  UpdatableTagTrail& TheTagTrail(void) { return tagTrail; }
-  RefTrail& TheRefTrail(void) { return refTrail; }
+  OtherTrail& TheOtherTrail(void) { return otherTrail; }
   ChoiceStack& TheChoiceStack(void) { return choiceStack; }
 
 

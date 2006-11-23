@@ -3,7 +3,7 @@
 <!-- Created by texi2html 1.56k from main.tex on 30 November 1999 -->
 <!-- Edited by Michael Walters on 30 Novemeber 1999 -->
 
-<TITLE>Qu-Prolog 7.2 Reference Manual - Getting Started</TITLE>
+<TITLE>Qu-Prolog 7.4 Reference Manual - Getting Started</TITLE>
 </HEAD>
 
 <BODY>
@@ -63,42 +63,15 @@ This trail is used to determine which variables should be reset to unbound
 on backtracking.
 </BLOCKQUOTE>
 
-<P> The object trail.
+<P> The other trail.
 
 <BLOCKQUOTE>
 Some Qu-Prolog data structures change values during computation and this trail
 is used to reset these data structures to their old values on backtracking.
 Such data structures include the delay list associated with a variable,
-the distinctness information associated with an object variable and the
-names of variables.
-</BLOCKQUOTE>
-
-<P> The implicit parameter trail.
-
-<BLOCKQUOTE>
-The implicit parameter trail is like the object trail but deals only with
-the changes of values of implicit parameters.
-</BLOCKQUOTE>
-
-<P> The tag trail.
-
-<BLOCKQUOTE>
-Each Qu-Prolog data structure contains a tag that describes the contents of
-the data structure (e.g. variable, structure, list). For variables, the tag
-contains information about the temperature of the variable (i.e. frozen or
-thawed) and if an occurs check should be carried out when the variable is bound.
-This information about variables is trailed in the tag trail so that it
-can be reset to the old value on backtracking.
-</BLOCKQUOTE>
-
-<P> The reference trail.
-
-<BLOCKQUOTE>
-Garbage collection of the dynamic database is managed by reference counting.
-The reference trail keeps information about references to clauses. 
-When backtracking occurs or choice points are removed, 
-appropriate references that are referred to in the reference trail
-are decremented.
+the distinctness information associated with an object variable, the
+names of variables, and implicit parameters.
+It is also used to manage variable tags, reference counts for the dynamic database and <KBD>call_cleanup</KBD>.
 </BLOCKQUOTE>
 
 <P> The code area.
@@ -165,24 +138,7 @@ Set the binding trail size to <KBD>size</KBD> K words. The default size is 32K.
 
 <P><KBD>-O size</KBD>
 <BLOCKQUOTE>
-Set the object trail size to <KBD>size</KBD> K words. The default size is 16K.
-</BLOCKQUOTE>
-
-<P><KBD>-T size</KBD>
-<BLOCKQUOTE>
-Set the tag trail size to <KBD>size</KBD> K words. The default size is 8K.
-</BLOCKQUOTE>
-
-<P><KBD>-I size</KBD>
-<BLOCKQUOTE>
-Set the implicit parameter trail size to <KBD>size</KBD> K words. 
-The default size is 8K.
-</BLOCKQUOTE>
-
-<P><KBD>-r size</KBD>
-<BLOCKQUOTE>
-Set the reference trail size to <KBD>size</KBD> K words. 
-The default size is 2K.
+Set the other trail size to <KBD>size</KBD> K words. The default size is 32K.
 </BLOCKQUOTE>
 
 <P><KBD>-i size</KBD>

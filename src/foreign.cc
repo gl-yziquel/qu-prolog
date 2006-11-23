@@ -333,15 +333,15 @@ Thread::psi_load_foreign(Object *& object_file_arg,
       
       if (!pred->isAtom() ||
 	  !arity->isShort() ||
-	  !(0 <= arity->getNumber() && 
-	    arity->getNumber() <= (signed) ARITY_MAX) ||
+	  !(0 <= arity->getInteger() && 
+	    arity->getInteger() <= (signed) ARITY_MAX) ||
 	  !fn->isAtom())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 4);
 	}
       
       predicates->addEscape(atoms, OBJECT_CAST(Atom*, pred), 
-			    arity->getNumber(),
+			    arity->getInteger(),
 			    FnAddr(atoms->getAtomString(fn)), code);
     }
   

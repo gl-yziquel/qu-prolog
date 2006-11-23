@@ -67,7 +67,7 @@
 Thread::ReturnValue
 Thread::psi_get_catch(Object *& object1)
 {
-  object1 = heap.newNumber(catchPoint);
+  object1 = heap.newInteger(catchPoint);
   return(RV_SUCCESS);
 }
 
@@ -83,7 +83,7 @@ Thread::psi_set_catch(Object *& object1)
   
   assert(val1->isNumber());
   
-  catchPoint = val1->getNumber();
+  catchPoint = val1->getInteger();
   return(RV_SUCCESS);
 }
 
@@ -151,7 +151,7 @@ Thread::psi_psi_resume(Object *& object1)
   Object* pc = 
     OBJECT_CAST(Structure*, state)->getArgument(NUMBER_X_REGISTERS+1);
   assert(pc->isNumber());
-  programCounter = reinterpret_cast<CodeLoc>(pc->getNumber());
+  programCounter = reinterpret_cast<CodeLoc>(pc->getInteger());
   return(RV_SUCCESS);
 }
 

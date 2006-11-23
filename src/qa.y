@@ -39,6 +39,7 @@ LabelTable *labels = NULL;
 
   string *label_name;
   string *atom_name;
+  string *string_value;
 
   ASMLoc loc;
 
@@ -66,6 +67,7 @@ LabelTable *labels = NULL;
 %token <instruction> put_constant
 %token <instruction> put_integer
 %token <instruction> put_double
+%token <instruction> put_string
 %token <instruction> put_list
 %token <instruction> put_structure
 %token <instruction> put_x_object_variable
@@ -85,6 +87,7 @@ LabelTable *labels = NULL;
 %token <instruction> get_constant
 %token <instruction> get_integer
 %token <instruction> get_double
+%token <instruction> get_string
 %token <instruction> get_list
 %token <instruction> get_structure
 %token <instruction> get_structure_frame
@@ -101,6 +104,7 @@ LabelTable *labels = NULL;
 %token <instruction> unify_constant 
 %token <instruction> unify_integer 
 %token <instruction> unify_double 
+%token <instruction> unify_string 
 %token <instruction> unify_x_ref 
 %token <instruction> unify_y_ref 
 
@@ -115,6 +119,7 @@ LabelTable *labels = NULL;
 %token <instruction> set_constant
 %token <instruction> set_integer
 %token <instruction> set_double
+%token <instruction> set_string
 %token <instruction> set_void
 %token <instruction> set_object_void
 
@@ -185,6 +190,7 @@ LabelTable *labels = NULL;
 
 %token <number_value> NUMBER_TOKEN
 %token <double_value> DOUBLE_TOKEN
+%token <string_value> STRING_TOKEN
 %token <atom_name> ATOM_TOKEN
 %token <label_name> LABEL_TOKEN
 %token END_TOKEN
@@ -320,6 +326,17 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		  $5->Put(*code_block); delete $5;
 		}
+	| put_string '(' STRING_TOKEN ','  reg ')'
+ 		{
+		  $1->Put(*code_block); delete $1;
+		  $5->Put(*code_block); delete $5;
+		  string* buff = $3;
+		  for (string::iterator iter = buff->begin();
+		       iter != buff->end(); iter++)
+		    code_block->Put(*iter);
+		  code_block->Put('\0');
+		  delete $3;
+		}
 
 	| put_list '(' reg ')'
 		{
@@ -450,6 +467,18 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $5->Put(*code_block); delete $5;
 		}
 
+	| get_string '(' STRING_TOKEN ','  reg ')'
+ 		{
+		  $1->Put(*code_block); delete $1;
+		  $5->Put(*code_block); delete $5;
+		  string* buff = $3;
+		  for (string::iterator iter = buff->begin();
+		       iter != buff->end(); iter++)
+		    code_block->Put(*iter);
+		  code_block->Put('\0');
+		  delete $3;
+		}
+
 	| get_list '(' reg ')'
 		{
 		  $1->Put(*code_block); delete $1;
@@ -541,6 +570,17 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		}
 
+	| unify_string '(' STRING_TOKEN ')'
+ 		{
+		  $1->Put(*code_block); delete $1;
+		  string* buff = $3;
+		  for (string::iterator iter = buff->begin();
+		       iter != buff->end(); iter++)
+		    code_block->Put(*iter);
+		  code_block->Put('\0');
+		  delete $3;
+		}
+
 	| unify_void '(' number ')'
 		{
 		  $1->Put(*code_block); delete $1;
@@ -623,6 +663,17 @@ instr: put_x_variable '(' reg ',' reg ')'
 		{
 		  $1->Put(*code_block); delete $1;
 		  $3->Put(*code_block); delete $3;
+		}
+
+	| set_string '(' STRING_TOKEN ')'
+ 		{
+		  $1->Put(*code_block); delete $1;
+		  string* buff = $3;
+		  for (string::iterator iter = buff->begin();
+		       iter != buff->end(); iter++)
+		    code_block->Put(*iter);
+		  code_block->Put('\0');
+		  delete $3;
 		}
 
 	| set_void '(' number ')'

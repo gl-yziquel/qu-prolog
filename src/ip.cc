@@ -219,7 +219,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
   
   const long offset = 1 +
     static_cast<long>((hash_val->isNumber() ?
-      (hash_val->getNumber() & (array_size-1))
+      (hash_val->getInteger() & (array_size-1))
     : ((reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1))));
 
   Object *array_val_list = 
@@ -241,7 +241,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
 
       if (list_hash == hash_val ||
 	  (hash_val->isNumber() && list_hash->isNumber() &&
-	   hash_val->getNumber() == list_hash->getNumber()))
+	   hash_val->getInteger() == list_hash->getInteger()))
 	{
 	  break;
 	}
@@ -399,7 +399,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
   
   const int32 offset = 1 +
     static_cast<int32>((hash_val->isNumber()
-     ? hash_val->getNumber() & (array_size-1) 
+     ? hash_val->getInteger() & (array_size-1) 
      : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
   
   Object *array_val_list = 
@@ -422,7 +422,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
 
       if (list_hash == hash_val ||
 	  (hash_val->isNumber() && list_hash->isNumber() &&
-	   hash_val->getNumber() == list_hash->getNumber()))
+	   hash_val->getInteger() == list_hash->getInteger()))
 	{
 	  object3 = OBJECT_CAST(Structure*, array_val_head)->getArgument(1)->variableDereference();
 	  return RV_SUCCESS;
@@ -533,7 +533,7 @@ Thread::psi_ip_array_init(Object *& object1, Object *& object2)
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  int size = size_object->getNumber();
+  int size = size_object->getInteger();
   if (size <= 0)
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);

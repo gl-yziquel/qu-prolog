@@ -47,7 +47,7 @@ $1:
 
 $2:
 	get_constant('float', 0)
-	put_constant('isNumber()', 0)
+	put_constant('isDouble()', 0)
 	execute_predicate('$foreign_write', 1)
 
 $3:
@@ -76,7 +76,7 @@ $1:
 	get_x_variable(0, 1)
 	allocate(0)
 	call_predicate('$write_pval', 1, 0)
-	put_constant('->getNumber()', 0)
+	put_constant('->getInteger()', 0)
 	deallocate
 	execute_predicate('$foreign_write', 1)
 

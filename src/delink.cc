@@ -79,7 +79,7 @@ constants(Object* cell, AtomTable& atoms)
     }
   if (cell->isInteger())
     {
-      cout << cell->getNumber();
+      cout << cell->getInteger();
     }
   if (cell->isDouble())
     {
@@ -366,37 +366,61 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 			// decode instruction parameters
 			//
 			switch(instruct)
-			{		
-			//
-			//		Does instruct have a hash table:
-			//
-		   	    case  SWITCH_ON_CONSTANT:
-		  	    case  SWITCH_ON_STRUCTURE:
-  		            case  SWITCH_ON_QUANTIFIER:
-				hashInstruct(pc,instruct,array,arr_index,
-						atoms,code);
-				break;
-			    case SWITCH_ON_TERM: // not picked up by Mk...
-				coded_inst = "roooooo";
-				end_of_inst = start_of_inst + 14;
-	
-			    default:   // The other instructions.
-				commaflag = 0;	
-				length = static_cast<int>(strlen(coded_inst));
-				if (length != 0 ) 
+			  {		
+			    //
+			    //		Does instruct have a hash table:
+			    //
+			  case  SWITCH_ON_CONSTANT:
+			  case  SWITCH_ON_STRUCTURE:
+			  case  SWITCH_ON_QUANTIFIER:
+			    hashInstruct(pc,instruct,array,arr_index,
+					 atoms,code);
+			    break;
+			  case PUT_STRING:
+			  case GET_STRING:
+			    {
+			      word32 i = (word32)getRegister(pc);
+			      cout << "(\"";
+			      cout << (char*)pc;
+			      cout << "\", " << i << ")";
+			      char* c = (char*)pc;
+			      int size = strlen(c);
+			      pc += size+1;
+			      break;
+			    }
+			  case SET_STRING:
+			  case UNIFY_STRING:
+			    {
+			      cout << "(\"";
+			      cout << (char*)pc;
+			      cout << "\")";
+			      char* c = (char*)pc;
+			      int size = strlen(c);
+			      pc += size+1;
+			      break;
+			    }
+
+			  case SWITCH_ON_TERM: // not picked up by Mk...
+			    coded_inst = "roooooo";
+			    end_of_inst = start_of_inst + 14;
+			    
+			  default:   // The other instructions.
+			    commaflag = 0;	
+			    length = static_cast<int>(strlen(coded_inst));
+			    if (length != 0 ) 
 				{
-					//
-					// There are parameters!
-					//
-					paramflag = 1;
-					commaflag = 1;
-					cout << "(";
+				  //
+				  // There are parameters!
+				  //
+				  paramflag = 1;
+				  commaflag = 1;
+				  cout << "(";
 				}
 				strcpy(coded_array,coded_inst);
  				outputParams(length,commaflag,coded_array,
 					     pc,atoms, array,
 					     arr_index,end_of_inst,code);
-			}
+			  }
 			if (paramflag) cout  << ")"; 
 			cout << "\n";
 		}

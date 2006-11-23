@@ -143,7 +143,7 @@ Thread::psi_set_trace_level(Object *& object1)
   
   assert(val1->isNumber());
 	
-  trace.TraceLevel() = (word32)(val1->getNumber());
+  trace.TraceLevel() = (word32)(val1->getInteger());
 #endif // QP_DEBUG
   return(RV_SUCCESS);
 }

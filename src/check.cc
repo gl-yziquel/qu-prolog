@@ -79,9 +79,9 @@ Heap::decode_stream(IOManager& iom,
 
   QPStream *strmptr = NULL;
 
-  if (stream_cell->isNumber())
+  if (stream_cell->isInteger())
     {
-      const int stream_number = stream_cell->getNumber();
+      const int stream_number = stream_cell->getInteger();
       if (stream_number < 0 || stream_number >= (int)NUM_OPEN_STREAMS)
 	{
 	  return EV_TYPE;
@@ -214,9 +214,9 @@ Heap::decode_nonneg_int(Object* integer_cell, int& integer)
     {
       return EV_INST;
     }
-  else if (integer_cell->isNumber())
+  else if (integer_cell->isInteger())
     {
-      integer = integer_cell->getNumber();
+      integer = integer_cell->getInteger();
       if (integer < 0)
 	{
 	  return EV_VALUE;
@@ -411,7 +411,7 @@ Heap::decode_icm_handle(AtomTable& atoms,
 
   size_t length = 0;
 
-  if (! (target_object->isAtom() || target_object->isNumber()) ||
+  if (! (target_object->isAtom() || target_object->isInteger()) ||
       ! name_object->isAtom() ||
       ! home_object->isAtom() ||
       ! check_atom_list(locations_object, length)) 
@@ -427,7 +427,7 @@ Heap::decode_icm_handle(AtomTable& atoms,
     }
   else
     {
-      ICMOutgoingTarget icm_outgoing_target(target_object->getNumber());
+      ICMOutgoingTarget icm_outgoing_target(target_object->getInteger());
       target = icm_outgoing_target.Target();
     }
 

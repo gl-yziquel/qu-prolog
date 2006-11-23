@@ -74,22 +74,13 @@ NameTable::set(NameEntry key, Thread& th)
   Atom*&     	name = entry.getName();
   heapobject*   valuePtr = entry.getValueAddr();
 
-  if (entry.isEmpty())
-    {
+  assert(entry.isEmpty());
       //
       // Add a new entry.
       //
+  assert(! key.getValue()->isSubstitutionBlock());
       th.updateAndTrailObject(valuePtr, key.getValue(), 0);
       name = key.getName();
-    }
-  else
-    {
-      assert(false);
-      //
-      // Overwrite the value of an existing entry.
-      //
-      // value = key.getValue();
-    }
 }
 
 void
@@ -119,6 +110,7 @@ IPTable::set(IPEntry key, Thread& th)
 {
   IPEntry&	entry = getEntry(search(key));
   
+  assert(!key.getValue()->isSubstitutionBlock());
   if (entry.isEmpty())
     {
       //

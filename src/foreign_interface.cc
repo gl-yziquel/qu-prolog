@@ -68,7 +68,7 @@ ForeignInterface::makeAtom(const char* s)
 
 Object* 
 ForeignInterface::makeInteger(const int i) 
-{ return threadptr->TheHeap().newNumber(i); }
+{ return threadptr->TheHeap().newInteger(i); }
 
 Object* 
 ForeignInterface::makeDouble(const double d)

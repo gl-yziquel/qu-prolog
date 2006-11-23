@@ -908,6 +908,15 @@ end('$remove_sorted_duplicates'/2):
 
 
 
+'sort'/3:
+
+
+$1:
+	execute_predicate('$merge_sort', 3)
+end('sort'/3):
+
+
+
 '^'/2:
 
 
@@ -915,6 +924,54 @@ $1:
 	get_x_variable(0, 1)
 	execute_predicate('call_predicate', 1)
 end('^'/2):
+
+
+
+'forall/2$0/2$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('call', 1, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('forall/2$0/2$0'/1):
+
+
+
+'forall/2$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_variable(1, 1)
+	get_y_level(0)
+	call_predicate('call', 1, 2)
+	put_y_value(1, 0)
+	call_predicate('forall/2$0/2$0', 1, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('forall/2$0'/2):
+
+
+
+'forall'/2:
+
+
+$1:
+	execute_predicate('forall/2$0', 2)
+end('forall'/2):
 
 
 

@@ -74,29 +74,36 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
-	allocate(8)
-	get_y_variable(7, 0)
+	allocate(9)
+	get_y_variable(8, 0)
 	get_y_variable(2, 1)
 	get_y_level(1)
+	put_y_variable(7, 19)
 	put_y_variable(6, 19)
 	put_y_variable(5, 19)
 	put_y_variable(4, 19)
 	put_y_variable(3, 19)
 	put_y_variable(0, 19)
-	call_predicate('$legal_clause_head', 1, 8)
+	call_predicate('$legal_clause_head', 1, 9)
 	cut(1)
-	put_y_value(7, 0)
+	put_y_value(8, 0)
 	put_y_value(3, 1)
-	call_predicate('$correct_name', 2, 7)
-	pseudo_instr3(66, 23, 0, 1)
+	call_predicate('$correct_name', 2, 8)
+	put_x_variable(0, 0)
+	put_x_variable(1, 1)
+	pseudo_instr3(0, 23, 0, 1)
+	pseudo_instr3(66, 0, 1, 2)
+	get_y_value(7, 2)
+	pseudo_instr4(16, 23, 27, 0, 1)
 	get_y_value(6, 0)
 	get_y_value(5, 1)
-	call_predicate('clause/2$0', 0, 7)
+	call_predicate('clause/2$0', 0, 8)
 	put_y_value(6, 0)
-	put_y_value(4, 1)
-	put_y_value(5, 2)
-	put_y_value(0, 3)
-	call_predicate('$get_clause_ref', 4, 5)
+	put_y_value(7, 1)
+	put_y_value(4, 2)
+	put_y_value(5, 3)
+	put_y_value(0, 4)
+	call_predicate('$get_clause_ref', 5, 5)
 	pseudo_instr3(57, 24, 23, 0)
 	pseudo_instr2(67, 23, 1)
 	put_y_value(2, 3)
@@ -132,22 +139,22 @@ end('clause'/2):
 
 
 
-'$get_clause_ref'/4:
+'$get_clause_ref'/5:
 
-	try(4, $1)
+	try(5, $1)
 	trust($2)
 
 $1:
-	get_x_value(0, 1)
-	get_x_value(2, 3)
+	get_x_value(0, 2)
+	get_x_value(3, 4)
 	proceed
 
 $2:
-	pseudo_instr3(13, 0, 2, 4)
-	get_x_variable(0, 2)
-	get_x_variable(2, 4)
-	execute_predicate('$get_clause_ref', 4)
-end('$get_clause_ref'/4):
+	pseudo_instr4(17, 0, 1, 3, 5)
+	get_x_variable(0, 3)
+	get_x_variable(3, 5)
+	execute_predicate('$get_clause_ref', 5)
+end('$get_clause_ref'/5):
 
 
 

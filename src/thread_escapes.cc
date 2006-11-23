@@ -107,10 +107,7 @@ Thread::psi_thread_fork(Object *& name_arg,
   int heap_size; 
   int scratchpad_size;
   int binding_trail_size;
-  int object_trail_size;
-  int ip_trail_size;
-  int tag_trail_size;
-  int ref_trail_size;
+  int other_trail_size;
   int env_size;
   int choice_size;
   int name_table_size;
@@ -120,10 +117,7 @@ Thread::psi_thread_fork(Object *& name_arg,
 		      heap_size,
 		      scratchpad_size,
 		      binding_trail_size,
-		      object_trail_size,
-		      ip_trail_size,
-		      tag_trail_size,
-		      ref_trail_size,
+		      other_trail_size,
 		      env_size,
 		      choice_size,
 		      name_table_size,
@@ -134,10 +128,7 @@ Thread::psi_thread_fork(Object *& name_arg,
 			      scratchpad_size,
 			      heap_size,
 			      binding_trail_size,
-			      object_trail_size,
-			      ip_trail_size,
-			      tag_trail_size,
-			      ref_trail_size,
+			      other_trail_size,
 			      env_size,
 			      choice_size,
 			      name_table_size,
@@ -226,7 +217,7 @@ Thread::psi_thread_fork(Object *& name_arg,
 #endif
   
   // The thread is now runnable.
-  thread->Condition(RUNNABLE);
+  thread->Condition(ThreadCondition::RUNNABLE);
 
   // Add it to the run queue
   scheduler->insertThread(this, thread);
@@ -259,7 +250,7 @@ Thread::psi_thread_symbol(Object *& thread_arg, Object *& name_arg)
 	}
       else
 	{
-	  return BOOL_TO_RV(unify(argT, heap.newNumber((u_long) loc)));
+	  return BOOL_TO_RV(unify(argT, heap.newInteger((u_long) loc)));
 	}
     }
   else
@@ -484,7 +475,7 @@ Thread::psi_thread_is_runnable(Object *& thread_arg)
   Thread *thread;
   DECODE_THREAD_ARG(heap, argT, *thread_table, 1, thread);
 
-  return BOOL_TO_RV(thread->Condition() == RUNNABLE);
+  return BOOL_TO_RV(thread->Condition() == ThreadCondition::RUNNABLE);
 }
 
 // @doc
@@ -503,7 +494,7 @@ Thread::psi_thread_is_suspended(Object *& thread_id_cell)
   Thread *thread;
   DECODE_THREAD_ARG(heap, thread_id_arg, *thread_table, 1, thread);
   
-  return BOOL_TO_RV(thread->Condition() == SUSPENDED);
+  return BOOL_TO_RV(thread->Condition() == ThreadCondition::SUSPENDED);
 }
 
 // @doc
@@ -517,7 +508,7 @@ Thread::psi_thread_is_suspended(Object *& thread_id_cell)
 Thread::ReturnValue
 Thread::psi_thread_tid(Object *& thread_arg)
 {
-  thread_arg = heap.newNumber((u_long) TInfo().ID());
+  thread_arg = heap.newInteger((u_long) TInfo().ID());
   
   return RV_SUCCESS;
 }
@@ -533,15 +524,15 @@ Thread::psi_thread_tid(Object *& thread_arg)
 Thread::ReturnValue
 Thread::psi_thread_exit(void)
 {
-  refTrail.backtrackTo(0);
-  assert(Condition() == RUNNABLE);
+  otherTrail.backtrackTo(otherTrail.getHigh());
+  assert(Condition() == ThreadCondition::RUNNABLE);
 
   // If the thread is the initial thread then exit the application.
   if (TInfo().Initial())
     {
       return RV_HALT;
     }
-  Condition(EXITED);
+  Condition(ThreadCondition::EXITED);
 
 #ifdef DEBUG_MT
   cerr.form("%s %ld\n", __FUNCTION__, TInfo().ID());
@@ -783,19 +774,16 @@ Thread::psi_thread_wait(Object *& conditions_arg)
 Thread::ReturnValue
 Thread::psi_thread_defaults(Object *& sizes_arg)
 {
-  Structure* str = heap.newStructure(11);
+  Structure* str = heap.newStructure(8);
   str->setFunctor(AtomTable::thread_defaults);
-  str->setArgument(1, heap.newNumber(thread_options->HeapSize()));
-  str->setArgument(2, heap.newNumber(thread_options->ScratchpadSize()));
-  str->setArgument(3, heap.newNumber(thread_options->BindingTrailSize()));
-  str->setArgument(4, heap.newNumber(thread_options->ObjectTrailSize()));
-  str->setArgument(5, heap.newNumber(thread_options->IPTrailSize()));
-  str->setArgument(6, heap.newNumber(thread_options->TagTrailSize()));
-  str->setArgument(7, heap.newNumber(thread_options->RefTrailSize()));
-  str->setArgument(8, heap.newNumber(thread_options->EnvironmentStackSize()));
-  str->setArgument(9, heap.newNumber(thread_options->ChoiceStackSize()));
-  str->setArgument(10, heap.newNumber(thread_options->NameTableSize()));
-  str->setArgument(11, heap.newNumber(thread_options->IPTableSize()));
+  str->setArgument(1, heap.newInteger(thread_options->HeapSize()));
+  str->setArgument(2, heap.newInteger(thread_options->ScratchpadSize()));
+  str->setArgument(3, heap.newInteger(thread_options->BindingTrailSize()));
+  str->setArgument(4, heap.newInteger(thread_options->OtherTrailSize()));
+  str->setArgument(5, heap.newInteger(thread_options->EnvironmentStackSize()));
+  str->setArgument(6, heap.newInteger(thread_options->ChoiceStackSize()));
+  str->setArgument(7, heap.newInteger(thread_options->NameTableSize()));
+  str->setArgument(8, heap.newInteger(thread_options->IPTableSize()));
   
   sizes_arg = str;
   return RV_SUCCESS;
@@ -821,10 +809,7 @@ Thread::psi_thread_set_defaults(Object *& sizes_arg)
   int heap_size;
   int scratchpad_size;
   int binding_trail_size;
-  int object_trail_size;
-  int ip_trail_size;
-  int tag_trail_size;
-  int ref_trail_size;
+  int other_trail_size;
   int env_size;
   int choice_size;
   int name_table_size;
@@ -834,10 +819,7 @@ Thread::psi_thread_set_defaults(Object *& sizes_arg)
 		      heap_size,
 		      scratchpad_size,
 		      binding_trail_size,
-		      object_trail_size,
-		      ip_trail_size,
-		      tag_trail_size,
-		      ref_trail_size,
+		      other_trail_size,
 		      env_size,
 		      choice_size,
 		      name_table_size,
@@ -847,10 +829,7 @@ Thread::psi_thread_set_defaults(Object *& sizes_arg)
   thread_options->HeapSize((u_long) heap_size);  
   thread_options->ScratchpadSize((u_long) scratchpad_size);
   thread_options->BindingTrailSize((u_long) binding_trail_size);
-  thread_options->ObjectTrailSize((u_long) object_trail_size);
-  thread_options->IPTrailSize((u_long) ip_trail_size);
-  thread_options->TagTrailSize((u_long) tag_trail_size);
-  thread_options->RefTrailSize((u_long) ref_trail_size);
+  thread_options->OtherTrailSize((u_long) other_trail_size);
   thread_options->EnvironmentStackSize((u_long) env_size);
   thread_options->ChoiceStackSize((u_long) choice_size);
   thread_options->NameTableSize((u_long) name_table_size);
@@ -862,7 +841,7 @@ Thread::psi_thread_set_defaults(Object *& sizes_arg)
 Thread::ReturnValue
 Thread::psi_thread_errno(Object *& errno_arg)
 {
-  errno_arg = heap.newNumber(errno);
+  errno_arg = heap.newInteger(errno);
   
   return RV_SUCCESS;
 }
@@ -892,7 +871,7 @@ Thread::psi_current_threads(Object*& thread_ids)
     {
       if (thread_table->LookupID(loc) != NULL)
 	{
-	  Cons* tmplist = heap.newCons(heap.newNumber(loc), list);
+	  Cons* tmplist = heap.newCons(heap.newInteger(loc), list);
 	  list = tmplist;
 	}
     }
@@ -949,9 +928,9 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
   Thread *thread;
   DECODE_THREAD_ARG(heap, thread_id_arg, *thread_table, 1, thread);
 
-  assert(thread->Condition() == RUNNABLE);
+  assert(thread->Condition() == ThreadCondition::RUNNABLE);
 
-  thread->refTrail.backtrackTo(0);
+  thread->otherTrail.backtrackTo(thread->otherTrail.getHigh());
   //
   // If the thread is the initial thread then exit the application.
   if (thread->TInfo().Initial())
@@ -959,7 +938,7 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
       return RV_HALT;
     }
 
-  thread->Condition(EXITED);
+  thread->Condition(ThreadCondition::EXITED);
 
 #ifdef DEBUG_MT
   cerr.form("%s %ld\n", __FUNCTION__, thread->TInfo().ID());
@@ -993,7 +972,7 @@ Thread::psi_thread_throw(Object *& thread_arg,
   DECODE_THREAD_ARG(heap, argT, *thread_table, 1, thread);
 
   // Must be a runnable thread for this to work.
-  if (thread->Condition() == RUNNABLE)
+  if (thread->Condition() == ThreadCondition::RUNNABLE)
     {
       // Copy the goal onto the target thread's heap.
 
@@ -1046,7 +1025,7 @@ Thread::psi_thread_push_goal(Object *& thread_arg,
       PSI_ERROR_RETURN(EV_NOT_PERMITTED, 0);
     }
   // Must be a runnable thread for this to work.
-  if (thread->Condition() == RUNNABLE)
+  if (thread->Condition() == ThreadCondition::RUNNABLE)
     {
       // Copy the goal onto the target thread's heap.
       Object* goal = heap.copyTerm(goal_obj, thread->heap);

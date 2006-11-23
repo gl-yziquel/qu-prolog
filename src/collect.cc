@@ -94,10 +94,10 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
   assert(term->variableDereference()->hasLegalSub());
   term = dereference(term);
 
-  switch (term->utag())
+  switch (term->tTag())
     {
-    case Object::uVar:
-    case Object::uObjVar:
+    case Object::tVar:
+    case Object::tObjVar:
       if (!OBJECT_CAST(Reference*, term)->isCollected() &&
 	  !term->isLocalObjectVariable())
 	{
@@ -106,7 +106,7 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
 	  varlist = newlist;
 	}
       break;
-    case Object::uCons:
+    case Object::tCons:
       while (term->isCons())
 	{
 	  collect_term_vars(OBJECT_CAST(Cons*, term)->getHead(), varlist);
@@ -115,7 +115,7 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
 	}
       collect_term_vars(term, varlist);
       break;
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* str = OBJECT_CAST(Structure*, term);
 	u_int arity = static_cast<u_int>(str->getArity());
@@ -126,7 +126,7 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
 	  }
       }
       break;
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant = OBJECT_CAST(QuantifiedTerm*, term);
 	collect_term_vars(quant->getQuantifier(), varlist);
@@ -134,9 +134,13 @@ Heap::collect_term_vars(Object* term, Object*& varlist)
 	collect_term_vars(quant->getBody(), varlist);
       } 
      break;
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+    case Object::tDouble:
+    case Object::tAtom:
+    case Object::tString:
       break;
-    case Object::uSubst:
+    case Object::tSubst:
       collect_sub_vars(OBJECT_CAST(Substitution*, term)->getSubstitutionBlockList(), varlist);
       collect_term_vars(OBJECT_CAST(Substitution*, term)->getTerm(), varlist);
       break;

@@ -85,9 +85,9 @@ Thread::ReturnValue
 Thread::psi_process_pid(Object *& pid_arg)
 {
 #ifdef WIN32
-  pid_arg = heap.newNumber(reinterpret_cast<long>(GetCurrentProcess()));
+  pid_arg = heap.newInteger(reinterpret_cast<long>(GetCurrentProcess()));
 #else 
-  pid_arg = heap.newNumber(getpid());
+  pid_arg = heap.newInteger(getpid());
 #endif
   return RV_SUCCESS;
 }

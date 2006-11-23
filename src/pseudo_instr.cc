@@ -171,7 +171,7 @@ Thread::psi5NewVars(int32 mode,
 Object*
 Thread::psiSaveState(void)
 {
-  Object* pc = heap.newNumber(reinterpret_cast<word32>(programCounter));
+  Object* pc = heap.newInteger(reinterpret_cast<word32>(programCounter));
   Structure* state = heap.newStructure(NUMBER_X_REGISTERS + 1);
 
   state->setFunctor(AtomTable::dollar);
@@ -197,7 +197,7 @@ Thread::psiSaveState(void)
 Object*
 Thread::psi0BuildCall(word32 n)
 {
-  Object* instr = heap.newNumber(n);
+  Object* instr = heap.newInteger(n);
   Structure* problem = heap.newStructure(2);
 
   problem->setFunctor(AtomTable::psi0_resume);   // "$psi0_resume"
@@ -211,7 +211,7 @@ Thread::psi0BuildCall(word32 n)
 Object*
 Thread::psi1BuildCall(word32 n, Object * object1)
 {
-  Object* instr = heap.newNumber(n);
+  Object* instr = heap.newInteger(n);
   Structure* problem = heap.newStructure(3);
 
   problem->setFunctor(AtomTable::psi1_resume);   // "$psi1_resume"
@@ -226,7 +226,7 @@ Thread::psi1BuildCall(word32 n, Object * object1)
 Object*
 Thread::psi2BuildCall(word32 n, Object * object1, Object * object2)
 {
-  Object* instr = heap.newNumber(n);
+  Object* instr = heap.newInteger(n);
   Structure* problem = heap.newStructure(4);
 
   problem->setFunctor(AtomTable::psi2_resume);   // "$psi2_resume"
@@ -242,7 +242,7 @@ Object*
 Thread::psi3BuildCall(word32 n, Object * object1, Object * object2, 
 		      Object * object3)
 {
-  Object* instr = heap.newNumber(n);
+  Object* instr = heap.newInteger(n);
   Structure* problem = heap.newStructure(5);
 
   problem->setFunctor(AtomTable::psi3_resume);   // "$psi3_resume"
@@ -261,7 +261,7 @@ Thread::psi4BuildCall(word32 n,
 		      Object * object1, Object * object2, Object * object3,
 		      Object * object4)
 {
-  Object* instr = heap.newNumber(n);
+  Object* instr = heap.newInteger(n);
   Structure* problem = heap.newStructure(6);
 
   problem->setFunctor(AtomTable::psi4_resume);   // "$psi4_resume"
@@ -281,7 +281,7 @@ Thread::psi5BuildCall(word32 n,
 		      Object * object1, Object * object2, Object * object3,
 		      Object * object4, Object * object5)
 {
-  Object* instr = heap.newNumber(n);
+  Object* instr = heap.newInteger(n);
   Structure* problem = heap.newStructure(7);
 
   problem->setFunctor(AtomTable::psi5_resume);   // "$psi5_resume"
@@ -304,9 +304,9 @@ CodeLoc
 Thread::psi0ErrorHandler(word32 n)
 {
   X[0] = psiSaveState();
-  X[1] = heap.newNumber(error_value);
-  X[2] = heap.newNumber(error_arg);
-  X[3] = heap.newNumber(n);
+  X[1] = heap.newInteger(error_value);
+  X[2] = heap.newInteger(error_arg);
+  X[3] = heap.newInteger(n);
   return
     predicates->getCode(predicates->lookUp(AtomTable::psi0_error_handler,
 			4, atoms, code)).getPredicate(code);
@@ -317,9 +317,9 @@ CodeLoc
 Thread::psi1ErrorHandler(word32 n, Object * object1)
 {
   X[0] = psiSaveState();
-  X[1] = heap.newNumber(error_value);
-  X[2] = heap.newNumber(error_arg);
-  X[3] = heap.newNumber(n);
+  X[1] = heap.newInteger(error_value);
+  X[2] = heap.newInteger(error_arg);
+  X[3] = heap.newInteger(n);
   X[4] = object1;
   return
     predicates->getCode(predicates->lookUp(AtomTable::psi1_error_handler,
@@ -331,9 +331,9 @@ CodeLoc
 Thread::psi2ErrorHandler(word32 n, Object * object1, Object * object2)
 {
   X[0] = psiSaveState();
-  X[1] = heap.newNumber(error_value);
-  X[2] = heap.newNumber(error_arg);
-  X[3] = heap.newNumber(n);
+  X[1] = heap.newInteger(error_value);
+  X[2] = heap.newInteger(error_arg);
+  X[3] = heap.newInteger(n);
   X[4] = object1;
   X[5] = object2;
   return
@@ -347,9 +347,9 @@ Thread::psi3ErrorHandler(word32 n, Object * object1, Object * object2,
 			 Object * object3)
 {
   X[0] = psiSaveState();
-  X[1] = heap.newNumber(error_value);
-  X[2] = heap.newNumber(error_arg);
-  X[3] = heap.newNumber(n);
+  X[1] = heap.newInteger(error_value);
+  X[2] = heap.newInteger(error_arg);
+  X[3] = heap.newInteger(n);
   X[4] = object1;
   X[5] = object2;
   X[6] = object3;
@@ -364,9 +364,9 @@ Thread::psi4ErrorHandler(word32 n, Object * object1, Object * object2,
 			 Object * object3, Object * object4)
 {
   X[0] = psiSaveState();
-  X[1] = heap.newNumber(error_value);
-  X[2] = heap.newNumber(error_arg);
-  X[3] = heap.newNumber(n);
+  X[1] = heap.newInteger(error_value);
+  X[2] = heap.newInteger(error_arg);
+  X[3] = heap.newInteger(n);
   X[4] = object1;
   X[5] = object2;
   X[6] = object3;
@@ -383,9 +383,9 @@ Thread::psi5ErrorHandler(word32 n, Object * object1, Object * object2,
 			 Object * object5 )
 {
   X[0] = psiSaveState();
-  X[1] = heap.newNumber(error_value);
-  X[2] = heap.newNumber(error_arg);
-  X[3] = heap.newNumber(n);
+  X[1] = heap.newInteger(error_value);
+  X[2] = heap.newInteger(error_arg);
+  X[3] = heap.newInteger(n);
   X[4] = object1;
   X[5] = object2;
   X[6] = object3;

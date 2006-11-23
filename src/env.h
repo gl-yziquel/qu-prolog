@@ -88,6 +88,8 @@ ReturnValue psi_set_flag(Object *& , Object *& );
 //
 ReturnValue psi_get_flag(Object *& , Object *& );
 
+ReturnValue psi_make_cleanup_cp(Object *& );
+
 //
 // psi_call_predicate(structure,..args...)
 // These functions execute the nonvariable term as the term

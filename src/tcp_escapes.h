@@ -324,5 +324,6 @@ ReturnValue psi_tcp_service_proto_from_port(Object *&,Object *&,Object *&);
 ReturnValue psi_tcp_is_socket(Object *&);
 
 
-//ReturnValue psi_poll(Object *&, Object *&);
+ReturnValue psi_select(Object *&, Object *&);
+
 #endif	// TCP_ESCAPES_H

@@ -172,6 +172,16 @@ public:
 //
 bool unifyPrologValues(PrologValue& term1, PrologValue& term2, 
 		       bool in_quant = false);
+
+inline bool unifyAsPrologValues(Object* term1, Object* term2, bool in_quant);
+
+bool unifyOtherConst(Object* term1, Object* term2, bool in_quant);
+
+bool unifyOtherTerm(Object* term1, Object* term2, bool in_quant);
+
+inline bool unifyVarOCTerm(Object* term1, Object* term2, bool in_quant);
+
+inline bool unifyOtherVarTerm(Object* term1, Object* term2, bool in_quant);
 //
 // Unify algorithm.
 //
@@ -180,7 +190,7 @@ bool unify(Object* term1, Object* term2, bool in_quant = false);
 //
 // Unify object variables.
 //
-bool Thread::unifyObjectVariables(PrologValue& objectVariable1,
+bool unifyObjectVariables(PrologValue& objectVariable1,
 				  PrologValue& objectVariable2);
 
 //
@@ -192,6 +202,18 @@ bool structuralUnify(PrologValue&, PrologValue&);
 
 bool structuralUnifySubs(Object*, Object*);
 
+bool structuralUnifyVarVar(PrologValue& term1, PrologValue& term2);
+
+bool structuralUnifyVarQuantifier(PrologValue& term1, PrologValue& term2);
+
+bool structuralUnifyVarStruct(PrologValue& term1, PrologValue& term2);
+
+bool structuralUnifyVarCons(PrologValue& term1, PrologValue& term2);
+
+bool structuralUnifyVarObjVar(PrologValue& term1, PrologValue& term2);
+
+inline bool structuralUnifyVarConst(PrologValue& term1, PrologValue& term2);
+inline bool structuralUnifyObjVarObjVar(PrologValue& term1, PrologValue& term2);
 inline ReturnValue structuralUnifyTerm(Object*& term1, Object*& term2)
 {
   PrologValue pval1(term1);

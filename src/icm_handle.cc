@@ -93,13 +93,11 @@ icm_handle_to_heap(Heap& heap,
 
       if (icm_incoming_target.IsID())
 	{
-	  handle_struct->setArgument(1, 
-				     heap.newNumber(icm_incoming_target.ID()));
+	  handle_struct->setArgument(1, heap.newInteger(icm_incoming_target.ID()));
 	}
       else
 	{
-	  handle_struct->setArgument(1, 
-				     atoms.add(icm_incoming_target.Symbol()));
+	  handle_struct->setArgument(1, atoms.add(icm_incoming_target.Symbol()));
 	}
     }
   else

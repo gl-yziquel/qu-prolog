@@ -663,7 +663,7 @@ $2:
 	pseudo_instr1(53, 22)
 	put_y_value(1, 0)
 	put_y_value(2, 1)
-	put_constant('write', 2)
+	put_constant('writeq', 2)
 	call_predicate('$write_t', 3, 1)
 	put_y_value(0, 0)
 	deallocate
@@ -721,7 +721,7 @@ $2:
 	put_integer(10, 2)
 	pseudo_instr2(8, 0, 2)
 	pseudo_instr1(53, 1)
-	put_constant('write', 2)
+	put_constant('writeq', 2)
 	call_predicate('$write_t', 3, 1)
 	put_y_value(0, 0)
 	deallocate

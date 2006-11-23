@@ -570,6 +570,15 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case GET_DOUBLE:
 	  pc += SIZE_OF_REGISTER + SIZE_OF_DOUBLE;
 	  break;
+	case PUT_STRING:
+	case GET_STRING:
+	  {
+	    pc += SIZE_OF_REGISTER;
+	    char* c = (char*)pc;
+	    int size = strlen(c);
+	    pc += size+1;
+	  }
+	  break;
 	case SET_INTEGER:
 	case UNIFY_INTEGER:
 	  pc += SIZE_OF_INTEGER;
@@ -578,6 +587,15 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case UNIFY_DOUBLE:
 	  pc += SIZE_OF_DOUBLE;
 	  break;
+	case SET_STRING:
+	case UNIFY_STRING:
+	  {
+	    char* c = (char*)pc;
+	    int size = strlen(c);
+	    pc += size+1;
+	  }
+	  break;
+
 	case PUT_X_VARIABLE:		// put_x_variable i, j
 	case PUT_Y_VARIABLE:		// put_y_variable i, j
 	case PUT_X_VALUE:		// put_x_value i, j
@@ -835,10 +853,29 @@ Code::pointersToOffsets(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
         case GET_DOUBLE:
 	  pc += SIZE_OF_REGISTER + SIZE_OF_DOUBLE;
 	  break;
+	case PUT_STRING:
+	case GET_STRING:
+	  {
+	    pc += SIZE_OF_REGISTER;
+	    char* c = (char*)pc;
+	    int size = strlen(c);
+	    pc += size+1;
+	  }
+	  break;
+
 	case UNIFY_INTEGER:
 	case SET_INTEGER:
 	  pc += SIZE_OF_INTEGER;
 	  break;
+	case UNIFY_STRING:
+	case SET_STRING:
+	  {
+	    char* c = (char*)pc;
+	    int size = strlen(c);
+	    pc += size+1;
+	  }
+	  break;
+
 	case UNIFY_DOUBLE:
 	case SET_DOUBLE:
 	  pc += SIZE_OF_DOUBLE;
@@ -1238,6 +1275,25 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case SET_DOUBLE:
 	  pc += SIZE_OF_DOUBLE;
 	  break;
+	case PUT_STRING:
+	case GET_STRING:
+	  {
+	    pc += SIZE_OF_REGISTER;
+	    char* c = (char*)pc;
+	    int size = strlen(c);
+	    pc += size+1;
+	  }
+	  break;
+
+	case UNIFY_STRING:
+	case SET_STRING:
+	  {
+	    char* c = (char*)pc;
+	    int size = strlen(c);
+	    pc += size+1;
+	  }
+	  break;
+
 	case PUT_X_VARIABLE:		// put_x_variable i, j
 	case PUT_Y_VARIABLE:		// put_y_variable i, j
 	case PUT_X_VALUE:		// put_x_value i, j

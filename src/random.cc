@@ -120,11 +120,11 @@ Thread::psi_srandom(Object *& object1)
       srand(seed);
       r250_521_init();
       for (int i = 0; i < 10; i++) (void)r250_521_random();
-      return BOOL_TO_RV(unify(object1, heap.newNumber(seed)));
+      return BOOL_TO_RV(unify(object1, heap.newInteger(seed)));
     }
   else if (val1->isInteger())
     {
-      srand(val1->getNumber());
+      srand(val1->getInteger());
       r250_521_init();
       for (int i = 0; i < 10; i++) (void)r250_521_random();
     }
@@ -155,7 +155,7 @@ Thread:: psi_random_float(Object *& object1)
 Thread::ReturnValue
 Thread:: psi_random_int(Object *& object1)
 {
-  object1 = heap.newNumber(r250_521_random());
+  object1 = heap.newInteger(r250_521_random());
   return(RV_SUCCESS);
 }
 
@@ -188,12 +188,12 @@ Thread:: psi_random_range(Object *& object1, Object *& object2,
     }
 
   double r = dr250();
-  int x = val1->getNumber();
-  int y = val2->getNumber();
+  int x = val1->getInteger();
+  int y = val2->getInteger();
   int size = y - x + 1;
   
   int res = x + (long)floor(r*size);
 
-  object3 = heap.newNumber(res);
+  object3 = heap.newInteger(res);
   return(RV_SUCCESS);
 }

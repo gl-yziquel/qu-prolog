@@ -115,17 +115,33 @@ EncodeWrite::writeEncodeChar(QPStream& stream, word8 c)
 // Encode the string and write the result to the stream.
 //
 bool
-EncodeWrite::encodeWriteString(QPStream& stream,
-			       Atom* loc,
-			       AtomTable& atoms)
+EncodeWrite::encodeWriteString(QPStream& stream, char* str)
 {
-  const char *string = atoms.getAtomString(loc);
-  word32 length = static_cast<word32>(strlen(string));
+  word32 length = static_cast<word32>(strlen(str));
   bool result = writeEncodeChar(stream, static_cast<word8>(length));
 
   for (word32 i = 0; i < length; i++)
     {
-      result &= writeEncodeChar(stream, string[i]);
+      result &= writeEncodeChar(stream, str[i]);
+    }
+  return(result);
+}
+
+//
+// Encode the atom and write the result to the stream.
+//
+bool
+EncodeWrite::encodeWriteAtom(QPStream& stream,
+			       Atom* loc,
+			       AtomTable& atoms)
+{
+  const char *stringbuff = atoms.getAtomString(loc);
+  word32 length = static_cast<word32>(strlen(stringbuff));
+  bool result = writeEncodeChar(stream, static_cast<word8>(length));
+
+  for (word32 i = 0; i < length; i++)
+    {
+      result &= writeEncodeChar(stream, stringbuff[i]);
     }
   return(result);
 }
@@ -146,7 +162,7 @@ EncodeWrite::encodeWriteVarName(Heap& heap,
   if (ref->hasExtraInfo() && ref->getName() != NULL)
     {
       result = writeEncodeChar(stream, EncodeMap::ENCODE_NAME) &&
-	encodeWriteString(stream, ref->getName(), atoms);
+	encodeWriteAtom(stream, ref->getName(), atoms);
     }
 
   return(result);
@@ -236,9 +252,9 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 
   term = term->variableDereference();
 
-  switch (term->utag())
+  switch (term->tTag())
     {
-    case Object::uVar:
+    case Object::tVar:
       {
 	int32 val = map->lookUp(term);
 	if (val != EncodeMap::NOT_FOUND)
@@ -274,7 +290,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 	  }
       }
       break;
-    case Object::uObjVar:
+    case Object::tObjVar:
       {
 	int32 val = map->lookUp(term);
 	if (val != EncodeMap::NOT_FOUND)
@@ -314,7 +330,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 	  }
       }
       break;
-    case Object::uCons:
+    case Object::tCons:
       {
 	Cons* list = OBJECT_CAST(Cons*, term);
 	return(writeEncodeChar(stream, EncodeMap::ENCODE_LIST) &&
@@ -324,7 +340,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 			       atoms, remember, names));
       }
       break;
-    case Object::uStruct:
+    case Object::tStruct:
       {
 	Structure* str = OBJECT_CAST(Structure*, term);
 	word32 arity = static_cast<word32>(str->getArity());
@@ -340,7 +356,7 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 	  }
 	break;
       }
-    case Object::uQuant:
+    case Object::tQuant:
       {
 	QuantifiedTerm* quant = OBJECT_CAST(QuantifiedTerm*, term);
 	return(writeEncodeChar(stream, EncodeMap::ENCODE_QUANTIFIER) &&
@@ -352,50 +368,50 @@ EncodeWrite::encodeWriteTerm(Thread& th,
 			       atoms, remember, names));
       }
       break;
-    case Object::uConst:
+    case Object::tShort:
+    case Object::tLong:
+      return(writeEncodeChar(stream, EncodeMap::ENCODE_INTEGER) &&
+	     writeEncodeNumber(stream, term->getInteger()));
+      break;
+    case Object::tDouble:
+      return(writeEncodeChar(stream, EncodeMap::ENCODE_DOUBLE) &&
+	     writeEncodeDouble(stream, term->getDouble()));
+      break;
+    case Object::tAtom:
       {
-	if (term->isAtom())
+	int32 val = map->lookUp(term);
+	if (val != EncodeMap::NOT_FOUND)
 	  {
-	    int32 val = map->lookUp(term);
-	    if (val != EncodeMap::NOT_FOUND)
+	    if (val >= 256)
 	      {
-		if (val >= 256)
-		  {
-		    return (writeEncodeChar(stream, EncodeMap::ENCODE_REF_OFFSET)
-			    && writeEncodeChar(stream, static_cast<word8>((val / 256) & 0x000000ff))
-			    && writeEncodeChar(stream, 
-					       EncodeMap::ENCODE_ATOM_REF)
-			    && writeEncodeChar(stream, static_cast<word8>(val & 0x000000ff)));
-		  }
-		else
-		  {
-		    return(writeEncodeChar(stream, EncodeMap::ENCODE_ATOM_REF)
-			   &&
-			   writeEncodeChar(stream, static_cast<word8>(val & 0x000000ff)));
-		  }
+		return (writeEncodeChar(stream, EncodeMap::ENCODE_REF_OFFSET)
+			&& writeEncodeChar(stream, static_cast<word8>((val / 256) & 0x000000ff))
+			&& writeEncodeChar(stream, 
+					   EncodeMap::ENCODE_ATOM_REF)
+			&& writeEncodeChar(stream, static_cast<word8>(val & 0x000000ff)));
 	      }
 	    else
 	      {
-		map->add(term);
-		return(writeEncodeChar(stream, EncodeMap::ENCODE_ATOM) &&
-		       encodeWriteString(stream, OBJECT_CAST(Atom*, term), 
-					 atoms));
+		return(writeEncodeChar(stream, EncodeMap::ENCODE_ATOM_REF)
+		       &&
+		       writeEncodeChar(stream, static_cast<word8>(val & 0x000000ff)));
 	      }
 	  }
-	else if (term->isInteger())
+	else
 	  {
-	    return(writeEncodeChar(stream, EncodeMap::ENCODE_INTEGER) &&
-		   writeEncodeNumber(stream, term->getNumber()));
+	    map->add(term);
+	    return(writeEncodeChar(stream, EncodeMap::ENCODE_ATOM) &&
+		   encodeWriteAtom(stream, OBJECT_CAST(Atom*, term), 
+				     atoms));
 	  }
-        else
-	  {
-	    return(writeEncodeChar(stream, EncodeMap::ENCODE_DOUBLE) &&
-		   writeEncodeDouble(stream, term->getDouble()));
-	  }
+	break;
       }
+    case Object::tString:
+      return(writeEncodeChar(stream, EncodeMap::ENCODE_STRING) &&
+	     encodeWriteString(stream, OBJECT_CAST(StringObject*, term)->getChars()));
       break;
 
-    case Object::uSubst:
+    case Object::tSubst:
       {  
 	Substitution* subst = OBJECT_CAST(Substitution*, term);
 	return(writeEncodeChar(stream, EncodeMap::ENCODE_SUBSTITUTION) &&
@@ -464,6 +480,26 @@ EncodeRead::encodeReadDouble(QPStream& stream, double& num)
 //
 bool
 EncodeRead::encodeReadString(QPStream& stream,
+			     Object*& strobj, Heap& heap)
+{
+  word8 c;
+  bool result = encodeReadChar(stream, c);
+  word32 length = c;
+  string str;
+  for (word32 i = 0; (i < length) && result; i++)
+    {
+      result &= encodeReadChar(stream, c);
+      str.push_back(c);
+    }
+  strobj = heap.newStringObject(str.c_str());
+  return result;
+}
+
+//
+// Read from a stream and decode back to a string.
+//
+bool
+EncodeRead::encodeReadAtom(QPStream& stream,
 			     Atom*& name,
 			     AtomTable& atoms)
 {
@@ -473,10 +509,10 @@ EncodeRead::encodeReadString(QPStream& stream,
   for (word32 i = 0; (i < length) && result; i++)
     {
       result &= encodeReadChar(stream, c);
-      string[i] = c;
+      stringbuff[i] = c;
     }
-  string[length] = '\0';
-  name = atoms.add(string);
+  stringbuff[length] = '\0';
+  name = atoms.add(stringbuff);
   return result;
 }
 
@@ -581,7 +617,7 @@ EncodeRead::encodeReadTerm(Thread& th,
 	{
 	  Atom* name;
 
-	  if (! encodeReadString(stream, name, atoms))
+	  if (! encodeReadAtom(stream, name, atoms))
             {
               return(false);
             }
@@ -625,7 +661,7 @@ EncodeRead::encodeReadTerm(Thread& th,
 	{
 	  Atom* name;
 
-	  if (! encodeReadString(stream, name, atoms))
+	  if (! encodeReadAtom(stream, name, atoms))
             {
               return(false);
             }
@@ -721,7 +757,7 @@ EncodeRead::encodeReadTerm(Thread& th,
       {
 	Atom* a;
 	
-	if (encodeReadString(stream, a, atoms))
+	if (encodeReadAtom(stream, a, atoms))
           {
 	    term = a;
 	    map->add(term);
@@ -737,7 +773,7 @@ EncodeRead::encodeReadTerm(Thread& th,
       {
 	int32 integer;
 	result = encodeReadNumber(stream, integer);
-	term = heap.newNumber(integer);
+	term = heap.newInteger(integer);
 	return result;
       }
       break;
@@ -746,6 +782,12 @@ EncodeRead::encodeReadTerm(Thread& th,
 	double d;
 	result = encodeReadDouble(stream, d);
 	term = heap.newDouble(d);
+	return result;
+      }
+      break;
+    case EncodeMap::ENCODE_STRING:
+      {
+	result = encodeReadString(stream, term, heap);
 	return result;
       }
       break;

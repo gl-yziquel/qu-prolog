@@ -73,6 +73,11 @@
 
 public:
 //
+// Copy the first n substitutions
+//
+Object* copySubSpineN(Object *input_list, int n);
+
+//
 // Copy the spine of a sequence of substitutions up to the stop point.
 // tail specifies the new tail of copied version.
 //

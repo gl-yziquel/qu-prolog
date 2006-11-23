@@ -721,7 +721,8 @@ end('open_string/3$0'/3):
 
 	try(4, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($4)
 
 $1:
 	pseudo_instr1(2, 0)
@@ -731,6 +732,13 @@ $1:
 	proceed
 
 $2:
+	pseudo_instr1(117, 0)
+	neck_cut
+	put_integer(2, 0)
+	get_x_value(1, 0)
+	proceed
+
+$3:
 	allocate(2)
 	get_y_variable(0, 1)
 	get_y_level(1)
@@ -743,7 +751,7 @@ $2:
 	deallocate
 	proceed
 
-$3:
+$4:
 	put_structure(1, 1)
 	set_constant('read')
 	set_x_value(0)

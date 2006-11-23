@@ -113,7 +113,7 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
   if (val.getTerm()->isInteger())
     {
       number y;
-      MAKE_INT(y, val.getTerm()->getNumber());
+      MAKE_INT(y, val.getTerm()->getInteger());
       return y;
     }
   else if (val.getTerm()->isDouble())
@@ -658,6 +658,7 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 	    {
 	      error_value = EV_TYPE;
 	      return zero;
+	    }
 	  if IS_INT(res1)
             {
 	      number res;
@@ -669,7 +670,6 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 	      error_value = EV_TYPE;
 	      return zero;
             }
-	    }
 	}
       else 
 	{
@@ -712,7 +712,7 @@ Thread::psi_is(Object *& object1, Object *& object2)
   else
     {
       if IS_INT(result)
-        object1 = heap.newNumber(GET_INT_VAL(result));
+        object1 = heap.newInteger(GET_INT_VAL(result));
       else
         object1 = heap.newDouble(GET_DOUBLE_VAL(result));
 
@@ -825,7 +825,7 @@ Thread::psi_add(Object *& object1, Object *& object2, Object *& object3)
   //
   if BOTH_INTS(res1, res2)
     {
-      object3 = heap.newNumber(GET_INT_VAL(res1) + GET_INT_VAL(res2));
+      object3 = heap.newInteger(GET_INT_VAL(res1) + GET_INT_VAL(res2));
      }
    else
      {
@@ -868,7 +868,7 @@ Thread::psi_subtract(Object *& object1, Object *& object2, Object *& object3)
   //
   if BOTH_INTS(res1, res2)
     {
-      object3 = heap.newNumber(GET_INT_VAL(res1) - GET_INT_VAL(res2));
+      object3 = heap.newInteger(GET_INT_VAL(res1) - GET_INT_VAL(res2));
      }
    else
      {
@@ -903,7 +903,7 @@ Thread::psi_increment(Object *& object1, Object *& object2)
   //
   if IS_INT(res1)
     {
-      object2 = heap.newNumber(GET_INT_VAL(res1) + 1);
+      object2 = heap.newInteger(GET_INT_VAL(res1) + 1);
      }
    else
      {
@@ -937,7 +937,7 @@ Thread::psi_decrement(Object *& object1, Object *& object2)
   //
   if IS_INT(res1)
     {
-      object2 = heap.newNumber(GET_INT_VAL(res1) - 1);
+      object2 = heap.newInteger(GET_INT_VAL(res1) - 1);
      }
    else
      {
@@ -968,6 +968,6 @@ Thread::psi_hash_double(Object *& object1, Object *& object2)
   u_int x[2];
   memcpy(x, &d, sizeof(double));
   word32 v = (x[0] | x[1]) & ~(x[0] & x[1]);
-  object2 = heap.newNumber(v);
+  object2 = heap.newInteger(v);
   return RV_SUCCESS;
 }

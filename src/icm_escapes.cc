@@ -94,7 +94,7 @@ Thread::psi_icm_register(Object *& name_arg, Object *& port_arg,
   assert(port_arg->variableDereference()->isNumber());
   assert(server_arg->variableDereference()->isAtom());
   Atom* name = OBJECT_CAST(Atom*, name_arg->variableDereference());
-  int port = port_arg->variableDereference()->getNumber();
+  int port = port_arg->variableDereference()->getInteger();
   Atom* server = OBJECT_CAST(Atom*, server_arg->variableDereference());
 
   process_symbol = atoms->getAtomString(name);
@@ -406,7 +406,7 @@ Thread::psi_icm_port(Object *& name_cell)
     }
   else
     {
-      name_cell = heap.newNumber(icm_port);
+      name_cell = heap.newInteger(icm_port);
       return RV_SUCCESS;
     }
 #else

@@ -84,7 +84,7 @@ typedef HashLoc         IPLoc;        // See name_table.h
 // typede	HeapLoc;	// See heap.h
 typedef StackLoc	EnvLoc;		// See environment.h
 typedef StackLoc	ChoiceLoc;	// See choice.h
-typedef StackLoc	TrailLoc;	// See trail.h
+typedef word32*	TrailLoc;	// See trail.h
 
 //
 // Offsets for data area for linking.

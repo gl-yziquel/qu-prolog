@@ -92,7 +92,7 @@ CodeLoc getFirstUnretractedClause(CodeLoc code)
 Thread::ReturnValue
 Thread::psi_code_top(Object*& object1)
 {
-  object1 = heap.newNumber(reinterpret_cast<word32>(code->getTop()));
+  object1 = heap.newInteger(reinterpret_cast<word32>(code->getTop()));
   
   return(RV_SUCCESS);
 }
@@ -114,9 +114,9 @@ Thread::psi_get_opcode(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
   
-  object1 = heap.newNumber(getInstruction(offset));
+  object1 = heap.newInteger(getInstruction(offset));
   
   return(RV_SUCCESS);
 }
@@ -136,7 +136,7 @@ Thread::psi_get_const(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
   
   object1 = getConstant(offset);
   
@@ -159,9 +159,9 @@ Thread::psi_get_integer(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
 
-  object1 = heap.newNumber(getInteger(offset));
+  object1 = heap.newInteger(getInteger(offset));
   
   return(RV_SUCCESS);
 }
@@ -182,7 +182,7 @@ Thread::psi_get_double(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
 
   object1 = heap.newDouble(getDouble(offset));
   
@@ -205,9 +205,9 @@ Thread::psi_get_number(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
    
-  object1 = heap.newNumber(getNumber(offset));
+  object1 = heap.newInteger(getInteger(offset));
   
   return(RV_SUCCESS);
 }
@@ -228,9 +228,9 @@ Thread::psi_get_address(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
 
-  object1 = heap.newNumber(getAddress(offset));
+  object1 = heap.newInteger(getAddress(offset));
   
   return(RV_SUCCESS);
 }
@@ -250,9 +250,9 @@ Thread::psi_get_offset(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
 
-  object1 = heap.newNumber(getOffset(offset));
+  object1 = heap.newInteger(getOffset(offset));
   
   return(RV_SUCCESS);
 }
@@ -272,7 +272,7 @@ Thread::psi_get_pred(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getNumber() + val3->getNumber());
+  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
 
   object1 = getPredAtom(offset);
   
@@ -289,12 +289,12 @@ Thread::psi_get_entry(Object*& object1, Object*& object2, Object*& object3)
 {
   Object* val2 = object2->variableDereference();
   assert(val2->isNumber());
-  assert(val2->getNumber() != 0);
-  CodeLoc code = reinterpret_cast<CodeLoc>((val2->getNumber()) +
-    Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS); 
+  assert(val2->getInteger() != 0);
+  CodeLoc code = reinterpret_cast<CodeLoc>((val2->getInteger()) +
+					   Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS); 
   
-  object1 = heap.newNumber(reinterpret_cast<word32>(getCodeLoc(code)));
-  object3 = heap.newNumber(0);
+  object1 = heap.newInteger(reinterpret_cast<word32>(getCodeLoc(code)));
+  object3 = heap.newInteger(0);
   return(RV_SUCCESS);
 }
 
@@ -312,7 +312,7 @@ Thread::psi_reset_entry(Object*& object1, Object*& object2)
   assert(val1->isAtom());
   assert(val2->isNumber());
   
-  predicates->resetEp(OBJECT_CAST(Atom*, val1), val2->getNumber(), atoms, code);
+  predicates->resetEp(OBJECT_CAST(Atom*, val1), val2->getInteger(), atoms, code);
   
   return(RV_SUCCESS);
 }
@@ -332,6 +332,8 @@ Thread::psi_assert(Object*& object1, Object*& object2,
   
   Object* val1 = object1->variableDereference();
   Object* val3 = object3->variableDereference();
+  assert(object2->variableDereference()->isInteger());
+  //  CodeLoc pc = (CodeLoc)(object4->variableDereference()->getInteger());
   
   if (val1->isAtom())
     {
@@ -364,24 +366,25 @@ Thread::psi_assert(Object*& object1, Object*& object2,
 						arity, dp, code);
 	}
     }
-  assert(val3->isNumber());
-  bool asserta = (val3->getNumber() == 0);
+  assert(val3->isInteger());
+  bool asserta = (val3->getInteger() == 0);
   DynamicPredicate* dp =  predicates->getCode(loc).getDynamicPred();
-  dp->Stamp();
   if (arity != 0)
     {
-         indexarg = 
-	   OBJECT_CAST(Structure*, val1)->getArgument(1 + dp->getIndexedArg());
+      indexarg = 
+	OBJECT_CAST(Structure*, val1)->getArgument(1 + dp->getIndexedArg());
     }
-#ifdef DYNAMIC_CODE_DEBUG
-  cerr << "--------- BEFORE assertClause -----------" << endl << endl;
-  dp->display_clauses();
-#endif // DYNAMIC_CODE_DEBUG
+#ifdef QP_DEBUG_ASSERT
+  cerr << "======= assert ==========" << endl;
+  dp->display();
+#endif
   dp->assertClause(*this, indexarg, object2, asserta); 
-#ifdef DYNAMIC_CODE_DEBUG
-  dp->display_clauses();
-#endif // DYNAMIC_CODE_DEBUG
-  object4 = heap.newNumber(0);
+  dp->Stamp();
+#ifdef QP_DEBUG_ASSERT
+  dp->display();
+#endif
+
+  object4 = heap.newInteger(0);
   return(RV_SUCCESS);
 }
 
@@ -396,15 +399,14 @@ Thread::psi_retract(Object*& object1)
   code->Stamp();
   Object* val1 = object1->variableDereference();
   assert(val1->isNumber());
-  CodeLoc code = reinterpret_cast<CodeLoc>((val1->getNumber()) 
-    + Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER);
-  DynamicPredicate* pred = 
-    reinterpret_cast<DynamicPredicate*>(getAddress(code));
+  LinkedClause* clause = (LinkedClause*)(val1->getInteger());
+  CodeBlock* codeb = clause->getCodeBlock();
+
+  DynamicPredicate* pred = codeb->getThisPred();
   pred->makeDirty();
   pred->Stamp();
-  CodeLoc first = getCodeLoc(code);
-  updateInstruction(first, FAIL);
-  
+  codeb->setDelete(pred->GetStamp());
+
   return(RV_SUCCESS);
 }
 
@@ -418,7 +420,7 @@ Thread::psi_predicate_stamp(Object*& object1, Object*& object2,
   Object* pred = object1->variableDereference();
   Object* arityObject = object2->variableDereference();
   
-  int arity = arityObject->getNumber();
+  int arity = arityObject->getInteger();
   
   PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, pred), arity,
 				   atoms, code);
@@ -429,7 +431,7 @@ Thread::psi_predicate_stamp(Object*& object1, Object*& object2,
   else if ((predicates->getCode(loc)).type() == PredCode::DYNAMIC_PRED)
     {
       DynamicPredicate* dp =  predicates->getCode(loc).getDynamicPred();
-      object3 = heap.newNumber(dp->GetStamp());
+      object3 = heap.newInteger(dp->GetStamp());
       return(RV_SUCCESS);
     }
   else
@@ -475,7 +477,7 @@ Thread::psi_dynamic(Object*& object1, Object*& object2,
   //
   // arity is a number
   //
-  int arity = arityObject->getNumber();
+  int arity = arityObject->getInteger();
   
   if (indexArgObject->isVariable())
     {
@@ -486,7 +488,7 @@ Thread::psi_dynamic(Object*& object1, Object*& object2,
       PSI_ERROR_RETURN(EV_TYPE, 3);
     }
   
-  int indexArg = indexArgObject->getNumber();
+  int indexArg = indexArgObject->getInteger();
   
   if ((arity > 0) && ((indexArg < 1) || (indexArg > arity)))
     {
@@ -504,7 +506,7 @@ Thread::psi_dynamic(Object*& object1, Object*& object2,
     {
       PSI_ERROR_RETURN(EV_TYPE, 4);
     }
-  int tableSize = tableSizeObject->getNumber();
+  int tableSize = tableSizeObject->getInteger();
   if (tableSize < 1)
     { 
       PSI_ERROR_RETURN(EV_RANGE, 4);
@@ -600,19 +602,19 @@ Thread::psi_get_dynamic_chain(Object*& object1, Object*& object2)
   start->aquire();
   RefObject r(start, NULL);
   refTrail.trail(r);
-  object2 = heap.newNumber(reinterpret_cast<word32>(start));
+  object2 = heap.newInteger(reinterpret_cast<word32>(start));
 #endif
   return RV_SUCCESS;
 }
 
 //
-// psi_get_first_clause(pred, ref, more)
+// psi_get_first_clause(pred, time, ref, more)
 // Get the first linkblock ptr for the predicate
 // more is true if there are subsequent clauses
 //
 Thread::ReturnValue
 Thread::psi_get_first_clause(Object*& object1, Object*& object2,
-			     Object*& object3)
+			     Object*& object3, Object*& object4)
 {
   int   arity;
   Object* predObject;
@@ -629,7 +631,7 @@ Thread::psi_get_first_clause(Object*& object1, Object*& object2,
       assert(val1->isStructure());
       Structure* str = OBJECT_CAST(Structure*, val1);
       arity = static_cast<int>(str->getArity());
-      predObject = str->getFunctor();
+      predObject = str->getFunctor()->variableDereference();
     }
   
   const PredLoc loc = 
@@ -655,70 +657,74 @@ Thread::psi_get_first_clause(Object*& object1, Object*& object2,
     }
   else
     {
-      argObject = OBJECT_CAST(Structure*, val1)->getArgument(arg+1);
+      argObject = OBJECT_CAST(Structure*, val1)->getArgument(arg+1)->variableDereference();
     }
-  ChainEnds* chain 
-    = pred.getDynamicPred()->lookUpClauseChain(*this, argObject);
+  DynamicPredicate* dp = pred.getDynamicPred();
+  ChainEnds* chain = dp->lookUpClauseChain(*this, argObject);
 
-  CodeLoc code = getFirstUnretractedClause(chain->first());
-  if (code == NULL)
+  assert(object2->variableDereference()->isInteger());
+  word32 time = (word32)(object2->variableDereference()->getInteger());
+
+  if (chain->first() == NULL)
     {
       return RV_FAIL;
     }
 
-  object2 = heap.newNumber(reinterpret_cast<word32>(code));
-  CodeLoc cl = code + Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER;
-  DynamicPredicate* thispred = reinterpret_cast<DynamicPredicate*>(getAddress(cl));
-  RefObject r(REF_PRED, thispred);
-  refTrail.trail(r);
-  thispred->aquire();
-  CodeLoc nextAddr = cl + Code::SIZE_OF_ADDRESS;
-  code = getFirstUnretractedClause(getCodeLoc(nextAddr));
-  if (code == NULL)
+  LinkedClause* clause = chain->first()->nextAlive(time);
+  if (clause == NULL)
     {
-      object3 = AtomTable::failure;
+      return RV_FAIL;
+    }
+  object3 = heap.newInteger(reinterpret_cast<word32>(clause));
+  otherTrail.push(dp);
+  dp->aquire();
+  LinkedClause* next_clause = clause->nextNextAlive(time); 
+  if (next_clause == NULL)
+    {
+      object4 = AtomTable::failure;
     }
   else
     {
-      object3 = AtomTable::success;
+      object4 = AtomTable::success;
     }
   return(RV_SUCCESS);
 }
 
 
 //
-// psi_get_next_clause(ptr, next, more)
+// psi_get_next_clause(ptr, time, next, more)
 // Get the next linkblock ptr for ptr.
 // mode(in, out, out)
 //
 Thread::ReturnValue
 Thread::psi_get_next_clause(Object*& object1, Object*& object2,
-			    Object*& object3)
+			    Object*& object3, Object*& object4)
 {
   Object* val1 = object1->variableDereference();
 
   assert(val1->isNumber());
-  assert(val1->getNumber() != 0);
+  assert(val1->getInteger() != 0);
 
-  CodeLoc code = reinterpret_cast<CodeLoc>((val1->getNumber()) + OFFSET_TO_LAST_ADDRESS);
+  assert(object2->variableDereference()->isInteger());
+  word32 time = (word32)(object2->variableDereference()->getInteger());
 
-  CodeLoc next = getFirstUnretractedClause(getCodeLoc(code));
+  LinkedClause* clause = reinterpret_cast<LinkedClause*>((val1->getInteger()));
+  LinkedClause* next = clause->nextNextAlive(time);
 
   if (next == NULL)
     {
       return RV_FAIL;
     }
 
-  object2 = heap.newNumber(reinterpret_cast<word32>(next));
-  code = next + OFFSET_TO_LAST_ADDRESS;
-  next = getFirstUnretractedClause(getCodeLoc(code));
+  object3 = heap.newInteger(reinterpret_cast<word32>(next));
+  next = next->nextNextAlive(time);
   if (next == NULL)
     {
-      object3 = AtomTable::failure;
+      object4 = AtomTable::failure;
     }
   else
     {
-      object3 = AtomTable::success;
+      object4 = AtomTable::success;
     }
   return(RV_SUCCESS);
 }

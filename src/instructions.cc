@@ -106,6 +106,10 @@ const char *opnames[] = {
 	"get_double",
 	"set_double",
 	"unify_double",
+	"put_string",
+	"get_string",
+	"set_string",
+	"unify_string",
 };
 
 // Operand types
@@ -205,6 +209,10 @@ const char *operands[] = {
 	/* GET_DOUBLE */ "dr",
 	/* SET_DOUBLE */ "d",
 	/* UNIFY_DOUBLE */ "d",
+	/* PUT_STRING */ "r",
+	/* GET_STRING */ "r",
+	/* SET_STRING */ "",
+	/* UNIFY_STRING */ "",
 };
 
 // Instruction sizes
@@ -304,5 +312,9 @@ const word32 opsizes[] = {
 	/* GET_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_REGISTER + Code::SIZE_OF_INSTRUCTION, 
 	/* SET_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_INSTRUCTION, 
 	/* UNIFY_DOUBLE */ Code::SIZE_OF_DOUBLE + Code::SIZE_OF_INSTRUCTION, 
+	/* PUT_STRING */ Code::SIZE_OF_REGISTER + Code::SIZE_OF_INSTRUCTION, 
+	/* GET_STRING */ Code::SIZE_OF_REGISTER + Code::SIZE_OF_INSTRUCTION, 
+	/* SET_STRING */ Code::SIZE_OF_INSTRUCTION, 
+	/* UNIFY_STRING */ Code::SIZE_OF_INSTRUCTION, 
 };
 

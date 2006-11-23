@@ -70,7 +70,7 @@ decode_thread(Heap& heap,
     }
   else if (thread_cell->isNumber())
     {
-      const ThreadTableLoc loc = (ThreadTableLoc) (thread_cell->getNumber());
+      const ThreadTableLoc loc = (ThreadTableLoc) (thread_cell->getInteger());
 
       if (thread_table.IsValid(loc))
 	{
@@ -157,29 +157,23 @@ decode_defaults(Heap& heap, Object * sizes,
 		Object *& heap_size,
 		Object *& scratchpad_size,
 		Object *& binding_trail_size,
-		Object *& object_trail_size,
-		Object *& ip_trail_size,
-		Object *& tag_trail_size,
-		Object *& ref_trail_size,
+		Object *& other_trail_size,
 		Object *& env_size,
 		Object *& choice_size,
 		Object *& name_table_size,
 		Object *& ip_table_size)
 {
-  if (heap.check_functor(sizes, AtomTable::thread_defaults, 11))
+  if (heap.check_functor(sizes, AtomTable::thread_defaults, 8))
     {
       Structure* str = OBJECT_CAST(Structure*, sizes);
       heap_size = str->getArgument(1)->variableDereference();
       scratchpad_size = str->getArgument(2)->variableDereference();
       binding_trail_size = str->getArgument(3)->variableDereference();
-      object_trail_size = str->getArgument(4)->variableDereference();
-      ip_trail_size = str->getArgument(5)->variableDereference();
-      tag_trail_size = str->getArgument(6)->variableDereference();
-      ref_trail_size = str->getArgument(7)->variableDereference();
-      env_size = str->getArgument(8)->variableDereference(); 
-      choice_size = str->getArgument(9)->variableDereference();
-      name_table_size = str->getArgument(10)->variableDereference();
-      ip_table_size = str->getArgument(11)->variableDereference();
+      other_trail_size = str->getArgument(4)->variableDereference();
+      env_size = str->getArgument(5)->variableDereference(); 
+      choice_size = str->getArgument(6)->variableDereference();
+      name_table_size = str->getArgument(7)->variableDereference();
+      ip_table_size = str->getArgument(8)->variableDereference();
 
       return true;
     }
@@ -195,10 +189,7 @@ decode_defaults(Heap& heap,
 		int& heap_size,
 		int& scratchpad_size,
 		int& binding_trail_size,
-		int& object_trail_size,
-		int& ip_trail_size,
-		int& tag_trail_size,
-		int& ref_trail_size,
+		int& other_trail_size,
 		int& env_size,
 		int& choice_size,
 		int& name_table_size,
@@ -207,10 +198,7 @@ decode_defaults(Heap& heap,
   Object* heap_size_cell;
   Object* scratchpad_size_cell;
   Object* binding_trail_size_cell;
-  Object* object_trail_size_cell;
-  Object* ip_trail_size_cell;
-  Object* tag_trail_size_cell;
-  Object* ref_trail_size_cell;
+  Object* other_trail_size_cell;
   Object* env_size_cell;
   Object* choice_size_cell;
   Object* name_table_size_cell;
@@ -224,10 +212,7 @@ decode_defaults(Heap& heap,
 			   heap_size_cell,
 			   scratchpad_size_cell,
 			   binding_trail_size_cell,
-			   object_trail_size_cell,
-			   ip_trail_size_cell,
-			   tag_trail_size_cell,
-			   ref_trail_size_cell,
+			   other_trail_size_cell,
 			   env_size_cell,
 			   choice_size_cell,
 			   name_table_size_cell,
@@ -239,14 +224,8 @@ decode_defaults(Heap& heap,
 				       scratchpad_size, error);
       DECODE_THREAD_DEFAULT_NONNEG_INT(heap, binding_trail_size_cell,
 				       binding_trail_size, error);
-      DECODE_THREAD_DEFAULT_NONNEG_INT(heap, object_trail_size_cell,
-				       object_trail_size, error);
-      DECODE_THREAD_DEFAULT_NONNEG_INT(heap, ip_trail_size_cell,
-				       ip_trail_size, error);
-      DECODE_THREAD_DEFAULT_NONNEG_INT(heap, tag_trail_size_cell,
-				       tag_trail_size, error);
-      DECODE_THREAD_DEFAULT_NONNEG_INT(heap, ref_trail_size_cell,
-				       ref_trail_size, error);
+      DECODE_THREAD_DEFAULT_NONNEG_INT(heap, other_trail_size_cell,
+				       other_trail_size, error);
       DECODE_THREAD_DEFAULT_NONNEG_INT(heap, env_size_cell,
 				       env_size, error);
       DECODE_THREAD_DEFAULT_NONNEG_INT(heap, choice_size_cell,

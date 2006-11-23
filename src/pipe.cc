@@ -84,8 +84,8 @@ Thread::psi_pipe(Object *& input_stream_arg,
   QPStream *outstream = new QPofdstream(fdes[1]);
 
 
-  input_stream_arg =  heap.newNumber(reinterpret_cast<word32>(instream));
-  output_stream_arg = heap.newNumber(reinterpret_cast<word32>(outstream));
+  input_stream_arg =  heap.newInteger(reinterpret_cast<word32>(instream));
+  output_stream_arg = heap.newInteger(reinterpret_cast<word32>(outstream));
 
   return RV_SUCCESS;
 }

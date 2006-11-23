@@ -237,7 +237,7 @@ Thread::psi_global_state_set(Object *& object1, Object *& object2)
     }
   else
     {
-      OBJECT_CAST(Atom*, val1)->associateInteger(val2->getNumber());
+      OBJECT_CAST(Atom*, val1)->associateInteger(val2->getInteger());
     }
   
   code->Stamp();
@@ -272,7 +272,7 @@ Thread::psi_global_state_lookup(Object *& object1, Object *& object2)
     }
   else if (name->hasAssociatedInteger())
     {
-      object2 = heap.newNumber(name->getAssociatedInteger());
+      object2 = heap.newInteger(name->getAssociatedInteger());
 
       return RV_SUCCESS;
     }
@@ -312,7 +312,7 @@ Thread::psi_global_state_increment(Object *& object1, Object *& object2)
       const int32 intval = name->getAssociatedInteger() + 1;
       name->associateInteger(intval);
       
-      object2 = heap.newNumber(intval);      
+      object2 = heap.newInteger(intval);      
 
       code->Stamp();
       return RV_SUCCESS;
@@ -351,7 +351,7 @@ Thread::psi_global_state_decrement(Object *& object1, Object *& object2)
       const int32 intval = name->getAssociatedInteger() - 1;
       
       name->associateInteger(intval);
-      object2 = heap.newNumber(intval);
+      object2 = heap.newInteger(intval);
 
       code->Stamp();
       return RV_SUCCESS;

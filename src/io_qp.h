@@ -728,7 +728,7 @@ class QPostream: public QPStream
       double absn = fabs(n);
 
       if ((n == 0) || 
-          ((floor(absn) > 0) && ((absn - floor(absn)) <= 5*pow(10, -prec))))
+          ((floor(absn) > 0) && ((absn - floor(absn)) <= 5*pow(10.0, -prec))))
              (*stream) << ".0";
     }
 

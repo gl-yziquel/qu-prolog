@@ -81,7 +81,7 @@ Thread::psi_alloc_buffer(Object *& object1)
   //
   // Allocate the buffer.
   //
-  object1 = heap.newNumber(buffers.allocate(heap.getTop(), 
+  object1 = heap.newInteger(buffers.allocate(heap.getTop(), 
 					    scratchpad.getTop()));
 
   return (RV_SUCCESS);
@@ -99,9 +99,9 @@ Thread::psi_dealloc_buffer(Object *& object1)
   Object* buffer = heap.dereference(object1);
 
   assert(buffer->isNumber());
-  assert(buffer->getNumber() >= 0);
+  assert(buffer->getInteger() >= 0);
 
-  word32 bindex = (word32)(buffer->getNumber());
+  word32 bindex = (word32)(buffer->getInteger());
 
   scratchpad.setTop(buffers.getStart(bindex));
   buffers.deallocate(bindex);
@@ -120,9 +120,9 @@ Thread::psi_copy_term_from_buffer(Object *& object1, Object *& object2)
   Object* buffer = heap.dereference(object1);
 
   assert(buffer->isNumber());
-  assert(buffer->getNumber() >= 0);
+  assert(buffer->getInteger() >= 0);
 
-  word32 bindex = (word32)(buffer->getNumber()); 
+  word32 bindex = (word32)(buffer->getInteger()); 
 
   if (buffers.getCount(bindex) == 0)
     {
@@ -152,11 +152,11 @@ Thread::psi_copy_to_buffer_tail(Object *& object1, Object *& object2,
   Object* copy;
 
   assert(buffer->isNumber());
-  assert(buffer->getNumber() >= 0);
+  assert(buffer->getInteger() >= 0);
 
   assert(share->isAtom());
 
-  word32 bindex = (word32)(buffer->getNumber()); 
+  word32 bindex = (word32)(buffer->getInteger()); 
 
   Cons* cons = scratchpad.newCons();
 
@@ -200,8 +200,8 @@ Thread::psi_copy_obvar_to_buffer_tail(Object *& object1, Object *& object2)
 
   Object* buffer = heap.dereference(object1);
   assert(buffer->isNumber());
-  assert(buffer->getNumber() >= 0);
-  word32 bindex = (word32)(buffer->getNumber()); 
+  assert(buffer->getInteger() >= 0);
+  word32 bindex = (word32)(buffer->getInteger()); 
 
   assert(obvar != NULL);
   
@@ -254,9 +254,9 @@ Thread::psi_make_sub_from_buffer(Object *& object1, Object *& object2,
   Object* buffer = heap.dereference(object1);
 
   assert(buffer->isNumber());
-  assert(buffer->getNumber() >= 0);
+  assert(buffer->getInteger() >= 0);
 
-  word32 bindex = (word32)(buffer->getNumber()); 
+  word32 bindex = (word32)(buffer->getInteger()); 
 
   u_int count = buffers.getCount(bindex);
 
@@ -314,9 +314,9 @@ Thread::psi_buffer_set_domains_apart(Object *& object1, Object *& object2)
     OBJECT_CAST(ObjectVariable*, object2->variableDereference());
 
   assert(buffer->isNumber());
-  assert(buffer->getNumber() >= 0);
+  assert(buffer->getInteger() >= 0);
 
-  word32 bindex = (word32)(buffer->getNumber()); 
+  word32 bindex = (word32)(buffer->getInteger()); 
 
   u_int count = buffers.getCount(bindex);
 

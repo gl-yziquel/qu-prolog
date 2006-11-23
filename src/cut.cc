@@ -65,7 +65,7 @@
 Thread::ReturnValue
 Thread::psi_get_level(Object *& object1)
 {
-  object1 = heap.newNumber(cutPoint);
+  object1 = heap.newInteger(cutPoint);
   return(RV_SUCCESS);
 }
 
@@ -84,7 +84,7 @@ Thread::psi_delayneckcut(Object *& object1)
   
   assert(val1->isNumber());
   
-  cut = (ChoiceLoc)(val1->getNumber()); 
+  cut = (ChoiceLoc)(val1->getInteger()); 
   if (currentChoicePoint > cut)
     {
       currentChoicePoint = cut;
@@ -110,7 +110,7 @@ Thread::psi_cut(Object *& object1)
   Object* val1 = heap.dereference(object1);
   assert(val1->isNumber());
   
-  cut = (ChoiceLoc)(val1->getNumber());  
+  cut = (ChoiceLoc)(val1->getInteger());  
   if (currentChoicePoint > cut)
     {
       currentChoicePoint = cut;

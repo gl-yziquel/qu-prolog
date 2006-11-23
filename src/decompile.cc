@@ -216,7 +216,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 
 	case OPCODE(PUT_INTEGER, ARGS(integer, register)):
 	  {
-	    Object* c = heap.newNumber(getInteger(programCounter));
+	    Object* c = heap.newInteger(getInteger(programCounter));
 	    const word32 i = getRegister(programCounter);
 	    X[i]= c;
 	  }
@@ -227,6 +227,18 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    Object* c = heap.newDouble(getDouble(programCounter));
 	    const word32 i = getRegister(programCounter);
 	    X[i]= c;
+	  }
+	break;
+	case OPCODE(PUT_STRING, ARGS(register)):
+	  {
+	    const word32 i = getRegister(programCounter);
+	    char* c = (char*)programCounter;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    programCounter += size+1;
+
+	    X[i]= str;
 	  }
 	break;
 
@@ -409,7 +421,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 
 	case OPCODE(GET_INTEGER, ARGS(integer, register)):
 	  {
-	    Object* c = heap.newNumber(getInteger(programCounter));
+	    Object* c = heap.newInteger(getInteger(programCounter));
 	    const word32 i =getRegister(programCounter);
             if (inHead)
               {
@@ -442,7 +454,28 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
               }
 	  }
 	break; 
-	  
+	case OPCODE(GET_STRING, ARGS(register)):
+	  {
+	    const word32 i =getRegister(programCounter);
+	    char* c = (char*)programCounter;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    programCounter += size+1;
+            if (inHead)
+              {
+		if (! unify(X[i], str))
+	          {
+		    BACKTRACK;
+	          }
+              }
+            else
+              {
+                ADD_UNIFICATION(X[i], str, listElem);
+              }
+	  }
+	break;
+  
 	case OPCODE(GET_LIST, ARGS(register)):
 	  {
 	    const word32 i =getRegister(programCounter);
@@ -740,7 +773,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
  
 	case OPCODE(SET_INTEGER, ARGS(integer)):
 	  {
-	    const Object* c = heap.newNumber(getInteger(programCounter));
+	    const Object* c = heap.newInteger(getInteger(programCounter));
 	    *StructurePointer = reinterpret_cast<heapobject>(c); 
 	    StructurePointer++;
 	  }
@@ -753,7 +786,19 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    StructurePointer++;
 	  }
 	break; 
-	  
+	case OPCODE(SET_STRING, ARGS(register)):
+	  {
+	    char* c = (char*)programCounter;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    programCounter += size+1;
+	    *StructurePointer = reinterpret_cast<heapobject>(str); 
+	    StructurePointer++;
+	  }
+	break;
+  
+
 	case OPCODE(SET_VOID, ARGS(number)):
 	  {
 	    const word32 n = getNumber(programCounter);
@@ -1016,7 +1061,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
             inHead = false;
 	    const word32 n = getNumber(programCounter);
 	    Object* predicate = AtomTable::psi0_call; 
-	    Object* psi = heap.newNumber(n);
+	    Object* psi = heap.newInteger(n);
 	    Structure* u = heap.newStructure(1);
 	    u->setFunctor(predicate);
 	    u->setArgument(1, psi);
@@ -1038,7 +1083,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    const word32 i = getRegister(programCounter);
 	    
 	   Object* predicate = AtomTable::psi1_call;
-           Object* psi = heap.newNumber(n);
+           Object* psi = heap.newInteger(n);
            Object*& arg = DecPSIGetReg(i,X,Y);
            psi1NewVars(pseudo_instr1_array[n].mode, arg);
 	   Structure* u = heap.newStructure(2);
@@ -1064,7 +1109,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    psi2NewVars(pseudo_instr2_array[n].mode, arg1, arg2);
 
 	    Object* predicate = AtomTable::psi2_call;;
-	    Object* psi = heap.newNumber(n);
+	    Object* psi = heap.newInteger(n);
 	    Structure* u = heap.newStructure(3);
 	    u->setFunctor(predicate);
 	    u->setArgument(1, psi);
@@ -1092,7 +1137,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    psi3NewVars(pseudo_instr3_array[n].mode, arg1, arg2, arg3);
 	    
 	    Object* predicate = AtomTable::psi3_call;;
-	    Object* psi = heap.newNumber(n);
+	    Object* psi = heap.newInteger(n);
 	    Structure* u = heap.newStructure(4);
 	    u->setFunctor(predicate);
 	    u->setArgument(1, psi);
@@ -1123,7 +1168,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	    psi4NewVars(pseudo_instr4_array[n].mode, arg1, arg2, arg3, arg4);
 
 	    Object* predicate = AtomTable::psi4_call;;
-	    Object* psi = heap.newNumber(n);
+	    Object* psi = heap.newInteger(n);
 	    Structure* u = heap.newStructure(5);
 	    u->setFunctor(predicate);
 	    u->setArgument(1, psi);
@@ -1157,7 +1202,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
            psi5NewVars(pseudo_instr5_array[n].mode, 
 		       arg1, arg2, arg3, arg4, arg5);
 	   Object* predicate = AtomTable::psi5_call;;
-	   Object* psi = heap.newNumber(n);
+	   Object* psi = heap.newInteger(n);
 	   Structure* u = heap.newStructure(6);
 	   u->setFunctor(predicate);
 	   u->setArgument(1, psi);
@@ -1187,7 +1232,7 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 
 	case OPCODE(UNIFY_INTEGER, ARGS(integer)):
 	  {
-	    Object* c = heap.newNumber(getInteger(programCounter));
+	    Object* c = heap.newInteger(getInteger(programCounter));
             Object* arg =  reinterpret_cast<Object*>(*StructurePointer);
             StructurePointer++;
 	    if (! unify(c, arg))
@@ -1208,7 +1253,23 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
 	      }
 	  }
 	break;
-	
+	case OPCODE(UNIFY_STRING, ARGS()):
+	  {
+	    char* c = (char*)programCounter;
+	    int size = strlen(c);
+	    
+	    Object* str = heap.newStringObject(c);
+	    programCounter += size+1;
+            Object* arg =  reinterpret_cast<Object*>(*StructurePointer);
+	    StructurePointer++;
+	    if (! unify(str, arg))
+	      {
+		BACKTRACK;
+	      }
+
+	  }
+	break;
+
 	case OPCODE(UNIFY_X_REF, ARGS(register)):
 	  {
 	    const word32 i =getRegister(programCounter);
@@ -1284,6 +1345,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(PUT_CONSTANT, ARGS(constant, register)):
 	case OPCODE(PUT_INTEGER, ARGS(integer, register)):
 	case OPCODE(PUT_DOUBLE, ARGS(double, register)):
+	case OPCODE(PUT_STRING, ARGS(register)):
 	case OPCODE(PUT_LIST, ARGS(register)):
 	case OPCODE(PUT_STRUCTURE, ARGS(number, register)):
 	case OPCODE(PUT_X_OBJECT_VARIABLE, ARGS(register, register)):
@@ -1303,6 +1365,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(GET_CONSTANT, ARGS(constant, register)):
 	case OPCODE(GET_INTEGER, ARGS(integer, register)):
 	case OPCODE(GET_DOUBLE, ARGS(double, register)):
+	case OPCODE(GET_STRING, ARGS(register)):
 	case OPCODE(GET_LIST, ARGS(register)):
 	case OPCODE(GET_STRUCTURE, ARGS(constant, number, register)):
 	case OPCODE(GET_STRUCTURE_FRAME, ARGS(number, register)):
@@ -1328,6 +1391,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(SET_CONSTANT, ARGS(constant)):
 	case OPCODE(SET_INTEGER, ARGS(integer)):
 	case OPCODE(SET_DOUBLE, ARGS(double)):
+	case OPCODE(SET_STRING, ARGS()):
 	case OPCODE(SET_VOID, ARGS(number)):
 	case OPCODE(SET_OBJECT_VOID, ARGS(number)):
 	case OPCODE(ALLOCATE, ARGS(number)):
@@ -1355,8 +1419,9 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(UNIFY_CONSTANT, ARGS(constant)):
 	case OPCODE(UNIFY_INTEGER, ARGS(integer)):
 	case OPCODE(UNIFY_DOUBLE, ARGS(double)):
+	case OPCODE(UNIFY_STRING, ARGS()):
           {
-	    first = heap.newNumber(
+	    first = heap.newInteger(
                          reinterpret_cast<long>(programCounter - Code::SIZE_OF_INSTRUCTION));
              return(RV_SUCCESS);
           }
@@ -1366,7 +1431,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
           {
 	    if (next->isNumber())
               {
-                programCounter = reinterpret_cast<CodeLoc>(next->getNumber());
+                programCounter = reinterpret_cast<CodeLoc>(next->getInteger());
               }
             else
               {
@@ -1385,14 +1450,14 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	  {
              getNumber(programCounter);
              const word32 label = getOffset(programCounter);
-	     next = heap.newNumber(reinterpret_cast<long>(programCounter + label));
+	     next = heap.newInteger(reinterpret_cast<long>(programCounter + label));
 	  }
 	break; 
 	  
 	case OPCODE(RETRY_ME_ELSE, ARGS(offset)):
 	  {
              const word32 label = getOffset(programCounter);
-	     next = heap.newNumber(reinterpret_cast<long>(programCounter + label));
+	     next = heap.newInteger(reinterpret_cast<long>(programCounter + label));
 	  }
 	break;
 
@@ -1405,7 +1470,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	  {
              getNumber(programCounter);
              const word32 label = getOffset(programCounter);
-	     next = heap.newNumber(reinterpret_cast<long>(programCounter));
+	     next = heap.newInteger(reinterpret_cast<long>(programCounter));
              programCounter += label;
 	  }
 	break; 
@@ -1413,7 +1478,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	case OPCODE(RETRY, ARGS(offset)):
 	  {
             const word32 label = getOffset(programCounter);
-	    next = heap.newNumber(reinterpret_cast<long>(programCounter));
+	    next = heap.newInteger(reinterpret_cast<long>(programCounter));
             programCounter += label;
 	  }
 	break; 
@@ -1431,7 +1496,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	    PrologValue pval(X[i]);
             heap.prologValueDereference(pval);          
             CodeLoc loc =
-              programCounter + Code::SIZE_OF_OFFSET * pval.getTerm()->utag();
+              programCounter + Code::SIZE_OF_OFFSET * pval.getTerm()->switchOffset();
             const word32 offset = getOffset(loc);
             if (offset == Code::FAIL)
               {
@@ -1462,7 +1527,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
 	    else
 	      {
 		assert(val->isNumber());
-		constant.assign(val->getNumber(), 
+		constant.assign(val->getInteger(), 
 				ConstEntry::INTEGER_TYPE);
 	      }
 
@@ -1603,18 +1668,10 @@ Thread::psi_decompile(Object*& o1, Object*& o2, Object*& o3)
 {
   Object* co = heap.dereference(o1);
   assert(co->isNumber());
-  assert(co->getNumber() != 0);
+  assert(co->getInteger() != 0);
   
-  CodeLoc start = reinterpret_cast<CodeLoc>((co->getNumber()) 
-    + Code::SIZE_OF_INSTRUCTION
-    + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS);
-  CodeLoc pc = getCodeLoc(start);
-  CodeLoc tmp = pc;
-  if (getInstruction(tmp) == FAIL)
-    {
-      return RV_FAIL;
-    }
-
+  LinkedClause* clause = (LinkedClause*)(co->getInteger());
+  CodeLoc pc = clause->getCodeBlock()->getCode();
   return(decompile(pc, o2, o3));
 }
 
@@ -1629,7 +1686,7 @@ Thread::psi_next_instr(Object*& o1, Object*& o2, Object*& o3, Object*& o4)
 {
   Object* co = heap.dereference(o1);
   assert(co->isNumber());
-  CodeLoc pc = reinterpret_cast<CodeLoc>(co->getNumber());
+  CodeLoc pc = reinterpret_cast<CodeLoc>(co->getInteger());
 
   return(next_instr(pc, o2, o3, o4));
 }

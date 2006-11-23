@@ -124,10 +124,10 @@ Thread::psi_system(Object *& object1, Object *& object2)
 
 #if defined(FREEBSD) || defined(MACOSX)
   object2 = 
-    heap.newNumber(bsd_system(atoms->getAtomString(val1)));
+    heap.newInteger(bsd_system(atoms->getAtomString(val1)));
 #else
   object2 = 
-    heap.newNumber(system(atoms->getAtomString(val1)));
+    heap.newInteger(system(atoms->getAtomString(val1)));
 #endif //defined(FREEBSD) || defined(MACOSX)
 
   return (RV_SUCCESS);
@@ -151,11 +151,11 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
 //#ifdef WIN32
 //  string tmpstr = wordexp(atoms->getAtomString(val1));
 //  const char* tmpcharptr = tmpstr.c_str();
-//  object3 = heap.newNumber(access(tmpcharptr,val2->getNumber()));
+//  object3 = heap.newInteger(access(tmpcharptr,val2->getInteger()));
 //#else
 //  object3 =
-//    heap.newNumber(access(wordexp(atoms->getAtomString(val1)).c_str(),
-//                           val2->getNumber()));
+//    heap.newInteger(access(wordexp(atoms->getAtomString(val1)).c_str(),
+//                           val2->getInteger()));
 //#endif
   string filename = atoms->getAtomString(val1);
   wordexp(filename);
@@ -163,7 +163,7 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
   strcpy(file, filename.c_str());
 
   object3 =
-    heap.newNumber(access(file, val2->getNumber()));
+    heap.newInteger(access(file, val2->getInteger()));
 
   return(RV_SUCCESS);
 } 
@@ -241,7 +241,7 @@ Thread::psi_mktemp(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_realtime(Object *& time_arg)
 {
-  time_arg = heap.newNumber(static_cast<long>(time((time_t *) NULL)));
+  time_arg = heap.newInteger(static_cast<long>(time((time_t *) NULL)));
   return RV_SUCCESS;
 }
 
@@ -257,18 +257,18 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
 {
   Object* time_arg = heap.dereference(time_obj);
   Object* time_struct_arg = heap.dereference(time_struct);
-  if (time_arg->isNumber())
+  if (time_arg->isInteger())
     {
-      time_t etime = (time_t)time_arg->getNumber();
+      time_t etime = (time_t)time_arg->getInteger();
       struct tm *tmtime = gmtime(&etime);
       Structure* t_struct = heap.newStructure(6);
       t_struct->setFunctor(atoms->add("time"));
-      t_struct->setArgument(1, heap.newNumber(tmtime->tm_year));
-      t_struct->setArgument(2, heap.newNumber(tmtime->tm_mon));
-      t_struct->setArgument(3, heap.newNumber(tmtime->tm_mday));
-      t_struct->setArgument(4, heap.newNumber(tmtime->tm_hour));
-      t_struct->setArgument(5, heap.newNumber(tmtime->tm_min));
-      t_struct->setArgument(6, heap.newNumber(tmtime->tm_sec));
+      t_struct->setArgument(1, heap.newInteger(tmtime->tm_year));
+      t_struct->setArgument(2, heap.newInteger(tmtime->tm_mon));
+      t_struct->setArgument(3, heap.newInteger(tmtime->tm_mday));
+      t_struct->setArgument(4, heap.newInteger(tmtime->tm_hour));
+      t_struct->setArgument(5, heap.newInteger(tmtime->tm_min));
+      t_struct->setArgument(6, heap.newInteger(tmtime->tm_sec));
 
       return BOOL_TO_RV(unify(t_struct, time_struct_arg));
     }
@@ -291,41 +291,41 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
 	}
       struct tm tmtime;
       Object* arg1 = t_struct->getArgument(1)->variableDereference();
-      if (!arg1->isNumber())
+      if (!arg1->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_year = arg1->getNumber();
+      tmtime.tm_year = arg1->getInteger();
       Object* arg2 = t_struct->getArgument(2)->variableDereference();
-      if (!arg2->isNumber())
+      if (!arg2->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_mon = arg2->getNumber();
+      tmtime.tm_mon = arg2->getInteger();
       Object* arg3 = t_struct->getArgument(3)->variableDereference();
-      if (!arg3->isNumber())
+      if (!arg3->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_mday = arg3->getNumber();
+      tmtime.tm_mday = arg3->getInteger();
       Object* arg4 = t_struct->getArgument(4)->variableDereference();
-      if (!arg4->isNumber())
+      if (!arg4->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_hour = arg4->getNumber();
+      tmtime.tm_hour = arg4->getInteger();
       Object* arg5 = t_struct->getArgument(5)->variableDereference();
-      if (!arg5->isNumber())
+      if (!arg5->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_min = arg5->getNumber();
+      tmtime.tm_min = arg5->getInteger();
       Object* arg6 = t_struct->getArgument(6)->variableDereference();
-      if (!arg6->isNumber())
+      if (!arg6->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_sec = arg6->getNumber();
+      tmtime.tm_sec = arg6->getInteger();
 
       tmtime.tm_isdst = 0;
 
@@ -344,7 +344,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
         {
           PSI_ERROR_RETURN(EV_TYPE, 2);
         }
-      Object* timet = heap.newNumber(static_cast<long>(etime));
+      Object* timet = heap.newInteger(static_cast<long>(etime));
 
       return BOOL_TO_RV(unify(time_arg, timet));
     }
@@ -368,27 +368,27 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 	{
 	  PSI_ERROR_RETURN(EV_INST, 1);
 	}
-      if (!time_arg->isNumber())
+      if (!time_arg->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 1);
 	}
-      time_t etime = (time_t)time_arg->getNumber();
+      time_t etime = (time_t)time_arg->getInteger();
       struct tm *tmtime = localtime(&etime);
       Structure* t_struct = heap.newStructure(7);
       t_struct->setFunctor(atoms->add("time"));
-      t_struct->setArgument(1, heap.newNumber(tmtime->tm_year));
-      t_struct->setArgument(2, heap.newNumber(tmtime->tm_mon));
-      t_struct->setArgument(3, heap.newNumber(tmtime->tm_mday));
-      t_struct->setArgument(4, heap.newNumber(tmtime->tm_hour));
-      t_struct->setArgument(5, heap.newNumber(tmtime->tm_min));
-      t_struct->setArgument(6, heap.newNumber(tmtime->tm_sec));
-      t_struct->setArgument(7, heap.newNumber(tmtime->tm_isdst));
+      t_struct->setArgument(1, heap.newInteger(tmtime->tm_year));
+      t_struct->setArgument(2, heap.newInteger(tmtime->tm_mon));
+      t_struct->setArgument(3, heap.newInteger(tmtime->tm_mday));
+      t_struct->setArgument(4, heap.newInteger(tmtime->tm_hour));
+      t_struct->setArgument(5, heap.newInteger(tmtime->tm_min));
+      t_struct->setArgument(6, heap.newInteger(tmtime->tm_sec));
+      t_struct->setArgument(7, heap.newInteger(tmtime->tm_isdst));
 
       return BOOL_TO_RV(unify(t_struct, time_struct_arg));
     }
   else
     {
-      if (!time_arg->isVariable() && !time_arg->isNumber())
+      if (!time_arg->isVariable() && !time_arg->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 1);
 	}
@@ -405,60 +405,60 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 	}
       struct tm tmtime;
       Object* arg1 = t_struct->getArgument(1)->variableDereference();
-      if (!arg1->isNumber())
+      if (!arg1->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_year = arg1->getNumber();
+      tmtime.tm_year = arg1->getInteger();
       Object* arg2 = t_struct->getArgument(2)->variableDereference();
-      if (!arg2->isNumber())
+      if (!arg2->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_mon = arg2->getNumber();
+      tmtime.tm_mon = arg2->getInteger();
       Object* arg3 = t_struct->getArgument(3)->variableDereference();
-      if (!arg3->isNumber())
+      if (!arg3->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_mday = arg3->getNumber();
+      tmtime.tm_mday = arg3->getInteger();
       Object* arg4 = t_struct->getArgument(4)->variableDereference();
-      if (!arg4->isNumber())
+      if (!arg4->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_hour = arg4->getNumber();
+      tmtime.tm_hour = arg4->getInteger();
       Object* arg5 = t_struct->getArgument(5)->variableDereference();
-      if (!arg5->isNumber())
+      if (!arg5->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_min = arg5->getNumber();
+      tmtime.tm_min = arg5->getInteger();
       Object* arg6 = t_struct->getArgument(6)->variableDereference();
-      if (!arg6->isNumber())
+      if (!arg6->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_sec = arg6->getNumber();
+      tmtime.tm_sec = arg6->getInteger();
       Object* arg7 = t_struct->getArgument(7)->variableDereference();
-      if (!arg7->isNumber())
+      if (!arg7->isInteger())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      tmtime.tm_isdst = arg7->getNumber();
+      tmtime.tm_isdst = arg7->getInteger();
       
       time_t etime = mktime(&tmtime);
       if (etime == (time_t)(-1))
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      Object* timet = heap.newNumber(static_cast<long>(etime));
+      Object* timet = heap.newInteger(static_cast<long>(etime));
       return BOOL_TO_RV(unify(time_arg, timet));
     }
 }
 
 // @user
-// @pred signal_to_atom(SignalNumber, SignalAtom)
+// @pred signal_to_atom(SignalInteger, SignalAtom)
 // @type signal_to_atom(integer, atom)
 // @mode signal_to_atom(+, -) is det
 // @description
@@ -474,12 +474,12 @@ Thread::psi_signal_to_atom(Object *& signum, Object *& sigatom)
     {
       PSI_ERROR_RETURN(EV_INST, 1);
     }
-  if (!signum_arg->isNumber())
+  if (!signum_arg->isInteger())
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
 
-  const int sig = signum_arg->getNumber();
+  const int sig = signum_arg->getInteger();
 
   if (sig <= 0 || sig > NSIG)
     {
@@ -580,7 +580,7 @@ Thread::psi_signal_to_atom(Object *& signum, Object *& sigatom)
 Thread::ReturnValue
 Thread::psi_nsig(Object *& nsig)
 {
-  nsig = heap.newNumber(NSIG);
+  nsig = heap.newInteger(NSIG);
 
   return RV_SUCCESS;
 }
@@ -593,12 +593,12 @@ Thread::psi_strerror(Object *& errno_arg, Object *& string_arg)
     {
       PSI_ERROR_RETURN(EV_INST, 1);
     }
-  if (!errno_arg_value->isNumber())
+  if (!errno_arg_value->isInteger())
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
 
-  const char *str = strerror(errno_arg_value->getNumber());
+  const char *str = strerror(errno_arg_value->getInteger());
   if (str == NULL)
     {
       PSI_ERROR_RETURN(EV_VALUE, 1);

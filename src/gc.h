@@ -64,46 +64,15 @@
 #ifdef QP_DEBUG
 bool check_heap2(Heap&);
 #endif // QP_DEBUG
-//
-// In the "upward" phase of compression an entry in the heap
-// with the F bit set can be found. This happens when the object
-// starting at this point has previously entered a relocation chain.
-// At this point we want to relocate the chain so that we are pointing
-// at the final destination. However, in order to do this we need to know the
-// size of the object stored at the current location. To do this we need the
-// tag for the object - which is found at the end of the relocation chain.
-// This function is used to find the end of the relocation chain.
-//
-inline heapobject* unfold_chain(heapobject* ptr)
-{
-  while ((*ptr & Object::GC_F) == Object::GC_F)
-    {
-      ptr = reinterpret_cast<heapobject*>(*ptr & ~Object::GC_Mask);
-    }
-  return ptr;
-}
 
-inline void update_relocation_chain(heapobject* current, heapobject* dest)
-{
-  heapobject* j;
-  while ((*current & Object::GC_F) == Object::GC_F)
-    {
-      j = reinterpret_cast<heapobject*>(*current & ~Object::GC_Mask);
-      *current = (*j & ~Object::GC_M) | (*current & Object::GC_M);
-      *j = reinterpret_cast<heapobject>(dest) | (*j & Object::GC_M);
-    }
-}
 
-inline void into_relocation_chain(heapobject* j, heapobject* current)
-{
-  *current = (*j & ~Object::GC_M) | (*current & Object::GC_M);
-  *j = reinterpret_cast<heapobject>(current) | 
-       (*j & Object::GC_M) | Object::GC_F; 
-}
 
-void gc_mark_pointer(Object*, int32&, Heap&);
+void gc_mark_pointer(Object*, Heap&, ObjectsStack&, GCBits&);
 
 void gc_compact_heap(int32, Heap&);
+
+void update_forward_pointers(Heap& heap, GCBits& gcbits);
+void update_backward_pointers(Heap& heap, GCBits& gcbits);
 
 #ifdef QP_DEBUG
 bool check_term(Object* term);
