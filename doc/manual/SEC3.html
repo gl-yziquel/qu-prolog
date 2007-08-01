@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 7.4 Reference Manual - Built-in Predicates
+Qu-Prolog 8.0 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -79,6 +79,8 @@ Qu-Prolog 7.4 Reference Manual - Built-in Predicates
 <KBD>goal</KBD> : an atom or compound representing a goal.
 <LI>
 <KBD>stream</KBD> : a term representing a stream
+<LI>
+<KBD>handle</KBD> : a term representing the handle (address) for messages
 </UL>
 
 <P>As an example, the mode information for <KBD>=..</KBD> is
@@ -449,7 +451,23 @@ Succeed if <KBD>Goal1</KBD> succeeds.  <KBD>Goal2</KBD> is executed after <KBD>G
 <A NAME="Section3.3.1" >3.3.1 File and Stream Handling</A>
 </H3>
 
-<P>Streams are the basic input/output management units.  They provide a uniform interface to files and strings.  Each stream can be opened for reading or writing, and data is sent through the stream using term or character input/output predicates.  String streams behave in the same way as file streams.  Rather than having a file attached to the stream, a string stream is connected to an atom or a list of <KBD>CharCode</KBD>. If the string stream is opened for writing, any further writing to the stream is not possible after the successful execution of <KBD><a href="#stream_to_atom">stream_to_atom/2</a></KBD> or <KBD><a href="#stream_to_chars">stream_to_chars/2</a></KBD> as these predicates close the stream.
+<P>Streams are the basic input/output management units.  
+They provide a uniform interface to files and strings.  
+Each stream can be opened for reading or writing, and data is sent through 
+the stream using term or character input/output predicates.  
+String streams behave in the same way as file streams.  
+
+<P>Rather than having a file attached to the stream, 
+a string stream is connected to an atom or a list of <KBD>CharCode</KBD>. 
+If the string stream is opened for writing, any further writing to the 
+stream is not possible after the successful execution of 
+<KBD><a href="#stream_to_atom">stream_to_atom/2</a></KBD>,
+<KBD><a href="#stream_to_string">stream_to_string/2</a></KBD> or
+<KBD><a href="#stream_to_chars">stream_to_chars/2</a></KBD> 
+as these predicates close the stream.
+
+<P>If the process is registered with Pedro then it is possible to open
+a message stream for either reading or writing.
 
 <P>A term representing a stream is an
 integer (the stream ID)
@@ -579,6 +597,53 @@ The possible values for <KBD>StringMode</KBD> are
 <BR>Stream = 3
 <BR>Term = p(B, A)
 </KBD>
+</BLOCKQUOTE>
+
+
+
+<P><KBD><a name="open_msgstream"></a>open_msgstream(Handle, Mode, Stream)</KBD>
+
+<BLOCKQUOTE>
+This predicate opens a stream with <KBD>Mode</KBD> for an address given 
+by the handle <KBD>Handle</KBD>. If the stream is opened for reading 
+then messages from the sender should be of the form
+<BR>
+<KBD>p2pmsg('':myname@mymachine, Handle, msg)</KBD>
+<BR>
+where <KBD>myname</KBD> and <KBD>mymachine</KBD> are respectively
+the name of this process and the machine on which this process
+is running. <KBD>Handle</KBD> is the handle specified when opening the
+stream. The third argument, <KBD>msg</KBD> should be a string - 
+it is appended to a stream buffer that can then be read from using the 
+Qu-Prolog input predicates. Messages from this address are ignored
+by the predicates that look at the message buffer such as <KBD>ipc_peek</KBD>.
+
+<P> If the stream is opened for writing then when the stream is flushed,
+the contents of the stream buffer is wrapped into a message of the form
+<BR>
+<KBD>p2pmsg(Handle, MyHAndle, msg)</KBD>
+<BR>
+<P> For most applications the message sends and receives are more appropriate
+but for interacting with GUI's it is sometimes more convenient to use streams.
+The <KBD>xqpdebug</KBD> GUI uses this mechanism.
+</BLOCKQUOTE>
+
+<P><KBD><a name="set_std_stream"></a>set_std_stream(StreamNo, Stream)</KBD>
+
+<BLOCKQUOTE>
+This predicate resets one of the standard streams given by <KBD>StreamNo</KBD>
+to <KBD>Stream</KBD>. <KBD>StreamNo</KBD> must be 0,1 or 2 (stdin,stdout,stderr).
+<P> This is used in combination with <KBD>open_msgstream</KBD> in the 
+<KBD>xqpdebug</KBD> GUI
+so that reads and writes in the debugger become reads and writes via the GUI. 
+This allows the GUI to behave in a transparent way with respect
+to IO.
+</BLOCKQUOTE>
+
+<P><KBD><a name="reset_std_stream"></a>reset_std_stream(StreamNo)</KBD>
+
+<BLOCKQUOTE>
+Reset the supplied standard stream.
 </BLOCKQUOTE>
 
 <P><KBD><a name="close"></a>close(Stream)</KBD>
@@ -2487,6 +2552,34 @@ Succeed if <KBD>Term</KBD> is not a meta variable.
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="ground"></a>ground(Term)</KBD>
+
+<BLOCKQUOTE>
+Succeed if <KBD>Term</KBD> does not contain any meta variables 
+(after simplifying substitutions).
+<BR><KBD>mode ground(@term)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- ground(Var).
+<BR>
+<BR>no
+<BR>
+<BR>| ?- ground(!obvar).
+<BR>
+<BR>obvar = !obvar
+<BR>
+<BR>| ?- ground([a/!x]Var).
+<BR>
+<BR>no
+<BR> 
+<BR>| ?- ground(f(G)).
+<BR>
+<BR>no
+</KBD>
+</BLOCKQUOTE>
+
 <P><KBD><a name="obvar"></a>obvar(Term)</KBD>
 
 <BLOCKQUOTE>
@@ -4325,6 +4418,26 @@ Execute <KBD>Goal</KBD>.  It is treated the same as <KBD>call(Goal)</KBD>. It is
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="forall"></a>forall(Goal, Test)</KBD>
+
+<BLOCKQUOTE>
+This predicate succeeds (without binding variables) iff whenever <KBD>Goal</KBD> succeeds, <KBD>Test</KBD> also succeeds.
+
+<BR><KBD>mode forall(@goal, @goal)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- forall(member(X, [1,2,3]), integer(X)).
+<BR>
+<BR>X = X
+<BR>
+<BR>| ?- forall(member(X, [5,4,1,3,6]), X > 2).
+<BR>
+<BR>no
+</KBD>
+</BLOCKQUOTE>
+
 <!-- Section 3.6 -->
 <H2>
 <A NAME="Section3.6">3.6 Arithmetic</A>
@@ -5977,7 +6090,7 @@ Remove all the spy points and conditions.
 <P><KBD><a name="debug"></a>debug</KBD>
 
 <BLOCKQUOTE>
-Switch on the debugger.  Produce trace at spy points only.
+Switch on the debugger.  Produce trace at spy points only. If <KBD>xdebug</KBD> is used instead then the debug GUI will start - see <A HREF="SEC3.html#Section3.21">Graphical User Interface</A>.
 
 <P>Example:
 
@@ -6017,7 +6130,7 @@ Switch on the debugger.  Produce trace at spy points only.
 <P><KBD><a name="trace"></a>trace</KBD>
 
 <BLOCKQUOTE>
-Switch on the debugger. Produce trace at every interpreted clause.
+Switch on the debugger. Produce trace at every interpreted clause. If <KBD>xtrace</KBD> is used instead then the debug GUI will start - see <A HREF="SEC3.html#Section3.21">Graphical User Interface</A>.
 
 <P>Example:
 
@@ -6082,7 +6195,7 @@ Set leashing at the list of ports given in <KBD>Mode</KBD>.  The available ports
 <P><KBD><a name="nodebug"></a>nodebug</KBD>
 
 <BLOCKQUOTE>
-Switch off the debugger.
+Switch off the debugger. 
 </BLOCKQUOTE>
 
 <P><KBD><a name="notrace"></a>notrace</KBD>
@@ -7925,7 +8038,7 @@ single Qu-Prolog process. All threads have a symbolic name (an atom).
 
 <P><KBD><a name="thread_set_symbol"></a>thread_set_symbol(Name)</KBD>
 <BLOCKQUOTE>
-<P>Set the symbolic name for this thread to <KBD>Name</KBD>.  Fails if the name is already taken or is <KBD>self</KBD> or <KBD>elvin</KBD>.  
+<P>Set the symbolic name for this thread to <KBD>Name</KBD>.  Fails if the name is already taken or is <KBD>self</KBD> or <KBD>pedro</KBD>.  
 <BR><KBD>mode thread_set_symbol(@atom)</KBD>
 <P>Example:
 
@@ -7954,7 +8067,7 @@ single Qu-Prolog process. All threads have a symbolic name (an atom).
 <BR><KBD>thread_fork(ThreadName, Goal, Sizes)</KBD>
 <BLOCKQUOTE>
 <P>Creates a new thread called <KBD>ThreadName</KBD> and sets its goal 
-to be <KBD>Goal</KBD>. <KBD>ThreadName</KBD> cannot be the name of any existing threads and cannot use the names <KBD>self</KBD> or <KBD>elvin</KBD>.  
+to be <KBD>Goal</KBD>. <KBD>ThreadName</KBD> cannot be the name of any existing threads and cannot use the names <KBD>self</KBD> or <KBD>pedro</KBD>.  
 Use the current defaults for the sizes of the data areas 
 unless otherwise specified in <KBD>Sizes</KBD>.  
 The call will fail if the thread cannot be created, 
@@ -8179,166 +8292,164 @@ seconds since the Unix epoch. See <KBD><a href="#realtime">realtime/[1]</a></KBD
 <H2>
 <A NAME="Section3.20">3.20 Interprocess Communication</A>
 </H2>
-Qu-Prolog supports two forms of high-level interprocess communication: ICM for peer-to-peer communication; and Elvin for subscription/notification communication.
+Qu-Prolog supports high-level interprocess communication using the Pedro
+server. Pedro supports both subscription/notification and peer-to-peer 
+messages. A Qu-Prolog process can connect to the Pedro server and then send
+messages to and 
+receive messages from other Pedro clients. 
 <P>
-Both forms of communication share the same incoming message buffer and use the 
-same predicates (discussed in the ICM section) to access the buffer. 
-Elvin messages have the address <KBD>elvin</KBD>.
+The reader is referred to the Pedro reference manual for further details.
+<P>
+For peer-to-peer messages addresses (handles) are used to determine the
+recepient of a message, and the received message will be accompanied by the 
+address of the sender and a reply-to address if required. 
+<P>
+A handle is of the form <KBD>ThreadName:ProcessName@MachineName</KBD> where the
+components are respectively the name of the thread, the registered name 
+of the process and the name of the machine on which the process is running.
+<P>
+When specifying addresses the handle can be used, but if the address is for a 
+process on the same machine then the machine name can be elided. Further, if
+the address is for a thread on the same process then the process name can 
+also be elided. The special address <KBD>self</KBD> is the shorthand
+for the address of this thread.
+<P>
+For non-Qu-Prolog processes for which the thread name is not relevant, handles
+can be of the form <KBD>ProcessName@MachineName</KBD>. If a process uses such
+a handle when sending a message to a Qu-Prolog process then the initial thread 
+(thread0) will receive the message.
+<P>
+It is also possible, when sending a message, to use a handle with either
+the process name or the machine name (but not both) being a variable. 
+In the first case all registered processes on that machine will receive
+the message. In the second case, all registered processes with that name 
+(on any machine) will receive the message. 
+<P>
+All messages (both notifications and peer-to-peer), together with address
+information, received by a thread are
+placed in a message queue for that thread.
+A notification received by a thread that is not a peer-to-peer message will 
+get the handle <KBD>pedro</KBD>
+<P>
 
-<!-- Section 3.20.1 -->
-<H3>
-<A NAME="Section3.20.1">3.20.1 ICM</A>
-</H3>
-<P>Qu-Prolog uses the Inter-Agent Communications Model (ICM)
-(<a href="http://www.nar.fla.com/icm/manual.html">F. G. McCabe, ICM Reference Manual</a>)
-for peer-to-peer communicating between different processes. 
-Each process that uses ICM communication first registers its name with 
-some <KBD>icm</KBD> process (typically one running on the same machine as 
-the process being registered). For a Qu-Prolog process this is done by using
-the <KBD>-A ProcessName</KBD> switch when the process is started. This
-registers <KBD>ProcessName</KBD> as the name of the process, and any other 
-registered process can then send a message to this process using its registered 
-name in the process field of the address. 
-
-<P> The <KBD>icm</KBD> processes act as message routers - receiving messages
-from registered processes and forwarding them to either their final destination
-or another <KBD>icm</KBD> process.
-
-<P> The address structure used by this form of communication 
-has four fields: a thread identifier, a process name, a machine address 
-(called the home of the process) and a list
-of locations (also machine addresses). 
-The home of a Qu-Prolog process is the machine on which it is running while
-the location of a process is the machine at which it is registered. 
-The process name together with the home is used as a unique identifier for
-the <KBD>icm</KBD> at which the process is registered.
-Normally a process registers with the <KBD>icm</KBD> on the same machine, in which 
-case its home and location are the same. However, if the process is started using the
-<KBD>-N ICMAddress</KBD> to register with an <KBD>icm</KBD> process on a different machine, then its home and location will be different.
-
-<P> When sending messages, the locations list is used to 
-specify the machines at which
-the process may be registered. 
-If the locations list is empty, it is assumed the
-process is registered on the same machine.
-
-<P>Each address structure in Qu-Prolog (called an <KBD>icm_handle</KBD>) is represented by one of the following terms.
-<UL type="disc">
-<LI> <KBD>ThreadID:ProcessName@MachineAddress/Locations</KBD> - where
-<KBD>ThreadID</KBD> is the thread identifier (an atom), <KBD>ProcessName</KBD>
-is the symbolic name of the process (an atom), <KBD>MachineAddress</KBD> is
-the IP address of the machine (an atom) and <KBD>Locations</KBD> is a list
-of locations (a list of atoms).
-<LI> <KBD>ThreadID:ProcessName@MachineAddress</KBD> - the same as above with
-the default value for the locations (the current machine).
-<LI> <KBD>ThreadID:ProcessName</KBD> - the same as above with
-the default value for the machine address (the current machine).
-<LI> <KBD>ThreadID</KBD> - the same as above with
-the default value for the process name (the current process).
-<LI> <KBD>self</KBD> - the current thread.
-</UL>
-
-<P>Machine names can be either short names (without dots) or full names 
-or IP addresses. 
-Note that, if a name contains a dot, it is assumed to be a full name or IP address.
-
-<P>Using the ICM it is possible for Qu-Prolog threads to communicate with other threads in the same process, with threads in different processes on the same machine or with threads in processes on other machines. 
-
-<P>A messages between threads consist of a Qu-Prolog term, 
-the sender's address and a reply-to address.  
-Often the sender's address and the reply-to address are identical, 
-but they need not be.  
-Each thread has its own queue of incoming messages, 
-which it can access nondeterministically.  
-No other thread has access to this queue.  
-
-<P> Predicates:
-
-<P><KBD><a name="icm_register"></a>icm_register(Name)</KBD>
-<BR><KBD>icm_register(Name, Port)</KBD>
-<BR><KBD>icm_register(Name, Port, MachineIP)</KBD>
+Predicates:
+<P>
+<a name="pedro_connect"></a><KBD>pedro_connect</KBD>
+<BR><KBD>pedro_connect(Machine)</KBD>
+<BR><KBD>pedro_connect(Machine, Port)</KBD>
 <BLOCKQUOTE>
-Register the name <KBD>Name</KBD> with ICM. This has the same effect as using
-the -A switch when starting the process. If required, values for the port and
-IP address of the ICM server can be supplied. The call fails if the process is
-already registered.
-<BR><KBD>mode icm_register(@atom, @number, @atom)</KBD>
-</BLOCKQUOTE>
+Connect to an Pedro server. 
+<KBD>Machine</KBD> is the machine on which the Pedro server is running 
+(default <KBD>localhost</KBD>) and <KBD>Port</KBD> is the port on which 
+the Pedro server is listening (default 4550).
+<BR> <KBD>mode pedro_connect</KBD>
+<BR> <KBD>mode pedro_connect(@atom)</KBD>
+<BR> <KBD>mode pedro_connect(@atom, @integer)</KBD>
 
+<P>Example:
 
-<P><KBD><a name="icm_deregister"></a>icm_deregister</KBD>
-<BLOCKQUOTE>
-Deregister from the ICM server. Fails if the process was not registered 
-at the time of the call.
-<BR><KBD>mode icm_deregister</KBD>
-</BLOCKQUOTE>
-
-<P><KBD><a name="icm_connected"></a>icm_connected</KBD>
-<BLOCKQUOTE>
-Succeeds if and only if this process is registered with the ICM.
-<BR><KBD>mode icm_connected</KBD>
-</BLOCKQUOTE>
-
-<P><KBD><a name="icm_ping"></a>icm_ping(Handle)</KBD>
-<BLOCKQUOTE>
-Succeeds if and only if the process with the given handle is registered with the ICM. Note: The handle given here does not include the thread ID.
-<BR><KBD>mode icm_ping(@Handle)</KBD>
-</BLOCKQUOTE>
-
-<P><KBD><a name="icm_thread_handle"></a>icm_thread_handle(Handle)</KBD>
-
-<BLOCKQUOTE>
-<KBD>Handle</KBD> is instantiated to an <KBD>icm_handle</KBD> for the current thread executing in the current process on the local machine.
-<BR><KBD>mode icm_thread_handle(-icm_handle)</KBD>
-
-<P>Example: 
-
+<P>
 <KBD>
-<P>| ?- icm_thread_handle(Handle).
-<BR>
-<BR>Handle = thread0 : foo @ bloggs.it.uq.edu.au / [bloggs.it.uq.edu.au] 
+<BR>| ?- pedro_connect.
+<BR>| ?- pedro_connect(fred).
+<BR>| ?- pedro_connect(fred, 4999).
 </KBD>
 </BLOCKQUOTE>
 
-<P><KBD><a name="ipc_send"></a>ipc_send(Message, ToAddress)</KBD>
-<BR><KBD>ipc_send(Message, ToAddress, ReplyAddress)</KBD>
-<BR><KBD>ipc_send(Message, ToAddress, ReplyAddress, OptList)</KBD>
+<a name="pedro_disconnect"></a><KBD>pedro_disconnect</KBD>
+<BLOCKQUOTE>
+Disconnect from the Pedro server.
+<BR> <KBD>mode pedro_disconnect</KBD>
+</BLOCKQUOTE>
+
+
+<a name="pedro_register"></a><KBD>pedro_register(Name)</KBD>
+<BLOCKQUOTE>
+Register <KBD>Name</KBD> with the Pedro server. 
+The process needs to be connected first. This name is 
+used as part of the address of this process for peer-to-peer messages.
+If the process is started with the <KBD>-Aname</KBD> switch then the process
+connects with the Pedro server and registers the supplied name.
+<BR> <KBD>mode pedro_register(@atom)</KBD>
+</BLOCKQUOTE>
+
+<a name="pedro_deregister"></a><KBD>pedro_deregister</KBD>
+<BLOCKQUOTE>
+Deregisters the current name with the Pedro server.
+<BR> <KBD>mode pedro_deregister</KBD>
+</BLOCKQUOTE>
+
+<a name="pedro_subscribe"></a><KBD>pedro_subscribe(Head, Body, ID)</KBD>
+<BLOCKQUOTE>
+Subscribe to notifications which unify with <KBD>Head</KBD> and satisfy the
+goal <KBD>Body</KBD>. 
+The Pedro reference manual lists the goals that can be used in <KBD>Body</KBD>.
+If the subscription succeeds <KBD>ID</KBD> will be instantiated to 
+the ID for this subscription. This ID is used when unsubscribing.
+<BR> <KBD>mode pedro_subscribe(@compound, @goal, ?integer)</KBD>
+</BLOCKQUOTE>
+
+<a name="pedro_unsubscribe"></a><KBD>pedro_unsubscribe(ID)</KBD>
+<BLOCKQUOTE>
+Remove the subscription with the supplied ID.
+<BR> <KBD>mode pedro_unsubscribe(@integer)</KBD>
+</BLOCKQUOTE>
+
+<a name="pedro_notify"></a><KBD>pedro_notify(T)</KBD>
+<BLOCKQUOTE>
+Sends the compound term <KBD>T</KBD> as a notification.
+<BR> <KBD>mode pedro_notify(@compound)</KBD>
+</BLOCKQUOTE>
+
+<a name="thread_handle"></a><KBD>thread_handle(Handle)</KBD>
+<BLOCKQUOTE>
+<KBD>Handle</KBD> is the handle (peer-to-peer address) of this thread.
+<BR> <KBD>mode thread_handle(?handle)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="same_handle"></a>same_handle(Handle1, Handle2)</KBD>
+<BLOCKQUOTE>
+<P>This is true if <KBD>Handle1</KBD>  and <KBD>Handle2</KBD> represent 
+the same handle.
+<KBD>Handle1</KBD> must be ground at the time of call and be an 
+<KBD>handle</KBD>.  
+<BR><KBD>mode same_handle(@handle, ?handle)</KBD>
+</BLOCKQUOTE>
+
+<a name="ipc_send"></a><KBD>ipc_send(Message, ToAddress)</KBD>
+<BR> <KBD>ipc_send(Message, ToAddress, OptList)</KBD>
 
 <BLOCKQUOTE>
-Send <KBD>Message</KBD> to <KBD>ToAddress</KBD>.  The recipient will be informed that the preferred address for replies is <KBD>ReplyAddress</KBD> (defaults to the sender address).  The options supplied in <KBD>OptList</KBD> will determine the actions taken during sending.
+Send <KBD>Message</KBD> to <KBD>ToAddress</KBD>.   
+The options supplied in <KBD>OptList</KBD> will determine the actions taken 
+during sending.
 
-<P>The available options are:
+<P>The only available option is:
 
 <UL type="disc">
 <LI>
 <KBD>remember_names(Value)</KBD>
 <BR>Remember the names of the variables in <KBD>Message</KBD>.  
 <BR>Default: <KBD>true</KBD>.
-<LI>
-<KBD>encode(Value)</KBD>
-<BR>Send <KBD>Message</KBD> in an encoded form.  Since messages are arbitrary Qu-Prolog terms, it is necessary to translate them into a string in preparation for sending them.  Encoding the message produces a much more compact representation and is encouraged.  Please note that presently, the only terms that may be sent without encoding are lists of ASCII values.
-<BR>Default: <KBD>true</KBD>
 </UL>
-<BR><KBD>mode ipc_send(+term, +icm_handle)</KBD>
-<BR><KBD>mode ipc_send(+term, +icm_handle, +icm_handle)</KBD>
-<BR><KBD>mode ipc_send(+term, +icm_handle, +icm_handle,</KBD>
-<BR><KBD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+closed_list(compound))</KBD>
+<BR><KBD>mode ipc_send(+term, @handle)</KBD>
+<BR><KBD>mode ipc_send(+term, @handle, @handle)</KBD>
+<BR><KBD>mode ipc_send(+term, @handle, @handle, +closed_list(compound))</KBD>
 
 </BLOCKQUOTE>
 
 <P><KBD><a name="ipc_peek"></a>ipc_peek(Message)</KBD>
 <BR><KBD>ipc_peek(Message, FromAddress)</KBD>
-<BR><KBD>ipc_peek(Message, FromAddress, ReplyAddress)</KBD>
-<BR><KBD>ipc_peek(Message, FromAddress, ReplyAddress, OptList)</KBD>
+<BR><KBD>ipc_peek(Message, FromAddress, OptList)</KBD>
 
 <BLOCKQUOTE>
-Examine the incoming interprocess communication message queue of this thread for a message that will unify with <KBD>Message</KBD>, 
-an address that will unify with <KBD>FromAddress</KBD> and (optionally) 
-a <KBD>reply_to</KBD> address that will unify with <KBD>ReplyAddress</KBD>.  
+Examine the incoming message queue of this 
+thread for a message that will unify with <KBD>Message</KBD> and 
+an address that will unify with <KBD>FromAddress</KBD>.
 The options supplied in <KBD>OptList</KBD> will determine the actions 
 taken on peeking at the messages in the queue.
 <P> Address unification is done via <KBD>same_handle/2</KBD>
-and so shortened forms of <KBD>icm_handle</KBD>'s can be given in the address
+and so shortened forms of handles can be given in the address
 patterns.
 <P>The available options are:
 
@@ -8357,38 +8468,38 @@ a number, <KBD>N</KBD>, then the call will wait <KBD>N</KBD> seconds for a messa
 <BR>Default: <KBD>true</KBD>
 </UL>
 <BR><KBD>mode ipc_peek(?term)</KBD>
-<BR><KBD>mode ipc_peek(?term, ?icm_handle)</KBD>
-<BR><KBD>mode ipc_peek(?term, ?icm_handle, ?icm_handle)</KBD>
-<BR><KBD>mode ipc_peek(?term, ?icm_handle, ?icm_handle, +closed_list(compound))</KBD>
+<BR><KBD>mode ipc_peek(?term, ?handle)</KBD>
+<BR><KBD>mode ipc_peek(?term, ?handle, +closed_list(compound))</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="ipc_recv"></a>ipc_recv(Message)</KBD>
 <BR><KBD>ipc_recv(Message, FromAddress)</KBD>
-<BR><KBD>ipc_recv(Message, FromAddress, ReplyAddress)</KBD>
-<BR><KBD>ipc_recv(Message, FromAddress, ReplyAddress, OptList)</KBD>
+<BR><KBD>ipc_recv(Message, FromAddress, OptList)</KBD>
 
 <BLOCKQUOTE>
-Attempt to unify <KBD>Message</KBD> with a message from the thread's IPC message queue if possible.  <KBD>FromAddress</KBD> will be unified with the address of the sender of the message.  <KBD>ReplyAddress</KBD> will be unified with the address that the sender wishes replies to be sent.  The available options are identical to those available with <KBD><a href="#ipc_peek">ipc_peek/5</a></KBD>.  
+Attempt to unify <KBD>Message</KBD> with a message from the 
+thread's message queue if possible.  
+<KBD>FromAddress</KBD> will be unified with the address of the sender of the 
+message.  
+The available options are identical 
+to those available with <KBD><a href="#ipc_peek">ipc_peek/4</a></KBD>.  
 <BR><KBD>mode ipc_recv(?term)</KBD>
-<BR><KBD>mode ipc_recv(?term, ?icm_handle)</KBD>
-<BR><KBD>mode ipc_recv(?term, ?icm_handle, ?icm_handle)</KBD>
-<BR><KBD>mode ipc_recv(?term, ?icm_handle, ?icm_handle,</KBD>
-<BR><KBD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +closed_list(compound))</KBD>
+<BR><KBD>mode ipc_recv(?term, ?handle)</KBD>
+<BR><KBD>mode ipc_recv(?term, ?handle,  +closed_list(compound))</KBD>
 </BLOCKQUOTE>
 
-<P>Examples (Of the above four predicates):
+<P>Examples (of the above four predicates):
 
 <KBD>
-<P>| ?- icm_thread_handle(MyHandle), 
-<BR>ipc_send('Hello World', MyHandle, MyHandle, []).
+<P>| ?- thread_handle(MyHandle), 
+<BR>ipc_send('Hello World', MyHandle, []).
 <BR>
-<BR>MyHandle = thread0 : foo @ bloggs.it.uq.edu.au / [bloggs.it.uq.edu.au]
+<BR>MyHandle = thread0 : foo @ bloggs
 <BR>
-<BR>| ?- ipc_peek(Msg, FromHandle, ReplyHandle).
+<BR>| ?- ipc_peek(Msg, FromHandle).
 <BR>
 <BR>Msg = Hello World
-<BR>FromHandle = thread0 : foo @ bloggs.it.uq.edu.au / [bloggs.it.uq.edu.au]
-<BR>ReplyHandle = thread0 : foo @ bloggs.it.uq.edu.au / [bloggs.it.uq.edu.au]
+<BR>FromHandle = thread0 : foo @ bloggs
 <BR>
 <BR>| ?- ipc_recv(Msg, Th:PID).
 <BR>
@@ -8398,68 +8509,34 @@ Attempt to unify <KBD>Message</KBD> with a message from the thread's IPC message
 <BR>
 </KBD>
 
-<P><KBD><a name="icm_handle_to_components"></a>icm_handle_to_components(ThreadID, PID, Machine, Locations, Handle)</KBD>
-<BLOCKQUOTE>
-<P>This is true if <KBD>Handle</KBD>  is the same as <KBD>ThreadID:PID@Machine/Locations</KBD>.
-<BR><KBD>mode icm_handle_to_components(@atom, @atom, @atom, @list(atom), -icm_handle)</KBD>
-<BR><KBD>mode icm_handle_to_components(?atom, ?atom, ?atom, ?list(atom), @icm_handle)</KBD>
-</BLOCKQUOTE>
-<P><KBD><a name="same_handle"></a>same_handle(Handle1, Handle2)</KBD>
-<BLOCKQUOTE>
-<P>This is true if <KBD>Handle1</KBD>  and <KBD>Handle2</KBD> represent the same ICM handle.
-<KBD>Handle1</KBD> must be ground at the time of call and be an <KBD>icm_handle</KBD>.  
-<BR><KBD>mode same_handle(@icm_handle, ?icm_handle)</KBD>
-</BLOCKQUOTE>
+
 
 
 <P><KBD><a name="->>"></a>Msg -&#62;&#62; Address</KBD>
-<BR><KBD>Msg -&#62;&#62; Address reply_to RtAddress</KBD>
 
 <BLOCKQUOTE>
-<P>Send <KBD>Msg</KBD> to <KBD>Address</KBD> and set the 
-reply-to address to <KBD>RtAddress</KBD>.  
-<BR>The message is encoded using Qu-Prolog term encoding.
-<BR><KBD>mode @term -&#62;&#62; @icm_handle</KBD>
-<BR><KBD>mode @term -&#62;&#62; @icm_handle reply_to @icm_handle</KBD>
+<P>Send <KBD>Msg</KBD> to <KBD>Address</KBD>.
+<BR><KBD>mode @term -&#62;&#62; @handle</KBD>
 </BLOCKQUOTE>
-
-<P><KBD><a name="+>>"></a>Msg +&#62;&#62; Address</KBD>
-<BR><KBD>Msg +&#62;&#62; Address reply_to RtAddress</KBD>
-
-<BLOCKQUOTE>
-<P> The same as  <KBD>-&#62;&#62;</KBD> except that the term is not encoded. This
-predicate can only be used to send lists of ASCII values as messages.
-<BR><KBD>mode @list(integer) +&#62;&#62; @icm_handle</KBD>
-<BR><KBD>mode @list(integer) +&#62;&#62; @icm_handle reply_to @icm_handle</KBD>
-</BLOCKQUOTE>
-
 
 <P><KBD><a name="<<-"></a>Msg &#60;&#60;- Address</KBD>
-<BR><KBD>Msg &#60;&#60;- Address reply_to RtAddress</KBD>
 
 <BLOCKQUOTE>
-<P>Read a message from the thread's message queue and set <KBD>Address</KBD> to the senders address and <KBD>RtAddress</KBD> to the return address.  
-<BR><KBD>mode ?term &#60;&#60;- ?icm_handle</KBD>
-<BR><KBD>mode ?term &#60;&#60;- ?icm_handle reply_to ?icm_handle</KBD>
+<P>Read a message from the thread's message queue and set <KBD>Address</KBD> to the senders address.
+<BR><KBD>mode ?term &#60;&#60;- ?handle</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="<<="></a>Msg &#60;&#60;= Address</KBD>
-<BR><KBD>Msg &#60;&#60;= Address reply_to RtAddress</KBD>
 
 <BLOCKQUOTE>
 <P>Search the thread's message queue for a message that will unify 
-with <KBD>Msg</KBD>, <KBD>Address</KBD> and <KBD>RtAddress</KBD>.  
-<BR><KBD>mode ?term &#60;&#60;= ?icm_handle</KBD>
-<BR><KBD>mode ?term &#60;&#60;= ?icm_handle reply_to ?icm_handle</KBD>
+with <KBD>Msg</KBD> and <KBD>Address</KBD>.
+<BR><KBD>mode ?term &#60;&#60;= ?handle</KBD>
 </BLOCKQUOTE>
 
 <P>Examples (Of the above three predicates):
 
 <KBD>
-<P>| ?- 'Hello World' -&#62;&#62; self reply_to self.
-<BR>
-<BR>yes
-<BR>
 <BR>| ?- 'Other World' -&#62;&#62; self.
 <BR>
 <BR>yes
@@ -8476,7 +8553,7 @@ with <KBD>Msg</KBD>, <KBD>Address</KBD> and <KBD>RtAddress</KBD>.
 
 <P><KBD><a name="broadcast"></a>broadcast(Term)</KBD>
 <BLOCKQUOTE>
-<P> Send <KBD>Term</KBD> as an ICM message to all current threads within this process.
+<P> Send <KBD>Term</KBD> as a message to all current threads within this process.
 <BR><KBD>mode broadcast(+term)</KBD>
 </BLOCKQUOTE>
 
@@ -8490,7 +8567,7 @@ with <KBD>Msg</KBD>, <KBD>Address</KBD> and <KBD>RtAddress</KBD>.
 <P><KBD>Term1</KBD> to <KBD>TermN</KBD> are either message patterns or of the 
 form <KBD>Msg::Goal</KBD> where <KBD>Msg</KBD> is a message pattern 
 and <KBD>Goal</KBD> is a goal (for compatibility with logtalk <KBD>??</KBD> can be used instead of <KBD>::</KBD>).  
-Message patterns take the form <KBD>Msg &#60;&#60;- Addr</KBD> or <KBD>Msg &#60;&#60;- Addr1 reply_to Addr2</KBD>.  Where <KBD>timeout(T) -&#62; TimeoutGoal</KBD> appears it should be last as any subsequent choices are ignored.
+Message patterns take the form <KBD>Msg &#60;&#60;- Addr</KBD>.  Where <KBD>timeout(T) -&#62; TimeoutGoal</KBD> appears it should be last as any subsequent choices are ignored.
 
 <P>Messages in the incoming message queue are tested against the test terms <KBD>Term1</KBD> to <KBD>TermN</KBD>.  The first message to match against the test terms and the first such matching test term are chosen.  
 
@@ -8532,326 +8609,33 @@ Message patterns take the form <KBD>Msg &#60;&#60;- Addr</KBD> or <KBD>Msg &#60;
 </KBD>
 </BLOCKQUOTE>
 
-<P><KBD><a name="icm_address"></a>icm_address(IPAddress)</KBD>
+<P><KBD><a name="pedro_address"></a>pedro_address(IPAddress)</KBD>
 <BLOCKQUOTE>
-<P> <KBD>IPAddress</KBD> is the IP address of the ICM with which the process is registered.
-If the process is registered with the ICM on the same machine then the IP address returned is the empty atom (which is the default ICM address). Otherwise,
-the IP address is the same as the address supplied (using the <KBD>-N</KBD>
-switch) when the process was created.
-<BR><KBD>mode icm_address(?atom)</KBD>
+<P> <KBD>IPAddress</KBD> is the IP address of the Pedro server with which 
+the process is connected.
+<BR><KBD>mode pedro_address(?atom)</KBD>
 </BLOCKQUOTE>
 
-<P><KBD><a name="icm_port"></a>icm_port(Port)</KBD>
+<P><KBD><a name="pedro_port"></a>pedro_port(Port)</KBD>
 <BLOCKQUOTE>
-<P> <KBD>Port</KBD> is the port used by the ICM with which the process is registered.
-If the default ICM port is used then 0 will be returned.
-Otherwise
-the port is the same as that supplied (using the <KBD>-P</KBD>
-switch) when the process was created.
-<BR><KBD>mode icm_port(?integer)</KBD>
+<P> <KBD>Port</KBD> is the port used by the Pedro server with which the process is connected.
+<BR><KBD>mode pedro_port(?integer)</KBD>
 </BLOCKQUOTE>
 
-<!-- Section 3.20.2 -->
-<H3>
-<A NAME="Section3.20.2">3.20.2 Elvin</A>
-</H3>
-<!-- Section 3.21 -->
-
-<P> Elvin is a subscription/notification style communication - readers are 
-referred to <a href="http://elvin.dstc.edu.au">Elvin</a>
-for details of Elvin and the Elvin subscription language.
-<P>
-An Elvin notification (in Qu-Prolog) is a list of <KBD>Attribute = Value </KBD>terms.
-The attributes (field names) are Qu-Prolog atoms and the values are 
-Qu-Prolog terms corresponding to Elvin values of a given Elvin type.
- Below is a table that gives the mapping between Elvin types and Qu-Prolog 
-types. There is no direct equivalent of strings in Qu-Prolog - strings are 
-represented by Qu-Prolog atoms or lists of
-ASCII values. 
-<P>
- 
-<TABLE cellpadding="2" cellspacing="2" border="1" width="100%">
-     <TR>
-       <TD valign="top">Elvin type
-       </TD>
-       <TD valign="top">Qu-Prolog notification term sent
-       </TD>
-       <TD valign="top">Received
-       </TD>
-     </TR>
-     <TR>
-       <TD valign="top"><KBD>ELVIN_STRING</KBD>
-       </TD>
-       <TD valign="top">Atom or ASCII list
-       </TD>
-       <TD valign="top">Atom if Elvin string will fit into an atom, otherwise ASCII list
-       </TD>
-     </TR>
-     <TR>
-       <TD valign="top"><KBD>ELVIN_INT32</KBD>
-       </TD>
-       <TD valign="top">Integer
-       </TD>
-       <TD valign="top">Integer
-       </TD>
-     </TR>
-     <TR>
-       <TD valign="top"><KBD>ELVIN_INT64</KBD>
-       </TD>
-       <TD valign="top"><KBD>int64(Atom)</KBD>
-       </TD>
-       <TD valign="top"><KBD>int64(Atom)</KBD>
-       </TD>
-     </TR>
-     <TR>
-       <TD valign="top"><KBD>ELVIN_REAL64</KBD>
-       </TD>
-       <TD valign="top"><KBD>Float</KBD>
-       </TD>
-       <TD valign="top"><KBD>Float</KBD>
-       </TD>
-     </TR>
-     <TR>
-       <TD valign="top"><KBD>ELVIN_OPAQUE</KBD>
-       </TD>
-       <TD valign="top"><KBD>qpterm(Term)</KBD>
-       </TD>
-       <TD valign="top"><KBD>qpterm(Term)</KBD>
-       </TD>
-     </TR>
-     <TR>
-       <TD valign="top"><KBD>ELVIN_OPAQUE</KBD>
-       </TD>
-       <TD valign="top"><KBD>opaque(ASCIIList)</KBD>
-       </TD>
-       <TD valign="top"><KBD>opaque(ASCIIList)</KBD>
-       </TD>
-     </TR>
-</TABLE>
-<P>
-Note that the <KBD>ELVIN_OPAQUE</KBD> type is used for both Qu-Prolog terms and
-opaque strings.
-Internally Qu-Prolog term encoding is used and the encoded term is sent as an opaque type, 
-and 
-when the message is received it is decoded back to a Qu-Prolog term.
-<P>
-<B>WARNING: </B> Because different Qu-Prolog terms in different fields of a notification are
-separately encoded then there is no connection between variables occurring in the 
-different fields.
-<P>
-The following gives an example of a term that 
-can be uses as a notification and what the received message would look like.
-<P>
- Sent:
-<KBD>
-<BR>[f1 = hi, f2 = there, f3 = 86, f4 = int64('99999999999'), 
-<BR> &nbsp;f5 = 0.333333, f6 = opaque([1,0,1]), f7 = qpterm(f(X,g(X))), f8 = qpterm(h(X)]
-</KBD>
-<BR>
-Received:
-<KBD>
-<BR> [f1 = hi, f2 = there, f3 = 86, f4 = int64('99999999999'),  
-<BR> &nbsp;f5 = 0.333333, f6 = opaque([1,0,1]), f7 = qpterm(f(_A,g(_A))), f8 = qpterm(h(_B))]
-</KBD>
-<P>
-Note, however, that the order of elements of the sent and received notification may be different.
-<P>
-<a href="http://elvin.dstc.edu.au/doc/esl4.html">The Elvin subscription language</a>
-is used to specify notifications of interest.
- The subscription expressions are Qu-Prolog atoms and the name of the atom
-(i.e. the string of characters making up its name) must follow the syntax
-for Elvin subscription expresssions exactly (including spaces).
-<P>
-It is also possible to use Qu-Prolog terms to represent (some) subscriptions. Prolog negation
-(<KBD>\+</KBD>) is used instead of Elvin negation and <KBD>\=</KBD> is used instead of <KBD>!=</KBD>. 
-<P>
-As an example of the use of Qu-Prolog atoms for subscriptions, the following code adds a subscription for notifications 
-whose <KBD>sex</KBD> attribute is <KBD>Sex</KBD> and whose <KBD>name</KBD>
- attribute is not <KBD>Name</KBD>.
-<KBD>
-<BLOCKQUOTE>
-<BR>open_string(write, S),
-<BR>write(S, 'sex == "'),
-<BR>write(S, Sex),
-<BR>write(S, '" && name != "'),
-<BR>write(S, Name),
-<BR>write(S, '"'),
-<BR>stream_to_atom(S, Expr), 
-<BR>elvin_add_subscription(Expr)
-</BLOCKQUOTE>
-</KBD>
-
-<P> Using the Qu-Prolog term subscription this can be done more directly as
-<KBD>
-<BLOCKQUOTE>
-elvin_add_subscription(sex == Sex && name \= Name)
-</BLOCKQUOTE>
-</KBD>
-Note that if a thread dies and there are still subscriptions attached to 
-that thread, 
-then Elvin will continue to deliver matching notifications but Qu-Prolog will 
-ignore them. If, later, a new thread is created and happens to be allocated 
-the same thread ID then the new thread will start getting these notifications. 
-It is therefore a good idea to delete all the notifications for a thread before
-it dies. 
-<P>
-Predicates:
-<P>
-
- <a name="elvin_connect"></a><KBD>elvin_connect(Where)</KBD>
-<BLOCKQUOTE>
-Connect to an Elvin server. If <KBD>Where</KBD> is of the form 
- <KBD>connect(URL)</KBD> (where <KBD>URL</KBD> is an atom representing the URL 
-of an Elvin server) then a connection to that server is attempted. 
-If <KBD>Where</KBD> is of the form <KBD>discover(Scope)</KBD> then Elvin server discovery 
-is used. If <KBD>Where</KBD> is <KBD>default</KBD> then default discovery is used.
-The predicate fails if connection is not made or if it is already 
-connected. In order to use discovery then the Elvin server configuration file 
-(<KBD>elvind.conf</KBD>) needs to be modified to add a scope and/or set default on.
-<P>Example:
-
-<P>
-<KBD>
-<BR>| ?- elvin_connect(connect('elvin://localhost')).
-<BR>| ?- elvin_connect(discover(scopename)).
-<BR>| ?- elvin_connect(default).
-</KBD>
-
- </BLOCKQUOTE>
- <a name="elvin_disconnect"></a><KBD>elvin_disconnect</KBD>
-<BLOCKQUOTE>
-Disconnect from the Elvin server. Fails if not connected before 
-the call.
- </BLOCKQUOTE>
- <a name="elvin_add_subscription"></a><KBD>elvin_add_subscription(Expression)</KBD>
-<BLOCKQUOTE>
-Add an Elvin subscription using <KBD>Expression</KBD> as the subscription
-expression for this thread . <KBD>Expression</KBD> can be either an atom or a Qu-Prolog term 
-representing an Elvin subscription. The call fails if the attempted subscription fails.
-</BLOCKQUOTE>
- <a name="elvin_subscriptions"></a><KBD>elvin_subscriptions(Subs)</KBD>
- 
-<BLOCKQUOTE>
-Unifies <KBD>Subs</KBD> with a list of&nbsp;subscription expression
-s of the current subscriptions for this thread.
-</BLOCKQUOTE>
-<a name="elvin_sub_to_term"></a><KBD>elvin_sub_to_term(Sub, Term)</KBD>
-
-<BLOCKQUOTE>
-Converts then Elvin subscription <KBD>Sub</KBD> (an atom) to the corresponding Qu-Prolog
-term <KBD>Term</KBD>.
-</BLOCKQUOTE>
-
- <a name="elvin_delete_subscription"></a><KBD>elvin_delete_subscription(Expression)</KBD>
- 
-<BLOCKQUOTE>
-Delete a subscription with <KBD>Expression</KBD> from this thread. 
-Fails if there is no matching subscription or if the deletion fails.
-</BLOCKQUOTE>
- <a name="elvin_delete_all_subscriptions"></a><KBD>elvin_delete_all_subscriptions</KBD>
- 
-<BLOCKQUOTE>
-Delete all subscription from this thread. 
-</BLOCKQUOTE>
- <a name="elvin_add_notification"></a><KBD>elvin_add_notification(ElvinTermList)</KBD>
-<BLOCKQUOTE>
-Add an Elvin notification for <KBD>ElvinTermList</KBD> (a Qu-Prolog 
-of the form described earlier). Fails if the notification is unsuccessful.
-</BLOCKQUOTE>
- 
 
 <H2>
-<A NAME="Section3.21">3.21 Graphical User Interfaces</A>
+<A NAME="Section3.21">3.21 Graphical User Interface</A>
 </H2>
-
-
-<H3>
-<A NAME="Section3.21.1" >3.21.1 The Tcl/Tk GUI</A>
-</H3>
-<P> The Qu-Prolog system comes with an extension of the Tk 
-interpreter (<KBD>tkICM</KBD>)
-that includes the ICM API. 
-This makes it straightforward to design GUI's that communicate with 
-Qu-Prolog processes using ICM communications. Each GUI
-is a process that uses ICM communication and can interact with any 
-number of other processes that also use ICM communication.
-
-<P> The GUI for <KBD>qp</KBD> (<KBD>qp_gui</KBD>) and for the debugger 
-(<KBD>qp_debug_gui</KBD>) can be found in the bin directory.
-
-<P> A GUI template file (<KBD>template_gui</KBD>) in the 
-examples directory may be used as a starting point for defining new GUI's 
-that use ICM communications.
-
-<P> For some applications a GUI might be started independently of any Qu-Prolog process. This might be the case when the GUI is expected to interact with several other processes. On the other hand some GUI's are tightly coupled with
-a particular Qu-Prolog process - such as the GUI for the interpreter.
-This sort of GUI is more typically started from within the Qu-Prolog process.
-
-<P> For example, the interpreter GUI is started by the following Qu-Prolog
-code.
-<KBD>
-<P>icm_thread_handle(SelfHandle),
-<BR>icm_handle_to_components(X1, X2, X3, X4, SelfHandle),
-<BR>icm_address(ICMaddr),
-<BR>icm_port(ICMport),
-<BR>concat_atom(['"', ICMaddr, '"'], QuoteICMaddr),
-<BR>concat_atom([qp_gui, X1, X2, QuoteICMaddr, ICMport, '&'], ' ', EXEC),
-<BR>os(system(EXEC))
-</KBD>
-<P> 
-
-<P>Predicates:
-
-<P><KBD><a name="open_msgstream"></a>open_msgstream(Handle, Mode, Stream)</KBD>
-
-<BLOCKQUOTE>
-This predicate opens a stream with <KBD>Mode</KBD> for an address given by the ICM handle <KBD>Handle</KBD>. If the stream is opened for reading then messages
-from the given address are appended to a stream buffer that can then be read from using the Qu-Prolog input predicates. Messages from this address are ignored
-by the predicates that look at the message buffer such as <KBD>ipc_peek</KBD>.
-
-<P> For most applications the message sends and receives are more appropriate
-but for interacting with GUI's it is sometimes more convenient to use streams.
-The GUI for <KBD>qp</KBD> uses this mechanism.
-</BLOCKQUOTE>
-
-<P><KBD><a name="set_std_stream"></a>set_std_stream(StreamNo, Stream)</KBD>
-
-<BLOCKQUOTE>
-This predicate resets one of the standard streams given by <KBD>StreamNo</KBD>
-to <KBD>Stream</KBD>. <KBD>StreamNo</KBD> must be 0,1 or 2 (stdin,stdout,stderr).
-<P> This is used in combination with <KBD>open_msgstream</KBD> in the GUI for
-<KBD>qp</KBD> so that reads and writes in the interpreter become reads and writes via the GUI. This allows the GUI to behave in a transparent way with respect
-to IO.
-</BLOCKQUOTE>
-
-<P><KBD><a name="reset_std_stream"></a>reset_std_stream(StreamNo)</KBD>
-
-<BLOCKQUOTE>
-Reset the supplied standard stream.
-</BLOCKQUOTE>
-
-<P><KBD><a name="start_thread_gui"></a>start_thread_gui</KBD>
-
-<BLOCKQUOTE>
-Start the <KBD>qp</KBD> GUI for the current thread.
-</BLOCKQUOTE>
-
-<P><KBD><a name="exit_thread_gui"></a>exit_thread_gui</KBD>
-
-<BLOCKQUOTE>
-Terminate the <KBD>qp</KBD> GUI for the current thread.
-</BLOCKQUOTE>
-
-<H3>
-<A NAME="Section3.21.2" >3.21.2 The QT GUI</A>
-</H3>
-<P>
-Qu-Prolog also comes with a GUI built on the QT libraries. The program 
+Qu-Prolog comes with a GUI built on the QT libraries. The program 
 <KBD>xqp</KBD> is a GUI interface to <KBD>qp</KBD> built on these libraries.
-The program <KBD>xqpdebug</KBD> is a GUI interface to the debugger also using QT.
-If a <KBD>qp</KBD> process is registered with ICM then starting the debugger 
-will cause the <KBD>xqpdebug</KBD> interface to start (unless the Tcl/Tk GUI
-is being used).
+The program <KBD>xqpdebug</KBD> is a GUI interface to the debugger also 
+using QT.
+If a <KBD>qp</KBD> process is registered with Pedro then starting the debugger
+using  <KBD>xtrace</KBD> or <KBD>xdebug</KBD>
+will cause the <KBD>xqpdebug</KBD> interface to start. This debugger is
+specific to the thread that started the debugger. It is possible to start
+debuggers in serveral threads.
+
 
 
 <!-- Section 3.22 -->
@@ -8875,7 +8659,7 @@ Trigger the garbage collector.
 <A NAME="Section3.23">3.23 TCP/IP</A>
 </H2>
 It is expected that most communications between processes will be carried out
-using ICM communication. Where communication with applications such as FTP or HTTP servers are required, communications using sockets may be needed.
+using Pedro communication. Where communication with applications such as FTP or HTTP servers are required, communications using sockets may be needed.
 The predicates described in this section provide support for basic socket communication. 
 <P> A simple example using these predicates is given in the examples directory.
 <P>Predicates:

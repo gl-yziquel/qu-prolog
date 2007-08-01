@@ -26,13 +26,17 @@
 #include "term.h"
 #include "xqpqueries.h"
 #include <qmessagebox.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qfile.h>
+//Added by qt3to4:
+#include <QEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 using namespace std;
 
 Interact::Interact( QWidget *box )
-  : QTextEdit(box)
+  : Q3TextEdit(box)
 {
   parent = box;
   setTextFormat(Qt::PlainText);
@@ -98,13 +102,13 @@ void Interact::contentsMouseReleaseEvent(QMouseEvent* e)
   if ((p < para) || ((p == para) && (i < indent)))
     {
       if (e->button() != Qt::MidButton)
-	QTextEdit::contentsMouseReleaseEvent(e);
+	Q3TextEdit::contentsMouseReleaseEvent(e);
       setCursorPosition(currpara,currindent);
       readonly = true;
     }
   else
     {
-      QTextEdit::contentsMouseReleaseEvent(e);
+      Q3TextEdit::contentsMouseReleaseEvent(e);
       readonly = false;
     }
 }
@@ -116,21 +120,21 @@ void Interact::contentsMousePressEvent(QMouseEvent* e)
     {
       QMouseEvent lbe(QEvent::MouseButtonPress, e->pos(), 
 		      Qt::LeftButton, Qt::LeftButton);
-      QTextEdit::contentsMousePressEvent(&lbe);
-      QTextEdit::contentsMouseReleaseEvent(&lbe);
+      Q3TextEdit::contentsMousePressEvent(&lbe);
+      Q3TextEdit::contentsMouseReleaseEvent(&lbe);
     }
-  QTextEdit::contentsMousePressEvent(e);
+  Q3TextEdit::contentsMousePressEvent(e);
 }
 
 void Interact::cut()
 {
-  if (readonly) QTextEdit::copy();
-  else QTextEdit::cut();
+  if (readonly) Q3TextEdit::copy();
+  else Q3TextEdit::cut();
 }
 
 void Interact::paste()
 {
-  if (!readonly) QTextEdit::paste();
+  if (!readonly) Q3TextEdit::paste();
 }
 
 void Interact::keyPressEvent(QKeyEvent *k)
@@ -138,10 +142,10 @@ void Interact::keyPressEvent(QKeyEvent *k)
   int key_pressed = k->key();
   if (key_pressed == Qt::Key_Control)
     {
-      QTextEdit::keyPressEvent(k);
+      Q3TextEdit::keyPressEvent(k);
       return;
     }
-  if (k->state() == ControlButton)
+  if (k->state() == Qt::ControlButton)
     {
       in_history = false;
       if (key_pressed == 'D')
@@ -151,7 +155,7 @@ void Interact::keyPressEvent(QKeyEvent *k)
         } 
       if (key_pressed == 'C')
 	{
-	  QTextEdit::keyPressEvent(k);
+	  Q3TextEdit::keyPressEvent(k);
 	  return;
 	}
     }
@@ -220,7 +224,7 @@ void Interact::keyPressEvent(QKeyEvent *k)
   if (key_pressed == Qt::Key_Home)
     {
       in_history = false;
-      if (k->state() == ControlButton)
+      if (k->state() == Qt::ControlButton)
 	{
 	  setCursorPosition(para,indent);
 	  return;
@@ -244,7 +248,7 @@ void Interact::keyPressEvent(QKeyEvent *k)
     }
 
   in_history = false;
-  QTextEdit::keyPressEvent(k);
+  Q3TextEdit::keyPressEvent(k);
 }
 
 void Interact::addHistoryItem(QString* s)
@@ -271,11 +275,11 @@ QString* Interact::previousHistoryItem(void)
 
 void Interact::openQueryFile()
 {
-  QString fileName = QFileDialog::getOpenFileName(QString::null, "*", this);
+  QString fileName = Q3FileDialog::getOpenFileName(QString::null, "*", this);
   if (fileName != QString::null)
     {
       QFile f(fileName);
-      if (f.open(IO_ReadOnly))
+      if (f.open(QIODevice::ReadOnly))
 	{
 	  QTextStream t(&f);
 	  XQPQueries* xqp_queries = new XQPQueries(parent, fileName, t.read());
@@ -289,11 +293,11 @@ void Interact::openQueryFile()
 
 void Interact::saveHistory()
 {  
-  QString fileName = QFileDialog::getSaveFileName(QString::null, "*", this);
+  QString fileName = Q3FileDialog::getSaveFileName(QString::null, "*", this);
   if (fileName != QString::null)
     {
       QFile f(fileName);
-      if (f.open(IO_WriteOnly))
+      if (f.open(QIODevice::WriteOnly))
 	{
 	  QString* item = firstHistoryItem();
 	  while (item != NULL)
@@ -309,11 +313,11 @@ void Interact::saveHistory()
 
 void Interact::saveSession()
 {
-  QString fileName = QFileDialog::getSaveFileName(QString::null, "*", this);
+  QString fileName = Q3FileDialog::getSaveFileName(QString::null, "*", this);
   if (fileName != QString::null)
     {
       QFile f(fileName);
-      if (f.open(IO_WriteOnly))
+      if (f.open(QIODevice::WriteOnly))
 	{
 	  QString s = text();
 	  f.writeBlock(s, s.length());

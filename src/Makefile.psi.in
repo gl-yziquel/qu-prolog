@@ -21,12 +21,10 @@ export SOURCES.psi = \
 	free_in.cc \
         gc_escapes.cc \
 	get_args.cc \
-	icm_escapes.cc \
-	elvin_escapes.cc \
+	pedro_escapes.cc \
 	ip.cc \
 	ipc_escapes.cc \
 	load.cc \
-	machine.cc \
 	name.cc \
 	object_variable.cc \
 	pipe.cc \

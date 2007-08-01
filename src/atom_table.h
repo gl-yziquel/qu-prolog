@@ -83,14 +83,13 @@ class AtomKey
 {
 private:
   const char *string;
-  const StringTab *stringTable;  // needed to lookup string for comaprison atom
   
 public:
   //
   // Assign values.
   //
-  AtomKey(const char *s, const StringTab *table)
-    : string(s), stringTable(table) { }
+  AtomKey(const char *s)
+    : string(s) { }
   
   //
   // Using the string to hash into the name table.
@@ -159,8 +158,18 @@ public:
   static Atom *unsure;
   static Atom *colon;
   static Atom *dollar;
+  static Atom *at;
+
+  static Atom *obra;
+  static Atom *cbra;
+  static Atom *spobra;
+  static Atom *ospra;
+  static Atom *cspra;
+  static Atom *semi;
+  static Atom *arrow;
   
   static Atom *equal;
+  static Atom *is;
   static Atom *nfi;
   static Atom *checkBinder;
   static Atom *delays;
@@ -244,6 +253,10 @@ public:
   static Atom *shiftl;
   static Atom *shiftr;
   static Atom *bitneg;
+  static Atom *lt;
+  static Atom *gt;
+  static Atom *le;
+  static Atom *ge;
   static Atom *pi;
   static Atom *e;
   static Atom *abs;
@@ -330,8 +343,6 @@ public:
   static Atom *code;
   static Atom *record_db;
 
-  // ICM
-  static Atom *icm_handle;
 
   AtomTable(word32 TableSize,
 	  word32 StringSize,
@@ -351,8 +362,19 @@ public:
     unsure = add("unsure");
     colon = add(":");
     dollar = add("$");
-    
+    at = add("@");
+
+
+    obra = add("(");
+    cbra = add(")");
+    spobra = add(" (");
+    ospra = add("[");
+    cspra = add("]");
+    semi = add(";");
+    arrow = add("->");
+
     equal = add("=");
+    is = add("is");
     nfi = add("not_free_in");
     checkBinder = add("check_binder");
     delays = add("$delayed_problems");
@@ -435,6 +457,10 @@ public:
     shiftl = add("<<");
     shiftr = add(">>");
     bitneg = add("\\");
+    lt = add("<");
+    gt = add(">");
+    le = add("=<");
+    ge = add(">=");
     pi = add("pi");
     e = add("e");
     abs = add("abs");
@@ -518,18 +544,12 @@ public:
     code = add("code");
     record_db = add("record_db");
 
-    icm_handle = add("$icm_handle");
   }
   
   //
   // Check whether the entry is empty or not.
   //
   inline bool isEntryEmpty(const AtomLoc index) const;
-
-  //
-  // Retrieve information from an entry.
-  //
-  inline char *getAtomString(Object *atom);
 
   //
   // Get the atom from the offset
@@ -560,8 +580,10 @@ public:
   //
   // Return the string table for inspection.
   //
-const StringTab& getStringTable(void) const { return(stringTable); }
+  const StringTab& getStringTable(void) const { return(stringTable); }
   
+  char* getStringTableBase() {return (stringTable.getString(0)); }
+
   //
   // Save the atom table.
   //
@@ -593,6 +615,9 @@ const StringTab& getStringTable(void) const { return(stringTable); }
     {
       stringTable.load(istrm);
     }
+
+  void shiftStringPtrs(char* old_string_base);
+
 };
 
 #endif // ATOM_TABLE_H
@@ -608,18 +633,9 @@ const StringTab& getStringTable(void) const { return(stringTable); }
 //
 inline bool AtomKey::operator==(const Atom& entry) const
 {
-  return streq(string, 
-	       stringTable->inspectString(entry.getStringTableLoc()));
+  return streq(string, entry.getStringTablePtr());
 }
 
-//
-// Retrieve information from an entry.
-//
-inline char *AtomTable::getAtomString(Object *atom)
-{ 
-  assert(atom->isAtom());
-  return stringTable.getString(OBJECT_CAST(Atom*, atom)->getStringTableLoc());
-}
 
 //
 // Check whether the entry is empty or not.
@@ -632,7 +648,7 @@ inline bool AtomTable::isEntryEmpty(const AtomLoc index) const
 //
 inline AtomLoc AtomTable::lookUp(const char *string)
 {
-  AtomKey key(string, &stringTable);
+  AtomKey key(string);
   return(lookUpTable(key));
 } 
 

@@ -58,7 +58,9 @@
 //
 
 #include "config.h"
-#include "global.h"                                                             
+#include "global.h"
+#include "tcp_qp.h"
+
 #ifdef WIN32
         #include <time.h>
         #include <winsock2.h>
@@ -229,7 +231,7 @@ machine_ip_address(Heap& heap,
   else if (addr->isAtom())
     {
       char hostname[1000];
-      (void)strcpy(hostname, atoms.getAtomString(OBJECT_CAST(Atom*, addr)));
+      (void)strcpy(hostname, OBJECT_CAST(Atom*, addr)->getName());
       if (strcmp(hostname, "localhost") == 0)
 	{
 	  if (gethostname(hostname, 1000) != 0)
@@ -897,26 +899,9 @@ Thread::psi_tcp_connect1(
       PSI_ERROR_RETURN(EV_NOT_PERMITTED, 1);
     }
 
-  struct sockaddr_in add;
-  memset((char *)&add, 0, sizeof(add));
-  add.sin_family = AF_INET;
-  add.sin_port = port;
-  add.sin_addr.s_addr = ip_address;
-    
-  const int ret = connect(socket->getFD(),
-			  (struct sockaddr *)&add, sizeof(add));
-
-  if (ret == 0)
+  if (do_connection(socket->getFD(), port, ip_address))
     {
-      return RV_SUCCESS;
-    }
-#ifdef WIN32
-  else if ((errno = WSAGetLastError() == WSAEINPROGRESS) && errno == WSAEWOULDBLOCK)
-#else
-  else if (errno == EINPROGRESS)
-#endif
-    {
-      return RV_SUCCESS;
+    return RV_SUCCESS;
     }
   else
     {
@@ -1128,7 +1113,7 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
   char hostname[1000];
-  (void)strcpy(hostname, atoms->getAtomString(OBJECT_CAST(Atom*, argH)));
+  (void)strcpy(hostname, OBJECT_CAST(Atom*, argH)->getName());
   if (strcmp(hostname, "localhost") == 0)
     {
       if (gethostname(hostname, 1000) != 0)
@@ -1136,7 +1121,6 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
 	  PSI_ERROR_RETURN(EV_SYSTEM, 0);
 	}
     }
-
   hostent *hp = gethostbyname(hostname);
   if (hp == NULL)
     {
@@ -1144,14 +1128,22 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
       in.s_addr = inet_addr(hostname);
       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
     }
-#ifndef WIN32
-  endhostent();
-#endif
+
+  if (hp == NULL)
+    {
+      strcpy(hostname, "127.0.0.1");
+      getIPfromifconfig(hostname);
+      struct in_addr in;
+      in.s_addr = inet_addr(hostname);
+      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+    }
   if (hp == NULL)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, 0);
     }
-
+#ifndef WIN32
+  endhostent();
+#endif
  ip_address_arg =  heap.newInteger(ntohl(*(int *)hp->h_addr_list[0]));
 
   return RV_SUCCESS;
@@ -1218,7 +1210,7 @@ Thread::psi_tcp_service_to_proto_port(
   char * proto = NULL;
 
   servent *sp =
-    getservbyname(atoms->getAtomString(OBJECT_CAST(Atom*, argS)), proto);
+    getservbyname(OBJECT_CAST(Atom*, argS)->getName(), proto);
 #ifndef WIN32
   (void) endservent();
 #endif
@@ -1266,9 +1258,9 @@ Thread::psi_tcp_service_proto_to_port(
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  const char *proto = atoms->getAtomString(argPr);
+  const char *proto = OBJECT_CAST(Atom*, argPr)->getName();
 
-  servent *sp = getservbyname(atoms->getAtomString(argS), proto);
+  servent *sp = getservbyname(OBJECT_CAST(Atom*, argS)->getName(), proto);
 #ifndef WIN32
   (void) endservent();
 #endif
@@ -1310,7 +1302,7 @@ Thread::psi_tcp_service_from_proto_port(
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  const char *proto = atoms->getAtomString(OBJECT_CAST(Atom*, argPr));
+  const char *proto = OBJECT_CAST(Atom*, argPr)->getName();
   
   servent *sp = getservbyport(port, proto);
 #ifndef WIN32
@@ -1433,5 +1425,20 @@ Thread::psi_select(Object *& in, Object *& out)
 	  out = tmp;
 	}
     }
+  return RV_SUCCESS;
+}
+
+
+Thread::ReturnValue 
+Thread::psi_socket_fd(Object *&socket_arg, Object *&fd_arg)
+{
+  Object* argS = socket_arg->variableDereference();
+
+  Socket *socket;
+
+  DECODE_SOCKET_ARG(heap, argS, 1, socket);
+
+  fd_arg = heap.newInteger(socket->getFD());
+
   return RV_SUCCESS;
 }

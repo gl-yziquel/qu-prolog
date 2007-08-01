@@ -21,17 +21,20 @@
 #define INTERACT_H
 
 #include <qwidget.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qstring.h>
-#include <fstream.h>
-#include <qaccel.h>
+//Added by qt3to4:
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <fstream>
+#include <q3accel.h>
 #include <qregexp.h>
 #include <qsocketnotifier.h>
 #include <qstringlist.h>
 
 
 
-class Interact : public QTextEdit  {
+class Interact : public Q3TextEdit  {
   Q_OBJECT
     public: 
   Interact(QWidget *box);

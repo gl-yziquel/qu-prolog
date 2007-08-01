@@ -75,7 +75,7 @@ constants(Object* cell, AtomTable& atoms)
 {
   if (cell->isAtom())
     {
-      cout << "\'" << atoms.getAtomString(cell) << "\'";
+      cout << "\'" << OBJECT_CAST(Atom*, cell)->getName() << "\'";
     }
   if (cell->isInteger())
     {
@@ -192,7 +192,7 @@ outputParams(int length, int commaflag, char coded_array[],
 	  {
 	    predicate = getPredAtom(pc);
 	    
-	    const char *pred_string = atoms.getAtomString(predicate);
+	    const char *pred_string = OBJECT_CAST(Atom*, predicate)->getName();
 	    cout << "\'" << pred_string << "\'" ;
 	  }
 	  break;
@@ -300,7 +300,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 		//
 		// look up predicate table 
 		//
-		const char *name_string = atoms.getAtomString(predicate);
+		const char *name_string = OBJECT_CAST(Atom*, predicate)->getName();
 		cout << "\'" << name_string << "\'/" << arity << ':';
 		cout <<	"  (" << (word32)pc << ")";
 

@@ -86,8 +86,8 @@ private:
   Option<word32> thread_table_size;
   Option<bool> stand_alone;
   Option<char *> qx_file;
-  Option<char *> icm_server;
-  Option<u_short> icm_port;	// Host byte order.
+  Option<char *> pedro_server;
+  Option<u_short> pedro_port;	// Host byte order.
   Option<char *> process_symbol;
   Option<bool> debugging;
 
@@ -114,10 +114,10 @@ public:
 
   bool StandAlone(void) const { return stand_alone.Value(); }
 
-  char *ICMServer(void) const { return icm_server.Value(); }
+  char *PedroServer(void) const { return pedro_server.Value(); }
 
   // The result is in host byte order.
-  u_short ICMPort(void) const { return icm_port.Value(); }
+  u_short PedroPort(void) const { return pedro_port.Value(); }
   
   char *ProcessSymbol(void) const { return process_symbol.Value(); }
 

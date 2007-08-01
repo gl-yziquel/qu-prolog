@@ -107,7 +107,7 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
 		}
 	      else
 		{
-		  ostrm << ":" << atoms.getAtomString(name);
+		  ostrm << ":" << name->getName();
 		}
 	      // Print out any other information.
 	      if (OBJECT_CAST(Variable*, ref)->isOccursChecked())
@@ -168,7 +168,7 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
 		}
 	      else
 		{
-		  ostrm << ":" << atoms.getAtomString(name);
+		  ostrm << ":" << name->getName();
 		}
 
 	      if (ref->isThawedVariable())
@@ -225,7 +225,7 @@ Heap::display_term(ostream& ostrm, AtomTable& atoms, Object* term,
     }
   else if (term->isAtom())
     {
-      ostrm << "ATOM:" << hex << reinterpret_cast<word32>(term) << ":" << dec <<atoms.getAtomString(OBJECT_CAST(Atom*, term)) <<  endl;
+      ostrm << "ATOM:" << hex << reinterpret_cast<word32>(term) << ":" << dec <<OBJECT_CAST(Atom*, term)->getName() <<  endl;
     }
   else if (term->isInteger())
     {
@@ -308,7 +308,7 @@ Heap::quick_display_term(ostream& ostrm, AtomTable& atoms, Object* term)
     }
   else if (term->isAtom())
     {
-      ostrm << atoms.getAtomString(OBJECT_CAST(Atom*, term));
+      ostrm << OBJECT_CAST(Atom*, term)->getName();
     }
   else if (term->isInteger())
     {

@@ -64,9 +64,6 @@
 #include "block.h"
 #include "code.h"
 #include "defs.h"
-#ifdef ICM_DEF
-#include "icm_message.h"
-#endif
 #include "manager.h"
 #include "pred_table.h"
 //#include "sched_rec.h"

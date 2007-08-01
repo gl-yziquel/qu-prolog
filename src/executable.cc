@@ -155,6 +155,8 @@ SaveExecutable(const char *file, Code& code, AtomTable& atoms,
       // Save the areas.
       //
       atoms.saveStringTable(ostrm);
+      //save the pointer to the beginning of the sring table
+      IntSave<word32>(ostrm, (word32)(atoms.getStringTableBase()));
       atoms.save(ostrm);
       code.save(ostrm, atoms);
       predicates.save(ostrm);
@@ -173,6 +175,7 @@ void
 LoadExecutable(const char *file, Code& code, AtomTable& atoms,
 	       PredTab& predicates)
 {
+  char* old_atom_string_base = NULL;
   //
   // Open a file for reading.
   //
@@ -217,6 +220,7 @@ LoadExecutable(const char *file, Code& code, AtomTable& atoms,
 	  else if (magic ==  STRING_TABLE_MAGIC_NUMBER)
 	    {
 	      atoms.loadStringTable(istrm);
+	      old_atom_string_base = (char*)(IntLoad<word32>(istrm));
 	    }
 	  else if (magic ==  ATOM_TABLE_MAGIC_NUMBER)
 	    {
@@ -233,6 +237,8 @@ LoadExecutable(const char *file, Code& code, AtomTable& atoms,
       // Close the file.
       //
       istrm.close();
+      assert(old_atom_string_base != NULL);
+      atoms.shiftStringPtrs(old_atom_string_base);
     }
 }
 

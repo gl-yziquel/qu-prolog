@@ -243,7 +243,7 @@ $1:
 
 $2:
 	get_x_value(2, 3)
-	pseudo_instr1(117, 0)
+	pseudo_instr1(108, 0)
 	neck_cut
 	proceed
 

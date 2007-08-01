@@ -190,18 +190,6 @@ do {								\
       }							\
   } while (0)
 
-#define DECODE_ICM_HANDLE_ARG(heap, atoms, cell, arg_num, handle)	\
-  do {									\
-    if ((cell)->isVariable())						\
-      {									\
-	PSI_ERROR_RETURN(EV_INST, arg_num);				\
-      }									\
-    else if (! (heap).decode_icm_handle(atoms, cell, handle))		\
-      {									\
-	PSI_ERROR_RETURN(EV_TYPE, arg_num);				\
-      }									\
-  } while (0)
-
 #define DECODE_BOOLEAN_ARG(atoms, cell, arg_num, b)	\
   do {							\
     if ((cell)->isVariable())				\
@@ -228,7 +216,7 @@ ErrorValue decode_nonneg_int(Object*, int&);
 
 //
 // Check the options associated with outgoing 
-// TCP and IPC/ICM communication.
+// TCP and IPC communication.
 //
 bool decode_send_options(Object*, bool&, bool&);
 
@@ -244,10 +232,6 @@ bool decode_recv_options(Object*, Object*&, Object*&, Object*&);
 //
 ErrorValue decode_recv_options(Object*, bool&, bool&, bool&);
 
-#ifdef ICM_DEF
-bool decode_icm_handle(AtomTable& atoms, 
-		       Object*& handle_object, icmHandle& handle);
-#endif //ICM_DEF
 
 bool check_atom_list(Object*, size_t&);
 

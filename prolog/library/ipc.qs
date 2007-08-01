@@ -2,12 +2,18 @@
 
 
 $1:
-	pseudo_instr1(90, 2)
-	pseudo_instr2(114, 1, 3)
-	get_x_variable(1, 3)
+	allocate(2)
+	get_y_variable(1, 0)
+	get_x_variable(0, 1)
+	put_y_variable(0, 1)
+	call_predicate('$full_handle', 2, 2)
+	pseudo_instr1(90, 0)
+	get_x_variable(2, 0)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
 	put_constant('[]', 3)
-	pseudo_instr4(9, 0, 1, 2, 3)
-	proceed
+	deallocate
+	execute_predicate('$ipc_send1', 4)
 end('ipc_send'/2):
 
 
@@ -16,28 +22,106 @@ end('ipc_send'/2):
 
 
 $1:
-	pseudo_instr2(114, 1, 3)
-	get_x_variable(1, 3)
-	pseudo_instr2(114, 2, 3)
-	get_x_variable(2, 3)
-	put_constant('[]', 3)
-	pseudo_instr4(9, 0, 1, 2, 3)
-	proceed
+	allocate(3)
+	get_y_variable(2, 0)
+	get_x_variable(0, 1)
+	get_y_variable(1, 2)
+	pseudo_instr1(50, 21)
+	neck_cut
+	put_y_variable(0, 1)
+	call_predicate('$full_handle', 2, 3)
+	pseudo_instr1(90, 0)
+	get_x_variable(2, 0)
+	put_y_value(2, 0)
+	put_y_value(0, 1)
+	put_y_value(1, 3)
+	deallocate
+	execute_predicate('$ipc_send1', 4)
 end('ipc_send'/3):
 
 
 
-'ipc_send'/4:
+'$ipc_send1/4$0'/4:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'true':$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
+	try(4, $1)
+	trust($2)
+
+$1:
+	put_constant('true', 4)
+	get_x_value(0, 4)
+	neck_cut
+	pseudo_instr1(53, 1)
+	put_structure(3, 0)
+	set_constant('p2pmsg')
+	set_x_value(2)
+	set_x_value(3)
+	set_x_value(1)
+	execute_predicate('$pedro_p2p', 1)
+
+$2:
+	put_structure(3, 0)
+	set_constant('p2pmsg')
+	set_x_value(2)
+	set_x_value(3)
+	set_x_value(1)
+	execute_predicate('$pedro_p2p', 1)
+end('$ipc_send1/4$0'/4):
+
+
+
+'$ipc_send1'/4:
 
 
 $1:
-	pseudo_instr2(114, 1, 4)
-	get_x_variable(1, 4)
-	pseudo_instr2(114, 2, 4)
-	get_x_variable(2, 4)
-	pseudo_instr4(9, 0, 1, 2, 3)
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_x_variable(0, 3)
+	put_y_variable(0, 1)
+	call_predicate('$ipc_options', 2, 4)
+	put_y_value(0, 0)
+	put_y_value(3, 1)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
+	deallocate
+	execute_predicate('$ipc_send1/4$0', 4)
+end('$ipc_send1'/4):
+
+
+
+'$ipc_options'/2:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('true', 1)
 	proceed
-end('ipc_send'/4):
+
+$2:
+	get_list(0)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('remember_names', 1, 0)
+	unify_x_variable(0)
+	get_x_value(0, 1)
+	proceed
+end('$ipc_options'/2):
 
 
 
@@ -57,9 +141,8 @@ end('ipc_recv'/1):
 
 
 $1:
-	put_x_variable(2, 2)
-	put_constant('[]', 3)
-	execute_predicate('ipc_recv', 4)
+	put_constant('[]', 2)
+	execute_predicate('ipc_recv', 3)
 end('ipc_recv'/2):
 
 
@@ -68,48 +151,32 @@ end('ipc_recv'/2):
 
 
 $1:
-	put_constant('[]', 3)
-	execute_predicate('ipc_recv', 4)
-end('ipc_recv'/3):
-
-
-
-'ipc_recv'/4:
-
-
-$1:
-	allocate(9)
-	get_y_variable(6, 0)
-	get_y_variable(5, 1)
-	get_y_variable(3, 2)
-	get_x_variable(0, 3)
+	allocate(7)
+	get_y_variable(4, 0)
+	get_y_variable(3, 1)
+	get_x_variable(0, 2)
 	get_y_level(0)
-	put_y_variable(4, 19)
 	put_y_variable(2, 19)
 	put_y_variable(1, 19)
-	put_y_variable(8, 1)
-	put_y_variable(7, 2)
-	call_predicate('$ipc_decode_peek_options', 3, 9)
-	put_y_value(6, 0)
-	put_y_value(1, 1)
-	put_y_value(4, 2)
-	put_y_value(2, 3)
-	put_y_value(8, 4)
-	put_y_value(7, 5)
-	call_predicate('$ipc_peek', 6, 7)
-	put_y_value(6, 0)
-	call_predicate('$is_not_timeout', 1, 6)
+	put_y_variable(6, 1)
+	put_y_variable(5, 2)
+	call_predicate('$ipc_decode_peek_options', 3, 7)
 	put_y_value(4, 0)
-	put_y_value(5, 1)
-	call_predicate('$same_handle', 2, 4)
+	put_y_value(1, 1)
+	put_y_value(2, 2)
+	put_y_value(6, 3)
+	put_y_value(5, 4)
+	call_predicate('$ipc_peek', 5, 5)
+	put_y_value(4, 0)
+	call_predicate('$is_not_timeout', 1, 4)
 	put_y_value(2, 0)
 	put_y_value(3, 1)
-	call_predicate('$same_handle', 2, 2)
+	call_predicate('$same_handle_from', 2, 2)
 	pseudo_instr1(55, 21)
 	cut(0)
 	deallocate
 	proceed
-end('ipc_recv'/4):
+end('ipc_recv'/3):
 
 
 
@@ -118,9 +185,8 @@ end('ipc_recv'/4):
 
 $1:
 	put_x_variable(1, 1)
-	put_x_variable(2, 2)
-	put_constant('[]', 3)
-	execute_predicate('ipc_peek', 4)
+	put_constant('[]', 2)
+	execute_predicate('ipc_peek', 3)
 end('ipc_peek'/1):
 
 
@@ -129,9 +195,8 @@ end('ipc_peek'/1):
 
 
 $1:
-	put_x_variable(2, 2)
-	put_constant('[]', 3)
-	execute_predicate('ipc_peek', 4)
+	put_constant('[]', 2)
+	execute_predicate('ipc_peek', 3)
 end('ipc_peek'/2):
 
 
@@ -140,47 +205,31 @@ end('ipc_peek'/2):
 
 
 $1:
-	put_constant('[]', 3)
-	execute_predicate('ipc_peek', 4)
+	allocate(5)
+	get_y_variable(2, 0)
+	get_y_variable(1, 1)
+	get_x_variable(0, 2)
+	put_y_variable(0, 19)
+	put_y_variable(4, 1)
+	put_y_variable(3, 2)
+	call_predicate('$ipc_decode_peek_options', 3, 5)
+	put_y_value(2, 0)
+	put_x_variable(1, 1)
+	put_y_value(0, 2)
+	put_y_value(4, 3)
+	put_y_value(3, 4)
+	call_predicate('$ipc_peek', 5, 3)
+	put_y_value(2, 0)
+	call_predicate('$is_not_timeout', 1, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	deallocate
+	execute_predicate('$same_handle_from', 2)
 end('ipc_peek'/3):
 
 
 
-'ipc_peek'/4:
-
-
-$1:
-	allocate(7)
-	get_y_variable(4, 0)
-	get_y_variable(3, 1)
-	get_y_variable(1, 2)
-	get_x_variable(0, 3)
-	put_y_variable(2, 19)
-	put_y_variable(0, 19)
-	put_y_variable(6, 1)
-	put_y_variable(5, 2)
-	call_predicate('$ipc_decode_peek_options', 3, 7)
-	put_y_value(4, 0)
-	put_x_variable(1, 1)
-	put_y_value(2, 2)
-	put_y_value(0, 3)
-	put_y_value(6, 4)
-	put_y_value(5, 5)
-	call_predicate('$ipc_peek', 6, 5)
-	put_y_value(4, 0)
-	call_predicate('$is_not_timeout', 1, 4)
-	put_y_value(2, 0)
-	put_y_value(3, 1)
-	call_predicate('$same_handle', 2, 2)
-	put_y_value(0, 0)
-	put_y_value(1, 1)
-	deallocate
-	execute_predicate('$same_handle', 2)
-end('ipc_peek'/4):
-
-
-
-'$ipc_peek/6$0'/5:
+'$ipc_peek/5$0'/4:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
@@ -188,11 +237,11 @@ $3:
 	switch_on_constant(0, 4, ['$default':$2, 'timeout':$4])
 
 $4:
-	try(5, $1)
+	try(4, $1)
 	trust($2)
 
 $5:
-	try(5, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
@@ -204,43 +253,40 @@ $1:
 	proceed
 
 $2:
-	pseudo_instr5(0, 5, 0, 6, 7, 4)
-	get_x_variable(0, 5)
-	get_x_value(2, 6)
-	get_x_value(3, 7)
+	pseudo_instr4(19, 4, 0, 5, 3)
+	get_x_variable(0, 4)
+	get_x_value(2, 5)
 	get_x_value(1, 0)
 	proceed
-end('$ipc_peek/6$0'/5):
+end('$ipc_peek/5$0'/4):
 
 
 
-'$ipc_peek'/6:
+'$ipc_peek'/5:
 
 
 $1:
-	allocate(7)
-	get_y_variable(4, 0)
-	get_y_variable(3, 1)
-	get_y_variable(2, 2)
-	get_y_variable(1, 3)
-	get_y_variable(6, 4)
-	get_y_variable(0, 5)
+	allocate(6)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_y_variable(5, 3)
+	get_y_variable(0, 4)
 	pseudo_instr1(101, 0)
-	put_y_value(6, 1)
-	put_y_variable(5, 2)
-	call_predicate('$ipc_first_timeout', 3, 7)
-	put_y_value(5, 0)
+	put_y_value(5, 1)
+	put_y_variable(4, 2)
+	call_predicate('$ipc_first_timeout', 3, 6)
+	put_y_value(4, 0)
+	put_y_value(2, 1)
+	put_y_value(5, 2)
+	call_predicate('$ipc_peek1', 3, 4)
+	put_y_value(2, 0)
 	put_y_value(3, 1)
-	put_y_value(6, 2)
-	call_predicate('$ipc_peek1', 3, 5)
-	put_y_value(3, 0)
-	put_y_value(4, 1)
-	put_y_value(2, 2)
-	put_y_value(1, 3)
-	put_y_value(0, 4)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
 	deallocate
-	execute_predicate('$ipc_peek/6$0', 5)
-end('$ipc_peek'/6):
+	execute_predicate('$ipc_peek/5$0', 4)
+end('$ipc_peek'/5):
 
 
 
@@ -493,257 +539,18 @@ end('$ipc_decode_peek_options'/3):
 
 
 
-'icm_register'/1:
+'broadcast'/1:
 
 
 $1:
-	put_integer(0, 1)
-	put_constant('', 2)
-	execute_predicate('icm_register', 3)
-end('icm_register'/1):
-
-
-
-'icm_register'/3:
-
-	try(3, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	trust($7)
-
-$1:
-	allocate(4)
-	get_y_variable(2, 0)
-	get_y_variable(1, 1)
-	get_y_variable(0, 2)
-	pseudo_instr1(2, 22)
-	get_y_level(3)
-	put_y_value(1, 0)
-	call_predicate('number', 1, 4)
-	pseudo_instr1(2, 20)
-	cut(3)
-	pseudo_instr3(14, 22, 21, 20)
-	deallocate
+	pseudo_instr1(90, 1)
+	put_x_variable(2, 3)
+	get_structure('p2pmsg', 2, 3)
+	unify_x_value(1)
+	unify_x_value(0)
+	pseudo_instr1(104, 2)
 	proceed
-
-$2:
-	get_x_variable(3, 0)
-	pseudo_instr1(1, 3)
-	neck_cut
-	put_structure(3, 0)
-	set_constant('icm_register')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 2)
-	set_constant('@')
-	set_constant('number')
-	put_structure(1, 3)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(3, 4)
-	set_constant('icm_register')
-	set_x_value(1)
-	set_x_value(2)
-	set_x_value(3)
-	put_list(2)
-	set_x_value(4)
-	set_constant('[]')
-	put_integer(1, 1)
-	execute_predicate('instantiation_exception', 3)
-
-$3:
-	get_x_variable(3, 0)
-	pseudo_instr1(1, 1)
-	neck_cut
-	put_structure(3, 0)
-	set_constant('icm_register')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 2)
-	set_constant('@')
-	set_constant('number')
-	put_structure(1, 3)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(3, 4)
-	set_constant('icm_register')
-	set_x_value(1)
-	set_x_value(2)
-	set_x_value(3)
-	put_list(2)
-	set_x_value(4)
-	set_constant('[]')
-	put_integer(2, 1)
-	execute_predicate('instantiation_exception', 3)
-
-$4:
-	get_x_variable(3, 0)
-	pseudo_instr1(1, 2)
-	neck_cut
-	put_structure(3, 0)
-	set_constant('icm_register')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 2)
-	set_constant('@')
-	set_constant('number')
-	put_structure(1, 3)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(3, 4)
-	set_constant('icm_register')
-	set_x_value(1)
-	set_x_value(2)
-	set_x_value(3)
-	put_list(2)
-	set_x_value(4)
-	set_constant('[]')
-	put_integer(3, 1)
-	execute_predicate('instantiation_exception', 3)
-
-$5:
-	get_x_variable(3, 0)
-	pseudo_instr1(46, 3)
-	neck_cut
-	put_structure(3, 0)
-	set_constant('icm_register')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 2)
-	set_constant('@')
-	set_constant('number')
-	put_structure(1, 3)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(3, 4)
-	set_constant('icm_register')
-	set_x_value(1)
-	set_x_value(2)
-	set_x_value(3)
-	put_list(2)
-	set_x_value(4)
-	set_constant('[]')
-	put_integer(1, 1)
-	execute_predicate('type_exception', 3)
-
-$6:
-	get_x_variable(3, 0)
-	pseudo_instr1(46, 1)
-	neck_cut
-	put_structure(3, 0)
-	set_constant('icm_register')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 2)
-	set_constant('@')
-	set_constant('number')
-	put_structure(1, 3)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(3, 4)
-	set_constant('icm_register')
-	set_x_value(1)
-	set_x_value(2)
-	set_x_value(3)
-	put_list(2)
-	set_x_value(4)
-	set_constant('[]')
-	put_integer(2, 1)
-	execute_predicate('type_exception', 3)
-
-$7:
-	get_x_variable(3, 0)
-	pseudo_instr1(46, 2)
-	neck_cut
-	put_structure(3, 0)
-	set_constant('icm_register')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_structure(1, 1)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(1, 2)
-	set_constant('@')
-	set_constant('number')
-	put_structure(1, 3)
-	set_constant('@')
-	set_constant('atom')
-	put_structure(3, 4)
-	set_constant('icm_register')
-	set_x_value(1)
-	set_x_value(2)
-	set_x_value(3)
-	put_list(2)
-	set_x_value(4)
-	set_constant('[]')
-	put_integer(3, 1)
-	execute_predicate('type_exception', 3)
-end('icm_register'/3):
-
-
-
-'icm_deregister'/0:
-
-
-$1:
-	allocate(0)
-	call_predicate('exit_thread_gui', 0, 0)
-	call_predicate('exit_debug_thread_gui', 0, 0)
-	pseudo_instr1(103, 0)
-	call_predicate('$close_msg_streams', 1, 0)
-	pseudo_instr0(12)
-	deallocate
-	proceed
-end('icm_deregister'/0):
-
-
-
-'$close_msg_streams'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	get_x_variable(1, 0)
-	allocate(1)
-	put_y_variable(0, 0)
-	call_predicate('member', 2, 1)
-	pseudo_instr2(101, 20, 0)
-	get_structure('$prop', 7, 0)
-	unify_void(2)
-	unify_constant('msg')
-	unify_void(4)
-	put_y_value(0, 0)
-	call_predicate('close', 1, 0)
-	fail
-
-$2:
-	proceed
-end('$close_msg_streams'/1):
+end('broadcast'/1):
 
 
 

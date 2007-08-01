@@ -107,8 +107,8 @@ private:
   void TraceConst2(AtomTable& atoms, Heap& heap, const char *s, Object* c,
 		   const int32 x, const int32 y);
 
-  void Trace::TraceInt0(const char *s, const int32 n);
-  void Trace::TraceInt1(const char *s, const int32 n, const int32 x);
+  void TraceInt0(const char *s, const int32 n);
+  void TraceInt1(const char *s, const int32 n, const int32 x);
 
   void TraceString1(const char *s, const char *t);
   void TraceString2(const char *s, const char *t, const int32 x);

@@ -33,15 +33,14 @@ export OPTIMISATION=-O3
 #	DEBUG_SCHED	: Debugging information about scheduler
 #	DEBUG_BLOCK	: Debugging information about blocking behaviour
 #	DEBUG_IO	: Debugging information about IO behaviour
-#	DEBUG_ICM	: Debugging information about ICM interface
 #	DEBUG_TIMEOUT	: Debugging information about timeouts
 #	DEBUG_RETRY	: Debugging information about retries
 #	DEBUG_MT	: Debugging information about multi-threading
 
 #export DEBUGGING=
 
-export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 $(OPTIMISATION) @DEBUGGING@ -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
-export QACXXFLAGS = -Wall -D_GNU_SOURCE=1 @DEBUGGING@ -I@ICMHOME@/include @GCCINCLUDES@ -Wno-uninitialized
+export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 $(OPTIMISATION) @DEBUGGING@ @GCCINCLUDES@ -Wno-uninitialized
+export QACXXFLAGS = -Wall -D_GNU_SOURCE=1 @DEBUGGING@ @GCCINCLUDES@ -Wno-uninitialized
 
 .PHONY: all
 all: commands
@@ -65,7 +64,6 @@ include Makefile.qa
 include Makefile.qdeal
 include Makefile.qem
 include Makefile.ql
-include Makefile.tkICM
 
 export GENERATED = \
 	$(GENERATED.heap) \
@@ -91,10 +89,5 @@ $(BIG_LIBRARY): $(LIBRARY_OBJECTS)
 .PHONY: install
 install: $(INSTALL)
 
-
-.PHONY: tkICM
-tkICM:
-	@$(MAKE) all.tkICM
-	@$(MAKE) install.tkICM
 
 

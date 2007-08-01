@@ -26,13 +26,15 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qapplication.h>
-#include <qpopupmenu.h>
-#include <qmainwindow.h>
+#include <q3popupmenu.h>
+#include <q3mainwindow.h>
 #include <qmenubar.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
+//Added by qt3to4:
+#include <QCloseEvent>
 
 #include "xqp.h"
 #include "interact.h"
@@ -63,7 +65,7 @@ ConfigDialog::ConfigDialog(Xqp *parent, QFont xqpf, QColor xqpc)
      cancel->setGeometry(190,200,120,40);
      font->setGeometry(10,10,150,40);
      colour->setGeometry(170,10,150,40);
-     browser = new QTextBrowser(this);
+     browser = new Q3TextBrowser(this);
      browser->setGeometry(10,80,310,100);
      browser->setText("AaBb :- \n| ?-");
      browser->setFont(f);
@@ -105,7 +107,7 @@ void ConfigDialog::accept()
 
 
 Xqp::Xqp(int e_stdout, int e_stdin, pid_t c_pid)
-  : QMainWindow()
+  : Q3MainWindow()
 {
   config = new QPConfig(this);
   qp_stdin = e_stdin;
@@ -124,20 +126,20 @@ Xqp::Xqp(int e_stdout, int e_stdin, pid_t c_pid)
   qpint->setReadOnly(false);  
   // Set up menu items
   // File menu
-  QPopupMenu* file = new QPopupMenu(this);
+  Q3PopupMenu* file = new Q3PopupMenu(this);
   file->insertItem("Open Query File", qpint, SLOT(openQueryFile()));
   file->insertItem("Save History", qpint, SLOT(saveHistory()));
   file->insertItem("Save Session", qpint, SLOT(saveSession()));
   file->insertItem("Configure", this, SLOT(configure_int()));
   menuBar()->insertItem("File", file);
   
-  QPopupMenu* sigs = new QPopupMenu(this);
+  Q3PopupMenu* sigs = new Q3PopupMenu(this);
   sigs->insertItem("SIGINT", this, SLOT(process_CTRL_C()));
   menuBar()->insertItem("Signals", sigs);
   
   
   // Help menu
-  QPopupMenu* help = new QPopupMenu(this);
+  Q3PopupMenu* help = new Q3PopupMenu(this);
   help->insertItem("Help", this, SLOT(showHelp()));
   help->insertItem("About", this, SLOT(showAbout()));
   menuBar()->insertItem("Help", help);
@@ -170,7 +172,7 @@ void Xqp::send_cmd_to_qp(QString cmd)
   
 void Xqp::closeEvent(QCloseEvent *e)
 {
-  QMainWindow::closeEvent(e);
+  Q3MainWindow::closeEvent(e);
 }
 
 

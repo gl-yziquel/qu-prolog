@@ -1,9 +1,8 @@
 export LIBRARY.ipc = ipc.a
 
 export SOURCES.ipc = \
-	icm_environment.cc \
-	elvin_env.cc \
-	icm_handle.cc \
+	pedro_env.cc \
+	pedro_token.c \
 	thread_table.cc
 
 export BASES.ipc= $(basename $(SOURCES.ipc))
@@ -19,7 +18,11 @@ $(LIBRARY.ipc): $(OBJECTS.ipc)
 .PHONY: install.ipc
 install.ipc: all.ipc
 
-elvin_env.o: elvin_env.cc
-	$(CXX) @ELVIN_CFLAGS@ $(CXXFLAGS) -c -o elvin_env.o elvin_env.cc
+
+pedro_token.o : pedro_token.c
+	$(CXX) -c -o pedro_token.o pedro_token.c 
+
+pedro_token.c: pedro_token.l
+	flex -opedro_token.c pedro_token.l
 
 

@@ -73,6 +73,7 @@
 
 #include <sys/types.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 #include <stdio.h>
 
@@ -81,12 +82,8 @@
 #include "atom_table.h"
 #include "code.h"
 #include "defs.h"
-#include "elvin_env.h"
+#include "pedro_env.h"
 #include "executable.h"
-#ifdef ICM_DEF
-#include "icm_aux.h"
-#include "icm_environment.h"
-#endif
 #include "interrupt_handler.h"
 #include "io_qp.h"
 #include "pred_table.h"
@@ -100,6 +97,7 @@
 #include "thread_options.h"
 #include "thread_table.h"
 #include "user_hash_table.h"
+#include "tcp_qp.h"
 
 const char *Program = "qem";
 
@@ -116,7 +114,7 @@ void noMoreMemory()
 }
 
 AtomTable *atoms = NULL;
-Object **lib_path = NULL;
+//Object **lib_path = NULL;
 Code *code = NULL;
 IOManager *iom = NULL;
 SocketManager *sockm = NULL;
@@ -131,17 +129,13 @@ char *process_symbol = NULL;
 UserHashState* user_hash = new UserHashState(100, 10);
 int errorno = 0;
 
-#ifdef ICM_DEF
-char *icm_address = NULL;
-ICMMessageChannel* icm_channel = NULL;
-ICMEnvironment* icm_environment = NULL;
-#endif
-int icm_port = 0;
+int pedro_port = 0;
+char* pedro_address = NULL;
+
 CodeLoc failblock;
 
-#ifdef ELVIN_DEF
-ElvinMessageChannel* elvin_channel = NULL;
-#endif // ELVIN_DEF
+
+PedroMessageChannel* pedro_channel = NULL;
 
 // In order that signals to unblock selects we create a pipe and write to
 // it when a signal arrives. By putting the read end of the pipe in
@@ -241,14 +235,15 @@ main(int32 argc, char** argv)
   LoadExecutable(qem_options->QxFile(), *code, *atoms, *predicates);
 
   // Library path.
-  lib_path = new Object*;
+  //lib_path = new Object*;
 
-  const char *lp = getenv("QPLIBPATH");
-  if (lp == NULL)
-    {
-      Fatal(Program, " QPLIBPATH is undefined.");
-    }
-  *lib_path = atoms->add(lp);
+
+  //const char *lp = getenv("QPLIBPATH");
+  //if (lp == NULL)
+  //  {
+  //    Fatal(Program, " QPLIBPATH is undefined.");
+  //  }
+  //*lib_path = atoms->add(lp);
 
   // I/O management.
 
@@ -287,57 +282,34 @@ main(int32 argc, char** argv)
 
   // Thread table.
   thread_table = new ThreadTable(qem_options->ThreadTableSize());
-
   // Build the scheduler.
   scheduler 
     = new Scheduler(*thread_options, *thread_table, *signals, *predicates);
 
-#ifdef ICM_DEF
-  initICMIo();
-  icmConn icm_conn;
+  pedro_address = qem_options->PedroServer();
+  pedro_port = qem_options->PedroPort();
 
-  process_symbol = qem_options->ProcessSymbol();
-  icm_address = qem_options->ICMServer();
-  icm_port = qem_options->ICMPort();
-
-  if (process_symbol != NULL)
-    {
-#ifdef DEBUG_ICM
-      cerr << "Before starting ICM" << endl;
-#endif
-
-      // Start up communications
-      const icmStatus icm_status = icmInitComms(qem_options->ICMPort(),
-						qem_options->ICMServer(),
-						&icm_conn);
-      if (icm_status == icmFailed)
-	{
-	  Fatal(Program, " Couldn't contact ICM communications server");
-	}
-      else if (icm_status == icmError)
-	{
-	  Fatal(Program, " ICM communications refused connection");
-	}
-      
-      // Set up icm and register
-      icm_environment = new ICMEnvironment(icm_conn);
-      
-      if (!icm_environment->Register(process_symbol))
-	{
-	  Fatal(Program, " Cannot register process with ICM");
-	}
-
-
-      // Create a channel for ICM messages
-      icm_channel = 
-	new ICMMessageChannel(*icm_environment, *thread_table, *iom, *signals);
-
-      // Add ICM channel to scheduler channels
-      scheduler->getChannels().push_back(icm_channel);
-      assert(process_symbol != NULL);
+  pedro_channel = new PedroMessageChannel(*thread_table, *iom);
+  scheduler->getChannels().push_back(pedro_channel);
+  if (qem_options->ProcessSymbol() != NULL) {
+    process_symbol = new char[strlen(qem_options->ProcessSymbol()) + 1];
+    strcpy(process_symbol, qem_options->ProcessSymbol());
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    u_long ip_address = LookupMachineIPAddress(pedro_address);
+    u_short port = ntohs(pedro_port);
+    Socket *socket = new Socket(SOCK_STREAM, 0, sockfd);
+    socket->setSocket();
+    int sock = sockm->OpenSocket(socket);
+    if (!do_connection(sockfd, port, ip_address)) {
+      Fatal(__FUNCTION__, "Cannot connect to Pedro");
     }
-#endif // ICM_DEF
-    
+    pedro_channel->connect(sockfd, sock);
+    if (!pedro_channel->pedro_register(atoms->add(qem_options->ProcessSymbol()))) {
+      Fatal(__FUNCTION__, "Cannot register");
+    }
+  }
+ 
+
 #ifdef DEBUG_SCHED
   printf("%s Before scheduler->Scheduler()\n", Program);
 #endif
@@ -349,21 +321,6 @@ main(int32 argc, char** argv)
   printf("%s After scheduler->Scheduler()\n", Program);
 #endif
   
-#ifdef ICM_DEF
-  if (process_symbol != NULL)
-    {
-#ifdef DEBUG_ICM
-      printf("%s Before shutting down ICM\n", Program);
-#endif
-      
-      icm_environment->Unregister();
-      
-#ifdef DEBUG_ICM
-      printf("%s After shutting down ICM\n", Program);
-#endif
-    }
-#endif // ICM_DEF
-
   //exit(EXIT_SUCCESS);
   exit(errorno);
 }

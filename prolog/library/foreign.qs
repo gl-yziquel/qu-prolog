@@ -1286,7 +1286,7 @@ $2:
 	proceed
 
 $3:
-	pseudo_instr1(112, 0)
+	pseudo_instr1(85, 0)
 	neck_cut
 	put_constant('$foreign_stream', 2)
 	pseudo_instr2(73, 2, 1)

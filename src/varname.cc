@@ -287,8 +287,8 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
   //
   // first char of name should be in A..Z
   //
-  if (*(atoms->getAtomString(val2)) < 'A' 
-      || *(atoms->getAtomString(val2)) > 'Z')
+  char* str = OBJECT_CAST(Atom*, val2)->getName();
+  if (*str < 'A' || *str > 'Z')
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -302,7 +302,7 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
   do
     {
       strm.str("");
-      strm << atoms->getAtomString(val2);
+      strm << OBJECT_CAST(Atom*, val2)->getName();
       strm << counter;
   //    strm << ends;
       counter++;
@@ -375,7 +375,7 @@ Thread::psi_set_object_variable_name(Object *& object1, Object *& object2)
   do
     {
       strm.str("");
-      strm << atoms->getAtomString(OBJECT_CAST(Atom*, val2));
+      strm << OBJECT_CAST(Atom*, val2)->getName();
       strm << objectCounter;
       //strm << ends;
       objectCounter++;

@@ -1286,13 +1286,37 @@ Thread::decompile(CodeLoc programCounter, Object* head, Object*& instrlist)
           }
 	break;
 	case OPCODE(DB_JUMP, ARGS(number, address, address, address)):
-	case OPCODE(DB_TRY, ARGS(number, address, address, address)):
-	case OPCODE(DB_RETRY, ARGS(number, address, address, address)):
 	  {
 	    BACKTRACK;
 	  }
+	break;
+
+	case OPCODE(DB_EXECUTE_PREDICATE, ARGS(predatom, number)):
+	  {
+	    Atom* predicate = getPredAtom(programCounter);
+	    const word32 arity = getNumber(programCounter);
+	    BUILD_CALL_TERM(predicate, arity, listElem);
+	    *listElem = AtomTable::nil;
+            instrlist = instrHead;
+            return (RV_SUCCESS);
+	  }
 	break; 
-	case OPCODE(DB_TRY_DEC_REF, ARGS()):
+
+  	case OPCODE(DB_EXECUTE_ADDRESS, ARGS(address)):
+	  {
+	    const CodeLoc address = getCodeLoc(programCounter);
+            CodeLoc loc = address - Code::SIZE_OF_HEADER;
+	    Atom* predicate = reinterpret_cast<Atom*>(getAddress(loc));
+            const word32 arity = getNumber(loc);
+            BUILD_CALL_TERM(predicate, arity, listElem);
+	    *listElem = AtomTable::nil;
+            instrlist = instrHead;
+            return (RV_SUCCESS);
+
+          }
+	break;
+	  
+	case OPCODE(DB_PROCEED, ARGS()):
 	  *listElem = AtomTable::nil;
 	  instrlist = instrHead;
           return (RV_SUCCESS);

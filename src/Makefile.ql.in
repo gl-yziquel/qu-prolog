@@ -11,7 +11,7 @@ export OBJECTS.ql = $(addsuffix .o,$(BASES.ql))
 all.ql: $(COMMAND.ql)
 
 $(COMMAND.ql): $(OBJECTS.ql) $(BIG_LIBRARY)
-	$(CXX) $(LDFLAGS) -o $(COMMAND.ql) $(OBJECTS.ql) @LIBS@ -L@ICMHOME@/lib @ICM_LIB@ $(BIG_LIBRARY)
+	$(CXX) $(LDFLAGS) -o $(COMMAND.ql) $(OBJECTS.ql) @LIBS@ $(BIG_LIBRARY)
 
 .PHONY: install.ql
 install.ql: @QPHOME@/bin/$(COMMAND.ql)

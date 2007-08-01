@@ -2655,12 +2655,12 @@ $7:
 	execute_predicate('write_integer', 2)
 
 $8:
-	pseudo_instr1(112, 1)
+	pseudo_instr1(85, 1)
 	neck_cut
 	execute_predicate('write_float', 2)
 
 $9:
-	pseudo_instr1(117, 1)
+	pseudo_instr1(108, 1)
 	neck_cut
 	execute_predicate('write_string', 3)
 

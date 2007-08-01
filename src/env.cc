@@ -71,7 +71,7 @@
 #include "execute.h"
 
 extern AtomTable *atoms;
-extern Object** lib_path;
+//extern Object** lib_path;
 extern PredTab *predicates;
 extern Signals *signals;
 
@@ -138,7 +138,7 @@ Thread::call_predicate(int32 noargs, ...)
 	  if (arity > NUMBER_X_REGISTERS - 1)
 	    {
 	      ostringstream ostrm;
-	      ostrm << atoms->getAtomString(functor)
+	      ostrm << OBJECT_CAST(Atom*, functor)->getName()
 		    << "/" << arity << ends;
 	      pred = (char*)(ostrm.str().data());
 	      PredCodeLoc = 
@@ -467,7 +467,7 @@ Thread::psi_call_clause(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_get_qplibpath(Object *& object1)
 {
-  object1 = *lib_path;
+  object1 = atoms->add("."); //*lib_path;
   return(RV_SUCCESS);
 }
 

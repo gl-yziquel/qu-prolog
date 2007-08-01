@@ -408,7 +408,7 @@ end('stream_to_string'/2):
 	trust($3)
 
 $1:
-	pseudo_instr1(117, 0)
+	pseudo_instr1(108, 0)
 	neck_cut
 	get_list(0)
 	unify_x_variable(0)
@@ -471,7 +471,7 @@ end('string_to_list'/2):
 	trust($3)
 
 $1:
-	pseudo_instr1(117, 0)
+	pseudo_instr1(108, 0)
 	neck_cut
 	pseudo_instr2(122, 0, 2)
 	get_x_value(1, 2)
@@ -530,10 +530,10 @@ end('string_to_atom'/2):
 	trust($3)
 
 $1:
-	pseudo_instr1(117, 0)
-	pseudo_instr1(117, 1)
+	pseudo_instr1(108, 0)
+	pseudo_instr1(108, 1)
 	neck_cut
-	pseudo_instr3(69, 0, 1, 3)
+	pseudo_instr3(14, 0, 1, 3)
 	get_x_value(2, 3)
 	proceed
 
@@ -542,7 +542,7 @@ $2:
 	get_y_variable(1, 0)
 	get_y_variable(0, 1)
 	get_y_variable(3, 2)
-	pseudo_instr1(117, 23)
+	pseudo_instr1(108, 23)
 	neck_cut
 	pseudo_instr2(119, 23, 0)
 	get_x_variable(1, 0)
@@ -609,7 +609,7 @@ end('string_concat'/3):
 	trust($2)
 
 $1:
-	pseudo_instr1(117, 0)
+	pseudo_instr1(108, 0)
 	neck_cut
 	fail
 

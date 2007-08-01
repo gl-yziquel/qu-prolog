@@ -207,11 +207,4 @@ ReturnValue psi_set_std_stream(Object *& , Object *& );
 //
 ReturnValue psi_reset_std_stream(Object *& );
 
-//
-// psi_get_msgstream_handle(StreamID, Handle)
-// retrieve the handle of the imstream
-// mode (in,out)
-//
-ReturnValue psi_get_msgstream_handle(Object *&, Object *&);
-
-#endif	// STREAM_ESCAPES_H
+#endif

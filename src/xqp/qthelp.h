@@ -21,11 +21,11 @@
 #define QTHELP_H
 
 #include <qwidget.h>
-#include <qmainwindow.h>
-#include <qtextedit.h>
+#include <q3mainwindow.h>
+#include <q3textedit.h>
 
 
-class QTHelp : public QMainWindow
+class QTHelp : public Q3MainWindow
 {
   Q_OBJECT
     public:
@@ -37,7 +37,7 @@ public slots:
  signals:
 
  private:
-  QTextEdit* help;
+  Q3TextEdit* help;
   QWidget* parent;
   
  protected:

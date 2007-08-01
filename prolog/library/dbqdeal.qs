@@ -1,4 +1,18 @@
-'$qdeal/2$0'/2:
+'$qdeal/2$0'/0:
+
+	try(0, $1)
+	trust($2)
+
+$1:
+	proceed
+
+$2:
+	fail
+end('$qdeal/2$0'/0):
+
+
+
+'$qdeal/2$1'/2:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
@@ -25,7 +39,7 @@ $2:
 	cut(0)
 	deallocate
 	proceed
-end('$qdeal/2$0'/2):
+end('$qdeal/2$1'/2):
 
 
 
@@ -36,33 +50,40 @@ $1:
 	get_structure('/', 2, 0)
 	unify_x_variable(2)
 	unify_x_variable(3)
-	allocate(7)
+	allocate(8)
 	get_y_variable(2, 1)
 	get_y_level(1)
 	put_x_variable(0, 0)
 	pseudo_instr3(0, 0, 2, 3)
+	put_y_variable(6, 19)
 	put_y_variable(5, 19)
 	put_y_variable(4, 19)
 	put_y_variable(3, 19)
 	put_y_variable(0, 19)
-	put_y_variable(6, 1)
-	call_predicate('$correct_name', 2, 7)
-	put_y_value(6, 0)
-	put_y_value(5, 1)
-	put_y_value(4, 2)
-	call_predicate('$get_first_clause', 3, 6)
+	put_y_variable(7, 1)
+	call_predicate('$correct_name', 2, 8)
+	put_x_variable(0, 0)
+	put_x_variable(1, 1)
+	pseudo_instr3(0, 27, 0, 1)
+	pseudo_instr3(66, 0, 1, 2)
+	get_y_value(6, 2)
+	pseudo_instr4(16, 27, 26, 0, 1)
+	get_y_value(5, 0)
+	get_y_value(4, 1)
+	call_predicate('$qdeal/2$0', 0, 7)
 	put_y_value(5, 0)
-	put_y_value(3, 1)
-	put_y_value(4, 2)
-	put_y_value(0, 3)
-	call_predicate('$get_clause_ref', 4, 4)
+	put_y_value(6, 1)
+	put_y_value(3, 2)
+	put_y_value(4, 3)
+	put_y_value(0, 4)
+	call_predicate('$get_clause_ref', 5, 4)
 	pseudo_instr3(26, 0, 23, 1)
 	put_y_value(2, 1)
 	call_predicate('$get_instructions', 2, 2)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
 	deallocate
-	execute_predicate('$qdeal/2$0', 2)
+	execute_predicate('$qdeal/2$1', 2)
 end('$qdeal'/2):
 
 
@@ -136,20 +157,22 @@ end('$get_instructions'/2):
 
 '$last_clause_instruction'/1:
 
-	switch_on_term(0, $7, 'fail', 'fail', 'fail', 'fail', $6)
+	switch_on_term(0, $9, 'fail', 'fail', 'fail', 'fail', $8)
 
-$6:
-	switch_on_constant(0, 16, ['$default':'fail', 'db_try_dec_ref':$1, 'proceed':$2, 'execute_predicate':$3, 'execute_address':$4, 'fail':$5])
+$8:
+	switch_on_constant(0, 16, ['$default':'fail', 'db_proceed':$1, 'proceed':$2, 'execute_predicate':$3, 'execute_address':$4, 'db_execute_predicate':$5, 'db_execute_address':$6, 'fail':$7])
 
-$7:
+$9:
 	try(1, $1)
 	retry($2)
 	retry($3)
 	retry($4)
-	trust($5)
+	retry($5)
+	retry($6)
+	trust($7)
 
 $1:
-	get_constant('db_try_dec_ref', 0)
+	get_constant('db_proceed', 0)
 	proceed
 
 $2:
@@ -165,6 +188,14 @@ $4:
 	proceed
 
 $5:
+	get_constant('db_execute_predicate', 0)
+	proceed
+
+$6:
+	get_constant('db_execute_address', 0)
+	proceed
+
+$7:
 	get_constant('fail', 0)
 	proceed
 end('$last_clause_instruction'/1):

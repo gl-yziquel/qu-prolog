@@ -77,7 +77,7 @@ Thread::psi_atom_length(Object *& object1, Object *& object2)
   
   if (val1->isAtom())
     {
-      object2 = heap.newShort(static_cast<int32>(strlen(atoms->getAtomString(val1))));
+      object2 = heap.newShort(static_cast<int32>(strlen(OBJECT_CAST(Atom*, val1)->getName())));
       return(RV_SUCCESS);
     }
   else if (val1->isVariable())
@@ -106,7 +106,7 @@ Thread::psi_atom_concat2(Object *& object1, Object *& object2,
 
   if (a1->isAtom())
     {
-      strm << atoms->getAtomString(a1);
+      strm << OBJECT_CAST(Atom*, a1)->getName();
     }
   else if (a1->isNumber())
     {
@@ -118,7 +118,7 @@ Thread::psi_atom_concat2(Object *& object1, Object *& object2,
     }
   if (a2->isAtom())
     {
-      strm << atoms->getAtomString(a2);
+      strm << OBJECT_CAST(Atom*, a2)->getName();
     }
   else if (a2->isNumber())
     {
@@ -154,7 +154,7 @@ Thread::psi_concat_atom(Object *& object1, Object *& object2)
 
       if (head->isAtom())
 	{
-	  strm << atoms->getAtomString(head);
+	  strm << OBJECT_CAST(Atom*, head)->getName();
 	}
       else if (head->isNumber())
 	{
@@ -167,7 +167,7 @@ Thread::psi_concat_atom(Object *& object1, Object *& object2)
 	  head = pvhead.getTerm();
 	  if (head->isAtom())
 	    {
-	      strm << atoms->getAtomString(head);
+	      strm << OBJECT_CAST(Atom*, head)->getName();
 	    }
 	  else if (head->isNumber())
 	    {
@@ -219,7 +219,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
   
   if (val2->isAtom())
     {
-      strm1 << atoms->getAtomString(val2);
+      strm1 << OBJECT_CAST(Atom*, val2)->getName();
     }
   else if (val2->isNumber())
     {
@@ -254,7 +254,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
 
       if (head->isAtom())
 	{
-	  strm << atoms->getAtomString(head);
+	  strm << OBJECT_CAST(Atom*, head)->getName();
 	}
       else if (head->isNumber())
 	{
@@ -267,7 +267,7 @@ Thread::psi_concat_atom3(Object *& object1, Object *& object2,
 	  head = pvhead.getTerm();
 	  if (head->isAtom())
 	    {
-	      strm << atoms->getAtomString(head);
+	      strm << OBJECT_CAST(Atom*, head)->getName();
 	    }
 	  else if (head->isNumber())
 	    {
@@ -317,9 +317,9 @@ Thread::psi_atom_search(Object *& object1, Object *& object2,
   
   if (val1->isAtom() && val2->isShort() && val3->isAtom())
     {
-      const char *string1 = atoms->getAtomString(val1);
+      const char *string1 = OBJECT_CAST(Atom*, val1)->getName();
       const char *substring = strstr(string1 + val2->getInteger() - 1,
-				     atoms->getAtomString(val3));
+				     OBJECT_CAST(Atom*, val3)->getName());
       if (substring == NULL)
 	{
 	  return(RV_FAIL);
@@ -377,7 +377,7 @@ Thread::psi_sub_atom(Object *& object1, Object *& object2,
   
   length = val3->getInteger();
   strncpy(atom_buf1,
-	  atoms->getAtomString(val1) + val2->getInteger() - 1, 
+	  OBJECT_CAST(Atom*, val1)->getName() + val2->getInteger() - 1, 
 	  length);
   atom_buf1[length] = '\0';
   object4 = atoms->add(atom_buf1);

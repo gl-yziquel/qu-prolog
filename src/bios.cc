@@ -73,9 +73,6 @@
 #include "atom_table.h"
 #include "is_ready.h"
 #include "thread_qp.h"
-#ifdef ICM_DEF
-#include "icm_message.h"
-#endif
 #include "scheduler.h"
 
 extern AtomTable *atoms;
@@ -135,7 +132,7 @@ Thread::psi_get_char(Object *& stream_arg, Object *& char_arg)
       {							\
 	PSI_ERROR_RETURN(EV_TYPE, arg_num);		\
       }							\
-    c = *(atoms->getAtomString(object));             \
+    c = *(OBJECT_CAST(Atom*, object)->getName());             \
   } while (0)
 
 //

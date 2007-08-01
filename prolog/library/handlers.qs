@@ -174,14 +174,18 @@ $6:
 
 $7:
 	get_integer(120, 0)
-	allocate(1)
+	allocate(2)
+	put_y_variable(1, 19)
 	put_y_variable(0, 19)
-	put_constant('Enter thread id to exit (terminate with .) ', 0)
-	call_predicate('error', 1, 1)
+	put_constant('Enter thread id to exit', 0)
+	call_predicate('error', 1, 2)
 	put_constant('stderr', 0)
 	pseudo_instr1(31, 0)
+	put_y_value(1, 0)
+	call_predicate('get_line', 1, 2)
 	put_y_value(0, 0)
-	call_predicate('read', 1, 1)
+	put_y_value(1, 1)
+	call_predicate('name', 2, 1)
 	pseudo_instr1(97, 20)
 	fail
 
@@ -1297,7 +1301,7 @@ end('$psi5_resume'/7):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714/0$0'/0:
+'$query_handlers2007_8_1_10_21_57_895/0$0'/0:
 
 
 $1:
@@ -1311,11 +1315,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714/0$0'/0):
+end('$query_handlers2007_8_1_10_21_57_895/0$0'/0):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714/0$1'/0:
+'$query_handlers2007_8_1_10_21_57_895/0$1'/0:
 
 
 $1:
@@ -1329,11 +1333,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714/0$1'/0):
+end('$query_handlers2007_8_1_10_21_57_895/0$1'/0):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714/0$2'/0:
+'$query_handlers2007_8_1_10_21_57_895/0$2'/0:
 
 
 $1:
@@ -1347,11 +1351,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714/0$2'/0):
+end('$query_handlers2007_8_1_10_21_57_895/0$2'/0):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714/0$3'/0:
+'$query_handlers2007_8_1_10_21_57_895/0$3'/0:
 
 
 $1:
@@ -1365,11 +1369,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714/0$3'/0):
+end('$query_handlers2007_8_1_10_21_57_895/0$3'/0):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714/0$4'/0:
+'$query_handlers2007_8_1_10_21_57_895/0$4'/0:
 
 
 $1:
@@ -1383,11 +1387,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714/0$4'/0):
+end('$query_handlers2007_8_1_10_21_57_895/0$4'/0):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714/0$5'/0:
+'$query_handlers2007_8_1_10_21_57_895/0$5'/0:
 
 
 $1:
@@ -1401,11 +1405,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714/0$5'/0):
+end('$query_handlers2007_8_1_10_21_57_895/0$5'/0):
 
 
 
-'$query_handlers2006_11_24_7_37_21_714'/0:
+'$query_handlers2007_8_1_10_21_57_895'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1417,37 +1421,37 @@ end('$query_handlers2006_11_24_7_37_21_714/0$5'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_handlers2006_11_24_7_37_21_714/0$0', 0, 0)
+	call_predicate('$query_handlers2007_8_1_10_21_57_895/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_handlers2006_11_24_7_37_21_714/0$1', 0, 0)
+	call_predicate('$query_handlers2007_8_1_10_21_57_895/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_handlers2006_11_24_7_37_21_714/0$2', 0, 0)
+	call_predicate('$query_handlers2007_8_1_10_21_57_895/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_handlers2006_11_24_7_37_21_714/0$3', 0, 0)
+	call_predicate('$query_handlers2007_8_1_10_21_57_895/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_handlers2006_11_24_7_37_21_714/0$4', 0, 0)
+	call_predicate('$query_handlers2007_8_1_10_21_57_895/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_handlers2006_11_24_7_37_21_714/0$5', 0, 0)
+	call_predicate('$query_handlers2007_8_1_10_21_57_895/0$5', 0, 0)
 	fail
 
 $7:
 	proceed
-end('$query_handlers2006_11_24_7_37_21_714'/0):
+end('$query_handlers2007_8_1_10_21_57_895'/0):
 
 
 
@@ -1455,7 +1459,7 @@ end('$query_handlers2006_11_24_7_37_21_714'/0):
 
 
 $1:
-	execute_predicate('$query_handlers2006_11_24_7_37_21_714', 0)
+	execute_predicate('$query_handlers2007_8_1_10_21_57_895', 0)
 end('$query'/0):
 
 

@@ -135,6 +135,11 @@ pseudo_instr5		RETURN_INSTR(PSEUDO_INSTR5, pseudo_instr5);
 
                                 while(c != '"')
                                 {
+                                  if (c == '\\')
+                                  {
+                                    buf->push_back(c);
+                                    c = yyinput();
+                                  }
                                   buf->push_back(c);
                                   c = yyinput();
                                 }

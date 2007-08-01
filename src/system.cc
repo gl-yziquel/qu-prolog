@@ -124,10 +124,10 @@ Thread::psi_system(Object *& object1, Object *& object2)
 
 #if defined(FREEBSD) || defined(MACOSX)
   object2 = 
-    heap.newInteger(bsd_system(atoms->getAtomString(val1)));
+    heap.newInteger(bsd_system(OBJECT_CAST(Atom*, val1)->getName()));
 #else
   object2 = 
-    heap.newInteger(system(atoms->getAtomString(val1)));
+    heap.newInteger(system(OBJECT_CAST(Atom*, val1)->getName()));
 #endif //defined(FREEBSD) || defined(MACOSX)
 
   return (RV_SUCCESS);
@@ -157,7 +157,7 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
 //    heap.newInteger(access(wordexp(atoms->getAtomString(val1)).c_str(),
 //                           val2->getInteger()));
 //#endif
-  string filename = atoms->getAtomString(val1);
+  string filename = OBJECT_CAST(Atom*, val1)->getName();
   wordexp(filename);
   char file[1024];
   strcpy(file, filename.c_str());
@@ -181,7 +181,7 @@ Thread::psi_chdir(Object *& object1)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  string dirname = atoms->getAtomString(val1);
+  string dirname = OBJECT_CAST(Atom*, val1)->getName();
   wordexp(dirname);
   char dir[1024];
   strcpy(dir, dirname.c_str());
@@ -222,7 +222,7 @@ Thread::psi_mktemp(Object *& object1, Object *& object2)
 
   assert(val1->isAtom());
   
-  strcpy(atom_buf1, atoms->getAtomString(val1));
+  strcpy(atom_buf1, OBJECT_CAST(Atom*, val1)->getName());
 #ifdef WIN32
   (void)(_mktemp(atom_buf1));
 #else

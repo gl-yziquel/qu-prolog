@@ -1,7 +1,9 @@
-/* A Bison parser, made by GNU Bison 2.0.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+/* Skeleton implementation for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,16 +17,24 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
 
-/* Written by Richard Stallman by simplifying the original so called
-   ``semantic'' parser.  */
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+/* C LALR(1) parser skeleton written by Richard Stallman, by
+   simplifying the original so-called "semantic" parser.  */
 
 /* All symbols defined below should begin with yy or YY, to avoid
    infringing on user name space.  This should be done even for local
@@ -35,6 +45,9 @@
 
 /* Identify Bison output.  */
 #define YYBISON 1
+
+/* Bison version.  */
+#define YYBISON_VERSION "2.3"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -155,6 +168,7 @@
      END_TOKEN = 357
    };
 #endif
+/* Tokens.  */
 #define put_x_variable 258
 #define put_y_variable 259
 #define put_x_value 260
@@ -310,9 +324,15 @@ LabelTable *labels = NULL;
 # define YYERROR_VERBOSE 0
 #endif
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+/* Enabling the token table.  */
+#ifndef YYTOKEN_TABLE
+# define YYTOKEN_TABLE 0
+#endif
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
 #line 36 "qa.y"
-typedef union YYSTYPE {
+{
   signed long int number_value;
   double double_value;
 
@@ -337,9 +357,10 @@ typedef union YYSTYPE {
   
   vector<AtomArityLabel *> *aal_list;
   AtomArityLabel *aal;
-} YYSTYPE;
-/* Line 190 of yacc.c.  */
-#line 343 "qa.cc"
+}
+/* Line 187 of yacc.c.  */
+#line 363 "qa.cc"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -350,17 +371,94 @@ typedef union YYSTYPE {
 /* Copy the second part of user declarations.  */
 
 
-/* Line 213 of yacc.c.  */
-#line 355 "qa.cc"
+/* Line 216 of yacc.c.  */
+#line 376 "qa.cc"
 
-#if ! defined (yyoverflow) || YYERROR_VERBOSE
+#ifdef short
+# undef short
+#endif
 
-# ifndef YYFREE
-#  define YYFREE free
+#ifdef YYTYPE_UINT8
+typedef YYTYPE_UINT8 yytype_uint8;
+#else
+typedef unsigned char yytype_uint8;
+#endif
+
+#ifdef YYTYPE_INT8
+typedef YYTYPE_INT8 yytype_int8;
+#elif (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+typedef signed char yytype_int8;
+#else
+typedef short int yytype_int8;
+#endif
+
+#ifdef YYTYPE_UINT16
+typedef YYTYPE_UINT16 yytype_uint16;
+#else
+typedef unsigned short int yytype_uint16;
+#endif
+
+#ifdef YYTYPE_INT16
+typedef YYTYPE_INT16 yytype_int16;
+#else
+typedef short int yytype_int16;
+#endif
+
+#ifndef YYSIZE_T
+# ifdef __SIZE_TYPE__
+#  define YYSIZE_T __SIZE_TYPE__
+# elif defined size_t
+#  define YYSIZE_T size_t
+# elif ! defined YYSIZE_T && (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+#  define YYSIZE_T size_t
+# else
+#  define YYSIZE_T unsigned int
 # endif
-# ifndef YYMALLOC
-#  define YYMALLOC malloc
+#endif
+
+#define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
+
+#ifndef YY_
+# if YYENABLE_NLS
+#  if ENABLE_NLS
+#   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
+#   define YY_(msgid) dgettext ("bison-runtime", msgid)
+#  endif
 # endif
+# ifndef YY_
+#  define YY_(msgid) msgid
+# endif
+#endif
+
+/* Suppress unused-variable warnings by "using" E.  */
+#if ! defined lint || defined __GNUC__
+# define YYUSE(e) ((void) (e))
+#else
+# define YYUSE(e) /* empty */
+#endif
+
+/* Identity function, used to suppress warnings about constant conditions.  */
+#ifndef lint
+# define YYID(n) (n)
+#else
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+static int
+YYID (int i)
+#else
+static int
+YYID (i)
+    int i;
+#endif
+{
+  return i;
+}
+#endif
+
+#if ! defined yyoverflow || YYERROR_VERBOSE
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -368,34 +466,76 @@ typedef union YYSTYPE {
 #  if YYSTACK_USE_ALLOCA
 #   ifdef __GNUC__
 #    define YYSTACK_ALLOC __builtin_alloca
+#   elif defined __BUILTIN_VA_ARG_INCR
+#    include <alloca.h> /* INFRINGES ON USER NAME SPACE */
+#   elif defined _AIX
+#    define YYSTACK_ALLOC __alloca
+#   elif defined _MSC_VER
+#    include <malloc.h> /* INFRINGES ON USER NAME SPACE */
+#    define alloca _alloca
 #   else
 #    define YYSTACK_ALLOC alloca
+#    if ! defined _ALLOCA_H && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+#     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+#     ifndef _STDLIB_H
+#      define _STDLIB_H 1
+#     endif
+#    endif
 #   endif
 #  endif
 # endif
 
 # ifdef YYSTACK_ALLOC
-   /* Pacify GCC's `empty if-body' warning. */
-#  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
-# else
-#  if defined (__STDC__) || defined (__cplusplus)
-#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   define YYSIZE_T size_t
+   /* Pacify GCC's `empty if-body' warning.  */
+#  define YYSTACK_FREE(Ptr) do { /* empty */; } while (YYID (0))
+#  ifndef YYSTACK_ALLOC_MAXIMUM
+    /* The OS might guarantee only one guard page at the bottom of the stack,
+       and a page size can be as small as 4096 bytes.  So we cannot safely
+       invoke alloca (N) if N exceeds 4096.  Use a slightly smaller number
+       to allow for a few compiler-allocated temporary stack slots.  */
+#   define YYSTACK_ALLOC_MAXIMUM 4032 /* reasonable circa 2006 */
 #  endif
+# else
 #  define YYSTACK_ALLOC YYMALLOC
 #  define YYSTACK_FREE YYFREE
+#  ifndef YYSTACK_ALLOC_MAXIMUM
+#   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
+#  endif
+#  if (defined __cplusplus && ! defined _STDLIB_H \
+       && ! ((defined YYMALLOC || defined malloc) \
+	     && (defined YYFREE || defined free)))
+#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+#   ifndef _STDLIB_H
+#    define _STDLIB_H 1
+#   endif
+#  endif
+#  ifndef YYMALLOC
+#   define YYMALLOC malloc
+#   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
+#   endif
+#  endif
+#  ifndef YYFREE
+#   define YYFREE free
+#   if ! defined free && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+void free (void *); /* INFRINGES ON USER NAME SPACE */
+#   endif
+#  endif
 # endif
-#endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
+#endif /* ! defined yyoverflow || YYERROR_VERBOSE */
 
 
-#if (! defined (yyoverflow) \
-     && (! defined (__cplusplus) \
-	 || (defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
+#if (! defined yyoverflow \
+     && (! defined __cplusplus \
+	 || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  short int yyss;
+  yytype_int16 yyss;
   YYSTYPE yyvs;
   };
 
@@ -405,24 +545,24 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (short int) + sizeof (YYSTYPE))			\
+     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE)) \
       + YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if defined (__GNUC__) && 1 < __GNUC__
+#  if defined __GNUC__ && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
 #   define YYCOPY(To, From, Count)		\
       do					\
 	{					\
-	  register YYSIZE_T yyi;		\
+	  YYSIZE_T yyi;				\
 	  for (yyi = 0; yyi < (Count); yyi++)	\
 	    (To)[yyi] = (From)[yyi];		\
 	}					\
-      while (0)
+      while (YYID (0))
 #  endif
 # endif
 
@@ -440,39 +580,33 @@ union yyalloc
 	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
-    while (0)
+    while (YYID (0))
 
 #endif
 
-#if defined (__STDC__) || defined (__cplusplus)
-   typedef signed char yysigned_char;
-#else
-   typedef short int yysigned_char;
-#endif
-
-/* YYFINAL -- State number of the termination state. */
+/* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   587
 
-/* YYNTOKENS -- Number of terminals. */
+/* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  112
-/* YYNNTS -- Number of nonterminals. */
+/* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  27
-/* YYNRULES -- Number of rules. */
+/* YYNRULES -- Number of rules.  */
 #define YYNRULES  135
-/* YYNRULES -- Number of states. */
+/* YYNRULES -- Number of states.  */
 #define YYNSTATES  567
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   357
 
-#define YYTRANSLATE(YYX) 						\
+#define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 /* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
-static const unsigned char yytranslate[] =
+static const yytype_uint8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -515,7 +649,7 @@ static const unsigned char yytranslate[] =
 #if YYDEBUG
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
-static const unsigned short int yyprhs[] =
+static const yytype_uint16 yyprhs[] =
 {
        0,     0,     3,     5,     6,     9,    13,    18,    26,    27,
       30,    32,    34,    37,    44,    51,    58,    65,    72,    79,
@@ -533,8 +667,8 @@ static const unsigned short int yyprhs[] =
      693,   696,   698,   700,   702,   704
 };
 
-/* YYRHS -- A `-1'-separated list of the rules' RHS. */
-static const short int yyrhs[] =
+/* YYRHS -- A `-1'-separated list of the rules' RHS.  */
+static const yytype_int16 yyrhs[] =
 {
      113,     0,    -1,   114,    -1,    -1,   114,   115,    -1,   116,
      118,   117,    -1,   137,   103,   134,   104,    -1,   102,   105,
@@ -610,7 +744,7 @@ static const short int yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short int yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
        0,   201,   201,   204,   205,   208,   211,   242,   268,   269,
      272,   273,   276,   282,   289,   296,   303,   310,   317,   323,
@@ -629,9 +763,9 @@ static const unsigned short int yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE
-/* YYTNME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
-   First, the terminals, then, starting at YYNTOKENS, nonterminals. */
+#if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
+/* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
+   First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "put_x_variable", "put_y_variable",
@@ -674,7 +808,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const unsigned short int yytoknum[] =
+static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
@@ -692,7 +826,7 @@ static const unsigned short int yytoknum[] =
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
-static const unsigned char yyr1[] =
+static const yytype_uint8 yyr1[] =
 {
        0,   112,   113,   114,   114,   115,   116,   117,   118,   118,
      119,   119,   120,   121,   121,   121,   121,   121,   121,   121,
@@ -711,7 +845,7 @@ static const unsigned char yyr1[] =
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
-static const unsigned char yyr2[] =
+static const yytype_uint8 yyr2[] =
 {
        0,     2,     1,     0,     2,     3,     4,     7,     0,     2,
        1,     1,     2,     6,     6,     6,     6,     6,     6,     6,
@@ -732,7 +866,7 @@ static const unsigned char yyr2[] =
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
    STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
-static const unsigned char yydefact[] =
+static const yytype_uint8 yydefact[] =
 {
        3,     0,     2,     1,   134,     4,     8,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
@@ -793,8 +927,8 @@ static const unsigned char yydefact[] =
      106,     0,     0,     0,    97,   116,   121
 };
 
-/* YYDEFGOTO[NTERM-NUM]. */
-static const short int yydefgoto[] =
+/* YYDEFGOTO[NTERM-NUM].  */
+static const yytype_int16 yydefgoto[] =
 {
       -1,     1,     2,     5,     6,   106,     8,   107,   108,   109,
      520,   528,   529,   522,   533,   534,   524,   537,   538,   426,
@@ -804,7 +938,7 @@ static const short int yydefgoto[] =
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
 #define YYPACT_NINF -416
-static const short int yypact[] =
+static const yytype_int16 yypact[] =
 {
     -416,     3,   -94,  -416,  -416,  -416,  -416,   -95,   485,   -82,
      -79,   -77,   -67,   -63,   -43,   -38,   -26,   -23,   -17,   -12,
@@ -866,7 +1000,7 @@ static const short int yypact[] =
 };
 
 /* YYPGOTO[NTERM-NUM].  */
-static const short int yypgoto[] =
+static const yytype_int16 yypgoto[] =
 {
     -416,  -416,  -416,  -416,  -416,  -416,  -416,  -416,  -416,  -416,
     -416,  -416,  -309,  -416,  -416,  -310,  -416,  -416,  -308,  -415,
@@ -878,7 +1012,7 @@ static const short int yypgoto[] =
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -1
-static const unsigned short int yytable[] =
+static const yytype_uint16 yytable[] =
 {
      203,   204,   205,     3,   210,   211,     4,   217,     9,   219,
      220,   221,   222,   223,   224,   110,   226,   227,   228,   229,
@@ -941,7 +1075,7 @@ static const unsigned short int yytable[] =
      102,   103,     0,     0,     0,     0,   104,   105
 };
 
-static const short int yycheck[] =
+static const yytype_int16 yycheck[] =
 {
      113,   114,   115,     0,   116,   117,   100,   120,   103,   122,
      123,   124,   125,   126,   127,    97,   129,   130,   131,   132,
@@ -1006,7 +1140,7 @@ static const short int yycheck[] =
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
-static const unsigned char yystos[] =
+static const yytype_uint8 yystos[] =
 {
        0,   113,   114,     0,   100,   115,   116,   137,   118,   103,
        3,     4,     5,     6,     7,     8,     9,    10,    11,    12,
@@ -1067,22 +1201,6 @@ static const unsigned char yystos[] =
      106,   131,   104,   104,   106,   131,   131
 };
 
-#if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
-# define YYSIZE_T __SIZE_TYPE__
-#endif
-#if ! defined (YYSIZE_T) && defined (size_t)
-# define YYSIZE_T size_t
-#endif
-#if ! defined (YYSIZE_T)
-# if defined (__STDC__) || defined (__cplusplus)
-#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
-#  define YYSIZE_T size_t
-# endif
-#endif
-#if ! defined (YYSIZE_T)
-# define YYSIZE_T unsigned int
-#endif
-
 #define yyerrok		(yyerrstatus = 0)
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		(-2)
@@ -1108,15 +1226,15 @@ do								\
       yychar = (Token);						\
       yylval = (Value);						\
       yytoken = YYTRANSLATE (yychar);				\
-      YYPOPSTACK;						\
+      YYPOPSTACK (1);						\
       goto yybackup;						\
     }								\
   else								\
-    { 								\
-      yyerror ("syntax error: cannot back up");\
+    {								\
+      yyerror (YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
-while (0)
+while (YYID (0))
 
 
 #define YYTERROR	1
@@ -1131,7 +1249,7 @@ while (0)
 #ifndef YYLLOC_DEFAULT
 # define YYLLOC_DEFAULT(Current, Rhs, N)				\
     do									\
-      if (N)								\
+      if (YYID (N))                                                    \
 	{								\
 	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
 	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
@@ -1145,7 +1263,7 @@ while (0)
 	  (Current).first_column = (Current).last_column =		\
 	    YYRHSLOC (Rhs, 0).last_column;				\
 	}								\
-    while (0)
+    while (YYID (0))
 #endif
 
 
@@ -1157,8 +1275,8 @@ while (0)
 # if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
-              (Loc).first_line, (Loc).first_column,	\
-              (Loc).last_line,  (Loc).last_column)
+	      (Loc).first_line, (Loc).first_column,	\
+	      (Loc).last_line,  (Loc).last_column)
 # else
 #  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
 # endif
@@ -1185,36 +1303,96 @@ while (0)
 do {						\
   if (yydebug)					\
     YYFPRINTF Args;				\
-} while (0)
+} while (YYID (0))
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)		\
-do {								\
-  if (yydebug)							\
-    {								\
-      YYFPRINTF (stderr, "%s ", Title);				\
-      yysymprint (stderr, 					\
-                  Type, Value);	\
-      YYFPRINTF (stderr, "\n");					\
-    }								\
-} while (0)
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)			  \
+do {									  \
+  if (yydebug)								  \
+    {									  \
+      YYFPRINTF (stderr, "%s ", Title);					  \
+      yy_symbol_print (stderr,						  \
+		  Type, Value); \
+      YYFPRINTF (stderr, "\n");						  \
+    }									  \
+} while (YYID (0))
+
+
+/*--------------------------------.
+| Print this symbol on YYOUTPUT.  |
+`--------------------------------*/
+
+/*ARGSUSED*/
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+static void
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
+#else
+static void
+yy_symbol_value_print (yyoutput, yytype, yyvaluep)
+    FILE *yyoutput;
+    int yytype;
+    YYSTYPE const * const yyvaluep;
+#endif
+{
+  if (!yyvaluep)
+    return;
+# ifdef YYPRINT
+  if (yytype < YYNTOKENS)
+    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
+# else
+  YYUSE (yyoutput);
+# endif
+  switch (yytype)
+    {
+      default:
+	break;
+    }
+}
+
+
+/*--------------------------------.
+| Print this symbol on YYOUTPUT.  |
+`--------------------------------*/
+
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+static void
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
+#else
+static void
+yy_symbol_print (yyoutput, yytype, yyvaluep)
+    FILE *yyoutput;
+    int yytype;
+    YYSTYPE const * const yyvaluep;
+#endif
+{
+  if (yytype < YYNTOKENS)
+    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
+  else
+    YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
+
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep);
+  YYFPRINTF (yyoutput, ")");
+}
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
 | TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
-#if defined (__STDC__) || defined (__cplusplus)
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (short int *bottom, short int *top)
+yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    short int *bottom;
-    short int *top;
+    yytype_int16 *bottom;
+    yytype_int16 *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (/* Nothing. */; bottom <= top; ++bottom)
+  for (; bottom <= top; ++bottom)
     YYFPRINTF (stderr, " %d", *bottom);
   YYFPRINTF (stderr, "\n");
 }
@@ -1223,37 +1401,45 @@ yy_stack_print (bottom, top)
 do {								\
   if (yydebug)							\
     yy_stack_print ((Bottom), (Top));				\
-} while (0)
+} while (YYID (0))
 
 
 /*------------------------------------------------.
 | Report that the YYRULE is going to be reduced.  |
 `------------------------------------------------*/
 
-#if defined (__STDC__) || defined (__cplusplus)
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (int yyrule)
+yy_reduce_print (YYSTYPE *yyvsp, int yyrule)
 #else
 static void
-yy_reduce_print (yyrule)
+yy_reduce_print (yyvsp, yyrule)
+    YYSTYPE *yyvsp;
     int yyrule;
 #endif
 {
+  int yynrhs = yyr2[yyrule];
   int yyi;
-  unsigned int yylno = yyrline[yyrule];
-  YYFPRINTF (stderr, "Reducing stack by rule %d (line %u), ",
-             yyrule - 1, yylno);
-  /* Print the symbols being reduced, and their result.  */
-  for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
-    YYFPRINTF (stderr, "%s ", yytname [yyrhs[yyi]]);
-  YYFPRINTF (stderr, "-> %s\n", yytname [yyr1[yyrule]]);
+  unsigned long int yylno = yyrline[yyrule];
+  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu):\n",
+	     yyrule - 1, yylno);
+  /* The symbols being reduced.  */
+  for (yyi = 0; yyi < yynrhs; yyi++)
+    {
+      fprintf (stderr, "   $%d = ", yyi + 1);
+      yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
+		       &(yyvsp[(yyi + 1) - (yynrhs)])
+		       		       );
+      fprintf (stderr, "\n");
+    }
 }
 
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (Rule);		\
-} while (0)
+    yy_reduce_print (yyvsp, Rule); \
+} while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
@@ -1275,7 +1461,7 @@ int yydebug;
    if the built-in stack extension method is used).
 
    Do not make this value too large; the results are undefined if
-   SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
+   YYSTACK_ALLOC_MAXIMUM < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
 
 #ifndef YYMAXDEPTH
@@ -1287,45 +1473,47 @@ int yydebug;
 #if YYERROR_VERBOSE
 
 # ifndef yystrlen
-#  if defined (__GLIBC__) && defined (_STRING_H)
+#  if defined __GLIBC__ && defined _STRING_H
 #   define yystrlen strlen
 #  else
 /* Return the length of YYSTR.  */
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
 static YYSIZE_T
-#   if defined (__STDC__) || defined (__cplusplus)
 yystrlen (const char *yystr)
-#   else
+#else
+static YYSIZE_T
 yystrlen (yystr)
-     const char *yystr;
-#   endif
+    const char *yystr;
+#endif
 {
-  register const char *yys = yystr;
-
-  while (*yys++ != '\0')
+  YYSIZE_T yylen;
+  for (yylen = 0; yystr[yylen]; yylen++)
     continue;
-
-  return yys - yystr - 1;
+  return yylen;
 }
 #  endif
 # endif
 
 # ifndef yystpcpy
-#  if defined (__GLIBC__) && defined (_STRING_H) && defined (_GNU_SOURCE)
+#  if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
 #   define yystpcpy stpcpy
 #  else
 /* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
    YYDEST.  */
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
 static char *
-#   if defined (__STDC__) || defined (__cplusplus)
 yystpcpy (char *yydest, const char *yysrc)
-#   else
+#else
+static char *
 yystpcpy (yydest, yysrc)
-     char *yydest;
-     const char *yysrc;
-#   endif
+    char *yydest;
+    const char *yysrc;
+#endif
 {
-  register char *yyd = yydest;
-  register const char *yys = yysrc;
+  char *yyd = yydest;
+  const char *yys = yysrc;
 
   while ((*yyd++ = *yys++) != '\0')
     continue;
@@ -1335,53 +1523,171 @@ yystpcpy (yydest, yysrc)
 #  endif
 # endif
 
-#endif /* !YYERROR_VERBOSE */
+# ifndef yytnamerr
+/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
+   quotes and backslashes, so that it's suitable for yyerror.  The
+   heuristic is that double-quoting is unnecessary unless the string
+   contains an apostrophe, a comma, or backslash (other than
+   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
+   null, do not copy; instead, return the length of what the result
+   would have been.  */
+static YYSIZE_T
+yytnamerr (char *yyres, const char *yystr)
+{
+  if (*yystr == '"')
+    {
+      YYSIZE_T yyn = 0;
+      char const *yyp = yystr;
 
+      for (;;)
+	switch (*++yyp)
+	  {
+	  case '\'':
+	  case ',':
+	    goto do_not_strip_quotes;
+
+	  case '\\':
+	    if (*++yyp != '\\')
+	      goto do_not_strip_quotes;
+	    /* Fall through.  */
+	  default:
+	    if (yyres)
+	      yyres[yyn] = *yyp;
+	    yyn++;
+	    break;
+
+	  case '"':
+	    if (yyres)
+	      yyres[yyn] = '\0';
+	    return yyn;
+	  }
+    do_not_strip_quotes: ;
+    }
+
+  if (! yyres)
+    return yystrlen (yystr);
+
+  return yystpcpy (yyres, yystr) - yyres;
+}
+# endif
+
+/* Copy into YYRESULT an error message about the unexpected token
+   YYCHAR while in state YYSTATE.  Return the number of bytes copied,
+   including the terminating null byte.  If YYRESULT is null, do not
+   copy anything; just return the number of bytes that would be
+   copied.  As a special case, return 0 if an ordinary "syntax error"
+   message will do.  Return YYSIZE_MAXIMUM if overflow occurs during
+   size calculation.  */
+static YYSIZE_T
+yysyntax_error (char *yyresult, int yystate, int yychar)
+{
+  int yyn = yypact[yystate];
+
+  if (! (YYPACT_NINF < yyn && yyn <= YYLAST))
+    return 0;
+  else
+    {
+      int yytype = YYTRANSLATE (yychar);
+      YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
+      YYSIZE_T yysize = yysize0;
+      YYSIZE_T yysize1;
+      int yysize_overflow = 0;
+      enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
+      char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+      int yyx;
+
+# if 0
+      /* This is so xgettext sees the translatable formats that are
+	 constructed on the fly.  */
+      YY_("syntax error, unexpected %s");
+      YY_("syntax error, unexpected %s, expecting %s");
+      YY_("syntax error, unexpected %s, expecting %s or %s");
+      YY_("syntax error, unexpected %s, expecting %s or %s or %s");
+      YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
+# endif
+      char *yyfmt;
+      char const *yyf;
+      static char const yyunexpected[] = "syntax error, unexpected %s";
+      static char const yyexpecting[] = ", expecting %s";
+      static char const yyor[] = " or %s";
+      char yyformat[sizeof yyunexpected
+		    + sizeof yyexpecting - 1
+		    + ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
+		       * (sizeof yyor - 1))];
+      char const *yyprefix = yyexpecting;
+
+      /* Start YYX at -YYN if negative to avoid negative indexes in
+	 YYCHECK.  */
+      int yyxbegin = yyn < 0 ? -yyn : 0;
+
+      /* Stay within bounds of both yycheck and yytname.  */
+      int yychecklim = YYLAST - yyn + 1;
+      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+      int yycount = 1;
+
+      yyarg[0] = yytname[yytype];
+      yyfmt = yystpcpy (yyformat, yyunexpected);
+
+      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+	if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
+	  {
+	    if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+	      {
+		yycount = 1;
+		yysize = yysize0;
+		yyformat[sizeof yyunexpected - 1] = '\0';
+		break;
+	      }
+	    yyarg[yycount++] = yytname[yyx];
+	    yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+	    yysize_overflow |= (yysize1 < yysize);
+	    yysize = yysize1;
+	    yyfmt = yystpcpy (yyfmt, yyprefix);
+	    yyprefix = yyor;
+	  }
+
+      yyf = YY_(yyformat);
+      yysize1 = yysize + yystrlen (yyf);
+      yysize_overflow |= (yysize1 < yysize);
+      yysize = yysize1;
+
+      if (yysize_overflow)
+	return YYSIZE_MAXIMUM;
+
+      if (yyresult)
+	{
+	  /* Avoid sprintf, as that infringes on the user's name space.
+	     Don't have undefined behavior even if the translation
+	     produced a string with the wrong number of "%s"s.  */
+	  char *yyp = yyresult;
+	  int yyi = 0;
+	  while ((*yyp = *yyf) != '\0')
+	    {
+	      if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
+		{
+		  yyp += yytnamerr (yyp, yyarg[yyi++]);
+		  yyf += 2;
+		}
+	      else
+		{
+		  yyp++;
+		  yyf++;
+		}
+	    }
+	}
+      return yysize;
+    }
+}
+#endif /* YYERROR_VERBOSE */
 
 
-#if YYDEBUG
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
-
-#if defined (__STDC__) || defined (__cplusplus)
-static void
-yysymprint (FILE *yyoutput, int yytype, YYSTYPE *yyvaluep)
-#else
-static void
-yysymprint (yyoutput, yytype, yyvaluep)
-    FILE *yyoutput;
-    int yytype;
-    YYSTYPE *yyvaluep;
-#endif
-{
-  /* Pacify ``unused variable'' warnings.  */
-  (void) yyvaluep;
-
-  if (yytype < YYNTOKENS)
-    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
-  else
-    YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
-
-
-# ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# endif
-  switch (yytype)
-    {
-      default:
-        break;
-    }
-  YYFPRINTF (yyoutput, ")");
-}
-
-#endif /* ! YYDEBUG */
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
 
-#if defined (__STDC__) || defined (__cplusplus)
+/*ARGSUSED*/
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
 static void
 yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
 #else
@@ -1392,8 +1698,7 @@ yydestruct (yymsg, yytype, yyvaluep)
     YYSTYPE *yyvaluep;
 #endif
 {
-  /* Pacify ``unused variable'' warnings.  */
-  (void) yyvaluep;
+  YYUSE (yyvaluep);
 
   if (!yymsg)
     yymsg = "Deleting";
@@ -1403,7 +1708,7 @@ yydestruct (yymsg, yytype, yyvaluep)
     {
 
       default:
-        break;
+	break;
     }
 }
 
@@ -1411,13 +1716,13 @@ yydestruct (yymsg, yytype, yyvaluep)
 /* Prevent warnings from -Wmissing-prototypes.  */
 
 #ifdef YYPARSE_PARAM
-# if defined (__STDC__) || defined (__cplusplus)
+#if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
-# else
+#else
 int yyparse ();
-# endif
+#endif
 #else /* ! YYPARSE_PARAM */
-#if defined (__STDC__) || defined (__cplusplus)
+#if defined __STDC__ || defined __cplusplus
 int yyparse (void);
 #else
 int yyparse ();
@@ -1442,14 +1747,18 @@ int yynerrs;
 `----------*/
 
 #ifdef YYPARSE_PARAM
-# if defined (__STDC__) || defined (__cplusplus)
-int yyparse (void *YYPARSE_PARAM)
-# else
-int yyparse (YYPARSE_PARAM)
-  void *YYPARSE_PARAM;
-# endif
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
+int
+yyparse (void *YYPARSE_PARAM)
+#else
+int
+yyparse (YYPARSE_PARAM)
+    void *YYPARSE_PARAM;
+#endif
 #else /* ! YYPARSE_PARAM */
-#if defined (__STDC__) || defined (__cplusplus)
+#if (defined __STDC__ || defined __C99__FUNC__ \
+     || defined __cplusplus || defined _MSC_VER)
 int
 yyparse (void)
 #else
@@ -1460,13 +1769,19 @@ yyparse ()
 #endif
 {
   
-  register int yystate;
-  register int yyn;
+  int yystate;
+  int yyn;
   int yyresult;
   /* Number of tokens to shift before error messages enabled.  */
   int yyerrstatus;
   /* Look-ahead token as an internal (translated) token number.  */
   int yytoken = 0;
+#if YYERROR_VERBOSE
+  /* Buffer for error messages, and its allocated size.  */
+  char yymsgbuf[128];
+  char *yymsg = yymsgbuf;
+  YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
+#endif
 
   /* Three stacks and their tools:
      `yyss': related to states,
@@ -1477,18 +1792,18 @@ yyparse ()
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  short int yyssa[YYINITDEPTH];
-  short int *yyss = yyssa;
-  register short int *yyssp;
+  yytype_int16 yyssa[YYINITDEPTH];
+  yytype_int16 *yyss = yyssa;
+  yytype_int16 *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
   YYSTYPE *yyvs = yyvsa;
-  register YYSTYPE *yyvsp;
+  YYSTYPE *yyvsp;
 
 
 
-#define YYPOPSTACK   (yyvsp--, yyssp--)
+#define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
 
   YYSIZE_T yystacksize = YYINITDEPTH;
 
@@ -1497,9 +1812,9 @@ yyparse ()
   YYSTYPE yyval;
 
 
-  /* When reducing, the number of symbols on the RHS of the reduced
-     rule.  */
-  int yylen;
+  /* The number of symbols on the RHS of the reduced rule.
+     Keep to zero when no symbol should be popped.  */
+  int yylen = 0;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
@@ -1516,9 +1831,6 @@ yyparse ()
   yyssp = yyss;
   yyvsp = yyvs;
 
-
-  yyvsp[0] = yylval;
-
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1526,8 +1838,7 @@ yyparse ()
 `------------------------------------------------------------*/
  yynewstate:
   /* In all cases, when you get here, the value and location stacks
-     have just been pushed. so pushing a state here evens the stacks.
-     */
+     have just been pushed.  So pushing a state here evens the stacks.  */
   yyssp++;
 
  yysetstate:
@@ -1540,18 +1851,18 @@ yyparse ()
 
 #ifdef yyoverflow
       {
-	/* Give user a chance to reallocate the stack. Use copies of
+	/* Give user a chance to reallocate the stack.  Use copies of
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	short int *yyss1 = yyss;
+	yytype_int16 *yyss1 = yyss;
 
 
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
 	   be undefined if yyoverflow is a macro.  */
-	yyoverflow ("parser stack overflow",
+	yyoverflow (YY_("memory exhausted"),
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
 
@@ -1562,21 +1873,21 @@ yyparse ()
       }
 #else /* no yyoverflow */
 # ifndef YYSTACK_RELOCATE
-      goto yyoverflowlab;
+      goto yyexhaustedlab;
 # else
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-	goto yyoverflowlab;
+	goto yyexhaustedlab;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
 	yystacksize = YYMAXDEPTH;
 
       {
-	short int *yyss1 = yyss;
+	yytype_int16 *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
-	  goto yyoverflowlab;
+	  goto yyexhaustedlab;
 	YYSTACK_RELOCATE (yyss);
 	YYSTACK_RELOCATE (yyvs);
 
@@ -1607,12 +1918,10 @@ yyparse ()
 `-----------*/
 yybackup:
 
-/* Do appropriate processing given the current state.  */
-/* Read a look-ahead token if we need one and don't already have one.  */
-/* yyresume: */
+  /* Do appropriate processing given the current state.  Read a
+     look-ahead token if we need one and don't already have one.  */
 
   /* First try to decide what to do without reference to look-ahead token.  */
-
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
@@ -1654,22 +1963,21 @@ yybackup:
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  /* Shift the look-ahead token.  */
-  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
-
-  /* Discard the token being shifted unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
-
-  *++yyvsp = yylval;
-
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
+  /* Shift the look-ahead token.  */
+  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
+
+  /* Discard the shifted token unless it is eof.  */
+  if (yychar != YYEOF)
+    yychar = YYEMPTY;
+
   yystate = yyn;
+  *++yyvsp = yylval;
+
   goto yynewstate;
 
 
@@ -1710,8 +2018,8 @@ yyreduce:
 		  labels = new LabelTable;
 
 		  // Is it the query code block?
-		  if ((*asm_string_table)[(yyvsp[-3].constant)->Value()] == "$query" &&
-		      (yyvsp[-1].number)->Value() == 0)
+		  if ((*asm_string_table)[(yyvsp[(1) - (4)].constant)->Value()] == "$query" &&
+		      (yyvsp[(3) - (4)].number)->Value() == 0)
 		    {
 		      if (query_code_block != NULL)
 			{
@@ -1719,35 +2027,35 @@ yyreduce:
 				"more than one query code block");
 			}
 		      query_code_block = new CodeBlock(QUERY_BLOCK,
-						       (yyvsp[-3].constant)->Value(),
-						       (yyvsp[-1].number)->Value());
+						       (yyvsp[(1) - (4)].constant)->Value(),
+						       (yyvsp[(3) - (4)].number)->Value());
 
 		      code_block = query_code_block;
 		    }
 		  else
 		    {
 		      code_block = new CodeBlock(PREDICATE_BLOCK,
-						 (yyvsp[-3].constant)->Value(),
-						 (yyvsp[-1].number)->Value());
+						 (yyvsp[(1) - (4)].constant)->Value(),
+						 (yyvsp[(3) - (4)].number)->Value());
 		    }
 
-		  delete (yyvsp[-3].constant);
-		  delete (yyvsp[-1].number);
+		  delete (yyvsp[(1) - (4)].constant);
+		  delete (yyvsp[(3) - (4)].number);
 		}
     break;
 
   case 7:
 #line 243 "qa.y"
     {
-		  if ((yyvsp[-4].constant)->Value() != code_block->Atom() ||
-		      (yyvsp[-2].number)->Value() != code_block->Arity())
+		  if ((yyvsp[(3) - (7)].constant)->Value() != code_block->Atom() ||
+		      (yyvsp[(5) - (7)].number)->Value() != code_block->Arity())
 		    {
 		      Fatal(__FUNCTION__, 
 			    "atom or arity mismatch in predicate");
 		    }
 
-		  delete (yyvsp[-4].constant);
-		  delete (yyvsp[-2].number);
+		  delete (yyvsp[(3) - (7)].constant);
+		  delete (yyvsp[(5) - (7)].number);
 
 		  // Resolve all the fail label references
 		  labels->ResolveFail(*code_block);
@@ -1766,649 +2074,649 @@ yyreduce:
   case 12:
 #line 277 "qa.y"
     {
-		  labels->Resolve(*(yyvsp[-1].label_name), *code_block);
+		  labels->Resolve(*(yyvsp[(1) - (2)].label_name), *code_block);
 		}
     break;
 
   case 13:
 #line 283 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 14:
 #line 290 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 15:
 #line 297 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 16:
 #line 304 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 17:
 #line 311 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].constant)->Put(*code_block); delete (yyvsp[-3].constant);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].constant)->Put(*code_block); delete (yyvsp[(3) - (6)].constant);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 18:
 #line 318 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].constant)->Put(*code_block); delete (yyvsp[-3].constant);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].constant)->Put(*code_block); delete (yyvsp[(3) - (6)].constant);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 19:
 #line 324 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].double_num)->Put(*code_block); delete (yyvsp[-3].double_num);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].double_num)->Put(*code_block); delete (yyvsp[(3) - (6)].double_num);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 20:
 #line 330 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
-		  string* buff = (yyvsp[-3].string_value);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
+		  string* buff = (yyvsp[(3) - (6)].string_value);
 		  for (string::iterator iter = buff->begin();
 		       iter != buff->end(); iter++)
 		    code_block->Put(*iter);
 		  code_block->Put('\0');
-		  delete (yyvsp[-3].string_value);
+		  delete (yyvsp[(3) - (6)].string_value);
 		}
     break;
 
   case 21:
 #line 342 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 22:
 #line 348 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].number)->Put(*code_block); delete (yyvsp[(3) - (6)].number);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 23:
 #line 355 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 24:
 #line 362 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 25:
 #line 369 "qa.y"
     {
-		   (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		   (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		   (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		   (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		   (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		   (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		 }
     break;
 
   case 26:
 #line 376 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 27:
 #line 383 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 28:
 #line 389 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 29:
 #line 395 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].number)->Put(*code_block); delete (yyvsp[(3) - (6)].number);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 30:
 #line 402 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 31:
 #line 409 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 32:
 #line 416 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 33:
 #line 422 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 34:
 #line 429 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 35:
 #line 436 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 36:
 #line 443 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 37:
 #line 450 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].constant)->Put(*code_block); delete (yyvsp[-3].constant);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].constant)->Put(*code_block); delete (yyvsp[(3) - (6)].constant);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 38:
 #line 457 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].constant)->Put(*code_block); delete (yyvsp[-3].constant);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].constant)->Put(*code_block); delete (yyvsp[(3) - (6)].constant);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 39:
 #line 464 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].double_num)->Put(*code_block); delete (yyvsp[-3].double_num);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].double_num)->Put(*code_block); delete (yyvsp[(3) - (6)].double_num);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 40:
 #line 471 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
-		  string* buff = (yyvsp[-3].string_value);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
+		  string* buff = (yyvsp[(3) - (6)].string_value);
 		  for (string::iterator iter = buff->begin();
 		       iter != buff->end(); iter++)
 		    code_block->Put(*iter);
 		  code_block->Put('\0');
-		  delete (yyvsp[-3].string_value);
+		  delete (yyvsp[(3) - (6)].string_value);
 		}
     break;
 
   case 41:
 #line 483 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 42:
 #line 489 "qa.y"
     {
-		  (yyvsp[-7].instruction)->Put(*code_block); delete (yyvsp[-7].instruction);
-		  (yyvsp[-5].constant)->Put(*code_block); delete (yyvsp[-5].constant);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (8)].instruction)->Put(*code_block); delete (yyvsp[(1) - (8)].instruction);
+		  (yyvsp[(3) - (8)].constant)->Put(*code_block); delete (yyvsp[(3) - (8)].constant);
+		  (yyvsp[(5) - (8)].number)->Put(*code_block); delete (yyvsp[(5) - (8)].number);
+		  (yyvsp[(7) - (8)].reg)->Put(*code_block); delete (yyvsp[(7) - (8)].reg);
 		}
     break;
 
   case 43:
 #line 497 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].number)->Put(*code_block); delete (yyvsp[(3) - (6)].number);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 44:
 #line 504 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 45:
 #line 511 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 46:
 #line 518 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 47:
 #line 525 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].reg)->Put(*code_block); delete (yyvsp[(3) - (6)].reg);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 48:
 #line 532 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 49:
 #line 538 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 50:
 #line 544 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 51:
 #line 550 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 52:
 #line 556 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].constant)->Put(*code_block); delete (yyvsp[-1].constant);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].constant)->Put(*code_block); delete (yyvsp[(3) - (4)].constant);
 		}
     break;
 
   case 53:
 #line 562 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].constant)->Put(*code_block); delete (yyvsp[-1].constant);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].constant)->Put(*code_block); delete (yyvsp[(3) - (4)].constant);
 		}
     break;
 
   case 54:
 #line 568 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].double_num)->Put(*code_block); delete (yyvsp[-1].double_num);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].double_num)->Put(*code_block); delete (yyvsp[(3) - (4)].double_num);
 		}
     break;
 
   case 55:
 #line 574 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  string* buff = (yyvsp[-1].string_value);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  string* buff = (yyvsp[(3) - (4)].string_value);
 		  for (string::iterator iter = buff->begin();
 		       iter != buff->end(); iter++)
 		    code_block->Put(*iter);
 		  code_block->Put('\0');
-		  delete (yyvsp[-1].string_value);
+		  delete (yyvsp[(3) - (4)].string_value);
 		}
     break;
 
   case 56:
 #line 585 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].number)->Put(*code_block); delete (yyvsp[(3) - (4)].number);
 	        }
     break;
 
   case 57:
 #line 591 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 58:
 #line 597 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 59:
 #line 603 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 60:
 #line 609 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 	        }
     break;
 
   case 61:
 #line 615 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 62:
 #line 621 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 63:
 #line 627 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 64:
 #line 633 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 65:
 #line 639 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
         	}
     break;
 
   case 66:
 #line 645 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 	        }
     break;
 
   case 67:
 #line 651 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].constant)->Put(*code_block); delete (yyvsp[-1].constant);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].constant)->Put(*code_block); delete (yyvsp[(3) - (4)].constant);
 		}
     break;
 
   case 68:
 #line 657 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].constant)->Put(*code_block); delete (yyvsp[-1].constant);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].constant)->Put(*code_block); delete (yyvsp[(3) - (4)].constant);
 		}
     break;
 
   case 69:
 #line 663 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].double_num)->Put(*code_block); delete (yyvsp[-1].double_num);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].double_num)->Put(*code_block); delete (yyvsp[(3) - (4)].double_num);
 		}
     break;
 
   case 70:
 #line 669 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  string* buff = (yyvsp[-1].string_value);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  string* buff = (yyvsp[(3) - (4)].string_value);
 		  for (string::iterator iter = buff->begin();
 		       iter != buff->end(); iter++)
 		    code_block->Put(*iter);
 		  code_block->Put('\0');
-		  delete (yyvsp[-1].string_value);
+		  delete (yyvsp[(3) - (4)].string_value);
 		}
     break;
 
   case 71:
 #line 680 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].number)->Put(*code_block); delete (yyvsp[(3) - (4)].number);
 		}
     break;
 
   case 72:
 #line 686 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].number)->Put(*code_block); delete (yyvsp[(3) - (4)].number);
 		}
     break;
 
   case 73:
 #line 692 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].number)->Put(*code_block); delete (yyvsp[(3) - (4)].number);
 		}
     break;
 
   case 74:
 #line 698 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
   case 75:
 #line 703 "qa.y"
     {
-		  (yyvsp[-7].instruction)->Put(*code_block); delete (yyvsp[-7].instruction);
-		  (yyvsp[-5].constant)->Put(*code_block); delete (yyvsp[-5].constant);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (8)].instruction)->Put(*code_block); delete (yyvsp[(1) - (8)].instruction);
+		  (yyvsp[(3) - (8)].constant)->Put(*code_block); delete (yyvsp[(3) - (8)].constant);
+		  (yyvsp[(5) - (8)].number)->Put(*code_block); delete (yyvsp[(5) - (8)].number);
+		  (yyvsp[(7) - (8)].number)->Put(*code_block); delete (yyvsp[(7) - (8)].number);
 		}
     break;
 
   case 76:
 #line 711 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction); 
-		  (yyvsp[-3].address)->Put(*code_block); delete (yyvsp[-3].address);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction); 
+		  (yyvsp[(3) - (6)].address)->Put(*code_block); delete (yyvsp[(3) - (6)].address);
+		  (yyvsp[(5) - (6)].number)->Put(*code_block); delete (yyvsp[(5) - (6)].number);
 		}
     break;
 
   case 77:
 #line 718 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].address)->Put(*code_block); delete (yyvsp[-3].address);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].address)->Put(*code_block); delete (yyvsp[(3) - (6)].address);
+		  (yyvsp[(5) - (6)].number)->Put(*code_block); delete (yyvsp[(5) - (6)].number);
 		}
     break;
 
   case 78:
 #line 725 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].constant)->Put(*code_block); delete (yyvsp[-3].constant);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].constant)->Put(*code_block); delete (yyvsp[(3) - (6)].constant);
+		  (yyvsp[(5) - (6)].number)->Put(*code_block); delete (yyvsp[(5) - (6)].number);
 		}
     break;
 
   case 79:
 #line 732 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].address)->Put(*code_block); delete (yyvsp[-1].address);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].address)->Put(*code_block); delete (yyvsp[(3) - (4)].address);
 		}
     break;
 
   case 80:
 #line 738 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].address)->Put(*code_block); delete (yyvsp[-1].address);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].address)->Put(*code_block); delete (yyvsp[(3) - (4)].address);
 		}
     break;
 
   case 81:
 #line 744 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
   case 82:
 #line 749 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].address)->Put(*code_block); delete (yyvsp[-1].address);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].address)->Put(*code_block); delete (yyvsp[(3) - (4)].address);
 		}
     break;
 
   case 83:
 #line 755 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
   case 84:
 #line 760 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
   case 85:
 #line 765 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
   case 86:
 #line 770 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
@@ -2417,12 +2725,12 @@ yyreduce:
     {
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-5].instruction)->SizeOf() + (yyvsp[-3].number)->SizeOf() + Code::SIZE_OF_OFFSET;
+		      (yyvsp[(1) - (6)].instruction)->SizeOf() + (yyvsp[(3) - (6)].number)->SizeOf() + Code::SIZE_OF_OFFSET;
 
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].number)->Put(*code_block); delete (yyvsp[(3) - (6)].number);
 
-		  labels->AddReference(*(yyvsp[-1].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(5) - (6)].label_name), *code_block, jump_offset_base);
 		}
     break;
 
@@ -2431,17 +2739,17 @@ yyreduce:
     {
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-3].instruction)->SizeOf() + Code::SIZE_OF_OFFSET;
+		      (yyvsp[(1) - (4)].instruction)->SizeOf() + Code::SIZE_OF_OFFSET;
 
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  labels->AddReference(*(yyvsp[-1].label_name), *code_block, jump_offset_base);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  labels->AddReference(*(yyvsp[(3) - (4)].label_name), *code_block, jump_offset_base);
 		}
     break;
 
   case 89:
 #line 797 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
@@ -2450,12 +2758,12 @@ yyreduce:
     {
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-5].instruction)->SizeOf() + (yyvsp[-3].number)->SizeOf() + Code::SIZE_OF_OFFSET;
+		      (yyvsp[(1) - (6)].instruction)->SizeOf() + (yyvsp[(3) - (6)].number)->SizeOf() + Code::SIZE_OF_OFFSET;
 
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].number)->Put(*code_block); delete (yyvsp[(3) - (6)].number);
 
-		  labels->AddReference(*(yyvsp[-1].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(5) - (6)].label_name), *code_block, jump_offset_base);
 		}
     break;
 
@@ -2464,10 +2772,10 @@ yyreduce:
     {
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-3].instruction)->SizeOf() + Code::SIZE_OF_OFFSET;
+		      (yyvsp[(1) - (4)].instruction)->SizeOf() + Code::SIZE_OF_OFFSET;
 
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  labels->AddReference(*(yyvsp[-1].label_name), *code_block, jump_offset_base);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  labels->AddReference(*(yyvsp[(3) - (4)].label_name), *code_block, jump_offset_base);
 		}
     break;
 
@@ -2476,41 +2784,41 @@ yyreduce:
     {
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-3].instruction)->SizeOf() + Code::SIZE_OF_OFFSET;
+		      (yyvsp[(1) - (4)].instruction)->SizeOf() + Code::SIZE_OF_OFFSET;
 
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  labels->AddReference(*(yyvsp[-1].label_name), *code_block, jump_offset_base);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  labels->AddReference(*(yyvsp[(3) - (4)].label_name), *code_block, jump_offset_base);
 		}
     break;
 
   case 93:
 #line 834 "qa.y"
     {
-		  (yyvsp[0].instruction)->Put(*code_block); delete (yyvsp[0].instruction);
+		  (yyvsp[(1) - (1)].instruction)->Put(*code_block); delete (yyvsp[(1) - (1)].instruction);
 		}
     break;
 
   case 94:
 #line 839 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 95:
 #line 845 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
   case 96:
 #line 851 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].reg)->Put(*code_block); delete (yyvsp[(3) - (4)].reg);
 		}
     break;
 
@@ -2520,17 +2828,17 @@ yyreduce:
 		  // Calculate the pc value from which jumps will be offset
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-15].instruction)->SizeOf() + (yyvsp[-13].reg)->SizeOf() + 6 * Code::SIZE_OF_OFFSET;
+		      (yyvsp[(1) - (16)].instruction)->SizeOf() + (yyvsp[(3) - (16)].reg)->SizeOf() + 6 * Code::SIZE_OF_OFFSET;
 
-		  (yyvsp[-15].instruction)->Put(*code_block); delete (yyvsp[-15].instruction);
-		  (yyvsp[-13].reg)->Put(*code_block); delete (yyvsp[-13].reg);
+		  (yyvsp[(1) - (16)].instruction)->Put(*code_block); delete (yyvsp[(1) - (16)].instruction);
+		  (yyvsp[(3) - (16)].reg)->Put(*code_block); delete (yyvsp[(3) - (16)].reg);
 
-		  labels->AddReference(*(yyvsp[-11].label_name), *code_block, jump_offset_base);
-		  labels->AddReference(*(yyvsp[-9].label_name), *code_block, jump_offset_base);
-		  labels->AddReference(*(yyvsp[-7].label_name), *code_block, jump_offset_base);
-		  labels->AddReference(*(yyvsp[-5].label_name), *code_block, jump_offset_base);
-		  labels->AddReference(*(yyvsp[-3].label_name), *code_block, jump_offset_base);
-		  labels->AddReference(*(yyvsp[-1].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(5) - (16)].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(7) - (16)].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(9) - (16)].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(11) - (16)].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(13) - (16)].label_name), *code_block, jump_offset_base);
+		  labels->AddReference(*(yyvsp[(15) - (16)].label_name), *code_block, jump_offset_base);
 		}
     break;
 
@@ -2540,26 +2848,26 @@ yyreduce:
 		  // Calculate the pc value from which jumps will be offset
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-12].instruction)->SizeOf() + (yyvsp[-10].reg)->SizeOf() + (yyvsp[-8].table_size)->SizeOf();
+		      (yyvsp[(1) - (13)].instruction)->SizeOf() + (yyvsp[(3) - (13)].reg)->SizeOf() + (yyvsp[(5) - (13)].table_size)->SizeOf();
 
-		  (yyvsp[-12].instruction)->Put(*code_block); delete (yyvsp[-12].instruction);
-		  (yyvsp[-10].reg)->Put(*code_block); delete (yyvsp[-10].reg);
-		  (yyvsp[-8].table_size)->Put(*code_block); 
+		  (yyvsp[(1) - (13)].instruction)->Put(*code_block); delete (yyvsp[(1) - (13)].instruction);
+		  (yyvsp[(3) - (13)].reg)->Put(*code_block); delete (yyvsp[(3) - (13)].reg);
+		  (yyvsp[(5) - (13)].table_size)->Put(*code_block); 
 
-		  if (*(yyvsp[-5].atom_name) != "$default")
+		  if (*(yyvsp[(8) - (13)].atom_name) != "$default")
 		    {
 		      Fatal(__FUNCTION__,
 			    "invalid default atom in switch_on_structure");
 		    }
 
 		 ConstantSwitchTable switch_table(jump_offset_base,
-							  (yyvsp[-8].table_size), (yyvsp[-3].label_name), (yyvsp[-2].cl_list));
+							  (yyvsp[(5) - (13)].table_size), (yyvsp[(10) - (13)].label_name), (yyvsp[(11) - (13)].cl_list));
 
 		  switch_table.Put(*code_block, *labels);
 
-		  delete (yyvsp[-8].table_size);
-		  delete (yyvsp[-3].label_name);
-		  delete (yyvsp[-2].cl_list);
+		  delete (yyvsp[(5) - (13)].table_size);
+		  delete (yyvsp[(10) - (13)].label_name);
+		  delete (yyvsp[(11) - (13)].cl_list);
 		}
     break;
 
@@ -2569,26 +2877,26 @@ yyreduce:
 		  // Calculate the pc value from which jumps will be offset
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-12].instruction)->SizeOf() + (yyvsp[-10].reg)->SizeOf() + (yyvsp[-8].table_size)->SizeOf();
+		      (yyvsp[(1) - (13)].instruction)->SizeOf() + (yyvsp[(3) - (13)].reg)->SizeOf() + (yyvsp[(5) - (13)].table_size)->SizeOf();
 
-		  (yyvsp[-12].instruction)->Put(*code_block); delete (yyvsp[-12].instruction);
-		  (yyvsp[-10].reg)->Put(*code_block); delete (yyvsp[-10].reg);
-		  (yyvsp[-8].table_size)->Put(*code_block);
+		  (yyvsp[(1) - (13)].instruction)->Put(*code_block); delete (yyvsp[(1) - (13)].instruction);
+		  (yyvsp[(3) - (13)].reg)->Put(*code_block); delete (yyvsp[(3) - (13)].reg);
+		  (yyvsp[(5) - (13)].table_size)->Put(*code_block);
 
-		  if (*(yyvsp[-5].atom_name) != "$default")
+		  if (*(yyvsp[(8) - (13)].atom_name) != "$default")
 		    {
 		      Fatal(__FUNCTION__,
 			    "invalid default atom in switch_on_structure");
 		    }
 
 		  AtomSwitchTable switch_table(jump_offset_base,
-							   (yyvsp[-8].table_size), (yyvsp[-3].label_name), (yyvsp[-2].aal_list));
+							   (yyvsp[(5) - (13)].table_size), (yyvsp[(10) - (13)].label_name), (yyvsp[(11) - (13)].aal_list));
 
 		  switch_table.Put(*code_block, *labels);
 
-		  delete (yyvsp[-8].table_size);
-		  delete (yyvsp[-3].label_name);
-		  delete (yyvsp[-2].aal_list);
+		  delete (yyvsp[(5) - (13)].table_size);
+		  delete (yyvsp[(10) - (13)].label_name);
+		  delete (yyvsp[(11) - (13)].aal_list);
 		}
     break;
 
@@ -2598,89 +2906,89 @@ yyreduce:
 		  // Calculate the pc value from which jumps will be offset
 		  unsigned jump_offset_base =
 		    code_block->Current() +
-		      (yyvsp[-12].instruction)->SizeOf() + (yyvsp[-10].reg)->SizeOf() + (yyvsp[-8].table_size)->SizeOf();
+		      (yyvsp[(1) - (13)].instruction)->SizeOf() + (yyvsp[(3) - (13)].reg)->SizeOf() + (yyvsp[(5) - (13)].table_size)->SizeOf();
 
-		  (yyvsp[-12].instruction)->Put(*code_block); delete (yyvsp[-12].instruction);
-		  (yyvsp[-10].reg)->Put(*code_block); delete (yyvsp[-10].reg);
-		  (yyvsp[-8].table_size)->Put(*code_block);
+		  (yyvsp[(1) - (13)].instruction)->Put(*code_block); delete (yyvsp[(1) - (13)].instruction);
+		  (yyvsp[(3) - (13)].reg)->Put(*code_block); delete (yyvsp[(3) - (13)].reg);
+		  (yyvsp[(5) - (13)].table_size)->Put(*code_block);
 
-		  if (*(yyvsp[-5].atom_name) != "$default")
+		  if (*(yyvsp[(8) - (13)].atom_name) != "$default")
 		    {
 		      Fatal(__FUNCTION__,
 			    "invalid default atom in switch_on_quantifier");
 		    }
 
 		  AtomSwitchTable switch_table(jump_offset_base,
-							   (yyvsp[-8].table_size), (yyvsp[-3].label_name), (yyvsp[-2].aal_list));
+							   (yyvsp[(5) - (13)].table_size), (yyvsp[(10) - (13)].label_name), (yyvsp[(11) - (13)].aal_list));
 
 		  switch_table.Put(*code_block, *labels);
 
-		  delete (yyvsp[-8].table_size);
-		  delete (yyvsp[-3].label_name);
-		  delete (yyvsp[-2].aal_list);
+		  delete (yyvsp[(5) - (13)].table_size);
+		  delete (yyvsp[(10) - (13)].label_name);
+		  delete (yyvsp[(11) - (13)].aal_list);
 		}
     break;
 
   case 101:
 #line 965 "qa.y"
     {
-		  (yyvsp[-3].instruction)->Put(*code_block); delete (yyvsp[-3].instruction);
-		  (yyvsp[-1].number)->Put(*code_block); delete (yyvsp[-1].number);
+		  (yyvsp[(1) - (4)].instruction)->Put(*code_block); delete (yyvsp[(1) - (4)].instruction);
+		  (yyvsp[(3) - (4)].number)->Put(*code_block); delete (yyvsp[(3) - (4)].number);
 		}
     break;
 
   case 102:
 #line 971 "qa.y"
     {
-		  (yyvsp[-5].instruction)->Put(*code_block); delete (yyvsp[-5].instruction);
-		  (yyvsp[-3].number)->Put(*code_block); delete (yyvsp[-3].number);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (6)].instruction)->Put(*code_block); delete (yyvsp[(1) - (6)].instruction);
+		  (yyvsp[(3) - (6)].number)->Put(*code_block); delete (yyvsp[(3) - (6)].number);
+		  (yyvsp[(5) - (6)].reg)->Put(*code_block); delete (yyvsp[(5) - (6)].reg);
 		}
     break;
 
   case 103:
 #line 978 "qa.y"
     {
-		  (yyvsp[-7].instruction)->Put(*code_block); delete (yyvsp[-7].instruction);
-		  (yyvsp[-5].number)->Put(*code_block); delete (yyvsp[-5].number);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (8)].instruction)->Put(*code_block); delete (yyvsp[(1) - (8)].instruction);
+		  (yyvsp[(3) - (8)].number)->Put(*code_block); delete (yyvsp[(3) - (8)].number);
+		  (yyvsp[(5) - (8)].reg)->Put(*code_block); delete (yyvsp[(5) - (8)].reg);
+		  (yyvsp[(7) - (8)].reg)->Put(*code_block); delete (yyvsp[(7) - (8)].reg);
 		}
     break;
 
   case 104:
 #line 986 "qa.y"
     {
-		  (yyvsp[-9].instruction)->Put(*code_block); delete (yyvsp[-9].instruction);
-		  (yyvsp[-7].number)->Put(*code_block); delete (yyvsp[-7].number);
-		  (yyvsp[-5].reg)->Put(*code_block); delete (yyvsp[-5].reg);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (10)].instruction)->Put(*code_block); delete (yyvsp[(1) - (10)].instruction);
+		  (yyvsp[(3) - (10)].number)->Put(*code_block); delete (yyvsp[(3) - (10)].number);
+		  (yyvsp[(5) - (10)].reg)->Put(*code_block); delete (yyvsp[(5) - (10)].reg);
+		  (yyvsp[(7) - (10)].reg)->Put(*code_block); delete (yyvsp[(7) - (10)].reg);
+		  (yyvsp[(9) - (10)].reg)->Put(*code_block); delete (yyvsp[(9) - (10)].reg);
 		}
     break;
 
   case 105:
 #line 996 "qa.y"
     {
-		  (yyvsp[-11].instruction)->Put(*code_block); delete (yyvsp[-11].instruction);
-		  (yyvsp[-9].number)->Put(*code_block); delete (yyvsp[-9].number);
-		  (yyvsp[-7].reg)->Put(*code_block); delete (yyvsp[-7].reg);
-		  (yyvsp[-5].reg)->Put(*code_block); delete (yyvsp[-5].reg);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (12)].instruction)->Put(*code_block); delete (yyvsp[(1) - (12)].instruction);
+		  (yyvsp[(3) - (12)].number)->Put(*code_block); delete (yyvsp[(3) - (12)].number);
+		  (yyvsp[(5) - (12)].reg)->Put(*code_block); delete (yyvsp[(5) - (12)].reg);
+		  (yyvsp[(7) - (12)].reg)->Put(*code_block); delete (yyvsp[(7) - (12)].reg);
+		  (yyvsp[(9) - (12)].reg)->Put(*code_block); delete (yyvsp[(9) - (12)].reg);
+		  (yyvsp[(11) - (12)].reg)->Put(*code_block); delete (yyvsp[(11) - (12)].reg);
 		}
     break;
 
   case 106:
 #line 1006 "qa.y"
     {
-		  (yyvsp[-13].instruction)->Put(*code_block); delete (yyvsp[-13].instruction);
-		  (yyvsp[-11].number)->Put(*code_block); delete (yyvsp[-11].number);
-		  (yyvsp[-9].reg)->Put(*code_block); delete (yyvsp[-9].reg);
-		  (yyvsp[-7].reg)->Put(*code_block); delete (yyvsp[-7].reg);
-		  (yyvsp[-5].reg)->Put(*code_block); delete (yyvsp[-5].reg);
-		  (yyvsp[-3].reg)->Put(*code_block); delete (yyvsp[-3].reg);
-		  (yyvsp[-1].reg)->Put(*code_block); delete (yyvsp[-1].reg);
+		  (yyvsp[(1) - (14)].instruction)->Put(*code_block); delete (yyvsp[(1) - (14)].instruction);
+		  (yyvsp[(3) - (14)].number)->Put(*code_block); delete (yyvsp[(3) - (14)].number);
+		  (yyvsp[(5) - (14)].reg)->Put(*code_block); delete (yyvsp[(5) - (14)].reg);
+		  (yyvsp[(7) - (14)].reg)->Put(*code_block); delete (yyvsp[(7) - (14)].reg);
+		  (yyvsp[(9) - (14)].reg)->Put(*code_block); delete (yyvsp[(9) - (14)].reg);
+		  (yyvsp[(11) - (14)].reg)->Put(*code_block); delete (yyvsp[(11) - (14)].reg);
+		  (yyvsp[(13) - (14)].reg)->Put(*code_block); delete (yyvsp[(13) - (14)].reg);
 		}
     break;
 
@@ -2694,7 +3002,7 @@ yyreduce:
   case 108:
 #line 1022 "qa.y"
     {
-		  (yyval.cl_list) = (yyvsp[0].cl_list);
+		  (yyval.cl_list) = (yyvsp[(2) - (2)].cl_list);
 		}
     break;
 
@@ -2703,7 +3011,7 @@ yyreduce:
     {
 		  vector<ConstantLabel *> *tmp = new vector<ConstantLabel *>;
 
-		  tmp->push_back((yyvsp[0].cl));
+		  tmp->push_back((yyvsp[(1) - (1)].cl));
 
 		  (yyval.cl_list) = tmp;
 		}
@@ -2712,16 +3020,16 @@ yyreduce:
   case 110:
 #line 1036 "qa.y"
     {
-		  (yyvsp[-2].cl_list)->push_back((yyvsp[0].cl));
+		  (yyvsp[(1) - (3)].cl_list)->push_back((yyvsp[(3) - (3)].cl));
 
-		  (yyval.cl_list) = (yyvsp[-2].cl_list);
+		  (yyval.cl_list) = (yyvsp[(1) - (3)].cl_list);
 		}
     break;
 
   case 111:
 #line 1044 "qa.y"
     {
-		  (yyval.cl) = new ConstantLabel((yyvsp[-2].constant), (yyvsp[0].label_name));
+		  (yyval.cl) = new ConstantLabel((yyvsp[(1) - (3)].constant), (yyvsp[(3) - (3)].label_name));
 		  
 		}
     break;
@@ -2736,7 +3044,7 @@ yyreduce:
   case 113:
 #line 1055 "qa.y"
     {
-		  (yyval.aal_list) = (yyvsp[0].aal_list);
+		  (yyval.aal_list) = (yyvsp[(2) - (2)].aal_list);
 		}
     break;
 
@@ -2745,7 +3053,7 @@ yyreduce:
     {
 		  vector<AtomArityLabel *> *tmp = new vector<AtomArityLabel *>;
 
-		  tmp->push_back((yyvsp[0].aal));
+		  tmp->push_back((yyvsp[(1) - (1)].aal));
 
 		  (yyval.aal_list) = tmp;
 		}
@@ -2754,22 +3062,22 @@ yyreduce:
   case 115:
 #line 1069 "qa.y"
     {
-		  (yyvsp[-2].aal_list)->push_back((yyvsp[0].aal));
-		  (yyval.aal_list) = (yyvsp[-2].aal_list);
+		  (yyvsp[(1) - (3)].aal_list)->push_back((yyvsp[(3) - (3)].aal));
+		  (yyval.aal_list) = (yyvsp[(1) - (3)].aal_list);
 		}
     break;
 
   case 116:
 #line 1076 "qa.y"
     {
-		  ASMStringPointer asm_atom((yyvsp[-4].atom_name));
+		  ASMStringPointer asm_atom((yyvsp[(1) - (5)].atom_name));
 		  const ASMLoc loc = asm_string_table->lookup(asm_atom);
 
 		  ASMInt<Code::ConstantSizedType> *atom = 
 		    new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
 
 
-		  (yyval.aal) = new AtomArityLabel(atom, (yyvsp[-2].number), (yyvsp[0].label_name));
+		  (yyval.aal) = new AtomArityLabel(atom, (yyvsp[(3) - (5)].number), (yyvsp[(5) - (5)].label_name));
 
 		}
     break;
@@ -2784,7 +3092,7 @@ yyreduce:
   case 118:
 #line 1094 "qa.y"
     {
-		  (yyval.aal_list) = (yyvsp[0].aal_list);
+		  (yyval.aal_list) = (yyvsp[(2) - (2)].aal_list);
 		}
     break;
 
@@ -2793,7 +3101,7 @@ yyreduce:
     {
 		  vector<AtomArityLabel *> *tmp = new vector<AtomArityLabel *>;
 
-		  tmp->push_back((yyvsp[0].aal));
+		  tmp->push_back((yyvsp[(1) - (1)].aal));
 
 		  (yyval.aal_list) = tmp;
 		}
@@ -2802,32 +3110,32 @@ yyreduce:
   case 120:
 #line 1108 "qa.y"
     {
-		  (yyvsp[-2].aal_list)->push_back((yyvsp[0].aal));
+		  (yyvsp[(1) - (3)].aal_list)->push_back((yyvsp[(3) - (3)].aal));
 
-		  (yyval.aal_list) = (yyvsp[-2].aal_list);
+		  (yyval.aal_list) = (yyvsp[(1) - (3)].aal_list);
 		}
     break;
 
   case 121:
 #line 1116 "qa.y"
     {
-		  ASMStringPointer asm_atom((yyvsp[-4].atom_name));
+		  ASMStringPointer asm_atom((yyvsp[(1) - (5)].atom_name));
 		  const ASMLoc loc = asm_string_table->lookup(asm_atom);
 
 		  ASMInt<Code::ConstantSizedType> *atom = 
 		    new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
 
-		  (yyval.aal) = new AtomArityLabel(atom, (yyvsp[-2].number), (yyvsp[0].label_name));
+		  (yyval.aal) = new AtomArityLabel(atom, (yyvsp[(3) - (5)].number), (yyvsp[(5) - (5)].label_name));
 		}
     break;
 
   case 123:
 #line 1129 "qa.y"
     {
-		  if (*(yyvsp[0].atom_name) != "fail")
+		  if (*(yyvsp[(1) - (1)].atom_name) != "fail")
 		    {
 		      FatalS(__FUNCTION__, "invalid switch label ",
-			     (yyvsp[0].atom_name)->c_str());
+			     (yyvsp[(1) - (1)].atom_name)->c_str());
 		    }
 		}
     break;
@@ -2835,7 +3143,7 @@ yyreduce:
   case 124:
 #line 1139 "qa.y"
     {
-		  ASMStringPointer asm_atom((yyvsp[0].atom_name));
+		  ASMStringPointer asm_atom((yyvsp[(1) - (1)].atom_name));
 		  const ASMLoc loc = asm_string_table->lookup(asm_atom);
 
 		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
@@ -2845,7 +3153,7 @@ yyreduce:
   case 125:
 #line 1146 "qa.y"
     {
-		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>((word32)((yyvsp[0].number_value)), ConstEntry::INTEGER_TYPE);
+		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>((word32)((yyvsp[(1) - (1)].number_value)), ConstEntry::INTEGER_TYPE);
 
 		}
     break;
@@ -2853,7 +3161,7 @@ yyreduce:
   case 126:
 #line 1151 "qa.y"
     {
-		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>((word32)((yyvsp[0].number_value)), ConstEntry::INTEGER_TYPE);
+		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>((word32)((yyvsp[(2) - (2)].number_value)), ConstEntry::INTEGER_TYPE);
 
 		}
     break;
@@ -2861,7 +3169,7 @@ yyreduce:
   case 127:
 #line 1156 "qa.y"
     {
-		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>((word32)(-(yyvsp[0].number_value)), ConstEntry::INTEGER_TYPE);
+		  (yyval.constant) = new ASMInt<Code::ConstantSizedType>((word32)(-(yyvsp[(2) - (2)].number_value)), ConstEntry::INTEGER_TYPE);
 
 		}
     break;
@@ -2869,7 +3177,7 @@ yyreduce:
   case 128:
 #line 1163 "qa.y"
     {
-		  (yyval.double_num) = new ASMInt<double>((double)((yyvsp[0].double_value)), ConstEntry::INTEGER_TYPE);
+		  (yyval.double_num) = new ASMInt<double>((double)((yyvsp[(1) - (1)].double_value)), ConstEntry::INTEGER_TYPE);
 
 		}
     break;
@@ -2877,7 +3185,7 @@ yyreduce:
   case 129:
 #line 1168 "qa.y"
     {
-		  (yyval.double_num) = new ASMInt<double>((double)((yyvsp[0].double_value)), ConstEntry::INTEGER_TYPE);
+		  (yyval.double_num) = new ASMInt<double>((double)((yyvsp[(2) - (2)].double_value)), ConstEntry::INTEGER_TYPE);
 
 		}
     break;
@@ -2885,7 +3193,7 @@ yyreduce:
   case 130:
 #line 1173 "qa.y"
     {
-		  (yyval.double_num) = new ASMInt<double>((double)(-(yyvsp[0].double_value)), ConstEntry::INTEGER_TYPE);
+		  (yyval.double_num) = new ASMInt<double>((double)(-(yyvsp[(2) - (2)].double_value)), ConstEntry::INTEGER_TYPE);
 
 		}
     break;
@@ -2893,7 +3201,7 @@ yyreduce:
   case 131:
 #line 1179 "qa.y"
     {
-		  (yyval.number) = new ASMInt<Code::NumberSizedType>((yyvsp[0].number_value));
+		  (yyval.number) = new ASMInt<Code::NumberSizedType>((yyvsp[(1) - (1)].number_value));
 
 		}
     break;
@@ -2901,7 +3209,7 @@ yyreduce:
   case 132:
 #line 1186 "qa.y"
     {
-		  (yyval.reg) = new ASMInt<Code::RegisterSizedType>((yyvsp[0].number_value));
+		  (yyval.reg) = new ASMInt<Code::RegisterSizedType>((yyvsp[(1) - (1)].number_value));
 		  
 		}
     break;
@@ -2909,7 +3217,7 @@ yyreduce:
   case 133:
 #line 1193 "qa.y"
     {
-		  (yyval.address) = new ASMInt<Code::AddressSizedType>((yyvsp[0].number_value));
+		  (yyval.address) = new ASMInt<Code::AddressSizedType>((yyvsp[(1) - (1)].number_value));
 
 		}
     break;
@@ -2917,7 +3225,7 @@ yyreduce:
   case 134:
 #line 1200 "qa.y"
     {
-		  ASMStringPointer asm_atom((yyvsp[0].atom_name));
+		  ASMStringPointer asm_atom((yyvsp[(1) - (1)].atom_name));
 		  const ASMLoc loc = asm_string_table->lookup(asm_atom);
 		  (yyval.constant) = new ASMInt<Code::PredSizedType>(loc);
 		}
@@ -2926,21 +3234,20 @@ yyreduce:
   case 135:
 #line 1208 "qa.y"
     {
-		  (yyval.table_size) = new ASMInt<Code::TableSizeSizedType>((yyvsp[0].number_value));
+		  (yyval.table_size) = new ASMInt<Code::TableSizeSizedType>((yyvsp[(1) - (1)].number_value));
 
 		}
     break;
 
 
+/* Line 1267 of yacc.c.  */
+#line 3245 "qa.cc"
+      default: break;
     }
+  YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
 
-/* Line 1037 of yacc.c.  */
-#line 2939 "qa.cc"
-
-  yyvsp -= yylen;
-  yyssp -= yylen;
-
-
+  YYPOPSTACK (yylen);
+  yylen = 0;
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
@@ -2969,66 +3276,41 @@ yyerrlab:
   if (!yyerrstatus)
     {
       ++yynerrs;
-#if YYERROR_VERBOSE
-      yyn = yypact[yystate];
-
-      if (YYPACT_NINF < yyn && yyn < YYLAST)
-	{
-	  YYSIZE_T yysize = 0;
-	  int yytype = YYTRANSLATE (yychar);
-	  const char* yyprefix;
-	  char *yymsg;
-	  int yyx;
-
-	  /* Start YYX at -YYN if negative to avoid negative indexes in
-	     YYCHECK.  */
-	  int yyxbegin = yyn < 0 ? -yyn : 0;
-
-	  /* Stay within bounds of both yycheck and yytname.  */
-	  int yychecklim = YYLAST - yyn;
-	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-	  int yycount = 0;
-
-	  yyprefix = ", expecting ";
-	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	      {
-		yysize += yystrlen (yyprefix) + yystrlen (yytname [yyx]);
-		yycount += 1;
-		if (yycount == 5)
-		  {
-		    yysize = 0;
-		    break;
-		  }
-	      }
-	  yysize += (sizeof ("syntax error, unexpected ")
-		     + yystrlen (yytname[yytype]));
-	  yymsg = (char *) YYSTACK_ALLOC (yysize);
-	  if (yymsg != 0)
-	    {
-	      char *yyp = yystpcpy (yymsg, "syntax error, unexpected ");
-	      yyp = yystpcpy (yyp, yytname[yytype]);
-
-	      if (yycount < 5)
-		{
-		  yyprefix = ", expecting ";
-		  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-		    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-		      {
-			yyp = yystpcpy (yyp, yyprefix);
-			yyp = yystpcpy (yyp, yytname[yyx]);
-			yyprefix = " or ";
-		      }
-		}
-	      yyerror (yymsg);
+#if ! YYERROR_VERBOSE
+      yyerror (YY_("syntax error"));
+#else
+      {
+	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
+	if (yymsg_alloc < yysize && yymsg_alloc < YYSTACK_ALLOC_MAXIMUM)
+	  {
+	    YYSIZE_T yyalloc = 2 * yysize;
+	    if (! (yysize <= yyalloc && yyalloc <= YYSTACK_ALLOC_MAXIMUM))
+	      yyalloc = YYSTACK_ALLOC_MAXIMUM;
+	    if (yymsg != yymsgbuf)
 	      YYSTACK_FREE (yymsg);
-	    }
-	  else
-	    yyerror ("syntax error; also virtual memory exhausted");
-	}
-      else
-#endif /* YYERROR_VERBOSE */
-	yyerror ("syntax error");
+	    yymsg = (char *) YYSTACK_ALLOC (yyalloc);
+	    if (yymsg)
+	      yymsg_alloc = yyalloc;
+	    else
+	      {
+		yymsg = yymsgbuf;
+		yymsg_alloc = sizeof yymsgbuf;
+	      }
+	  }
+
+	if (0 < yysize && yysize <= yymsg_alloc)
+	  {
+	    (void) yysyntax_error (yymsg, yystate, yychar);
+	    yyerror (yymsg);
+	  }
+	else
+	  {
+	    yyerror (YY_("syntax error"));
+	    if (yysize != 0)
+	      goto yyexhaustedlab;
+	  }
+      }
+#endif
     }
 
 
@@ -3039,23 +3321,15 @@ yyerrlab:
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
-        {
-          /* If at end of input, pop the error token,
-	     then the rest of the stack, then return failure.  */
+	{
+	  /* Return failure if at end of input.  */
 	  if (yychar == YYEOF)
-	     for (;;)
-	       {
-
-		 YYPOPSTACK;
-		 if (yyssp == yyss)
-		   YYABORT;
-		 yydestruct ("Error: popping",
-                             yystos[*yyssp], yyvsp);
-	       }
-        }
+	    YYABORT;
+	}
       else
 	{
-	  yydestruct ("Error: discarding", yytoken, &yylval);
+	  yydestruct ("Error: discarding",
+		      yytoken, &yylval);
 	  yychar = YYEMPTY;
 	}
     }
@@ -3070,15 +3344,17 @@ yyerrlab:
 `---------------------------------------------------*/
 yyerrorlab:
 
-#ifdef __GNUC__
-  /* Pacify GCC when the user code never invokes YYERROR and the label
-     yyerrorlab therefore never appears in user code.  */
-  if (0)
+  /* Pacify compilers like GCC when the user code never invokes
+     YYERROR and the label yyerrorlab therefore never appears in user
+     code.  */
+  if (/*CONSTCOND*/ 0)
      goto yyerrorlab;
-#endif
 
-yyvsp -= yylen;
-  yyssp -= yylen;
+  /* Do not reclaim the symbols of the rule which action triggered
+     this YYERROR.  */
+  YYPOPSTACK (yylen);
+  yylen = 0;
+  YY_STACK_PRINT (yyss, yyssp);
   yystate = *yyssp;
   goto yyerrlab1;
 
@@ -3108,8 +3384,9 @@ yyerrlab1:
 	YYABORT;
 
 
-      yydestruct ("Error: popping", yystos[yystate], yyvsp);
-      YYPOPSTACK;
+      yydestruct ("Error: popping",
+		  yystos[yystate], yyvsp);
+      YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
@@ -3120,7 +3397,7 @@ yyerrlab1:
   *++yyvsp = yylval;
 
 
-  /* Shift the error token. */
+  /* Shift the error token.  */
   YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
 
   yystate = yyn;
@@ -3138,28 +3415,43 @@ yyacceptlab:
 | yyabortlab -- YYABORT comes here.  |
 `-----------------------------------*/
 yyabortlab:
-  yydestruct ("Error: discarding lookahead",
-              yytoken, &yylval);
-  yychar = YYEMPTY;
   yyresult = 1;
   goto yyreturn;
 
 #ifndef yyoverflow
-/*----------------------------------------------.
-| yyoverflowlab -- parser overflow comes here.  |
-`----------------------------------------------*/
-yyoverflowlab:
-  yyerror ("parser stack overflow");
+/*-------------------------------------------------.
+| yyexhaustedlab -- memory exhaustion comes here.  |
+`-------------------------------------------------*/
+yyexhaustedlab:
+  yyerror (YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
 
 yyreturn:
+  if (yychar != YYEOF && yychar != YYEMPTY)
+     yydestruct ("Cleanup: discarding lookahead",
+		 yytoken, &yylval);
+  /* Do not reclaim the symbols of the rule which action triggered
+     this YYABORT or YYACCEPT.  */
+  YYPOPSTACK (yylen);
+  YY_STACK_PRINT (yyss, yyssp);
+  while (yyssp != yyss)
+    {
+      yydestruct ("Cleanup: popping",
+		  yystos[*yyssp], yyvsp);
+      YYPOPSTACK (1);
+    }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-  return yyresult;
+#if YYERROR_VERBOSE
+  if (yymsg != yymsgbuf)
+    YYSTACK_FREE (yymsg);
+#endif
+  /* Make sure YYID is used.  */
+  return YYID (yyresult);
 }
 
 
@@ -3252,5 +3544,4 @@ yyerror(const char *s)
   Fatal(__FUNCTION__, s);
   return(1);
 }
-
 

@@ -20,7 +20,8 @@ export SOURCES.library	= \
 	string_map.cc \
 	string_table.cc \
 	system_support.cc \
-	tcp.cc
+	tcp.cc \
+	write_support.cc
 
 export BASES.library	= $(basename $(SOURCES.library))
 export OBJECTS.library = $(addsuffix .o,$(BASES.library))

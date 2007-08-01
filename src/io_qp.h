@@ -78,18 +78,20 @@
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
-#include <string.h>
+#include <string>
+#include <list>
 
+#include <stdlib.h>
+#include <string.h>
 
 #include "config.h"
 #include "objects.h"
 #include "defs.h"
 
-#ifdef ICM_DEF
-#include "icm_environment.h"
-#endif
+using namespace std;
 
 class Thread;
+class PedroMessageChannel;
 
 enum AccessMode {
   AM_READ = 0,
@@ -422,12 +424,10 @@ class QPStream
 
   virtual bool good(void) = 0;
 
-#ifdef ICM_DEF
-  virtual icmHandle getSenderHandle(void)
+  virtual string getSender(void)
     {
-      abort(); return icmDummyHandle();
+      abort(); return "";
     }
-#endif
 
 };
 
@@ -591,25 +591,26 @@ class QPifdstream: public QPStream
 
 };
 
-#ifdef ICM_DEF
 //
-// QP version of streams using ICM messages - an istringstream is
+// QP version of streams using Pedro P2P messages - an istringstream is
 // used as a buffer.
 //
 class QPimstream: public QPStream
 {
  private:
   istringstream stream;
-  // the icm handle for incoming messages.
-  icmHandle sender_handle;
+  // the handle for incoming messages (as a string).
+  string sender;
   int iom_fd;
 
   list<string *> message_strings;
 
+  PedroMessageChannel* pedro_channel;
+
   bool done_get;
 
  public:
-  explicit QPimstream(icmHandle handle); 
+  QPimstream(string addr, PedroMessageChannel* pc); 
 
   ~QPimstream() { }
   
@@ -656,10 +657,9 @@ class QPimstream: public QPStream
   bool good(void)
     { return stream.good(); }
 
-  icmHandle getSenderHandle(void);
+  string getSender() { return sender; }
 
 };
-#endif
 
 
 // OUTPUT STREAMS
@@ -723,13 +723,14 @@ class QPostream: public QPStream
 
   void operator<<(const double n)
     {
-      (*stream) << n; 
-      int prec = stream->precision();
-      double absn = fabs(n);
+      char buff[20];
+      sprintf(buff, "%g", n);
+      if (strpbrk(buff, ".e") == NULL) {
+        strcat(buff, ".0");
+      }
 
-      if ((n == 0) || 
-          ((floor(absn) > 0) && ((absn - floor(absn)) <= 5*pow(10.0, -prec))))
-             (*stream) << ".0";
+      (*stream) << buff; 
+
     }
 
   void flush(void)
@@ -795,7 +796,13 @@ class QPostringstream: public QPStream
 
   void operator<<(const double n)
     {
-      stream << showpoint << n << noshowpoint;
+      char buff[20];
+      sprintf(buff, "%g", n);
+      if (strpbrk(buff, ".e") == NULL) {
+        strcat(buff, ".0");
+      }
+
+      stream << buff; 
     }
 
  const string str(void)
@@ -865,26 +872,25 @@ class QPofdstream: public QPStream
 
 };
 
-#ifdef ICM_DEF
 //
-// QP version of streams using ICM messages - an ostringstream is
+// QP version of streams using Pedro P2P messages - an ostringstream is
 // used as a buffer.
 //
 class QPomstream: public QPStream
 {
  private:
   ostringstream stream;
-  icmHandle to_handle;
-  Thread* sender_thread;
-  ICMEnvironment* icm_environment;
-
+  PedroMessageChannel* pedro_channel;
+ 
   bool auto_flush;
+  string msg_header;
+
   void send(void);
 
 
  public:
-  QPomstream(icmHandle handle, Thread* thread, 
-	     ICMEnvironment* icm_env); 
+  QPomstream(Object* to_th, Object* to_proc, Object* to_mach, \
+	     PedroMessageChannel* pc);
 
   ~QPomstream() {}
 
@@ -925,7 +931,6 @@ class QPomstream: public QPStream
   bool set_autoflush(void);
 
 };
-#endif
 
 
 //
@@ -984,9 +989,7 @@ public:
 
   bool reset_std_stream(int stdstrm);
 
-#ifdef ICM_DEF
-  bool updateStreamMessages(icmHandle, icmMsg);
-#endif
+  bool updateStreamMessages(string& from, string& msg);
   
 };
 

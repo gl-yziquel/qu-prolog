@@ -169,7 +169,7 @@ Thread::psi_object_variable_name_to_prefix(Object *& object1,
 
   assert(val1->isAtom());
 
-  const char *s = atoms->getAtomString(val1);
+  const char *s = OBJECT_CAST(Atom*, val1)->getName();
 
   int i;
 
@@ -224,7 +224,7 @@ Thread::psi_valid_object_variable_prefix(Object *& object1)
  
   assert(val1->isAtom());
   
-  const char *s = atoms->getAtomString(val1);
+  const char *s = OBJECT_CAST(Atom*, val1)->getName();
 
   size_t i;
 

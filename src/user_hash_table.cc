@@ -24,12 +24,14 @@ void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
     }
   // Garbage Collect?
   if (userhashheap->doGarbageCollection())
+  {
     garbageCollect();
-  
+   } 
   UserHashEntry* new_entry = new UserHashEntry((word32)h1, sh2, isint);
   heapobject* old_top = userhashheap->getTop();
   Object* copy = heap.copyTerm(term, *userhashheap);
-  int size = userhashheap->getTop() - old_top;
+  heapobject* new_top = userhashheap->getTop();
+  int size = new_top - old_top;
   index = hash_table.search(*new_entry);
   if (index == -1)
     {
@@ -133,13 +135,13 @@ void UserHashState::garbageCollect(void)
   Heap* newheap;
   if (total_garbage * 2 > heap_size)
     {
-      newheap = new Heap("User Hash Table Heap", heap_sizeK, true);
+      newheap = new Heap("User Hash Table Heap", heap_sizeK * K, true);
     }
   else
     {
       heap_sizeK *= 2;
       heap_size *= 2;
-      newheap = new Heap("User Hash Table Heap", heap_sizeK, true);
+      newheap = new Heap("User Hash Table Heap", heap_sizeK * K, true);
     }
   total_garbage = 0;
   hash_table.iter_reset();

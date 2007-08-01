@@ -80,14 +80,4 @@ ReturnValue psi_process_pid(Object *&);
 // @end doc
 ReturnValue psi_process_symbol(Object *&);
 
-// @doc
-// @pred process_set_symbol(Name)
-// @mode process_set_symbol(+) is det
-// @type process_set_symbol(atom)
-// @description
-// Set the processes symbolic name to Name.
-// @end pred
-// @end doc
-ReturnValue psi_process_set_symbol(Object *&);
-
-#endif	// PROCESS_H
+#endif

@@ -6,7 +6,5 @@ TEMPLATE = app
 INCLUDEPATH += .
 
 # Input
-HEADERS += icm.h icm_env.h interact.h qpconfig.h xqpdebug.h
-SOURCES += icm_env.cc interact.cc main.cc qpconfig.cc xqpdebug.cc
-INCLUDEPATH += /opt/icm/include
-LIBS += -L/opt/icm/lib -licm
+HEADERS += interact.h qpconfig.h xqpdebug.h
+SOURCES += interact.cc main.cc qpconfig.cc xqpdebug.cc

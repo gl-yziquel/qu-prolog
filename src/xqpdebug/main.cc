@@ -19,9 +19,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h>
-#include <fstream.h>
+#include <fstream>
 
 #include "xqpdebug.h"
 

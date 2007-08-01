@@ -100,4 +100,12 @@ extern u_long LookupMachineIPAddress(const char *);
 //
 extern u_long LookupMachineIPAddress(void);
 
+//
+// Do a connection to a socket
+//
+bool do_connection(int sockfd, int port, u_long ip_address);
+
+
+void getIPfromifconfig(char* ip);
+
 #endif	// TCP_QP_H

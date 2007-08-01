@@ -12,7 +12,7 @@ export OBJECTS.qdeal	= $(addsuffix .o,$(BASES.qdeal))
 all.qdeal: $(COMMAND.qdeal) 
 
 $(COMMAND.qdeal): $(OBJECTS.qdeal) $(BIG_LIBRARY)
-	$(CXX) $(LDFLAGS) -o $(COMMAND.qdeal) $(OBJECTS.qdeal) @LIBS@ -L@ICMHOME@/lib @ICM_LIB@ $(BIG_LIBRARY)
+	$(CXX) $(LDFLAGS) -o $(COMMAND.qdeal) $(OBJECTS.qdeal) @LIBS@ $(BIG_LIBRARY)
 
 .PHONY: install.qdeal
 install.qdeal: @QPHOME@/bin/$(COMMAND.qdeal)

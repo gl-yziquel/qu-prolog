@@ -300,7 +300,7 @@ Thread::psi_list(Object *& object1)
   assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
-  if (val1->isList())
+  if (val1->isList() || val1->isString())
     {
       return RV_SUCCESS;
     }

@@ -37,11 +37,11 @@ repeat,
     ;
     remove_fact(Fact) <<- _ -> retract(Fact)
     ;
-    ask_all(Query) <<- _ reply_to Address ->
+    ask_all(Query) <<- Address ->
 	findall(Query, Query, Ans),
 	answers(Ans) ->> Address
     ;
-    stand_by(Query) <<-  _ reply_to Address ->
+    stand_by(Query) <<-  Address ->
 	thread_fork(_, ans_gen(Query, Address))
   ),
   fail.

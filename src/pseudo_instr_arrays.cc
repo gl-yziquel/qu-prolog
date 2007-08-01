@@ -74,9 +74,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_thread_is_initial_thread,	0,	"psi_thread_is_initial_thread"}, 
 	{&Thread::psi_signal_thread_exit,	0,	"psi_signal_thread_exit"}, 
 	{&Thread::psi_gc,	0,	"psi_gc"}, 
-	{&Thread::psi_icm_deregister,	0,	"psi_icm_deregister"}, 
-	{&Thread::psi_elvin_disconnect,	0,	"psi_elvin_disconnect"}, 
-	{&Thread::psi_icm_connected,	0,	"psi_icm_connected"}
+	{&Thread::psi_pedro_deregister,	0,	"psi_pedro_deregister"}, 
+	{&Thread::psi_pedro_is_connected,	0,	"psi_pedro_is_connected"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {
@@ -154,8 +153,8 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_thread_wait,	0,	"psi_thread_wait"}, 
 	{&Thread::psi_thread_defaults,	1,	"psi_thread_defaults"}, 
 	{&Thread::psi_thread_set_defaults,	0,	"psi_thread_set_defaults"}, 
-	{&Thread::psi_machine_ip_address,	1,	"psi_machine_ip_address"}, 
-	{&Thread::psi_machine_name,	1,	"psi_machine_name"}, 
+	{&Thread::psi_chdir,	0,	"psi_chdir"}, 
+	{&Thread::psi_getcwd,	1,	"psi_getcwd"}, 
 	{&Thread::psi_nsig,	1,	"psi_nsig"}, 
 	{&Thread::psi_thread_errno,	1,	"psi_thread_errno"}, 
 	{&Thread::psi_set_trace_flag,	0,	"psi_set_trace_flag"}, 
@@ -165,12 +164,12 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_stdin,	1,	"psi_stdin"}, 
 	{&Thread::psi_stdout,	1,	"psi_stdout"}, 
 	{&Thread::psi_stderr,	1,	"psi_stderr"}, 
-	{&Thread::psi_ipc_open,	1,	"psi_ipc_open"}, 
-	{&Thread::psi_ipc_close,	0,	"psi_ipc_close"}, 
-	{&Thread::psi_process_set_symbol,	0,	"psi_process_set_symbol"}, 
+	{&Thread::psi_float,	0,	"psi_float"}, 
+	{&Thread::psi_srandom,	0,	"psi_srandom"}, 
+	{&Thread::psi_pedro_notify,	0,	"psi_pedro_notify"}, 
 	{&Thread::psi_process_symbol,	1,	"psi_process_symbol"}, 
-	{&Thread::psi_icm_process_handle,	1,	"psi_icm_process_handle"}, 
-	{&Thread::psi_icm_thread_handle,	1,	"psi_icm_thread_handle"}, 
+	{&Thread::psi_pedro_register,	0,	"psi_pedro_register"}, 
+	{&Thread::psi_thread_handle,	1,	"psi_thread_handle"}, 
 	{&Thread::psi_alloc_buffer,	1,	"psi_alloc_buffer"}, 
 	{&Thread::psi_dealloc_buffer,	0,	"psi_dealloc_buffer"}, 
 	{&Thread::psi_debug_write,	0,	"psi_debug_write"}, 
@@ -178,24 +177,15 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_reset_std_stream,	0,	"psi_reset_std_stream"}, 
 	{&Thread::psi_current_threads,	1,	"psi_current_threads"}, 
 	{&Thread::psi_thread_exit,	0,	"psi_thread_exit"}, 
-	{&Thread::psi_icm_address,	1,	"psi_icm_address"}, 
-	{&Thread::psi_icm_port,	1,	"psi_icm_port"}, 
+	{&Thread::psi_pedro_address,	1,	"psi_pedro_address"}, 
+	{&Thread::psi_pedro_port,	1,	"psi_pedro_port"}, 
 	{&Thread::psi_bound,	0,	"psi_bound"}, 
 	{&Thread::psi_make_iterator,	1,	"psi_make_iterator"}, 
 	{&Thread::psi_set_autoflush,	0,	"psi_set_autoflush"}, 
 	{&Thread::psi_get_open_streams,	1,	"psi_get_open_streams"}, 
 	{&Thread::psi_broadcast,	0,	"psi_broadcast"}, 
-	{&Thread::psi_elvin_connect,	0,	"psi_elvin_connect"}, 
-	{&Thread::psi_elvin_add_subscription,	0,	"psi_elvin_add_subscription"}, 
-	{&Thread::psi_elvin_delete_subscription,	0,	"psi_elvin_delete_subscription"}, 
-	{&Thread::psi_elvin_subscriptions,	1,	"psi_elvin_subscriptions"}, 
-	{&Thread::psi_elvin_add_notification,	0,	"psi_elvin_add_notification"}, 
-	{&Thread::psi_chdir,	0,	"psi_chdir"}, 
-	{&Thread::psi_getcwd,	1,	"psi_getcwd"}, 
-	{&Thread::psi_float,	0,	"psi_float"}, 
-	{&Thread::psi_srandom,	0,	"psi_srandom"}, 
 	{&Thread::psi_random_float,	1,	"psi_random_float"}, 
-	{&Thread::psi_icm_ping,	0,	"psi_icm_ping"}, 
+	{&Thread::psi_pedro_disconnect,	1,	"psi_pedro_disconnect"}, 
 	{&Thread::psi_make_cleanup_cp,	1,	"psi_make_cleanup_cp"}, 
 	{&Thread::psi_string,	0,	"psi_string"}
 };
@@ -282,7 +272,7 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_threadID_goal,	1,	"psi_threadID_goal"}, 
 	{&Thread::psi_tcp_host_to_ip_address,	1,	"psi_tcp_host_to_ip_address"}, 
 	{&Thread::psi_tcp_host_from_ip_address,	2,	"psi_tcp_host_from_ip_address"}, 
-	{&Thread::psi_get_msgstream_handle,	1,	"psi_get_msgstream_handle"}, 
+	{&Thread::psi_local_p2p,	0,	"psi_local_p2p"}, 
 	{&Thread::psi_thread_symbol,	0,	"psi_thread_symbol"}, 
 	{&Thread::psi_load,	1,	"psi_load"}, 
 	{&Thread::psi_is_free_in,	0,	"psi_is_free_in"}, 
@@ -291,8 +281,8 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_env_putenv,	0,	"psi_env_putenv"}, 
 	{&Thread::psi_signal_to_atom,	1,	"psi_signal_to_atom"}, 
 	{&Thread::psi_strerror,	1,	"psi_strerror"}, 
-	{&Thread::psi_icm_handles_equal,	0,	"psi_icm_handles_equal"}, 
-	{&Thread::psi_icm_handles_qp_equal,	0,	"psi_icm_handles_qp_equal"}, 
+	{&Thread::psi_socket_fd,	1,	"psi_socket_fd"}, 
+	{&Thread::psi_pedro_unsubscribe,	0,	"psi_pedro_unsubscribe"}, 
 	{&Thread::psi_uncurry,	1,	"psi_uncurry"}, 
 	{&Thread::psi_get_line,	1,	"psi_get_line"}, 
 	{&Thread::psi_ip_array_init,	0,	"psi_ip_array_init"}, 
@@ -315,7 +305,7 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_simplify_term,	1,	"psi_simplify_term"}, 
 	{&Thread::psi_is_not_free_in,	0,	"psi_is_not_free_in"}, 
 	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
-	{&Thread::psi_icm_symbolic_address_to_icm_handle,	1,	"psi_icm_symbolic_address_to_icm_handle"}, 
+	{&Thread::psi_pedro_subscribe,	1,	"psi_pedro_subscribe"}, 
 	{&Thread::psi_write_float,	0,	"psi_write_float"}, 
 	{&Thread::psi_select,	1,	"psi_select"}, 
 	{&Thread::psi_write_string,	0,	"psi_write_string"}, 
@@ -342,7 +332,7 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_stat_code,	7,	"psi_stat_code"}, 
 	{&Thread::psi_stat_string,	7,	"psi_stat_string"}, 
 	{&Thread::psi_random_range,	1,	"psi_random_range"}, 
-	{&Thread::psi_icm_register,	0,	"psi_icm_register"}, 
+	{&Thread::psi_string_concat,	1,	"psi_string_concat"}, 
 	{&Thread::psi_set_domain,	0,	"psi_set_domain"}, 
 	{&Thread::psi_set_range,	0,	"psi_set_range"}, 
 	{&Thread::psi_get_domain,	1,	"psi_get_domain"}, 
@@ -396,8 +386,7 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}, 
 	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
 	{&Thread::psi_get_integer,	4,	"psi_get_integer"}, 
-	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}, 
-	{&Thread::psi_string_concat,	1,	"psi_string_concat"}
+	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {
@@ -410,7 +399,7 @@ pseudo_instr4_data pseudo_instr4_array[] =
 	{&Thread::psi_encoded_read,	6,	"psi_encoded_read"}, 
 	{&Thread::psi_quantify,	0,	"psi_quantify"}, 
 	{&Thread::psi_call_predicate3,	0,	"psi_call_predicate3"}, 
-	{&Thread::psi_ipc_send,	0,	"psi_ipc_send"}, 
+	{&Thread::psi_pedro_connect,	0,	"psi_pedro_connect"}, 
 	{&Thread::psi_tcp_accept,	7,	"psi_tcp_accept"}, 
 	{&Thread::psi_next_instr,	3,	"psi_next_instr"}, 
 	{&Thread::psi_assert,	1,	"psi_assert"}, 
@@ -419,12 +408,10 @@ pseudo_instr4_data pseudo_instr4_array[] =
 	{&Thread::psi_new_sub,	1,	"psi_new_sub"}, 
 	{&Thread::psi_get_first_clause,	3,	"psi_get_first_clause"}, 
 	{&Thread::psi_get_next_clause,	3,	"psi_get_next_clause"}, 
-	{&Thread::psi_split_string,	3,	"psi_split_string"}
+	{&Thread::psi_split_string,	3,	"psi_split_string"}, 
+	{&Thread::psi_ipc_get_message,	10,	"psi_ipc_get_message"}
 };
 pseudo_instr5_data pseudo_instr5_array[] =
 {
-	{&Thread::psi_ipc_get_message,	22,	"psi_ipc_get_message"}, 
-	{&Thread::psi_call_predicate4,	0,	"psi_call_predicate4"}, 
-	{&Thread::psi_icm_handle_from_components,	1,	"psi_icm_handle_from_components"}, 
-	{&Thread::psi_icm_handle_to_components,	30,	"psi_icm_handle_to_components"}
+	{&Thread::psi_call_predicate4,	0,	"psi_call_predicate4"}
 };

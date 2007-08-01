@@ -326,4 +326,7 @@ ReturnValue psi_tcp_is_socket(Object *&);
 
 ReturnValue psi_select(Object *&, Object *&);
 
+
+ReturnValue psi_socket_fd(Object *&, Object *&);
+
 #endif	// TCP_ESCAPES_H

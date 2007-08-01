@@ -55,17 +55,23 @@ Set the choice point stack to
 K words.
 The default size is 64K words.
 .TP
-.BI \-T size
-Set the trail for the name table to
+.BI \-B size
+Set the binding trail to
 .I size
 K words.
-The default size is 64K words.
+The default size is 32K words.
+.TP
+.BI \-O size
+Set the other trail to
+.I size
+K words.
+The default size is 32K words.
 .TP
 .BI \-a size
 Set the atom table to
 .I size
 entries.
-The default size is 32K entries.
+The system makes the size of the table the next power of two bigger than twice the supplied size. The default size is 10000. 
 .TP
 .BI \-e size
 Set the environment stack to
@@ -77,25 +83,25 @@ The default size is 64K words.
 Set the heap to
 .I size
 K cells (words).
-The default size is 192K cells (words).
+The default size is 400K cells (words).
 .TP
 .BI \-i size
-Set the code area to
+Set the implicit parameter size to
 .I size
 K bytes.
-The default size is 400K bytes.
+The system makes the size of the table the next power of two bigger than twice the supplied size. The default size is 10000.
 .TP
 .BI \-n size
 Set the name table to
 .I size
 entries.
-The default size is 32K entries.
+The system makes the size of the table the next power of two bigger than twice the supplied size. The default size is 10000.
 .TP
 .BI \-p size
 Set the predicate table to
 .I size
-entries.
-The default size is 32K entries.
+entries
+The system makes the size of the table the next power of two bigger than twice the supplied size. The default size is 10000. 
 .TP
 .BI \-s size
 Set the string table to
@@ -103,11 +109,6 @@ Set the string table to
 K bytes.
 The default size is 64K bytes.
 .TP
-.BI \-t size
-Set the trail for the heap to
-.I size
-K words.
-The default size is 64K words.
 .SH FILES
 .PD 0
 .TP 20

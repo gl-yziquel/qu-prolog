@@ -73,9 +73,9 @@ this can be used when the query needs to be edited.\
 
 
 QTHelp::QTHelp(QWidget *p)
-  : QMainWindow(p)
+  : Q3MainWindow(p)
 {
-  help = new QTextEdit(this);
+  help = new Q3TextEdit(this);
   setCentralWidget(help);
   parent = p;
   resize(600,400);

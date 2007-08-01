@@ -135,7 +135,7 @@ EncodeWrite::encodeWriteAtom(QPStream& stream,
 			       Atom* loc,
 			       AtomTable& atoms)
 {
-  const char *stringbuff = atoms.getAtomString(loc);
+  const char *stringbuff = loc->getName();
   word32 length = static_cast<word32>(strlen(stringbuff));
   bool result = writeEncodeChar(stream, static_cast<word8>(length));
 

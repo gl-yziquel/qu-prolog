@@ -19,11 +19,13 @@
 
 #include "xqpqueries.h"
 #include "term.h"
+//Added by qt3to4:
+#include <QKeyEvent>
 
 XQPQueries::XQPQueries(QWidget *p, QString& name, QString text)
-  : QMainWindow(p, name)
+  : Q3MainWindow(p, name)
 {
-  queries = new QTextEdit(this);
+  queries = new Q3TextEdit(this);
   setCentralWidget(queries);
   parent = p;
   resize(400,300);
@@ -88,6 +90,6 @@ void XQPQueries::keyPressEvent(QKeyEvent * k)
     }
   else
     {
-      QMainWindow::keyPressEvent(k);
+      Q3MainWindow::keyPressEvent(k);
     }
 }

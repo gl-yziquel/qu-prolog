@@ -898,7 +898,7 @@ Trace::TraceInstr(Thread& th,
       
 	case CALL_PREDICATE:	// call_predicate predicate, arity, n
 	  {
-	    const char *s = atoms.getAtomString(getPredAtom(pc));
+	    const char *s = getPredAtom(pc)->getName();
 	    const word32 arity = getNumber(pc);
 	    const word32 n = getNumber(pc);
       
@@ -914,8 +914,7 @@ Trace::TraceInstr(Thread& th,
 	    CodeLoc loc = address - Code::SIZE_OF_HEADER;
 	    Atom* predicate = reinterpret_cast<Atom*>(getAddress(loc));
       
-	    const char *s 
-	      = atoms.getAtomString(predicate);
+	    const char *s = predicate->getName();
       
 	    TraceString2("call_address", s, n);
 	  }
@@ -927,8 +926,7 @@ Trace::TraceInstr(Thread& th,
 	    const word32 n = getNumber(pc);
       
 	    Atom* predicate =  predicates.getPredName((word32)address, &atoms);
-	    const char *s =
-	      atoms.getAtomString(predicate);
+	    const char *s = predicate->getName();
       
 	    TraceString2("call_escape", s, n);
 	  }
@@ -939,8 +937,7 @@ Trace::TraceInstr(Thread& th,
 	    Atom* predicate = getPredAtom(pc);
 	    const word32 arity = getNumber(pc);
       
-	    const char *s = 
-	      atoms.getAtomString(predicate);
+	    const char *s = predicate->getName();
       
 	    TraceString2("execute_predicate", s, arity);
 	  }
@@ -953,8 +950,7 @@ Trace::TraceInstr(Thread& th,
 	    CodeLoc loc = address - Code::SIZE_OF_HEADER;
 	    Atom* predicate = reinterpret_cast<Atom*>(getAddress(loc));
       
-	    const char *s = 
-	      atoms.getAtomString(predicate);
+	    const char *s = predicate->getName();
       
 	    TraceString1("execute_address", s);
 	  }
@@ -965,8 +961,7 @@ Trace::TraceInstr(Thread& th,
 	    const CodeLoc address = getCodeLoc(pc);
       
 	    Atom* predicate = predicates.getPredName((word32)address, &atoms);
-	    const char *s = 
-	      atoms.getAtomString(predicate);
+	    const char *s = predicate->getName();
       
 	    TraceString1("execute_escape", s);
 	  }
@@ -1216,27 +1211,33 @@ Trace::TraceInstr(Thread& th,
           }
           break;
  
-        case DB_TRY:
-          {
-            (void)getNumber(pc);
-            (void)getAddress(pc);
-            const CodeLoc jump = getCodeLoc(pc);
-	    Trace1("db try", (word32)jump);
-          }
-          break;
-
-	case DB_RETRY:
+	case DB_EXECUTE_PREDICATE:	// execute_predicate predicate, arity 
 	  {
-            (void)getNumber(pc);
-            (void)getAddress(pc);
-            const CodeLoc jump = getCodeLoc(pc);
-	    Trace1("db retry", (word32)jump);
+	    Atom* predicate = getPredAtom(pc);
+	    const word32 arity = getNumber(pc);
+      
+	    const char *s = predicate->getName();
+      
+	    TraceString2("db_execute_predicate", s, arity);
 	  }
-	  break;
+	break; 
+      
+	case DB_EXECUTE_ADDRESS:	// execute_address address
+	  {
+	    const CodeLoc address = getCodeLoc(pc);
+      
+	    CodeLoc loc = address - Code::SIZE_OF_HEADER;
+	    Atom* predicate = reinterpret_cast<Atom*>(getAddress(loc));
+      
+	    const char *s = predicate->getName();
+      
+	    TraceString1("db_execute_address", s);
+	  }
+	break;
 
-        case DB_TRY_DEC_REF:
+        case DB_PROCEED:
           {
-            Trace0("try dec ref");
+            Trace0("db_proceed");
           }
           break;  
  

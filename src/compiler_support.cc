@@ -59,6 +59,7 @@
 #include "compiler_support.h"
 #include "objects.h"
 #include "regalloc.h"
+#include "write_support.h"
 
 extern AtomTable *atoms;
 
@@ -625,7 +626,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  assert(arg2->isInteger());
 	  assert(arg3->isInteger());
 	  *stream << "\tcall_predicate('";
-	  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg1)), stream);
+	  writeCAtom(OBJECT_CAST(Atom*, arg1)->getName(), stream);
 	  *stream << "', ";
 	  *stream << arg2->getInteger();
 	  *stream << ", ";
@@ -640,7 +641,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  assert(arg1->isAtom());
 	  assert(arg2->isInteger());
 	  *stream << "\texecute_predicate('"; 
-	  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg1)), stream);
+	  writeCAtom(OBJECT_CAST(Atom*, arg1)->getName(), stream);
 	  *stream << "', ";
 	  *stream << arg2->getInteger();
 	  *stream << ")\n";
@@ -846,7 +847,9 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		{
                   *stream << "string(";
 		  *(stream) << "\"";
-		  *(stream) << OBJECT_CAST(StringObject*, arg3)->getChars();
+		  string str = OBJECT_CAST(StringObject*, arg3)->getChars();
+		  addEscapes(str, '"');
+		  *(stream) << str.c_str();
 		  *(stream) << "\"";
 		  *stream << ", ";
 		}
@@ -856,7 +859,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
-		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
+		  writeCAtom(OBJECT_CAST(Atom*, arg3)->getName(), stream);
 		  *stream << "', ";
 		}
 	      assert(is_xreg(arg4, reg2));
@@ -943,7 +946,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << "y_";
 		}
 	      assert(arg2->isAtom());
-	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+	      *stream << OBJECT_CAST(Atom*, arg2)->getName();
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
@@ -965,7 +968,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << "y_object_"; 
 		}
 	      assert(arg2->isAtom());
-	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+	      *stream << OBJECT_CAST(Atom*, arg2)->getName();
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
@@ -1015,7 +1018,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
-		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
+		  writeCAtom(OBJECT_CAST(Atom*, arg3)->getName(), stream);
 		  *stream << "', ";
 		}
 	      assert(is_xreg(arg4, reg2));
@@ -1030,7 +1033,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	      assert(arg3->isNumber());
 	      assert(is_xreg(arg4, reg2));
 	      (void)is_xreg(arg4, reg2);
-	      writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg2)), stream);
+	      writeCAtom(OBJECT_CAST(Atom*, arg2)->getName(), stream);
 	      *stream << "', ";
 	      *stream << arg3->getInteger();
 	      *stream << ", ";
@@ -1069,7 +1072,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << "y_"; 
 		}
 	      assert(arg2->isAtom());
-	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+	      *stream << OBJECT_CAST(Atom*, arg2)->getName();
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
@@ -1091,7 +1094,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << "y_object_"; 
 		}
 	      assert(arg2->isAtom());
-	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+	      *stream << OBJECT_CAST(Atom*, arg2)->getName();
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ", ";
@@ -1137,7 +1140,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
-		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
+		  writeCAtom(OBJECT_CAST(Atom*, arg3)->getName(), stream);
 		  *stream << "'";
 		}
 	      *stream << ")\n";
@@ -1164,7 +1167,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		      *stream << "y_"; 
 		    }
 		  assert(arg2->isAtom());
-		  *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+		  *stream << OBJECT_CAST(Atom*, arg2)->getName();
 		  *stream << "(";
 		  *stream << reg1;
 		  *stream << ")\n";
@@ -1183,7 +1186,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << "y_object_"; 
 		}
 	      assert(arg2->isAtom());
-	      *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+	      *stream << OBJECT_CAST(Atom*, arg2)->getName();
 	      *stream << "(";
 	      *stream << reg1;
 	      *stream << ")\n";
@@ -1225,7 +1228,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  assert(arg3->isAtom());
 	          *stream << "constant(";
 		  *stream << "'";
-		  writeCAtom(atoms->getAtomString(OBJECT_CAST(Atom*, arg3)), stream);
+		  writeCAtom(OBJECT_CAST(Atom*, arg3)->getName(), stream);
 		  *stream << "'";
 		}
 	      *stream << ")\n";
@@ -1252,7 +1255,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		      *stream << "y_"; 
 		    }
 		  assert(arg2->isAtom());
-		  *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+		  *stream << OBJECT_CAST(Atom*, arg2)->getName();
 		  *stream << "(";
 		  *stream << reg1;
 		  *stream << ")\n";
@@ -1280,7 +1283,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 		  *stream << "y_object_"; 
 		    }
 		  assert(arg2->isAtom());
-		  *stream << atoms->getAtomString(OBJECT_CAST(Atom*, arg2));
+		  *stream << OBJECT_CAST(Atom*, arg2)->getName();
 		  *stream << "(";
 		  *stream << reg1;
 		  *stream << ")\n";
@@ -1950,7 +1953,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  assert(arg1->isAtom());
 	  assert(arg2->isNumber());
-	  updateInstruction(pc, EXECUTE_PREDICATE);
+	  updateInstruction(pc, DB_EXECUTE_PREDICATE);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	  updateConstant(pc, arg1);
 	  pc += Code::SIZE_OF_CONSTANT;
@@ -1988,7 +1991,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
       else if (tstruct->getFunctor() == AtomTable::cproceed)
 	{
 	  assert(tstruct->getArity() == 1);
-	  updateInstruction(pc, DB_TRY_DEC_REF);
+	  updateInstruction(pc, DB_PROCEED);
 	  pc += Code::SIZE_OF_INSTRUCTION; 
 	}
       else if (tstruct->getFunctor() == AtomTable::failure)

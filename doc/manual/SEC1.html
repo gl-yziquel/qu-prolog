@@ -3,7 +3,7 @@
 <!-- Created by texi2html 1.56k from main.tex on 30 November 1999 -->
 <!-- Edited by Michael Walters on 30 Novemeber 1999 -->
 
-<TITLE>Qu-Prolog 7.4 Reference Manual - Getting Started</TITLE>
+<TITLE>Qu-Prolog 8.0 Reference Manual - Getting Started</TITLE>
 </HEAD>
 
 <BODY>
@@ -194,25 +194,24 @@ The default size is 100. This switch determines the maximum number of threads
 that can be running at any time.
 </BLOCKQUOTE>
 
-<P><KBD>-N icm-server-name</KBD>
+<P><KBD>-N server-name</KBD>
 <BLOCKQUOTE>
-Set the machine (IP address) on which the icm is running to
-<KBD>icm-server-name</KBD>.
-The default is the current machine.
+Set the machine (IP address) on which the Pedro server is running to
+<KBD>server-name</KBD>.
+The default is the current machine (localhost).
 </BLOCKQUOTE>
 
-<P><KBD>-P icm-server-port</KBD>
+<P><KBD>-P server-port</KBD>
 <BLOCKQUOTE>
-Set the port on which the ICM is listening to
-<KBD>icm-server-port</KBD>. The default is 0 which is interpreted as the
-default ICM port.
+Set the port on which the Pedro server is listening to
+<KBD>server-port</KBD>. The default is 4550.
 </BLOCKQUOTE>
 
 <P><KBD>-A process-symbol</KBD>
 <BLOCKQUOTE>
 Set the name of this process to
 <KBD>process-symbol</KBD>. 
-If the name is supplied and <KBD>gui</KBD> appears as the last switch then the qp Tcl/Tk GUI will start.
+
 </BLOCKQUOTE>
 
 <P>An online manual <KBD>qp(1)</KBD> is available to explain the options available to the interpreter.

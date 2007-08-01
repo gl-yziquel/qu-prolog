@@ -81,7 +81,7 @@ end('$thread_fork_ok/1$0'/1):
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
-	switch_on_constant(0, 4, ['$default':$2, 'elvin':$4])
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
 
 $4:
 	try(1, $1)
@@ -92,7 +92,7 @@ $5:
 	trust($2)
 
 $1:
-	put_constant('elvin', 1)
+	put_constant('', 1)
 	get_x_value(0, 1)
 	neck_cut
 	fail
@@ -100,6 +100,33 @@ $1:
 $2:
 	proceed
 end('$thread_fork_ok/1$1'/1):
+
+
+
+'$thread_fork_ok/1$2'/1:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'pedro':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('pedro', 1)
+	get_x_value(0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('$thread_fork_ok/1$2'/1):
 
 
 
@@ -118,8 +145,12 @@ $2:
 	get_y_variable(0, 0)
 	call_predicate('$thread_fork_ok/1$0', 1, 1)
 	put_y_value(0, 0)
+	call_predicate('$thread_fork_ok/1$1', 1, 1)
+	put_y_value(0, 0)
+	call_predicate('$thread_fork_ok/1$2', 1, 1)
+	pseudo_instr1(2, 20)
 	deallocate
-	execute_predicate('$thread_fork_ok/1$1', 1)
+	proceed
 end('$thread_fork_ok'/1):
 
 
@@ -914,7 +945,6 @@ $1:
 	neck_cut
 	allocate(0)
 	call_predicate('$thread_start/0$0', 1, 0)
-	call_predicate('exit_thread_gui', 0, 0)
 	call_predicate('exit_debug_thread_gui', 0, 0)
 	pseudo_instr0(8)
 	deallocate
@@ -922,7 +952,6 @@ $1:
 
 $2:
 	allocate(0)
-	call_predicate('exit_thread_gui', 0, 0)
 	call_predicate('exit_debug_thread_gui', 0, 0)
 	pseudo_instr0(8)
 	deallocate
@@ -941,7 +970,6 @@ $1:
 	call_predicate('error', 1, 1)
 	put_y_value(0, 0)
 	call_predicate('errornl', 1, 0)
-	call_predicate('exit_thread_gui', 0, 0)
 	call_predicate('exit_debug_thread_gui', 0, 0)
 	pseudo_instr0(8)
 	deallocate

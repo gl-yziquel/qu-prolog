@@ -95,10 +95,9 @@ public:
 
   // virtual methods vor derived classes
 
-  virtual Object* constructSenderTerm(Thread&, AtomTable&) = 0;
-  virtual Object* constructReplyToTerm(Thread&, AtomTable&) = 0;
-  virtual Object* constructMessageTerm(Thread&, AtomTable&,
-				       bool remember_names = false) = 0;
+  virtual void constructMessage(Object*& sender, Object*& msg,
+				Thread&, AtomTable&,
+				bool remember_names = false) = 0;
 };
 
 //

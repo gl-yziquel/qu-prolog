@@ -60,14 +60,6 @@
 
 public:
 
-//
-// ipc_send(message, to-address, reply-address, options)
-//
-// Send a message.
-//
-// mode(in, in, in, in)
-//
-ReturnValue psi_ipc_send(Object *&, Object *&, Object *&, Object *&);
 
 //
 // ipc_make_iterator(reference_out)
@@ -97,14 +89,13 @@ ReturnValue psi_ipc_first(Object *&, Object *&, Object *&);
 ReturnValue psi_ipc_next(Object *&, Object *&, Object *&);
 
 //
-// ipc_get_message(message, reference, from-address, reply-address,
-// 		   remember-names)
+// ipc_get_message(message, reference, from-address, remember-names)
 //
 // Lookup and decode the fields of a message given a reference.
 //
-// mode(out, in, out, out, in)
+// mode(out, in, out, in)
 //
-ReturnValue psi_ipc_get_message(Object *&, Object *&, Object *&, Object *&, Object *&);
+ReturnValue psi_ipc_get_message(Object *&, Object *&, Object *&, Object *&);
 
 //
 // ipc_commit(reference)
@@ -115,25 +106,6 @@ ReturnValue psi_ipc_get_message(Object *&, Object *&, Object *&, Object *&, Obje
 //
 ReturnValue psi_ipc_commit(Object *&);
 
-//
-// ipc_open(-integer)
-//
-// Indicates that the thread wishes to open an iterator on its ICM queue.
-// ipc_open/1 and ipc_close/1 calls are a way of managing the possibility
-// of having several message iterators active on a single thread's message
-// queue.
-//
-ReturnValue psi_ipc_open(Object *&);
-
-//
-// ipc_open(+integer)
-//
-// Indicates that the thread wishes to close an iterator on its ICM queue.
-// ipc_open/1 and ipc_close/1 calls are a way of managing the possibility
-// of having several message iterators active on a single thread's message
-// queue.
-//
-ReturnValue psi_ipc_close(Object *&);
 
 //
 // Broadcast message to all current local threads

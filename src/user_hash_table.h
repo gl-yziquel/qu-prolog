@@ -146,7 +146,7 @@ public:
   UserHashState(int hts, int hs)
     : hash_table(hts)
   {
-    userhashheap = new Heap("User Hash Table Heap", hs, true);
+    userhashheap = new Heap("User Hash Table Heap", hs * K, true);
     total_garbage = 0;
     heap_size = hs * K / sizeof (heapobject);
     heap_sizeK = hs;

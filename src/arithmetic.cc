@@ -102,7 +102,7 @@ do {                                                       	\
 
 #define IS_ZERO(x) ((x.type == ARITH_INTEGER_TYPE) && (x.value.i == 0))
 
-number zero = {ARITH_INTEGER_TYPE, 0};
+number zero = {ARITH_INTEGER_TYPE, {0}};
 //
 // arithEvaluate is an auxilary function used by arithmetical pseudo
 //instructions to carry out the evaluation of expressions.

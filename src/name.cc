@@ -189,7 +189,7 @@ Thread::psi_atom_codes(Object *& object1, Object *& object2)
   assert(val1->isAtom());
  
   Object* tail = AtomTable::nil;
-  string atomstring(atoms->getAtomString(val1));
+  string atomstring(OBJECT_CAST(Atom*, val1)->getName());
   
   for (string::reverse_iterator iter = atomstring.rbegin();
        iter != atomstring.rend(); iter++)
@@ -213,6 +213,11 @@ Thread::psi_codes_atom(Object *& object1, Object *& object2)
 {
   Object* list = object1->variableDereference();
   string atomname;
+  if (list->isString())
+    {
+      object2 = atoms->add(OBJECT_CAST(StringObject*, list)->getChars());
+      return(RV_SUCCESS);
+    }
   while (list->isCons())
     {
       Cons* clist = OBJECT_CAST(Cons*, list);
@@ -238,7 +243,7 @@ Thread::psi_char_code(Object *& object1, Object *& object2)
   
   assert(val1->isAtom());
   
-  const char *string = atoms->getAtomString(val1);
+  const char *string = OBJECT_CAST(Atom*, val1)->getName();
   if (string[1] != '\0')
     {
       return(RV_FAIL);
@@ -325,15 +330,21 @@ Thread::psi_codes_number(Object *& object1, Object *& object2)
   Object* arg = heap.dereference(object1);
 
   ostringstream str;
-  while (arg->isCons())
+  if (arg->isString())
     {
-      Cons* list = OBJECT_CAST(Cons*, arg);
-      if (!(list->getHead()->variableDereference()->isInteger()))
-          return(RV_FAIL);
-      str << (char)(list->getHead()->variableDereference()->getInteger());
-      arg = list->getTail()->variableDereference();
+      str << OBJECT_CAST(StringObject*, arg)->getChars();
     }
-  if (!arg->isNil())  return(RV_FAIL);
+  else {
+    while (arg->isCons())
+      {
+	Cons* list = OBJECT_CAST(Cons*, arg);
+	if (!(list->getHead()->variableDereference()->isInteger()))
+          return(RV_FAIL);
+	str << (char)(list->getHead()->variableDereference()->getInteger());
+	arg = list->getTail()->variableDereference();
+      }
+    if (!arg->isNil())  return(RV_FAIL);
+  }
 
   bool has_dot = false;
   bool has_e = false;
@@ -351,7 +362,7 @@ Thread::psi_codes_number(Object *& object1, Object *& object2)
           else
             has_sign = true;
         }
-      else if (*c == 'e')
+      else if ((*c == 'e') || (*c == 'E'))
         {
           if (has_e)
             return(RV_FAIL);

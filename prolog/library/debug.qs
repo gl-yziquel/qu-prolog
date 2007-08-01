@@ -125,7 +125,63 @@ end('$get_debugger_state'/1):
 
 
 
+'debug/0$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	put_x_variable(1, 1)
+	put_x_variable(2, 2)
+	call_predicate('$thread_debug_set', 3, 1)
+	cut(0)
+	put_structure(6, 0)
+	set_constant('$debug_state')
+	set_constant('debug')
+	set_integer(31)
+	set_integer(0)
+	set_constant('[]')
+	set_integer(10)
+	set_integer(0)
+	deallocate
+	execute_predicate('$set_debugger_state', 1)
+
+$2:
+	get_x_variable(1, 0)
+	put_structure(3, 0)
+	set_constant('$thread_debug_set')
+	set_x_value(1)
+	set_integer(0)
+	set_integer(2)
+	allocate(0)
+	call_predicate('assert', 1, 0)
+	put_structure(6, 0)
+	set_constant('$debug_state')
+	set_constant('debug')
+	set_integer(31)
+	set_integer(0)
+	set_constant('[]')
+	set_integer(10)
+	set_integer(0)
+	deallocate
+	execute_predicate('$set_debugger_state', 1)
+end('debug/0$0'/1):
+
+
+
 'debug'/0:
+
+
+$1:
+	pseudo_instr1(68, 0)
+	execute_predicate('debug/0$0', 1)
+end('debug'/0):
+
+
+
+'xdebug'/0:
 
 
 $1:
@@ -141,7 +197,7 @@ $1:
 	set_integer(0)
 	deallocate
 	execute_predicate('$set_debugger_state', 1)
-end('debug'/0):
+end('xdebug'/0):
 
 
 
@@ -527,7 +583,63 @@ end('$print_leash_port'/1):
 
 
 
+'trace/0$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	put_x_variable(1, 1)
+	put_x_variable(2, 2)
+	call_predicate('$thread_debug_set', 3, 1)
+	cut(0)
+	put_structure(6, 0)
+	set_constant('$debug_state')
+	set_constant('trace')
+	set_integer(31)
+	set_integer(0)
+	set_constant('[]')
+	set_integer(10)
+	set_integer(0)
+	deallocate
+	execute_predicate('$set_debugger_state', 1)
+
+$2:
+	get_x_variable(1, 0)
+	put_structure(3, 0)
+	set_constant('$thread_debug_set')
+	set_x_value(1)
+	set_integer(0)
+	set_integer(2)
+	allocate(0)
+	call_predicate('assert', 1, 0)
+	put_structure(6, 0)
+	set_constant('$debug_state')
+	set_constant('trace')
+	set_integer(31)
+	set_integer(0)
+	set_constant('[]')
+	set_integer(10)
+	set_integer(0)
+	deallocate
+	execute_predicate('$set_debugger_state', 1)
+end('trace/0$0'/1):
+
+
+
 'trace'/0:
+
+
+$1:
+	pseudo_instr1(68, 0)
+	execute_predicate('trace/0$0', 1)
+end('trace'/0):
+
+
+
+'xtrace'/0:
 
 
 $1:
@@ -543,7 +655,7 @@ $1:
 	set_integer(0)
 	deallocate
 	execute_predicate('$set_debugger_state', 1)
-end('trace'/0):
+end('xtrace'/0):
 
 
 
@@ -1786,48 +1898,56 @@ end('$debug_call/1$0/4$0/2$0'/1):
 
 
 
-'$debug_call/1$0/4$0/2$1/1$0'/0:
+'$debug_call/1$0/4$0/2$1/2$0'/2:
 
-	try(0, $1)
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'ctrlC_reset':$4])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
 	trust($2)
 
 $1:
-	allocate(1)
-	get_y_level(0)
-	put_structure(1, 0)
-	set_constant('$throw_pattern')
-	set_void(1)
-	put_constant('true', 1)
-	call_predicate('clause', 2, 1)
-	cut(0)
-	fail
-
-$2:
-	proceed
-end('$debug_call/1$0/4$0/2$1/1$0'/0):
-
-
-
-'$debug_call/1$0/4$0/2$1'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	allocate(1)
-	get_y_level(0)
-	call_predicate('$debug_call/1$0/4$0/2$1/1$0', 0, 1)
-	cut(0)
-	deallocate
+	put_constant('ctrlC_reset', 1)
+	get_x_value(0, 1)
+	neck_cut
 	proceed
 
 $2:
-	allocate(1)
-	get_y_variable(0, 0)
-	call_predicate('$skip_complete', 0, 1)
-	put_y_value(0, 0)
+	get_x_variable(0, 1)
 	put_constant('throw', 1)
-	call_predicate('$print_port', 2, 0)
+	execute_predicate('$print_port', 2)
+end('$debug_call/1$0/4$0/2$1/2$0'/2):
+
+
+
+'$debug_call/1$0/4$0/2$1'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_x_variable(2, 0)
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_level(2)
+	put_structure(2, 0)
+	set_constant('$throw_pattern')
+	set_x_value(2)
+	set_y_variable(0)
+	put_constant('true', 1)
+	call_predicate('clause', 2, 3)
+	cut(2)
+	call_predicate('$skip_complete', 0, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	call_predicate('$debug_call/1$0/4$0/2$1/2$0', 2, 0)
 	put_constant('$debug_id', 1)
 	pseudo_instr2(76, 1, 0)
 	put_constant('$skip_retry_fail', 0)
@@ -1836,7 +1956,10 @@ $2:
 	pseudo_instr0(1)
 	deallocate
 	proceed
-end('$debug_call/1$0/4$0/2$1'/1):
+
+$2:
+	proceed
+end('$debug_call/1$0/4$0/2$1'/2):
 
 
 
@@ -1858,9 +1981,15 @@ $1:
 	execute_predicate('$exit_catch', 2)
 
 $2:
-	pseudo_instr1(22, 1)
-	allocate(0)
-	call_predicate('$debug_call/1$0/4$0/2$1', 1, 0)
+	allocate(3)
+	get_y_variable(1, 0)
+	get_y_variable(2, 1)
+	put_y_variable(0, 0)
+	call_predicate('thread_symbol', 1, 3)
+	pseudo_instr1(22, 22)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	call_predicate('$debug_call/1$0/4$0/2$1', 2, 0)
 	fail
 end('$debug_call/1$0/4$0'/2):
 

@@ -26,7 +26,7 @@ SOURCES	= \
 	debug.ql \
 	delay.ql \
 	dynamic.ql \
-	elvin.ql \
+	pedro.ql \
 	encode.ql \
 	env_var.ql \
 	equal.ql \
@@ -43,7 +43,6 @@ SOURCES	= \
 	handlers.ql \
 	higher_list.ql \
 	higher_term.ql \
-	icm.ql \
 	index.ql \
 	init.ql \
 	instructions.ql \

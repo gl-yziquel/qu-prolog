@@ -38,7 +38,7 @@ void skip_to_closing_quote(const QString pattern,
 
 bool graphic_char(QChar c)
 {
-    switch (c)
+    switch ((int)(c.toAscii()))
     {
        case '-':
        case '/':

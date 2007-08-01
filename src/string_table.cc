@@ -66,7 +66,7 @@
 //
 // Add a new string to the table.
 //
-StringLoc
+char*
 StringTab::add(const char *string)
 {
   StringLoc   start = allocateBlock(static_cast<word32>(strlen(string) + 1));
@@ -78,7 +78,7 @@ StringTab::add(const char *string)
       // "arbitrary" value.  OutOfPage in allocateBlock
       // should recover the program in the appropriate manner.
       //
-      return(EMPTY_LOC);
+      return(NULL);
     }
   else
     {
@@ -86,7 +86,7 @@ StringTab::add(const char *string)
       // Save the string in the string table.
       //
       strcpy(fetchAddr(start), string);
-      return(start);
+      return(fetchAddr(start));
     }
 }
 

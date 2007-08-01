@@ -59,6 +59,7 @@
 #define	THREAD_TABLE_H
 
 #include <sys/types.h>
+#include <string>
 
 #include "defs.h"
 #include "hash_qp.h"

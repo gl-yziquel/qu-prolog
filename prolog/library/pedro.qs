@@ -1,0 +1,428 @@
+'pedro_connect'/0:
+
+
+$1:
+	put_integer(4550, 0)
+	put_constant('localhost', 1)
+	execute_predicate('pedro_connect', 2)
+end('pedro_connect'/0):
+
+
+
+'pedro_connect'/1:
+
+
+$1:
+	get_x_variable(1, 0)
+	put_integer(4550, 0)
+	execute_predicate('pedro_connect', 2)
+end('pedro_connect'/1):
+
+
+
+'pedro_connect'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	pseudo_instr0(13)
+	neck_cut
+	put_constant('Warning: Pedro is already connected', 0)
+	allocate(0)
+	call_predicate('errornl', 1, 0)
+	fail
+
+$2:
+	allocate(3)
+	get_y_variable(1, 0)
+	get_y_variable(0, 1)
+	put_y_variable(2, 2)
+	call_predicate('tcp_client', 3, 3)
+	pseudo_instr2(90, 22, 0)
+	pseudo_instr4(9, 0, 22, 21, 20)
+	deallocate
+	proceed
+end('pedro_connect'/2):
+
+
+
+'pedro_disconnect'/0:
+
+
+$1:
+	pseudo_instr1(106, 0)
+	pseudo_instr1(58, 0)
+	proceed
+end('pedro_disconnect'/0):
+
+
+
+'pedro_subscribe/3$0'/1:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 0:$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_integer(0, 1)
+	get_x_value(0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('pedro_subscribe/3$0'/1):
+
+
+
+'pedro_subscribe'/3:
+
+
+$1:
+	allocate(1)
+	get_y_variable(0, 2)
+	pseudo_instr1(68, 2)
+	put_y_value(0, 3)
+	call_predicate('$pedro_subscribe_aux', 4, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('pedro_subscribe/3$0', 1)
+end('pedro_subscribe'/3):
+
+
+
+'$pedro_subscribe_aux/4$0'/4:
+
+	try(4, $1)
+	trust($2)
+
+$1:
+	put_x_variable(4, 5)
+	get_structure('subscribe', 3, 5)
+	unify_x_value(0)
+	unify_x_value(1)
+	unify_x_value(2)
+	pseudo_instr2(114, 4, 3)
+	get_x_variable(0, 3)
+	neck_cut
+	put_constant('$pedro_subscribe_id', 1)
+	pseudo_instr2(74, 1, 0)
+	proceed
+
+$2:
+	allocate(1)
+	get_y_variable(0, 3)
+	cut(0)
+	deallocate
+	proceed
+end('$pedro_subscribe_aux/4$0'/4):
+
+
+
+'$pedro_subscribe_aux'/4:
+
+	try(4, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	put_x_variable(3, 4)
+	get_structure(',', 2, 4)
+	unify_x_value(0)
+	unify_x_value(1)
+	pseudo_instr1(53, 3)
+	put_constant('$pedro_subscribe_id', 3)
+	put_integer(0, 4)
+	pseudo_instr2(74, 3, 4)
+	put_y_value(0, 3)
+	call_predicate('$pedro_subscribe_aux/4$0', 4, 0)
+	fail
+
+$2:
+	put_constant('$pedro_subscribe_id', 1)
+	pseudo_instr2(73, 1, 0)
+	get_x_value(3, 0)
+	proceed
+end('$pedro_subscribe_aux'/4):
+
+
+
+'pedro_unsubscribe'/1:
+
+	try(1, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_x_variable(1, 0)
+	pseudo_instr1(1, 1)
+	neck_cut
+	put_structure(1, 0)
+	set_constant('pedro_unsubscribe')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('integer')
+	put_structure(1, 3)
+	set_constant('pedro_unsubscribe')
+	set_x_value(1)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$2:
+	pseudo_instr1(3, 0)
+	neck_cut
+	pseudo_instr1(68, 1)
+	put_x_variable(2, 3)
+	get_structure('unsubscribe', 1, 3)
+	unify_x_value(0)
+	pseudo_instr2(91, 1, 2)
+	proceed
+
+$3:
+	get_x_variable(1, 0)
+	put_structure(1, 0)
+	set_constant('pedro_unsubscribe')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('integer')
+	put_structure(1, 3)
+	set_constant('pedro_unsubscribe')
+	set_x_value(1)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('type_exception', 3)
+end('pedro_unsubscribe'/1):
+
+
+
+'pedro_notify/1$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(87, 0)
+	neck_cut
+	proceed
+
+$2:
+	allocate(1)
+	get_y_variable(0, 1)
+	cut(0)
+	deallocate
+	proceed
+end('pedro_notify/1$0'/2):
+
+
+
+'pedro_notify'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	pseudo_instr1(53, 0)
+	put_y_value(0, 1)
+	call_predicate('pedro_notify/1$0', 2, 0)
+	fail
+
+$2:
+	proceed
+end('pedro_notify'/1):
+
+
+
+'pedro_register'/1:
+
+	try(1, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_x_variable(1, 0)
+	pseudo_instr1(1, 1)
+	neck_cut
+	put_structure(1, 0)
+	set_constant('pedro_register')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('pedro_register')
+	set_x_value(1)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$2:
+	pseudo_instr1(2, 0)
+	neck_cut
+	pseudo_instr1(89, 0)
+	put_constant('localhost', 1)
+	pseudo_instr2(79, 1, 0)
+	pseudo_instr2(80, 1, 0)
+	proceed
+
+$3:
+	get_x_variable(1, 0)
+	put_structure(1, 0)
+	set_constant('pedro_register')
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('pedro_register')
+	set_x_value(1)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	execute_predicate('type_exception', 3)
+end('pedro_register'/1):
+
+
+
+'$pedro_p2p'/1:
+
+	switch_on_term(0, $6, $2, $2, $3, $2, $2)
+
+$3:
+	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, 'p2pmsg'/3:$5])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$6:
+	try(1, $1)
+	trust($2)
+
+$1:
+	get_structure('p2pmsg', 3, 0)
+	unify_x_variable(0)
+	allocate(4)
+	unify_y_variable(2)
+	unify_y_variable(1)
+	get_y_level(3)
+	put_y_variable(0, 1)
+	call_predicate('$is_local_p2p', 2, 4)
+	cut(3)
+	put_x_variable(0, 1)
+	get_structure('p2pmsg', 2, 1)
+	unify_y_value(2)
+	unify_y_value(1)
+	pseudo_instr2(81, 20, 0)
+	deallocate
+	proceed
+
+$2:
+	execute_predicate('pedro_notify', 1)
+end('$pedro_p2p'/1):
+
+
+
+'$is_local_p2p/2$0'/1:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, '':$4])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('', 1)
+	get_x_value(0, 1)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('$is_local_p2p/2$0'/1):
+
+
+
+'$is_local_p2p'/2:
+
+	switch_on_term(0, $6, 'fail', 'fail', $3, 'fail', 'fail')
+
+$3:
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$4, '@'/2:$5])
+
+$4:
+	try(2, $1)
+	trust($2)
+
+$5:
+	try(2, $1)
+	trust($2)
+
+$6:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_structure('@', 2, 0)
+	unify_x_variable(0)
+	unify_void(1)
+	pseudo_instr1(1, 0)
+	neck_cut
+	fail
+
+$2:
+	get_structure('@', 2, 0)
+	unify_x_ref(0)
+	allocate(2)
+	unify_y_variable(0)
+	get_structure(':', 2, 0)
+	unify_x_variable(0)
+	unify_y_variable(1)
+	get_x_value(0, 1)
+	call_predicate('$is_local_p2p/2$0', 1, 2)
+	pseudo_instr1(90, 0)
+	get_structure('@', 2, 0)
+	unify_x_ref(0)
+	unify_y_value(0)
+	get_structure(':', 2, 0)
+	unify_void(1)
+	unify_y_value(1)
+	deallocate
+	proceed
+end('$is_local_p2p'/2):
+
+
+

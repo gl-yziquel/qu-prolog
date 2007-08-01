@@ -65,6 +65,7 @@
 #include "atom_table.h"
 #include "is_ready.h"
 #include "thread_qp.h"
+#include "write_support.h"
 
 extern AtomTable *atoms;
 extern IOManager *iom;
@@ -100,143 +101,11 @@ Thread::psi_write_atom(Object *& object1, Object *& object2)
 
   // IS_READY_STREAM(stream, -1);
  
-  *stream << atoms->getAtomString(val2);
+  *stream << OBJECT_CAST(Atom*, val2)->getName();
 
   return(RV_SUCCESS);
 }
 
-/*
-  The string is safe if the string is one of the followings:
-  1.  []
-  2.  {}
-  3.  ;
-  4.  !
-  5.  abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789 .
-  6.  #$&*+-./:<=>?@^~\
-*/
-static bool
-SafeAtom(const char *s)
-{
-  if (*s == '\0' ||
-      streq(s, ".") ||
-      streq(s, "|"))
-    {
-      //
-      // Null atom ('') or a single full stop ('.') or a single '|' is unsafe.
-      //
-      return(false);
-    }
-  else if (streq(s, "[]") ||
-	   streq(s, "{}") ||
-	   streq(s, ";") ||
-	   streq(s, "!"))
-    {
-      return(true);
-    }
-  else if (strchr("abcdefghijklmnopqrstuvwxyz", *s) != NULL)
-    {
-      s++;
-      while(*s != '\0')
-	{
-	  if (strchr("abcdefghijklmnopqrstuvwxyz"
-		     "ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789",
-		     *s) !=
-	      NULL)
-	    {
-	      //
-	      // index finds the given character in the 'safe'
-	      // range.  So check the next character.
-	      // 
-	      s++;
-	    }
-	  else
-	    {
-	      //
-	      // index cannot find the character in the 'safe'
-	      // range.  So it is unsafe.
-	      //
-	      return(false);
-	    }
-	}
-      return(true);
-    }
-  else
-    {
-      while(*s != '\0')
-	{
-	  if (strchr("#$&*+-./:<=>?@^~\\|", *s) != NULL)
-	    {
-	      //
-	      // index finds the given character in the 'safe'
-	      // range.  So check the next character.
-	      // 
-	      s++;
-	    }
-	  else
-	    {
-	      //
-	      // index cannot find the character in the 'safe'
-	      // range.  So it is unsafe.
-	      //
-	      return(false);
-	    }
-	}
-      return(true);
-    }
-}
-
-static void addEscapes(string& str, char quote)
-{
-  string tmp;
-  for (string::iterator iter = str.begin(); iter != str.end(); iter++)
-    {
-      char c = *iter;
-      switch ((int)c)
-	{
-	case 7:  // \a
-	  tmp.push_back('\\');
-	  tmp.push_back('a');
-	  break;
-	case 8:  // \b
-	  tmp.push_back('\\');
-	  tmp.push_back('b');
-	  break;
-	case 9:  // \t
-	  tmp.push_back('\\');
-	  tmp.push_back('t');
-	  break;
-	case 10:  // \n
-	  tmp.push_back('\\');
-	  tmp.push_back('n');
-	  break;
-	case 11:  // \v
-	  tmp.push_back('\\');
-	  tmp.push_back('v');
-	  break;
-	case 12:  // \f
-	  tmp.push_back('\\');
-	  tmp.push_back('f');
-	  break;
-	case 13:  // \r
-	  tmp.push_back('\\');
-	  tmp.push_back('r');
-	  break;
-	case 92:  
-	  tmp.push_back('\\');
-	  break;
-	default:
-	  if (c == quote)
-	    {
-	      tmp.push_back('\\');
-	      tmp.push_back(c);
-	    }
-	  else
-	      tmp.push_back(c);
-	  break;
-	}
-    }
-  str = tmp;
-}
 
 void
 writeqAtom(const char *s, QPStream *stream)
@@ -286,7 +155,7 @@ Thread::psi_writeq_atom(Object *& object1, Object *& object2)
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  const char *s = atoms->getAtomString(val2);
+  const char *s = OBJECT_CAST(Atom*, val2)->getName();
 
   writeqAtom(s, stream);
 
@@ -452,7 +321,7 @@ Thread::psi_write_var(Object *& object1, Object *& object2)
       //
       // Use the existing name.
       //
-      *(stream) << atoms->getAtomString(var->getName());
+      *(stream) << var->getName()->getName();
     }
   else
     {
@@ -491,7 +360,7 @@ Thread::writeVarName(Object* ref, NameGen gen,
       //
       names.setNameOldVar(varName, ref, *this);
     }
-  *stream << atoms->getAtomString(varName);
+  *stream << OBJECT_CAST(Atom*, varName)->getName();
 }
 
 //
@@ -583,7 +452,7 @@ Thread::psi_write_object_variable(Object *& object1, Object *& object2)
 
   if (obvar->getName() != NULL)
     {
-      *stream << atoms->getAtomString(obvar->getName());
+      *stream << obvar->getName()->getName();
     }
   else
     {
@@ -640,7 +509,7 @@ Thread::psi_writeR_object_variable(Object *& object1, Object *& object2)
 
   if (obvar->getName() != NULL)
     {
-      *stream << atoms->getAtomString(obvar->getName());
+      *stream << obvar->getName()->getName();
     }
   else
     {
@@ -699,7 +568,7 @@ Thread::psi_writeq_object_variable(Object *& object1, Object *& object2)
 
   if (obvar->getName() != NULL)
     {
-      const char *s = atoms->getAtomString(obvar->getName());
+      const char *s = obvar->getName()->getName();
       writeqAtom(s, stream);
     }
   else

@@ -25,9 +25,7 @@ usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
 #	-v	verbose
 # Set Data Area Size in qc1:
 #	-B N	set binding trail 
-#	-O N	set object trail 
-#	-T N	set tag trail 
-#	-I N	set IP trail 
+#	-O N	set other trail 
 #	-C N	set choice stack
 #	-e N	set environment stack
 #	-H N	set scratchpad
@@ -37,13 +35,10 @@ usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
 #	-i N	set IP table
 # Set Data Area Size in qc1 and in the executable being generated:
 #	-s N	set string table
-#	-u N	set number table
 # Set Data Area Size in the executable being generated:
 #	-d N	set code area
 #	-p N	set predicate table
 #	-a N	set atom table
-# IPC control
-#       -L	no QPNS service required (L is for Loner!)
 #
 # BUGS: If -o is specified with -c, then if there is more than one
 #	.ql file, then the object code for all .ql files will be
@@ -58,11 +53,11 @@ PATH=@QPHOME@/bin:$PATH
 # names of Qu-Prolog binaries
 #
 preprocess=@QPHOME@/bin/qppp
-expand=qg
-compile=qc1
+expand=@QPHOME@/bin/qg
+compile=@QPHOME@/bin/qc1
 compversion=qup
-assemble=qa
-link=ql
+assemble=@QPHOME@/bin/qa
+link=@QPHOME@/bin/ql
 execute=@QPHOME@/bin/qem
 
 #

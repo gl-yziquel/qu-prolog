@@ -97,7 +97,7 @@ PredTab::add(AtomTable* atoms,
       // Redefined the predicate.
       //
       ostringstream os;
-      os << "new definition for " << atoms->getAtomString(PredName) 
+      os << "new definition for " << PredName->getName() 
 	 << "/" << arity << " is ignored";
       Warning(__FUNCTION__, os.str().c_str()); 
       return(index);

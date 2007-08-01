@@ -263,7 +263,7 @@ Thread::psi_atom_to_string(Object *& atom_arg, Object *& string_arg)
     {
       PSI_ERROR_RETURN(EV_INST, 1);
     }
-  char* atomstring = atoms->getAtomString(atom_object);
+  char* atomstring = OBJECT_CAST(Atom*, atom_object)->getName();
 
   if (*atomstring == '\0')
     string_arg = AtomTable::nil;

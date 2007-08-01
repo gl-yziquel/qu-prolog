@@ -11,15 +11,6 @@ qp \- Qu-Prolog interpreter
 \-O size
 ]
 [
-\-T size
-]
-[
-\-r size
-]
-[
-\-I size
-]
-[
 \-i size
 ]
 [
@@ -41,10 +32,10 @@ qp \- Qu-Prolog interpreter
 \-z size
 ]
 [
-\-N icm-server-name
+\-N server-name
 ]
 [
-\-P icm-server-port
+\-P server-port
 ]
 [
 \-A process-symbol
@@ -61,28 +52,10 @@ K words.
 The default size is 32K words.
 .TP
 \-O size
-Set the object trail size to
+Set the other trail size to
 .I size
 K words.
-The default size is 16K words.
-.TP
-\-T size
-Set the tag trail size to
-.I size
-K words.
-The default size is 8K words.
-.TP
-\-r size
-Set the reference trail size to
-.I size
-K words.
-The default size is 8K words.
-.TP
-\-I size
-Set the implicit parameter trail size to
-.I size
-K words.
-The default size is 8K words.
+The default size is 32K words.
 .TP
 \-i size
 Set the implicit parameter table size to
@@ -128,14 +101,14 @@ Set the thread table to
 entries.
 The default size is 100 entries.
 .TP
-\-N icm-server-name
-Set the machine (IP adress) on which the icm is running to
-.I icm-server-name.
+\-N server-name
+Set the machine (IP adress) on which the Pedro server is running to
+.I server-name.
 The default is the current machine.
 .TP
-\-P icm-server-port
-Set the port on which the icm is listining to
-.I icm-server-port.
+\-P server-port
+Set the port on which the Pedro server is listining to
+.I server-port.
 .TP
 \-A process-symbol
 Set the name of this process to

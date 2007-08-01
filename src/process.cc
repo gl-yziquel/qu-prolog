@@ -57,15 +57,9 @@
 // $Id: process.cc,v 1.3 2005/03/08 00:35:12 qp Exp $
 
 #include "atom_table.h"
-#ifndef WIN32
-#include "icm_environment.h"
-#endif
 #include "thread_qp.h"
 
 extern AtomTable *atoms;
-#ifdef ICM_DEF
-extern ICMEnvironment *icm_environment;
-#endif
 extern char *process_symbol;
 
 #ifdef WIN32
@@ -114,34 +108,3 @@ Thread::psi_process_symbol(Object *& name_cell)
     }
 }
 
-// @doc
-// @pred process_set_symbol(Name)
-// @mode process_set_symbol(+) is det
-// @type process_set_symbol(atom)
-// @description
-// Set the processes symbolic name to Name.
-// @end pred
-// @end doc
-Thread::ReturnValue
-Thread::psi_process_set_symbol(Object *& name_cell)
-{
-#if 0
-  // TO DO: Fix this when the ICM control message mechanism is fixed.
-  Object* name_arg = heap.dereference(name_cell);
-
-  CHECK_ATOM_ARG(name_arg, 1);
-
-  cerr << __FUNCTION__ << endl;
-
-  if (icm_environment->Register(atoms->getAtomString(OBJECT_CAST(Atom*, name_arg))))
-    {
-      return RV_SUCCESS;
-    }
-  else 
-    {
-      PSI_ERROR_RETURN(EV_VALUE, 1);
-    }
-#else
-  PSI_ERROR_RETURN(EV_UNIMPLEMENTED, 0);
-#endif
-}

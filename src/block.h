@@ -70,8 +70,6 @@
         #define _WINSOCKAPI_
         #include <windows.h>
         #include <winsock2.h>
-#else
-        #include "icm_message.h"
 #endif
 
 class Thread;

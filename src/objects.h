@@ -241,7 +241,7 @@ public:
   // the Object being pointed to
   size_t size_dispatch(void);
   
-#ifdef QP_DEBUG
+#ifndef NDEBUG
 public:
   // Testing substitution block lists to see if they are legal
   inline bool isLegalSub(void);
@@ -335,16 +335,12 @@ public:
 class Atom : public Constant
 {
 protected:
-  // Offset into the string table for the atom's name
-  StringLoc string_table_loc;
+  // Pointer into the string table for the atom's name
+  char* string_table_ptr;
 
   // Either an Atom * or int, depending on hasAssociatedItem()
   word32 associatedval;
 
-  // Pointers into the Record database.
-  StackLoc first_ref;
-  StackLoc last_ref;
-  
 public:
   // Buckybits 
   static const heapobject AssociatedMask =	0x00000300UL;
@@ -359,16 +355,15 @@ public:
   Atom(void):Constant()
     {
       tag = AtomTag;
-      string_table_loc = EMPTY_LOC;
+      string_table_ptr = NULL;
       associatedval = 0;
-      first_ref = EMPTY_LOC;
-      last_ref = EMPTY_LOC;
     }
 
 public:  
   // String related things
-  inline void setStringTableLoc(const StringLoc);
-  inline StackLoc getStringTableLoc(void) const;
+  inline void setStringTablePtr(char*);
+  inline char* getStringTablePtr(void) const;
+  inline char* getName(void) const;
 
   inline bool isEmpty(void) const;
 
@@ -386,13 +381,6 @@ public:
   inline Atom *getAssociatedAtom(void) const;
   inline int getAssociatedInteger(void) const;
 
-public:
-  // Record database stuff.
-  inline StackLoc getFirstRef(void) const;
-  inline StackLoc getLastRef(void) const;
-
-  inline void setFirstRef(const StackLoc);
-  inline void setLastRef(const StackLoc);
 
 public:
   static inline size_t size(void);
@@ -1159,26 +1147,24 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
 // Inline functions for the Atom class
 
 
-inline StringLoc Atom::getStringTableLoc(void) const
+inline char* Atom::getStringTablePtr(void) const
 {
-  assert(sizeof(StringLoc) == sizeof(heapobject));
-
-  return string_table_loc;
+  return string_table_ptr;
 }
 
-inline void Atom::setStringTableLoc(const StringLoc stl)
+inline char* Atom::getName(void) const
 {
-  assert(sizeof(StringLoc) == sizeof(heapobject));
-  assert(string_table_loc == EMPTY_LOC);
+  return string_table_ptr;
+}
 
-  string_table_loc = stl;
+inline void Atom::setStringTablePtr(char* stl)
+{
+  string_table_ptr = stl;
 }
 
 inline bool Atom::isEmpty(void) const
 {
-  assert(sizeof(StringLoc) == sizeof(heapobject));
-
-  return string_table_loc == EMPTY_LOC;
+  return string_table_ptr == NULL;
 }
 
 inline bool Atom::getBool(void) const
@@ -1231,25 +1217,6 @@ inline int Atom::getAssociatedInteger (void) const
 
   return associatedval;
 }
-inline StackLoc Atom::getFirstRef(void) const
-{
-  return(first_ref);
-}
-
-inline StackLoc Atom::getLastRef(void) const
-{
-  return(last_ref);
-}
-
-inline void Atom::setFirstRef(const StackLoc loc)
-{
-  first_ref = loc;
-}
-
-inline void Atom::setLastRef(const StackLoc loc)
-{
-  last_ref = loc;
-}
 
 inline size_t Atom::size(void)
 {
@@ -1260,7 +1227,7 @@ inline size_t Atom::size(void)
 inline void Atom::printMe(AtomTable& atoms, bool)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Atom: \""
-       << atoms.getAtomString(this) << "\" ";
+       << this->getName() << "\" ";
   
 #ifndef WIN32
   switch (hasAssociatedItem())
@@ -1416,7 +1383,7 @@ inline size_t Structure::size(size_t arity)
 inline void Structure::printMe(AtomTable& atoms, bool all)
 {
 	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Structure:[" 
-       << (word32)tag << "] functor: [ ";
+       << (word32)tag << "] arity: " << getArity() << " functor: [ ";
   getFunctor()->printMe_dispatch(atoms, all);
   std::cerr << " ] ";
   for (size_t i = 1; i <= getArity(); i++)
@@ -2153,7 +2120,8 @@ inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 // an object -- iteratively, not recursively -- and returns the object
 // at the end of the (ob)variable chain.
 //
-inline Object*
+//inline Object*
+Object*
 Object::variableDereference()
 {
   Object* o = this;

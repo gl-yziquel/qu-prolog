@@ -74,7 +74,7 @@ Thread::psi_readR_var(Object *& object1, Object *& object2)
 
   assert(val2->isAtom());
   
-  if (*(atoms->getAtomString(val2)) == '_')
+  if (*(OBJECT_CAST(Atom*, val2)->getName()) == '_')
     {
       //
       // Do not generate a name.
@@ -129,7 +129,7 @@ Thread::psi_readR_object_variable(Object *& object1, Object *& object2)
   if (object_variable == NULL)
     {
       object_variable = heap.newObjectVariable();
-      if (*(atoms->getAtomString(val2)) != '_')
+      if (*(OBJECT_CAST(Atom*, val2)->getName()) != '_')
 	{
 	  names.setNameNewVar(OBJECT_CAST(Atom*, val2), 
 			      object_variable, *this);

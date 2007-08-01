@@ -1,4 +1,4 @@
-Installing Qu-Prolog 7.4
+Installing Qu-Prolog 8.0
 
 Execute the following
 
@@ -21,22 +21,6 @@ NOTES
 If configure does not find some files then paths may need to be changed.
 Changing PATH or LD_LIBRARY_PATH may be enough. 
 
-configure looks for tcl/tk libraries and includes but you may need to help
-configure. If the tk library is not found then try
-./configure --with-libtk=PATH
-where PATH is the path to libtk.so (or libtk8.?.so).
-
-This should also be the location of libtcl.so but if not try
-./configure --with-libtcl=PATH
-
-If configure can't find tk.h then try
-./configure --with-tkinclude=PATH
-
-On some machines wish is in an unusual place or is called wish8.3 for example.
-In that case you can specify the location of wish with
-./configure --with-wish=LOCATION
-e.g. ./configure --with-wish=/opt/local/bin/wish8.3
-
 On some machines the paths for the includes for the STL libraries are 
 not automatically set by gcc. If you get a compiler error saying that it 
 can't find sstream then try
@@ -46,38 +30,11 @@ Then try
 ./configure --with-gcclib=PATH
 where PATH is the path to the STL library includes.
 
-The high-level communication of Qu-Prolog 7.4 relies on the ICM package.
-If this is not present on your system then Qu-Prolog will build without the
-communication.
-
-The ICM package can be downloaded from 
-http://sourceforge.net/projects/networkagent/
-
-If this package is installed before running configure then configure should 
-find it and build a system with high-level communication.
-
-Qu-Prolog 7.4 now also uses Elvin communication.
-
-The Elvin libraries and daemon can be dowloaded from
-http://elvin.dstc.edu.au/
-
-Again, if Elvin is not installed then Qu-Prolog will be built without 
-Elvin communication.
-
-
 Qu-Prolog has been build on LINUX (Redhat 6.0 or greater).
 
 It has also been ported to SOLARIS using the gcc version 2.95.2 compiler.
 
 
-TCL/TK GUI
-----------
-If configure found tcl/tk support then you can build a library that adds
-ICM support to tcl/tk.
-
-To do that execute the following
-
-make tkICM
 
 QT GUI
 ------
@@ -89,15 +46,9 @@ make xqp
 
 Before doing this you should check that the environment variable QTDIR is
 set to the QT home - e.g. /usr/lib/qt-3.1.
-You may also need to change the paths to icm in src/xqpdebug/xqpdebug.pro 
-before doing the make.
 
 Installing on MacOSX
 --------------------
 The system should install on MacOSX without problems.
 
-However, the ICM support for Tck/Tk does not work for MacOSX and so
-there is no point in executing "make tkICM"
-
-The QT GUI does work (if you have installed QT).
 

@@ -1,3 +1,3 @@
 #! /bin/sh
 
-pl -x @QPHOME@/bin/qc1.boot.po -F none -f none -t halt -g "main(['$1'])"
+swipl -x @QPHOME@/bin/qc1.boot.po -F none -f none -t halt -g "main(['$1'])"

@@ -90,6 +90,8 @@ extern Scheduler *scheduler;
 extern Signals *signals;
 extern int errorno;
 
+bool in_sigint = false;
+
 // Helps to label the opcodes for proceesing via MkOpcodes
 
 #define	OPCODE(x, y)		x
@@ -134,9 +136,14 @@ extern int errorno;
 	return RV_BLOCK;						\
 	break;								\
       case RV_SIGNAL:							\
-	restart_status.setRestartSignal();				\
-	programCounter -= pc_off;					\
-	return RV_SIGNAL;						\
+        if (in_sigint){                                                 \
+            block_status.setRunnable();					\
+	    restart_status.Clear(); 					\
+        } else {                                                        \
+	    restart_status.setRestartSignal();				\
+	    programCounter -= pc_off;					\
+	    return RV_SIGNAL;						\
+        }                                                               \
 	break;								\
       case RV_TIMESLICE:						\
 	restart_status.setRestartTimeslice();				\
@@ -1581,7 +1588,7 @@ Thread::Execute(void)
 	    const PredLoc start = predicates->lookUp(predicate, arity, 
 						     atoms, code); 
 
-	    if (signals->Status().testSignals())
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
 		HANDLE_SIGNAL(SIZE_OF_CALL_PREDICATE_INSTR);
 	      }
@@ -1683,7 +1690,7 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (signals->Status().testSignals())
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
 		HANDLE_SIGNAL(SIZE_OF_CALL_ADDRESS_INSTR);
 	      }
@@ -1759,7 +1766,7 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (signals->Status().testSignals())
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
 		HANDLE_SIGNAL(SIZE_OF_CALL_ESCAPE_INSTR);
 	      }
@@ -1820,7 +1827,7 @@ Thread::Execute(void)
 	    const PredLoc start = predicates->lookUp(predicate, arity,
 						     atoms, code);
 
-	    if (signals->Status().testSignals())
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
 		HANDLE_SIGNAL(SIZE_OF_EXECUTE_PREDICATE_INSTR);
 	      }
@@ -1858,6 +1865,7 @@ Thread::Execute(void)
                   {
 		    gc(arity);
                   }
+
 		const CodeLoc oldpc = PC;
 		const PredCode PredAddr = predicates->getCode(start);
 		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
@@ -1912,7 +1920,7 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (signals->Status().testSignals())
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
 		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ADDRESS_INSTR);
 	      }
@@ -1978,7 +1986,7 @@ Thread::Execute(void)
 		      }
 		      );
 
-	    if (signals->Status().testSignals())
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
 		HANDLE_SIGNAL(SIZE_OF_EXECUTE_ESCAPE_INSTR);
 	      }
@@ -2943,58 +2951,177 @@ Thread::Execute(void)
 	  }
 	  VMBREAK;
 
-	case OPCODE(DB_TRY, ARGS(number, address, address, address)):
-	  {
-	    assert(false);
-#if 0
-	    const word32 arity = getNumber(PC);
-	    DynamicPredicate* pred = 
-	      reinterpret_cast<DynamicPredicate*>(getAddress(PC));
-	    CodeLoc first = getCodeLoc(PC);
-	    CodeLoc next = getCodeLoc(PC);
-	    assert(next != NULL);
-	    RefObject p(REF_PRED, pred);
-	    pred->aquire();
-	    refTrail.trail(p);
-	    currentChoicePoint = pushChoicePoint(next, arity);
-	    RefObject r(REF_CLAUSE, pred);
-	    pred->aquire();
-	    refTrail.trail(r);
-	    PC = first;
-#endif
-	  }
-	  VMBREAK;
 
-	case OPCODE(DB_RETRY, ARGS(number, address, address, address)):
+	case OPCODE(DB_EXECUTE_PREDICATE, ARGS(predatom, number)):
 	  {
-	    assert(false);
-#if 0
-	    backtrackTo(choiceStack.fetchChoice(currentChoicePoint));
-	    (void)getNumber(PC);
-	    DynamicPredicate* pred = 
-	      reinterpret_cast<DynamicPredicate*>(getAddress(PC));
-	    CodeLoc first = getCodeLoc(PC);
-	    CodeLoc next = getCodeLoc(PC);
-	    pred->aquire();  // for the clause - must be before tidy
-	    if (next == NULL)
+	    //
+	    // Similar to EXECUTE_PREDICATE but for last call of
+	    // dynamic clause
+	    //
+	    static const word32 SIZE_OF_DB_EXECUTE_PREDICATE_INSTR =
+	      Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_PRED +
+	      Code::SIZE_OF_NUMBER;
+  
+	    Atom* predicate = getPredAtom(PC);
+	    const word32 arity = getNumber(PC);
+
+	    ONCE_ONLY(
+		      {
+			cutPoint = currentChoicePoint;
+		      }
+		      );
+
+	    const PredLoc start = predicates->lookUp(predicate, arity,
+						     atoms, code);
+
+	    if (signals->Status().testSignals() && !in_sigint)
 	      {
-		// no more clauses
-		currentChoicePoint = choiceStack.pop(currentChoicePoint);
-		tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+		HANDLE_SIGNAL(SIZE_OF_DB_EXECUTE_PREDICATE_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
+		     scheduler->Status().testTimeslice())
+	      {
+		HANDLE_TIMESLICE(SIZE_OF_DB_EXECUTE_PREDICATE_INSTR);
+	      }
+	    else if (status.testFastRetry() && !status.testDoingRetry())
+	      {
+                programCounter = PC;
+		status.resetFastRetry();
+		status.setDoingRetry();
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleFastRetry(problem);
+	      }
+	    else if (start == EMPTY_LOC)
+	      {
+                programCounter = PC;
+		Object* problem = BuildCall(predicate, arity);
+		PC = UndefinedPred(problem);
+	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
 	      }
 	    else
 	      {
-		// set alternative
-		choiceStack.nextClause(currentChoicePoint) = next;
+                if ((heap.doGarbageCollection() || status.testDoGC())
+		    && buffers.isEmpty() && !status.testNeckCutRetry())
+                  {
+		    gc(arity);
+                  }
+		Choice* currChoice 
+		  = choiceStack.fetchChoice(currentChoicePoint);
+		int time = currChoice->getTimestamp();
+		if (time == -1)
+		  {
+		    currentChoicePoint = choiceStack.pop(currentChoicePoint);
+		    tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+		    cutPoint = currentChoicePoint;
+		  }
+		const PredCode PredAddr = predicates->getCode(start);
+		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
+                  {
+		    DynamicPredicate* dp = PredAddr.getDynamicPred();
+		    if (!initializeDPcall(dp, arity, PC))
+		      {
+			BACKTRACK;
+		      }
+		  }
+		else if (PredAddr.type() == PredCode::ESCAPE_PRED)
+		  {
+		    PC = continuationInstr;
+
+		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
+		  }
+		else
+		  {
+                    assert(PredAddr.type() == PredCode::STATIC_PRED);
+		    const CodeLoc loc = PredAddr.getPredicate(code);
+		    code->updateCallInstruction(PC - SIZE_OF_DB_EXECUTE_PREDICATE_INSTR,
+						DB_EXECUTE_ADDRESS, loc);
+		    PC = loc;
+		  }
 	      }
-	    RefObject r(REF_CLAUSE, pred);
-	    refTrail.trail(r);
-	    PC = first;
-#endif
+	  }
+	  VMBREAK; 
+
+	case OPCODE(DB_EXECUTE_ADDRESS, ARGS(address)):
+	  {
+	    //
+	    // Similar to EXECUTE_ADDRESS but for last call of
+	    // dynamic clause
+	    //
+
+	    static const word32 SIZE_OF_DB_EXECUTE_ADDRESS_INSTR =
+	      Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_ADDRESS;
+
+	    const CodeLoc address = getCodeLoc(PC);
+
+	    ONCE_ONLY(
+		      {
+			cutPoint = currentChoicePoint;
+		      }
+		      );
+
+	    if (signals->Status().testSignals() && !in_sigint)
+	      {
+		HANDLE_SIGNAL(SIZE_OF_DB_EXECUTE_ADDRESS_INSTR);
+	      }
+	    else if (scheduler->Status().testEnableTimeslice() &&
+		     scheduler->Status().testTimeslice())
+	      {
+		HANDLE_TIMESLICE(SIZE_OF_DB_EXECUTE_ADDRESS_INSTR);
+	      }
+	    else if (status.testFastRetry() && !status.testDoingRetry())
+	      {
+                programCounter = PC;
+		status.resetFastRetry();
+		status.setDoingRetry();
+		CodeLoc loc = address - Code::SIZE_OF_HEADER;
+		Atom* predicate = getPredAtom(loc);
+		const word32 arity = getNumber(loc);
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleFastRetry(problem);
+	      }
+	    else if ( getCleanupMinCP() != 0xFFFF)
+	      {
+                programCounter = PC;
+		word32 cleanupCP = getCleanupMinCP();
+		resetCleanupMinCP();
+		CodeLoc loc = address - Code::SIZE_OF_HEADER;
+		Atom* predicate = getPredAtom(loc);
+		const word32 arity = getNumber(loc);
+		Object* problem = BuildCall(predicate, arity);
+		PC = HandleCleanup(problem, cleanupCP);
+	      }
+	    else
+	      {
+                if ((heap.doGarbageCollection() || status.testDoGC())
+		    && buffers.isEmpty() && !status.testNeckCutRetry())
+                  {
+		    CodeLoc loc = address - Code::SIZE_OF_HEADER;
+		    getPredAtom(loc);
+		    const word32 arity = getNumber(loc);
+		    gc(arity);
+                  }
+		Choice* currChoice 
+		  = choiceStack.fetchChoice(currentChoicePoint);
+		int time = currChoice->getTimestamp();
+		if (time == -1)
+		  {
+		    currentChoicePoint = choiceStack.pop(currentChoicePoint);
+		    tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+		    cutPoint = currentChoicePoint;
+		  }
+		PC = address;
+	      }
 	  }
 	  VMBREAK;
 
-	case OPCODE(DB_TRY_DEC_REF, ARGS()):
+	case OPCODE(DB_PROCEED, ARGS()):
           {
 	    Choice* currChoice = choiceStack.fetchChoice(currentChoicePoint);
 	    int time = currChoice->getTimestamp();

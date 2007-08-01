@@ -91,7 +91,7 @@ decode_thread(Heap& heap,
     }
   else if (thread_cell->isAtom())
     {
-      const char *symbol = atoms->getAtomString(OBJECT_CAST(Atom*, thread_cell));
+      const char *symbol = OBJECT_CAST(Atom*, thread_cell)->getName();
       ThreadTableLoc id = thread_table.LookupName(symbol);
       if (id == (ThreadTableLoc) -1)
         {

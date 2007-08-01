@@ -61,27 +61,18 @@
 #include "atom_table.h"
 #include "objects.h"
 #include "code.h"
-#ifdef ICM_DEF
-#include "icm_environment.h"
-#include "icm_message.h"
-#endif
 #include "pred_table.h"
 #include "qem_options.h"
 #include "scheduler.h"
 #include "scheduler_status.h"
 #include "signals.h"
-//#include "string_table.h"
 #include "thread_options.h"
 #include "thread_table.h"
 
-//#include "heap.h"
 
 extern AtomTable *atoms;
-extern Object** lib_path;
+//extern Object** lib_path;
 extern Code *code;
-#ifdef ICM_DEF
-extern ICMEnvironment *icm_environment;
-#endif
 extern IOManager *iom;
 extern SocketManager *sockm;
 extern PredTab *predicates;
@@ -91,9 +82,7 @@ extern SchedulerStatus *scheduler_status;
 extern Signals *signals;
 extern ThreadOptions *thread_options;
 extern ThreadTable *thread_table;
-#ifdef WIN32
-#define ELVIN_DEF
-#else
+#ifndef WIN32
 extern pthread_t *interrupt_handler_thread;
 #endif
 

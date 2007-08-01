@@ -1,12 +1,13 @@
 % consumer.ql
-% A simple example of using Elvin communication. See producer.ql
+% A simple example of using Pedro subscription/notification communication. 
+% See producer.ql
 % 
 
-% Start the consumer - simply connect to the elvin server elvin://localhost
-% and add a notification that looks for messages from the producer
+% Start the consumer - simply connect to the Pedro server on this machine 
+% and add a subscription
 start :-
-    elvin_connect(connect('elvin://localhost')),   
-    elvin_add_subscription('from == "producer"'),
+    pedro_connect,   
+    pedro_subscribe(producer(T), true, _),
     message_loop.
 
 % Start a loop waiting for messages and display them on stdout - exit
@@ -16,6 +17,5 @@ message_loop :-
     repeat,
     M <<- _,       % get the first message
     write(M), nl,
-    member(quit = _, M).
-
+    M = producer(quit).
 

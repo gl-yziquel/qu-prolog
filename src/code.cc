@@ -250,6 +250,7 @@ Code::updateCallInstruction(const CodeLoc loc,
       break;
     case EXECUTE_ADDRESS:
     case EXECUTE_ESCAPE:
+    case DB_EXECUTE_ADDRESS:
       {
 	const CodeLoc nooploc = loc + SIZE_OF_INSTRUCTION + SIZE_OF_ADDRESS;
 	updateInstruction(nooploc, NOOP);

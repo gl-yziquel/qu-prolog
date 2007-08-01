@@ -154,7 +154,7 @@ Thread::LinkLoad(Object* objects, Object* libraries)
       file =  OBJECT_CAST(Cons*,objects)->getHead()->variableDereference();
       assert(file->isAtom());
       
-      strm << atoms->getAtomString(file) << " ";
+      strm << OBJECT_CAST(Atom*, file)->getName() << " ";
     }
   assert(objects->isNil());
   
@@ -167,7 +167,7 @@ Thread::LinkLoad(Object* objects, Object* libraries)
       
       assert(file->isAtom());
       
-      strm << atoms->getAtomString(file) << " ";
+      strm << OBJECT_CAST(Atom*, file)->getName() << " ";
     }
   
   assert(libraries->isNil());
@@ -342,7 +342,7 @@ Thread::psi_load_foreign(Object *& object_file_arg,
       
       predicates->addEscape(atoms, OBJECT_CAST(Atom*, pred), 
 			    arity->getInteger(),
-			    FnAddr(atoms->getAtomString(fn)), code);
+			    FnAddr(OBJECT_CAST(Atom*, fn)->getName()), code);
     }
   
   if (!predList->isNil())

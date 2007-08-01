@@ -125,6 +125,8 @@ public:
   word32		objectCounter;
   word32		NumArgs;
   int        timestamp;
+
+
 #ifdef WIN32
   Object*               X[1];
 #else

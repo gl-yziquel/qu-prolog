@@ -469,7 +469,7 @@ end('call_predicate'/4):
 
 
 $1:
-	pseudo_instr5(1, 0, 1, 2, 3, 4)
+	pseudo_instr5(0, 0, 1, 2, 3, 4)
 	proceed
 end('call_predicate'/5):
 
@@ -567,7 +567,7 @@ end('$call_cleanup_2'/0):
 
 
 $1:
-	pseudo_instr1(116, 1)
+	pseudo_instr1(107, 1)
 	get_x_value(0, 1)
 	proceed
 end('$make_cleanup_cp_call'/1):

@@ -429,7 +429,7 @@ end('tcp_accept'/2):
 
 
 
-'tcp_connect/3$0'/1:
+'tcp_connect/3$0'/2:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
@@ -437,24 +437,26 @@ $3:
 	switch_on_constant(0, 4, ['$default':$2, 'localhost':$4])
 
 $4:
-	try(1, $1)
+	try(2, $1)
 	trust($2)
 
 $5:
-	try(1, $1)
+	try(2, $1)
 	trust($2)
 
 $1:
-	put_constant('localhost', 1)
-	get_x_value(0, 1)
+	put_constant('localhost', 2)
+	get_x_value(0, 2)
 	neck_cut
-	put_constant('localhost', 1)
-	pseudo_instr2(79, 1, 0)
+	put_constant('localhost', 2)
+	pseudo_instr2(79, 2, 0)
+	get_x_value(1, 0)
 	proceed
 
 $2:
+	get_x_value(1, 0)
 	proceed
-end('tcp_connect/3$0'/1):
+end('tcp_connect/3$0'/2):
 
 
 
@@ -463,13 +465,12 @@ end('tcp_connect/3$0'/1):
 
 $1:
 	allocate(3)
-	get_y_variable(0, 0)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	put_y_value(1, 0)
-	call_predicate('tcp_connect/3$0', 1, 3)
-	pseudo_instr3(47, 20, 22, 21)
-	pseudo_instr1(81, 20)
+	get_y_variable(2, 0)
+	get_y_variable(1, 1)
+	get_x_variable(0, 2)
+	put_y_variable(0, 1)
+	call_predicate('tcp_connect/3$0', 2, 3)
+	pseudo_instr3(47, 22, 21, 20)
 	deallocate
 	proceed
 end('tcp_connect'/3):

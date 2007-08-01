@@ -106,9 +106,10 @@ Thread::psi_compare_atom(Object *& object1, Object *& object2, Object *& object3
   assert(val1->isAtom());
   assert(val2->isAtom());
 
+  char* str1 = OBJECT_CAST(Atom*, val1)->getName();
+  char* str2 = OBJECT_CAST(Atom*, val2)->getName();
   object3 = 
-    heap.newShort(strcmp(atoms->getAtomString(OBJECT_CAST(Atom*, val1)),
-			 atoms->getAtomString(OBJECT_CAST(Atom*, val2))));
+    heap.newShort(strcmp(str1, str2));
   return(RV_SUCCESS);
 }
 

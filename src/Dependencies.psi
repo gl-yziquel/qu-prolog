@@ -1,49 +1,47 @@
 arithmetic.o: arithmetic.cc atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-atoms.o: atoms.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
-  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
-  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h icmIo.h \
-  icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+atoms.o: atoms.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
+  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
+  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
+  truth3.h thread_qp.h block.h timeval.h choice.h code.h heap_qp.h \
+  compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -51,50 +49,48 @@ atoms.o: atoms.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
 bios.o: bios.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
   debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
   option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h is_ready.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  truth3.h is_ready.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
   user_hash_table_escapes.h varname.h write.h scheduler.h manager.h \
-  scheduler_status.h
+  scheduler_status.h signals.h
 buffers.o: buffers.cc thread_qp.h area_offsets.h defs.h config.h \
-  ../config.h debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  ../config.h debug.h block.h timeval.h errors.h objects.h string_table.h \
+  magic.h qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -102,74 +98,71 @@ buffers.o: buffers.cc thread_qp.h area_offsets.h defs.h config.h \
 compare.o: compare.cc atom_table.h config.h ../config.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
   qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  objects.h truth3.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
   user_hash_table_escapes.h varname.h write.h
 compile.o: compile.cc thread_qp.h area_offsets.h defs.h config.h \
-  ../config.h debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  ../config.h debug.h block.h timeval.h errors.h objects.h string_table.h \
+  magic.h qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
   user_hash_table_escapes.h varname.h write.h
 cut.o: cut.cc thread_qp.h area_offsets.h defs.h config.h ../config.h \
-  debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  debug.h block.h timeval.h errors.h objects.h string_table.h magic.h \
+  qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -178,76 +171,72 @@ decompile.o: decompile.cc config.h ../config.h atom_table.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h dynamic_code.h \
-  pred_table.h thread_qp.h block.h choice.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h dynamic_code.h dynamic_hash_table.h \
+  pred_table.h thread_qp.h block.h timeval.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
   obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
   trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
   buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
   delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
   env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
   exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
-  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h icm_escapes.h \
-  elvin_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
-  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
-  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
-  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
-  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
-  unify.h user_hash_table_escapes.h varname.h write.h \
-  pseudo_instr_arrays.h
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h pseudo_instr_arrays.h
 delay_escape.o: delay_escape.cc global.h atom_table.h config.h \
   ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
   int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
   stack_qp.h page_table.h objects.h truth3.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h icm.h icmIo.h \
-  icmLocal.h io_qp.h icm_environment.h icm_message.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  timeval.h signals.h status.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h pred_table.h dynamic_code.h scheduler.h \
-  block.h manager.h scheduler_status.h thread_qp.h choice.h \
+  compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  pred_table.h dynamic_code.h dynamic_hash_table.h scheduler.h block.h \
+  timeval.h manager.h scheduler_status.h signals.h thread_qp.h choice.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
+  code_hash.h obj_index.h pile.h thread_condition.h thread_info.h \
+  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
+  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
+  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
+  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h user_hash_table_escapes.h varname.h write.h
 dyn_code.o: dyn_code.cc config.h ../config.h global.h atom_table.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h pred_table.h \
-  dynamic_code.h scheduler.h block.h manager.h scheduler_status.h \
-  thread_qp.h choice.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pile.h thread_condition.h thread_info.h thread_options.h trace_qp.h \
-  trail.h return.h arithmetic.h atoms.h bind.h bios.h buffers.h \
-  c_to_prolog.h compare.h compile_qp.h cut.h decompile.h delay_qp.h \
-  delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
-  equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h scheduler.h block.h timeval.h manager.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -256,14 +245,13 @@ encode_stream.o: encode_stream.cc config.h ../config.h atom_table.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h is_ready.h thread_qp.h block.h \
-  timeval.h icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h \
-  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
+  timeval.h choice.h code.h heap_qp.h compiler_support.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h record_stack.h encode.h environment.h \
+  foreign_handle.h heap_buffer.h messages.h thread_table.h hash_qp.h \
+  dynamic_hash_table.h thread_table_loc.h indexing.h code_hash.h \
   obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
   thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
   atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
@@ -271,35 +259,34 @@ encode_stream.o: encode_stream.cc config.h ../config.h atom_table.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  scheduler.h manager.h scheduler_status.h
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
+  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h user_hash_table_escapes.h varname.h write.h scheduler.h \
+  manager.h scheduler_status.h signals.h
 env.o: env.cc global.h atom_table.h config.h ../config.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
   qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
   objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h pred_table.h \
-  dynamic_code.h scheduler.h block.h manager.h scheduler_status.h \
-  thread_qp.h choice.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pile.h thread_condition.h thread_info.h thread_options.h trace_qp.h \
-  trail.h return.h arithmetic.h atoms.h bind.h bios.h buffers.h \
-  c_to_prolog.h compare.h compile_qp.h cut.h decompile.h delay_qp.h \
-  delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
-  equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h scheduler.h block.h timeval.h manager.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -307,24 +294,23 @@ env.o: env.cc global.h atom_table.h config.h ../config.h area_offsets.h \
 env_var.o: env_var.cc config.h ../config.h atom_table.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
   qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  objects.h truth3.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -332,74 +318,71 @@ env_var.o: env_var.cc config.h ../config.h atom_table.h area_offsets.h \
 equal_escape.o: equal_escape.cc atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-examine_term.o: examine_term.cc atom_table.h config.h ../config.h \
-  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
-  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-exception.o: exception.cc thread_qp.h area_offsets.h defs.h config.h \
-  ../config.h debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+examine_term.o: examine_term.cc atom_table.h config.h ../config.h \
+  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
+  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+exception.o: exception.cc thread_qp.h area_offsets.h defs.h config.h \
+  ../config.h debug.h block.h timeval.h errors.h objects.h string_table.h \
+  magic.h qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -408,49 +391,47 @@ foreign.o: foreign.cc global.h atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h pred_table.h \
-  dynamic_code.h scheduler.h block.h manager.h scheduler_status.h \
-  thread_qp.h choice.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pile.h thread_condition.h thread_info.h thread_options.h trace_qp.h \
-  trail.h return.h arithmetic.h atoms.h bind.h bios.h buffers.h \
-  c_to_prolog.h compare.h compile_qp.h cut.h decompile.h delay_qp.h \
-  delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
-  equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h scheduler.h block.h timeval.h manager.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
   user_hash_table_escapes.h varname.h write.h
 free_in.o: free_in.cc thread_qp.h area_offsets.h defs.h config.h \
-  ../config.h debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  ../config.h debug.h block.h timeval.h errors.h objects.h string_table.h \
+  magic.h qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -459,24 +440,23 @@ gc_escapes.o: gc_escapes.cc global.h atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h pred_table.h \
-  dynamic_code.h scheduler.h block.h manager.h scheduler_status.h \
-  thread_qp.h choice.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pile.h thread_condition.h thread_info.h thread_options.h trace_qp.h \
-  trail.h return.h arithmetic.h atoms.h bind.h bios.h buffers.h \
-  c_to_prolog.h compare.h compile_qp.h cut.h decompile.h delay_qp.h \
-  delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
-  equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h scheduler.h block.h timeval.h manager.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -484,102 +464,71 @@ gc_escapes.o: gc_escapes.cc global.h atom_table.h config.h ../config.h \
 get_args.o: get_args.cc atom_table.h config.h ../config.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
   qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  objects.h truth3.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
   user_hash_table_escapes.h varname.h write.h
-icm_escapes.o: icm_escapes.cc atom_table.h config.h ../config.h \
-  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
-  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h icm_environment.h icm.h icmIo.h \
-  icmLocal.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  icm_handle.h heap_qp.h compiler_support.h foreign_interface.h \
+pedro_escapes.o: pedro_escapes.cc thread_qp.h area_offsets.h defs.h \
+  config.h ../config.h debug.h block.h timeval.h errors.h objects.h \
+  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
+  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h \
+  choice.h code.h heap_qp.h compiler_support.h foreign_interface.h \
   error_value.h io_qp.h name_table.h prolog_value.h thread_status.h \
-  check.h copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h thread_qp.h block.h choice.h \
-  code.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  scheduler.h manager.h scheduler_status.h
-elvin_escapes.o: elvin_escapes.cc global.h atom_table.h config.h \
-  ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
-  int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
-  stack_qp.h page_table.h objects.h truth3.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h icm.h icmIo.h \
-  icmLocal.h io_qp.h icm_environment.h icm_message.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  timeval.h signals.h status.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h pred_table.h dynamic_code.h scheduler.h \
-  block.h manager.h scheduler_status.h thread_qp.h choice.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  elvin_env.h
+  status.h check.h copy_term.h collect.h dereference.h display_term.h \
+  regalloc.h substitution.h timeout.h unravel.h yield.h instructions.h \
+  string_map.h record_stack.h encode.h environment.h foreign_handle.h \
+  heap_buffer.h messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h tcp_qp.h pedro_env.h
 ip.o: ip.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
   debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
   option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h icmIo.h \
-  icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  truth3.h thread_qp.h block.h timeval.h choice.h code.h heap_qp.h \
+  compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -588,293 +537,14 @@ ipc_escapes.o: ipc_escapes.cc config.h ../config.h atom_table.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h global.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h icm.h icmIo.h \
-  icmLocal.h io_qp.h icm_environment.h icm_message.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  timeval.h signals.h status.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h pred_table.h dynamic_code.h scheduler.h \
-  block.h manager.h scheduler_status.h thread_qp.h choice.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  icm_handle.h is_ready.h tcp_qp.h
-load.o: load.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
-  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
-  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h system_support.h thread_qp.h block.h timeval.h icm_message.h \
-  icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
-  copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-machine.o: machine.cc icm.h icmIo.h icmLocal.h atom_table.h config.h \
-  ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
-  int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
-  stack_qp.h page_table.h objects.h truth3.h thread_qp.h block.h \
-  timeval.h icm_message.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
-  copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-name.o: name.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
-  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
-  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h icmIo.h \
-  icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
-  copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-object_variable.o: object_variable.cc atom_table.h config.h ../config.h \
-  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
-  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
   compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-pipe.o: pipe.cc thread_qp.h area_offsets.h defs.h config.h ../config.h \
-  debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  pred_table.h dynamic_code.h dynamic_hash_table.h scheduler.h block.h \
+  timeval.h manager.h scheduler_status.h signals.h thread_qp.h choice.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-process.o: process.cc atom_table.h config.h ../config.h area_offsets.h \
-  defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
-  qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h icm_environment.h icm.h icmIo.h icmLocal.h \
-  icm_message.h messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
-  thread_table_loc.h timeval.h signals.h status.h thread_qp.h block.h \
-  choice.h code.h heap_qp.h compiler_support.h foreign_interface.h \
-  error_value.h io_qp.h name_table.h prolog_value.h thread_status.h \
-  check.h copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-quantifier.o: quantifier.cc atom_table.h config.h ../config.h \
-  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
-  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-pseudo_instr_arrays.o: pseudo_instr_arrays.cc thread_qp.h area_offsets.h \
-  defs.h config.h ../config.h debug.h block.h timeval.h errors.h \
-  icm_message.h objects.h string_table.h magic.h qem_options.h option.h \
-  options.h stack_qp.h page_table.h int.h timestamp.h truth3.h \
-  atom_table.h hash_table.h icm.h icmIo.h icmLocal.h choice.h code.h \
-  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  pseudo_instr_arrays.h
-random.o: random.cc thread_qp.h area_offsets.h defs.h config.h \
-  ../config.h debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
-  copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-read.o: read.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
-  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
-  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h icmIo.h \
-  icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
-  copy_term.h collect.h dereference.h display_term.h regalloc.h \
-  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
-  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
-  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
-  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
-signal_escapes.o: signal_escapes.cc scheduler.h atom_table.h config.h \
-  ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
-  int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
-  stack_qp.h page_table.h objects.h truth3.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h manager.h pred_table.h \
-  dynamic_code.h scheduler_status.h thread_qp.h choice.h record_stack.h \
-  encode.h environment.h foreign_handle.h heap_buffer.h indexing.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
   code_hash.h obj_index.h pile.h thread_condition.h thread_info.h \
   thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
   bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
@@ -882,32 +552,274 @@ signal_escapes.o: signal_escapes.cc scheduler.h atom_table.h config.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-state.o: state.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
+  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h user_hash_table_escapes.h varname.h write.h is_ready.h tcp_qp.h \
+  pedro_env.h
+load.o: load.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
   debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
   option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h code.h heap_qp.h compiler_support.h foreign_interface.h \
-  error_value.h icm.h icmIo.h icmLocal.h io_qp.h icm_environment.h \
-  icm_message.h messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
-  thread_table_loc.h timeval.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h is_ready.h pred_table.h \
-  dynamic_code.h thread_qp.h block.h choice.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
+  truth3.h system_support.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+name.o: name.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
+  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
+  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
+  truth3.h thread_qp.h block.h timeval.h choice.h code.h heap_qp.h \
+  compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+object_variable.o: object_variable.cc atom_table.h config.h ../config.h \
+  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
+  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+pipe.o: pipe.cc thread_qp.h area_offsets.h defs.h config.h ../config.h \
+  debug.h block.h timeval.h errors.h objects.h string_table.h magic.h \
+  qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+process.o: process.cc atom_table.h config.h ../config.h area_offsets.h \
+  defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
+  qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
+  objects.h truth3.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+quantifier.o: quantifier.cc atom_table.h config.h ../config.h \
+  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
+  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+pseudo_instr_arrays.o: pseudo_instr_arrays.cc thread_qp.h area_offsets.h \
+  defs.h config.h ../config.h debug.h block.h timeval.h errors.h \
+  objects.h string_table.h magic.h qem_options.h option.h options.h \
+  stack_qp.h page_table.h int.h timestamp.h truth3.h atom_table.h \
+  hash_table.h choice.h code.h heap_qp.h compiler_support.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h record_stack.h encode.h environment.h \
+  foreign_handle.h heap_buffer.h messages.h thread_table.h hash_qp.h \
+  dynamic_hash_table.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
+  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
+  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
+  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
+  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
+  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
+  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
+  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h user_hash_table_escapes.h varname.h write.h \
+  pseudo_instr_arrays.h
+random.o: random.cc thread_qp.h area_offsets.h defs.h config.h \
+  ../config.h debug.h block.h timeval.h errors.h objects.h string_table.h \
+  magic.h qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+read.o: read.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
+  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
+  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
+  truth3.h thread_qp.h block.h timeval.h choice.h code.h heap_qp.h \
+  compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+signal_escapes.o: signal_escapes.cc scheduler.h atom_table.h config.h \
+  ../config.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
+  int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
+  stack_qp.h page_table.h objects.h truth3.h block.h timeval.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  manager.h pred_table.h dynamic_code.h dynamic_hash_table.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
   obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
   trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
   buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
   delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
   env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
   exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
-  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h icm_escapes.h \
-  elvin_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+state.o: state.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
+  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
+  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
+  truth3.h code.h heap_qp.h compiler_support.h foreign_interface.h \
+  error_value.h io_qp.h name_table.h prolog_value.h thread_status.h \
+  status.h check.h copy_term.h collect.h dereference.h display_term.h \
+  regalloc.h substitution.h timeout.h unravel.h yield.h instructions.h \
+  string_map.h is_ready.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h thread_qp.h block.h timeval.h choice.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
+  code_hash.h obj_index.h pile.h thread_condition.h thread_info.h \
+  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
+  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
+  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
+  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
+  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
+  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
   occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
   read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
   string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
@@ -917,23 +829,22 @@ statistics.o: statistics.cc config.h ../config.h atom_table.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h thread_decode.h \
-  global.h pred_table.h dynamic_code.h scheduler.h block.h manager.h \
-  scheduler_status.h thread_qp.h choice.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
-  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
-  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
-  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
-  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
-  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
-  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h icm_escapes.h \
-  elvin_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h thread_decode.h global.h pred_table.h \
+  dynamic_code.h dynamic_hash_table.h scheduler.h block.h timeval.h \
+  manager.h scheduler_status.h signals.h thread_qp.h choice.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
+  code_hash.h obj_index.h pile.h thread_condition.h thread_info.h \
+  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
+  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
+  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
+  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
+  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
+  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
   occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
   read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
   string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
@@ -942,15 +853,14 @@ statistics.o: statistics.cc config.h ../config.h atom_table.h \
 stream_escapes.o: stream_escapes.cc atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h io_qp.h icm_environment.h icm.h icmIo.h \
-  icmLocal.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  system_support.h thread_qp.h block.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
+  page_table.h objects.h truth3.h io_qp.h system_support.h thread_qp.h \
+  block.h timeval.h choice.h code.h heap_qp.h compiler_support.h \
+  foreign_interface.h error_value.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h record_stack.h encode.h environment.h \
+  foreign_handle.h heap_buffer.h messages.h thread_table.h hash_qp.h \
+  dynamic_hash_table.h thread_table_loc.h indexing.h code_hash.h \
   obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
   thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
   atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
@@ -958,84 +868,80 @@ stream_escapes.o: stream_escapes.cc atom_table.h config.h ../config.h \
   encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
   examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
   gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  icm_handle.h
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
+  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h user_hash_table_escapes.h varname.h write.h pedro_env.h
 string_escapes.o: string_escapes.cc atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h io_qp.h icm_environment.h icm.h icmIo.h \
-  icmLocal.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  thread_qp.h block.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pred_table.h dynamic_code.h pile.h thread_condition.h thread_info.h \
-  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
-  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
-  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
+  page_table.h objects.h truth3.h io_qp.h thread_qp.h block.h timeval.h \
+  choice.h code.h heap_qp.h compiler_support.h foreign_interface.h \
+  error_value.h name_table.h prolog_value.h thread_status.h status.h \
+  check.h copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
 structure.o: structure.cc atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-sub_escape.o: sub_escape.cc thread_qp.h area_offsets.h defs.h config.h \
-  ../config.h debug.h block.h timeval.h errors.h icm_message.h objects.h \
-  string_table.h magic.h qem_options.h option.h options.h stack_qp.h \
-  page_table.h int.h timestamp.h truth3.h atom_table.h hash_table.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+sub_escape.o: sub_escape.cc thread_qp.h area_offsets.h defs.h config.h \
+  ../config.h debug.h block.h timeval.h errors.h objects.h string_table.h \
+  magic.h qem_options.h option.h options.h stack_qp.h page_table.h int.h \
+  timestamp.h truth3.h atom_table.h hash_table.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -1044,24 +950,23 @@ symbols.o: symbols.cc global.h atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h pred_table.h \
-  dynamic_code.h scheduler.h block.h manager.h scheduler_status.h \
-  thread_qp.h choice.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pile.h thread_condition.h thread_info.h thread_options.h trace_qp.h \
-  trail.h return.h arithmetic.h atoms.h bind.h bios.h buffers.h \
-  c_to_prolog.h compare.h compile_qp.h cut.h decompile.h delay_qp.h \
-  delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
-  equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h scheduler.h block.h timeval.h manager.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -1069,24 +974,23 @@ symbols.o: symbols.cc global.h atom_table.h config.h ../config.h \
 system.o: system.cc atom_table.h config.h ../config.h area_offsets.h \
   defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
   qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  objects.h truth3.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -1095,205 +999,196 @@ tcp_escapes.o: tcp_escapes.cc config.h ../config.h global.h atom_table.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
   page_table.h objects.h truth3.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h icm.h icmIo.h icmLocal.h io_qp.h \
-  icm_environment.h icm_message.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h timeval.h signals.h status.h \
-  name_table.h prolog_value.h thread_status.h check.h copy_term.h \
-  collect.h dereference.h display_term.h regalloc.h substitution.h \
-  timeout.h unravel.h yield.h instructions.h string_map.h pred_table.h \
-  dynamic_code.h scheduler.h block.h manager.h scheduler_status.h \
-  thread_qp.h choice.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pile.h thread_condition.h thread_info.h thread_options.h trace_qp.h \
-  trail.h return.h arithmetic.h atoms.h bind.h bios.h buffers.h \
-  c_to_prolog.h compare.h compile_qp.h cut.h decompile.h delay_qp.h \
-  delay_escape.h distinction.h dyn_code.h encode_stream.h env.h env_var.h \
-  equal.h equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  foreign_interface.h error_value.h io_qp.h name_table.h prolog_value.h \
+  thread_status.h status.h check.h copy_term.h collect.h dereference.h \
+  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
+  instructions.h string_map.h pred_table.h dynamic_code.h \
+  dynamic_hash_table.h scheduler.h block.h timeval.h manager.h \
+  scheduler_status.h signals.h thread_qp.h choice.h record_stack.h \
+  encode.h environment.h foreign_handle.h heap_buffer.h messages.h \
+  thread_table.h hash_qp.h thread_table_loc.h indexing.h code_hash.h \
+  obj_index.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h arpa_inet.h is_ready.h \
-  netinet_in.h
+  user_hash_table_escapes.h varname.h write.h tcp_qp.h arpa_inet.h \
+  is_ready.h netinet_in.h
 temperature.o: temperature.cc atom_table.h config.h ../config.h \
   area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
   magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-thread_decode.o: thread_decode.cc thread_decode.h global.h atom_table.h \
-  config.h ../config.h area_offsets.h defs.h debug.h hash_table.h \
-  timestamp.h int.h errors.h magic.h qem_options.h option.h options.h \
-  string_table.h stack_qp.h page_table.h objects.h truth3.h code.h \
-  heap_qp.h compiler_support.h foreign_interface.h error_value.h icm.h \
-  icmIo.h icmLocal.h io_qp.h icm_environment.h icm_message.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  timeval.h signals.h status.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h pred_table.h dynamic_code.h scheduler.h \
-  block.h manager.h scheduler_status.h thread_qp.h choice.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-thread_escapes.o: thread_escapes.cc config.h ../config.h global.h \
-  atom_table.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
-  int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
-  stack_qp.h page_table.h objects.h truth3.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h icm.h icmIo.h \
-  icmLocal.h io_qp.h icm_environment.h icm_message.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  timeval.h signals.h status.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h pred_table.h dynamic_code.h scheduler.h \
-  block.h manager.h scheduler_status.h thread_qp.h choice.h \
-  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  thread_decode.h
-token.o: token.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
-  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
-  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h io_qp.h icm_environment.h icm.h icmIo.h icmLocal.h \
-  icm_message.h messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
-  thread_table_loc.h timeval.h signals.h status.h is_ready.h thread_qp.h \
-  block.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h name_table.h prolog_value.h \
-  thread_status.h check.h copy_term.h collect.h dereference.h \
-  display_term.h regalloc.h substitution.h timeout.h unravel.h yield.h \
-  instructions.h string_map.h record_stack.h encode.h environment.h \
-  foreign_handle.h heap_buffer.h indexing.h code_hash.h obj_index.h \
-  pred_table.h dynamic_code.h pile.h thread_condition.h thread_info.h \
-  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
-  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
-  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
-  scheduler.h manager.h scheduler_status.h
-trace_escapes.o: trace_escapes.cc atom_table.h config.h ../config.h \
-  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
-  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
-  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h \
-  icm_message.h icm.h icmIo.h icmLocal.h choice.h code.h heap_qp.h \
-  compiler_support.h foreign_interface.h error_value.h io_qp.h \
-  icm_environment.h messages.h thread_table.h hash_qp.h \
-  dynamic_hash_table.h thread_table_loc.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h instructions.h string_map.h record_stack.h encode.h \
-  environment.h foreign_handle.h heap_buffer.h indexing.h code_hash.h \
-  obj_index.h pred_table.h dynamic_code.h pile.h thread_condition.h \
-  thread_info.h thread_options.h trace_qp.h trail.h return.h arithmetic.h \
-  atoms.h bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h \
-  cut.h decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
-  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
-  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
-  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
-  icm_escapes.h elvin_escapes.h ipc_escapes.h load.h machine.h name.h \
-  object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
-  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
-  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
-  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
-  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
-user_hash_table_escapes.o: user_hash_table_escapes.cc user_hash_table.h \
-  heap_qp.h area_offsets.h defs.h config.h ../config.h debug.h \
-  atom_table.h hash_table.h timestamp.h int.h errors.h magic.h \
-  qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h compiler_support.h foreign_interface.h error_value.h \
-  icm.h icmIo.h icmLocal.h io_qp.h icm_environment.h icm_message.h \
   messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
-  thread_table_loc.h timeval.h signals.h status.h name_table.h \
-  prolog_value.h thread_status.h check.h copy_term.h collect.h \
-  dereference.h display_term.h regalloc.h substitution.h timeout.h \
-  unravel.h yield.h code.h instructions.h string_map.h thread_qp.h \
-  block.h choice.h record_stack.h encode.h environment.h foreign_handle.h \
-  heap_buffer.h indexing.h code_hash.h obj_index.h pred_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
   dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
   trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
   buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
   delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
   env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
   exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
-  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h icm_escapes.h \
-  elvin_escapes.h ipc_escapes.h load.h machine.h name.h object_variable.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+thread_decode.o: thread_decode.cc thread_decode.h global.h atom_table.h \
+  config.h ../config.h area_offsets.h defs.h debug.h hash_table.h \
+  timestamp.h int.h errors.h magic.h qem_options.h option.h options.h \
+  string_table.h stack_qp.h page_table.h objects.h truth3.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  pred_table.h dynamic_code.h dynamic_hash_table.h scheduler.h block.h \
+  timeval.h manager.h scheduler_status.h signals.h thread_qp.h choice.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
+  code_hash.h obj_index.h pile.h thread_condition.h thread_info.h \
+  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
+  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
+  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
+  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
+  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
+  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
   occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
   read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
   string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
   tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
   unify.h user_hash_table_escapes.h varname.h write.h
-varname.o: varname.cc atom_table.h config.h ../config.h area_offsets.h \
-  defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
-  qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
-  objects.h truth3.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+thread_escapes.o: thread_escapes.cc config.h ../config.h global.h \
+  atom_table.h area_offsets.h defs.h debug.h hash_table.h timestamp.h \
+  int.h errors.h magic.h qem_options.h option.h options.h string_table.h \
+  stack_qp.h page_table.h objects.h truth3.h code.h heap_qp.h \
+  compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  pred_table.h dynamic_code.h dynamic_hash_table.h scheduler.h block.h \
+  timeval.h manager.h scheduler_status.h signals.h thread_qp.h choice.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
+  code_hash.h obj_index.h pile.h thread_condition.h thread_info.h \
+  thread_options.h trace_qp.h trail.h return.h arithmetic.h atoms.h \
+  bind.h bios.h buffers.h c_to_prolog.h compare.h compile_qp.h cut.h \
+  decompile.h delay_qp.h delay_escape.h distinction.h dyn_code.h \
+  encode_stream.h env.h env_var.h equal.h equal_escape.h esc_init.h \
+  examine_term.h exception.h execute.h foreign.h free_in.h freeness.h \
+  gc_escapes.h generate_var_names.h get_args.h interrupt_qp.h ip_qp.h \
+  pedro_escapes.h ipc_escapes.h load.h name.h object_variable.h \
+  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
+  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
+  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
+  tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
+  unify.h user_hash_table_escapes.h varname.h write.h thread_decode.h \
+  pedro_env.h
+token.o: token.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
+  debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
+  option.h options.h string_table.h stack_qp.h page_table.h objects.h \
+  truth3.h io_qp.h is_ready.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h scheduler.h manager.h \
+  scheduler_status.h signals.h
+trace_escapes.o: trace_escapes.cc atom_table.h config.h ../config.h \
+  area_offsets.h defs.h debug.h hash_table.h timestamp.h int.h errors.h \
+  magic.h qem_options.h option.h options.h string_table.h stack_qp.h \
+  page_table.h objects.h truth3.h thread_qp.h block.h timeval.h choice.h \
+  code.h heap_qp.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
+  structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
+  temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
+  user_hash_table_escapes.h varname.h write.h
+user_hash_table_escapes.o: user_hash_table_escapes.cc user_hash_table.h \
+  heap_qp.h area_offsets.h defs.h config.h ../config.h debug.h \
+  atom_table.h hash_table.h timestamp.h int.h errors.h magic.h \
+  qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
+  objects.h truth3.h compiler_support.h foreign_interface.h error_value.h \
+  io_qp.h name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h dynamic_hash_table.h code.h \
+  instructions.h string_map.h thread_qp.h block.h timeval.h choice.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h thread_table_loc.h indexing.h \
+  code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
   thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
   return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
   compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
   distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
   equal_escape.h esc_init.h examine_term.h exception.h execute.h \
   foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h ipc_escapes.h load.h \
+  name.h object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
+  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
+  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
+  system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
+  trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h
+varname.o: varname.cc atom_table.h config.h ../config.h area_offsets.h \
+  defs.h debug.h hash_table.h timestamp.h int.h errors.h magic.h \
+  qem_options.h option.h options.h string_table.h stack_qp.h page_table.h \
+  objects.h truth3.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
+  copy_term.h collect.h dereference.h display_term.h regalloc.h \
+  substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
+  record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
@@ -1301,25 +1196,24 @@ varname.o: varname.cc atom_table.h config.h ../config.h area_offsets.h \
 write.o: write.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
   debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
   option.h options.h string_table.h stack_qp.h page_table.h objects.h \
-  truth3.h is_ready.h thread_qp.h block.h timeval.h icm_message.h icm.h \
-  icmIo.h icmLocal.h choice.h code.h heap_qp.h compiler_support.h \
-  foreign_interface.h error_value.h io_qp.h icm_environment.h messages.h \
-  thread_table.h hash_qp.h dynamic_hash_table.h thread_table_loc.h \
-  signals.h status.h name_table.h prolog_value.h thread_status.h check.h \
+  truth3.h is_ready.h thread_qp.h block.h timeval.h choice.h code.h \
+  heap_qp.h compiler_support.h foreign_interface.h error_value.h io_qp.h \
+  name_table.h prolog_value.h thread_status.h status.h check.h \
   copy_term.h collect.h dereference.h display_term.h regalloc.h \
   substitution.h timeout.h unravel.h yield.h instructions.h string_map.h \
   record_stack.h encode.h environment.h foreign_handle.h heap_buffer.h \
-  indexing.h code_hash.h obj_index.h pred_table.h dynamic_code.h pile.h \
-  thread_condition.h thread_info.h thread_options.h trace_qp.h trail.h \
-  return.h arithmetic.h atoms.h bind.h bios.h buffers.h c_to_prolog.h \
-  compare.h compile_qp.h cut.h decompile.h delay_qp.h delay_escape.h \
-  distinction.h dyn_code.h encode_stream.h env.h env_var.h equal.h \
-  equal_escape.h esc_init.h examine_term.h exception.h execute.h \
-  foreign.h free_in.h freeness.h gc_escapes.h generate_var_names.h \
-  get_args.h interrupt_qp.h ip_qp.h icm_escapes.h elvin_escapes.h \
-  ipc_escapes.h load.h machine.h name.h object_variable.h occurs_check.h \
-  pipe.h process.h pseudo_instr.h quantifier.h random.h read_qp.h \
+  messages.h thread_table.h hash_qp.h dynamic_hash_table.h \
+  thread_table_loc.h indexing.h code_hash.h obj_index.h pred_table.h \
+  dynamic_code.h pile.h thread_condition.h thread_info.h thread_options.h \
+  trace_qp.h trail.h return.h arithmetic.h atoms.h bind.h bios.h \
+  buffers.h c_to_prolog.h compare.h compile_qp.h cut.h decompile.h \
+  delay_qp.h delay_escape.h distinction.h dyn_code.h encode_stream.h \
+  env.h env_var.h equal.h equal_escape.h esc_init.h examine_term.h \
+  exception.h execute.h foreign.h free_in.h freeness.h gc_escapes.h \
+  generate_var_names.h get_args.h interrupt_qp.h ip_qp.h pedro_escapes.h \
+  ipc_escapes.h load.h name.h object_variable.h occurs_check.h pipe.h \
+  process.h pseudo_instr.h quantifier.h random.h read_qp.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h
+  user_hash_table_escapes.h varname.h write.h write_support.h

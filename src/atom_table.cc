@@ -74,8 +74,18 @@ Atom *AtomTable::failure;
 Atom *AtomTable::unsure;
 Atom *AtomTable::colon;
 Atom *AtomTable::dollar;
+Atom *AtomTable::at;
 
+Atom *AtomTable::obra;
+Atom *AtomTable::cbra;
+Atom *AtomTable::spobra;
+Atom *AtomTable::ospra;
+Atom *AtomTable::cspra;
+Atom *AtomTable::semi;
+Atom *AtomTable::arrow;
+  
 Atom *AtomTable::equal;
+Atom *AtomTable::is;
 Atom *AtomTable::nfi;
 Atom *AtomTable::checkBinder;
 Atom *AtomTable::delays;
@@ -160,6 +170,10 @@ Atom *AtomTable::bitwiseor;
 Atom *AtomTable::shiftl;
 Atom *AtomTable::shiftr;
 Atom *AtomTable::bitneg;
+Atom *AtomTable::lt;
+Atom *AtomTable::gt;
+Atom *AtomTable::le;
+Atom *AtomTable::ge;
 Atom *AtomTable::pi;
 Atom *AtomTable::e;
 Atom *AtomTable::abs;
@@ -246,9 +260,6 @@ Atom *AtomTable::trace_all;
 Atom *AtomTable::code;
 Atom *AtomTable::record_db;
 
-// ICM
-Atom *AtomTable::icm_handle;
-
 //
 // Using the string to hash into the atom table.
 // No idea of this algorithm.  It is from Ross.
@@ -275,7 +286,7 @@ AtomKey::hashFn(void) const
 Atom *
 AtomTable::add(const char *string)
 {
-  AtomKey key(string, &stringTable);
+  AtomKey key(string);
   
   const AtomLoc index = search(key);
   Atom& entry = getEntry(index);
@@ -284,7 +295,7 @@ AtomTable::add(const char *string)
       //
       // Add the new entry.
       //
-      entry.setStringTableLoc(stringTable.add(string));
+      entry.setStringTablePtr(stringTable.add(string));
     }
 
   //
@@ -311,7 +322,18 @@ AtomTable::atomToBool(Object* c)
 }
 
 
+void 
+AtomTable::shiftStringPtrs(char* old_string_base)
+{
+  int offset = stringTable.getString(0) - old_string_base;
 
+  for (u_int i = 0; i < size(); i++)
+    {
+      Atom& entry = getEntry(i);
+      if (!entry.isEmpty())
+	entry.setStringTablePtr(entry.getStringTablePtr() + offset);
+    }
+}
 
 
 

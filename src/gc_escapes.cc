@@ -138,7 +138,7 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
 	    }
 	  if (var->isDouble())
 	    {
-	      ptr += 2;
+	      ptr ++;
 	      continue;
 	    }
 	  if (var->isAnyVariable() && (i == 2))

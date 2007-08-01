@@ -123,9 +123,6 @@ do {									\
 } while (0)
 
 
-// IS_READY_IMSTREAM(listist<ICMMessage *> queue,
-//                   icmHandle sender_handle,
-//	             list<ICMMessage *>::iterator iter)
 //
 // This macro is used to simplify the coding required when we're checking
 // whether an IMSTREAM operation is about to be attempted,
@@ -147,7 +144,6 @@ do {									\
 } while (0)
 
 
-#ifdef ICM_DEF
 #define IS_READY_STREAM(s)                                                  \
 do {                                                                        \
      if ((s)->Type() == IMSTREAM)                                           \
@@ -160,20 +156,6 @@ do {                                                                        \
        }                                                                    \
 } while (0)
 
-#else // ICM_DEF
-
-#define IS_READY_STREAM(s)                                                  \
-do {                                                                        \
-     if ((s)->Type() == IMSTREAM)                                           \
-       {                                                                    \
-         return RV_FAIL;                                                    \
-       }                                                                    \
-     else                                                                   \
-       {                                                                    \
-         IS_READY_IO((s));                                                  \
-       }                                                                    \
-} while (0)
-#endif // ICM_DEF
 
 #define IS_READY_SOCKET(socket)                                             \
 do {                                                                        \

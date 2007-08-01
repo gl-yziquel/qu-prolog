@@ -100,7 +100,6 @@ end('$interpreter'/1):
 $1:
 	allocate(0)
 	call_predicate('$exit_interpreter', 1, 0)
-	call_predicate('exit_thread_gui', 0, 0)
 	deallocate
 	execute_predicate('exit_debug_thread_gui', 0)
 

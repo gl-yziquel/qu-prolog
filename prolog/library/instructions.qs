@@ -3,7 +3,7 @@
 	switch_on_term(0, $100, 'fail', 'fail', 'fail', 'fail', $99)
 
 $99:
-	switch_on_constant(0, 256, ['$default':'fail', 'put_x_variable':$1, 'put_y_variable':$2, 'put_x_value':$3, 'put_y_value':$4, 'put_constant':$5, 'put_integer':$6, 'put_list':$7, 'put_structure':$8, 'put_x_object_variable':$9, 'put_y_object_variable':$10, 'put_x_object_value':$11, 'put_y_object_value':$12, 'put_quantifier':$13, 'check_binder':$14, 'put_substitution':$15, 'put_x_term_substitution':$16, 'put_y_term_substitution':$17, 'put_initial_empty_substitution':$18, 'get_x_variable':$19, 'get_y_variable':$20, 'get_x_value':$21, 'get_y_value':$22, 'get_constant':$23, 'get_integer':$24, 'get_list':$25, 'get_structure':$26, 'get_structure_frame':$27, 'get_x_object_variable':$28, 'get_y_object_variable':$29, 'get_x_object_value':$30, 'get_y_object_value':$31, 'unify_x_variable':$32, 'unify_y_variable':$33, 'unify_x_value':$34, 'unify_y_value':$35, 'unify_void':$36, 'set_x_variable':$37, 'set_y_variable':$38, 'set_x_value':$39, 'set_y_value':$40, 'set_x_object_variable':$41, 'set_y_object_variable':$42, 'set_x_object_value':$43, 'set_y_object_value':$44, 'set_constant':$45, 'set_integer':$46, 'set_void':$47, 'set_object_void':$48, 'allocate':$49, 'deallocate':$50, 'call_predicate':$51, 'call_address':$52, 'call_escape':$53, 'execute_predicate':$54, 'execute_address':$55, 'execute_escape':$56, 'noop':$57, 'jump':$58, 'proceed':$59, 'fail':$60, 'halt':$61, 'exit':$62, 'try_me_else':$63, 'retry_me_else':$64, 'trust_me_else_fail':$65, 'try':$66, 'retry':$67, 'trust':$68, 'neck_cut':$69, 'get_x_level':$70, 'get_y_level':$71, 'cut':$72, 'switch_on_term':$73, 'switch_on_constant':$74, 'switch_on_structure':$75, 'switch_on_quantifier':$76, 'pseudo_instr0':$77, 'pseudo_instr1':$78, 'pseudo_instr2':$79, 'pseudo_instr3':$80, 'pseudo_instr4':$81, 'pseudo_instr5':$82, 'unify_constant':$83, 'unify_integer':$84, 'unify_x_ref':$85, 'unify_y_ref':$86, 'db_jump':$87, 'db_try':$88, 'db_retry':$89, 'db_try_dec_ref':$90, 'put_double':$91, 'get_double':$92, 'set_double':$93, 'unify_double':$94, 'put_string':$95, 'get_string':$96, 'set_string':$97, 'unify_string':$98])
+	switch_on_constant(0, 256, ['$default':'fail', 'put_x_variable':$1, 'put_y_variable':$2, 'put_x_value':$3, 'put_y_value':$4, 'put_constant':$5, 'put_integer':$6, 'put_list':$7, 'put_structure':$8, 'put_x_object_variable':$9, 'put_y_object_variable':$10, 'put_x_object_value':$11, 'put_y_object_value':$12, 'put_quantifier':$13, 'check_binder':$14, 'put_substitution':$15, 'put_x_term_substitution':$16, 'put_y_term_substitution':$17, 'put_initial_empty_substitution':$18, 'get_x_variable':$19, 'get_y_variable':$20, 'get_x_value':$21, 'get_y_value':$22, 'get_constant':$23, 'get_integer':$24, 'get_list':$25, 'get_structure':$26, 'get_structure_frame':$27, 'get_x_object_variable':$28, 'get_y_object_variable':$29, 'get_x_object_value':$30, 'get_y_object_value':$31, 'unify_x_variable':$32, 'unify_y_variable':$33, 'unify_x_value':$34, 'unify_y_value':$35, 'unify_void':$36, 'set_x_variable':$37, 'set_y_variable':$38, 'set_x_value':$39, 'set_y_value':$40, 'set_x_object_variable':$41, 'set_y_object_variable':$42, 'set_x_object_value':$43, 'set_y_object_value':$44, 'set_constant':$45, 'set_integer':$46, 'set_void':$47, 'set_object_void':$48, 'allocate':$49, 'deallocate':$50, 'call_predicate':$51, 'call_address':$52, 'call_escape':$53, 'execute_predicate':$54, 'execute_address':$55, 'execute_escape':$56, 'noop':$57, 'jump':$58, 'proceed':$59, 'fail':$60, 'halt':$61, 'exit':$62, 'try_me_else':$63, 'retry_me_else':$64, 'trust_me_else_fail':$65, 'try':$66, 'retry':$67, 'trust':$68, 'neck_cut':$69, 'get_x_level':$70, 'get_y_level':$71, 'cut':$72, 'switch_on_term':$73, 'switch_on_constant':$74, 'switch_on_structure':$75, 'switch_on_quantifier':$76, 'pseudo_instr0':$77, 'pseudo_instr1':$78, 'pseudo_instr2':$79, 'pseudo_instr3':$80, 'pseudo_instr4':$81, 'pseudo_instr5':$82, 'unify_constant':$83, 'unify_integer':$84, 'unify_x_ref':$85, 'unify_y_ref':$86, 'db_jump':$87, 'db_execute_predicate':$88, 'db_execute_address':$89, 'db_proceed':$90, 'put_double':$91, 'get_double':$92, 'set_double':$93, 'unify_double':$94, 'put_string':$95, 'get_string':$96, 'set_string':$97, 'unify_string':$98])
 
 $100:
 	try(3, $1)
@@ -951,41 +951,26 @@ $87:
 	proceed
 
 $88:
-	get_constant('db_try', 0)
+	get_constant('db_execute_predicate', 0)
 	get_integer(88, 1)
 	get_list(2)
+	unify_constant('predatom')
+	unify_x_ref(0)
+	get_list(0)
 	unify_constant('number')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('address')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('address')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('address')
 	unify_constant('[]')
 	proceed
 
 $89:
-	get_constant('db_retry', 0)
+	get_constant('db_execute_address', 0)
 	get_integer(89, 1)
 	get_list(2)
-	unify_constant('number')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('address')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('address')
-	unify_x_ref(0)
-	get_list(0)
 	unify_constant('address')
 	unify_constant('[]')
 	proceed
 
 $90:
-	get_constant('db_try_dec_ref', 0)
+	get_constant('db_proceed', 0)
 	get_integer(90, 1)
 	get_constant('[]', 2)
 	proceed

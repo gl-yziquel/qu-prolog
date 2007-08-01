@@ -72,20 +72,14 @@
 
 #include "atom_table.h"
 #include "global.h"
-#include "icm.h"
-#include "icm_environment.h"
-#include "icm_handle.h"
 #include "is_ready.h"
 #include "thread_qp.h"
 #include "thread_table.h"
 #include "timeval.h"
 #include "tcp_qp.h"
+#include "pedro_env.h"
 
 extern AtomTable *atoms;
-#ifdef ICM_DEF
-extern ICMMessageChannel* icm_channel;
-extern ICMEnvironment* icm_environment;
-#endif
 extern const char *Program;
 extern char *process_symbol;
 
@@ -125,155 +119,6 @@ extern char *process_symbol;
 //
 // --------------------------------------------------------------------------
 
-Thread::ReturnValue
-Thread::psi_ipc_send(Object *& message_cell,
-		     Object *& recipient_handle_cell,
-		     Object *& replyto_handle_cell,
-		     Object *& options_cell)
-{
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
-  Object* message_arg = heap.dereference(message_cell);
-  Object* recipient_handle_arg = heap.dereference(recipient_handle_cell);
-  Object* replyto_handle_arg = heap.dereference(replyto_handle_cell);
-  Object* options_arg = heap.dereference(options_cell);
-
-  icmHandle recipient_handle;
-  DECODE_ICM_HANDLE_ARG(heap, *atoms, recipient_handle_arg, 2,
-			recipient_handle);
-  
-  icmHandle sender_handle = icm_thread_handle(*icm_environment,
-					      *this);
-  bool sameprocess =
-      (icmSameAgentHandle(sender_handle, recipient_handle) == icmOk);
-
-
-  icmHandle replyto_handle;
-  DECODE_ICM_HANDLE_ARG(heap, *atoms, replyto_handle_arg, 3,
-			replyto_handle);
-
-  bool remember_names;
-  bool encoded;
-  DECODE_SEND_OPTIONS_ARG(heap, options_arg, 4,
-			  remember_names, encoded);
-
-  icmMsg message;
-
-  if (encoded)
-    {
-      QPostringstream stream;
-
-      EncodeWrite ew(*this,
-                     heap,
-                     stream,
-                     message_arg,
-                     *atoms,
-                     remember_names,
-                     names);
-      if (!ew.Success())
-        {
-          PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-        }
-
-      int size = stream.str().length();
-
-      char *msgstr = new char[size+1];
-      memcpy(msgstr, stream.str().data(), size);
-      icmDataRec data = { size, msgstr };
-
-      message = icmFormatMsg(NULL, "%(%S%)", &data);
-      delete msgstr;
-    }
-  else
-    {
-      QPostringstream stream;
-
-      while (message_arg->isCons())
-        {
-           Cons* list = OBJECT_CAST(Cons*, message_arg);
-	   Object* head = list->getHead()->variableDereference();
-           if (!head->isNumber())
-             {
-               PSI_ERROR_RETURN(EV_TYPE, 1);
-             }
-           int c = head->getInteger();
-	   if ((c < 0) || (c > 255))
-             {
-               PSI_ERROR_RETURN(EV_TYPE, 1);
-             }
-           stream << (char)c;
-           message_arg = list->getTail()->variableDereference();
-        }
-      if (!message_arg->isNil())
-        {
-          PSI_ERROR_RETURN(EV_TYPE, 1);
-        }
-
-
-      int size = stream.str().length();
-      char *msgstr = new char[size+1];
-      memcpy(msgstr, stream.str().data(), size);
-      icmDataRec data = { size, msgstr };
-      message = icmFormatMsg(NULL, "%S", &data);
-      delete msgstr;
-    }
-
-
-  // If the message is destined for the same process then simply add
-  // to the message queue otherwise send the message using the ICM.
-
-  if (sameprocess)
-    {
-
-      ICMMessage *icm_message = new ICMMessage(sender_handle,
-					       replyto_handle,
-					       recipient_handle,
-					       message);
-      if (!icm_channel->msgToThread(icm_message))
-	{
-	  icm_channel->pushMessageToBuff(icm_message);
-	}
-      return RV_SUCCESS;
-    }
-      
-  // Set the replyto handle in the options
-  icmOption options = icmNewOpt(NULL, icmReplyto, replyto_handle);
-
-  // Away it goes!
-
-  icmStatus status = icmSendMsg(icm_environment->Conn(),
-		                recipient_handle,
-		                sender_handle,
-		                options,
-		                message);
-
-  icmReleaseOptions(options);
-  
-  icmReleaseMsg(message);
-  
-  if (status == icmOk)
-    {
-      return RV_SUCCESS;
-    }
-  else if (status == icmFailed)
-    {
-      // TO DO: Could block instead.
-      return RV_FAIL;
-    }
-  else 
-    {
-      assert(false);
-      return RV_FAIL;
-    }
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
-}
 
 //
 // ipc_make_iterator(reference_out)
@@ -379,7 +224,6 @@ Thread::ReturnValue
 Thread::psi_ipc_get_message(Object *& message_cell,
 			    Object *& reference_cell,
 			    Object *& from_handle_cell,
-			    Object *& replyto_handle_cell,
 			    Object *& remember_names_cell)
 {
   Object* reference_str = heap.dereference(reference_cell);
@@ -402,9 +246,8 @@ Thread::psi_ipc_get_message(Object *& message_cell,
   
   Message& message = ***iter;
 
-  from_handle_cell = message.constructSenderTerm(*this, *atoms);
-  replyto_handle_cell = message.constructReplyToTerm(*this, *atoms);
-  message_cell = message.constructMessageTerm(*this, *atoms, remember_names);
+  message.constructMessage(from_handle_cell, 
+			   message_cell, *this, *atoms, remember_names);
 
   return RV_SUCCESS;
 }
@@ -443,75 +286,8 @@ Thread::psi_ipc_commit(Object *& reference_cell)
   return RV_SUCCESS;
 }
 
-Thread::ReturnValue
-Thread::psi_ipc_open(Object *& level_cell)
-{
-#ifdef ICM_DEF_XXX
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
 
-  icm_level++;
-  level_cell = heap.newInteger(icm_level);
 
-  return RV_SUCCESS;
-#else // ICM_DEF_XXX
-  return RV_FAIL;
-#endif // ICM_DEF_XXX
-}
-
-#ifdef ICM_DEF_XXX
-static bool commit_delete(ICMMessage *msg)
-{
-  if (msg->Committed())
-    {
-      delete msg;
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-#endif // ICM_DEF_XXX
-
-Thread::ReturnValue
-Thread::psi_ipc_close(Object *& level_cell)
-{
-#ifdef ICM_DEF_XXX
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
-
-  Object* level_arg = heap.dereference(level_cell);
-
-  size_t level;
-  DECODE_NONNEG_INT_ARG(heap, level_arg, 1, level);
-
-  if (level != icm_level)
-    {
-      PSI_ERROR_RETURN(EV_VALUE, 1);
-    }
-
-  icm_level--;
-
-  // Can we garbage collect the ICM queue?
-  if (icm_level == 0)
-    {
-      list<ICMMessage *>::iterator iter =
-	remove_if(icm_queue.begin(), icm_queue.end(), commit_delete);
-      icm_queue.erase(iter, icm_queue.end());
-    }
-
-  return RV_SUCCESS;
-#else // ICM_DEF_XXX
-  return RV_FAIL;
-#endif // ICM_DEF_XXX
-}
 
 //
 // Broadcast message to all current local threads
@@ -520,59 +296,22 @@ Thread::psi_ipc_close(Object *& level_cell)
 Thread::ReturnValue
 Thread::psi_broadcast(Object *& message_cell)
 {
-#ifdef ICM_DEF
-  if (process_symbol == NULL)
-    {
-      Warning(__FUNCTION__, "ICM functionality is not available in unregistered qem processes");
-      return RV_FAIL;
-    }
 
-  Object* message_arg = heap.dereference(message_cell);
-  icmMsg message;
 
-  QPostringstream stream;
+  Object* msg_obj = heap.dereference(message_cell);
 
-  EncodeWrite ew(*this,
-		 heap,
-		 stream,
-		 message_arg,
-		 *atoms,
-		 true,
-		 names);
-  if (!ew.Success())
-    {
-      PSI_ERROR_RETURN(EV_ALLOCATION_FAILURE, 0);
-    }
-
-  icmHandle sender_handle = icm_thread_handle(*icm_environment,
-					      *this);
-
+  string m = pedro_write(msg_obj);
+  m.append("\n");
 
   for (ThreadTableLoc loc = 0; loc < thread_table->Size(); loc++)
     {
       if ((*thread_table)[loc] != NULL)
 	{
-	  int size = stream.str().length();
-	  
-	  icmDataRec data = { size, const_cast<char*>(stream.str().data()) };
-	  
-	  message = icmFormatMsg(NULL, "%(%S%)", &data);
-
-	  ICMMessage *icm_message = new ICMMessage(sender_handle,
-						   sender_handle,
-						   sender_handle,
-						   message);
-
 	  Thread& thread = *(thread_table->LookupID(loc));
-	  thread.MessageQueue().push_back(icm_message);
+	  thread.MessageQueue().push_back(new PedroMessage(m));
 	}
     }
   return RV_SUCCESS;
-
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
-
 }
 
 

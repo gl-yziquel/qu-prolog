@@ -65,15 +65,13 @@
 #include "system_support.h"
 #include "thread_qp.h"
 #include "unify.h"
+#include "pedro_env.h"
 
-#ifdef ICM_DEF
-#include "icm_handle.h"
-extern ICMEnvironment *icm_environment;
-#endif
+
 
 extern AtomTable *atoms;
 extern IOManager *iom;
-
+extern PedroMessageChannel *pedro_channel;
 //
 // psi_get_open_streams(StreamList)
 // Make a list of all the open stream nums.
@@ -142,7 +140,7 @@ Thread::psi_open(Object *& filename_arg,
 //#else
 //  const char *file = wordexp(atoms->getAtomString(OBJECT_CAST(Atom*, argF))).c_str();
 //#endif
-  string filename = atoms->getAtomString(OBJECT_CAST(Atom*, argF));
+  string filename = OBJECT_CAST(Atom*, argF)->getName();
   wordexp(filename);
   char file[1024];
   strcpy(file, filename.c_str());
@@ -264,7 +262,7 @@ Thread::psi_open_string(Object *& string_arg,
 	
 	if (argT->getInteger() == 0)
 	  {
-	    QPistringstream *stream = new QPistringstream(atoms->getAtomString(OBJECT_CAST(Atom*, argS)));
+	    QPistringstream *stream = new QPistringstream(OBJECT_CAST(Atom*, argS)->getName());
 	    
 	    //
 	    // Return the index of the stream.
@@ -301,9 +299,11 @@ Thread::psi_open_string(Object *& string_arg,
 		  }
 		argS = heap.dereference(list->getTail());
 	      }
-	    
-	    assert(argS->isNil());
-	    
+
+	    if (argS->isString())
+	      {
+		*strstr << OBJECT_CAST(StringObject*, argS)->getChars();
+	      }
 	    QPistringstream *stream = new QPistringstream(strstr->str());
 	    delete strstr;
 	    //
@@ -714,12 +714,8 @@ Thread::psi_open_msgstream(Object *& address,
 			   Object *& access_mode_arg,
 			   Object *& stream_arg)
 {
-#ifdef ICM_DEF
   Object* argS = heap.dereference(address);
   Object* argAM = heap.dereference(access_mode_arg);
-
-  icmHandle handle;
-  DECODE_ICM_HANDLE_ARG(heap, *atoms, argS, 1, handle);
 
   if (argAM->isVariable())
     {
@@ -741,7 +737,14 @@ Thread::psi_open_msgstream(Object *& address,
     {
     case AM_READ:
       {
-	QPimstream *stream = new QPimstream(handle);
+	string addr = pedro_write(argS);
+	string addrs;
+	
+	// remove spaces
+	for (string::size_type i = 0; i < addr.length(); i++) {
+	  if (addr.at(i) != ' ') addrs.push_back(addr.at(i));
+	}
+	QPimstream *stream = new QPimstream(addrs, pedro_channel);
 	//
 	// Return the index of the stream.
 	//
@@ -753,7 +756,16 @@ Thread::psi_open_msgstream(Object *& address,
     break;
     case AM_WRITE:
       {
-	QPomstream *stream = new QPomstream(handle, this, icm_environment);
+	assert(argS->isStructure());
+	Structure* addr = OBJECT_CAST(Structure*, argS);
+	assert(addr->getArity() == 2);
+	Structure* caddr = OBJECT_CAST(Structure*, addr->getArgument(1)->variableDereference());
+	assert(caddr->getArity() == 2);
+	QPomstream *stream 
+	  = new QPomstream(caddr->getArgument(1)->variableDereference(),
+			   caddr->getArgument(2)->variableDereference(),
+			   addr->getArgument(2)->variableDereference(),
+			   pedro_channel);
 	//
 	// Return the index of the stream.
 	//
@@ -763,7 +775,6 @@ Thread::psi_open_msgstream(Object *& address,
     break;
     }
   
-#endif // ICM_DEF
   return RV_FAIL;
 }
 
@@ -875,42 +886,6 @@ Thread::psi_reset_std_stream(Object *& std_stream_num)
       return RV_SUCCESS;
     }
    PSI_ERROR_RETURN(EV_VALUE, 1);
-}
-
-//
-// psi_get_msgstream_handle(StreamID, Handle)
-// retrieve the handle of the imstream
-// mode (in,out)
-//
-Thread::ReturnValue
-Thread::psi_get_msgstream_handle(Object *& stream_num, Object *& handle_object)
-{
-#ifdef ICM_DEF
-  Object* snum = heap.dereference(stream_num);
-  
-  if (snum->isVariable())
-    {
-      PSI_ERROR_RETURN(EV_INST, 1);
-    }
-  if (!snum->isNumber())
-    {
-      PSI_ERROR_RETURN(EV_TYPE, 1);
-    }
-  u_int num = snum->getInteger();
-  if (num >= NUM_OPEN_STREAMS)
-    {
-      PSI_ERROR_RETURN(EV_TYPE, 1);
-    }
-  QPStream *s = iom->GetStream(num);
-  if (s == NULL || s->Type() != IMSTREAM)   
-    {
-      PSI_ERROR_RETURN(EV_TYPE, 1);
-    }
-  icm_handle_to_heap(heap, *atoms, s->getSenderHandle(), handle_object);
-  return RV_SUCCESS;
-#else // ICM_DEF
-  return RV_FAIL;
-#endif // ICM_DEF
 }
 
 

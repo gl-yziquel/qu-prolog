@@ -118,33 +118,23 @@ end('gc'/0):
 
 
 
-'$icm_deregister'/0:
+'pedro_deregister'/0:
 
 
 $1:
 	pseudo_instr0(12)
 	proceed
-end('$icm_deregister'/0):
+end('pedro_deregister'/0):
 
 
 
-'elvin_disconnect'/0:
+'pedro_is_connected'/0:
 
 
 $1:
 	pseudo_instr0(13)
 	proceed
-end('elvin_disconnect'/0):
-
-
-
-'icm_connected'/0:
-
-
-$1:
-	pseudo_instr0(14)
-	proceed
-end('icm_connected'/0):
+end('pedro_is_connected'/0):
 
 
 
@@ -906,25 +896,24 @@ end('$thread_set_defaults'/1):
 
 
 
-'machine_ip_address'/1:
+'chdir'/1:
 
 
 $1:
-	pseudo_instr1(74, 1)
-	get_x_value(0, 1)
+	pseudo_instr1(74, 0)
 	proceed
-end('machine_ip_address'/1):
+end('chdir'/1):
 
 
 
-'machine_name'/1:
+'getcwd'/1:
 
 
 $1:
 	pseudo_instr1(75, 1)
 	get_x_value(0, 1)
 	proceed
-end('machine_name'/1):
+end('getcwd'/1):
 
 
 
@@ -1023,34 +1012,33 @@ end('stderr'/1):
 
 
 
-'ipc_open'/1:
+'float'/1:
 
 
 $1:
-	pseudo_instr1(85, 1)
-	get_x_value(0, 1)
+	pseudo_instr1(85, 0)
 	proceed
-end('ipc_open'/1):
+end('float'/1):
 
 
 
-'ipc_close'/1:
+'srandom'/1:
 
 
 $1:
 	pseudo_instr1(86, 0)
 	proceed
-end('ipc_close'/1):
+end('srandom'/1):
 
 
 
-'process_set_symbol'/1:
+'$pedro_notify'/1:
 
 
 $1:
 	pseudo_instr1(87, 0)
 	proceed
-end('process_set_symbol'/1):
+end('$pedro_notify'/1):
 
 
 
@@ -1065,25 +1053,24 @@ end('process_symbol'/1):
 
 
 
-'icm_process_handle'/1:
+'$pedro_register'/1:
 
 
 $1:
-	pseudo_instr1(89, 1)
-	get_x_value(0, 1)
+	pseudo_instr1(89, 0)
 	proceed
-end('icm_process_handle'/1):
+end('$pedro_register'/1):
 
 
 
-'$icm_thread_handle'/1:
+'thread_handle'/1:
 
 
 $1:
 	pseudo_instr1(90, 1)
 	get_x_value(0, 1)
 	proceed
-end('$icm_thread_handle'/1):
+end('thread_handle'/1):
 
 
 
@@ -1159,25 +1146,25 @@ end('thread_exit'/1):
 
 
 
-'icm_address'/1:
+'pedro_address'/1:
 
 
 $1:
 	pseudo_instr1(98, 1)
 	get_x_value(0, 1)
 	proceed
-end('icm_address'/1):
+end('pedro_address'/1):
 
 
 
-'icm_port'/1:
+'pedro_port'/1:
 
 
 $1:
 	pseudo_instr1(99, 1)
 	get_x_value(0, 1)
 	proceed
-end('icm_port'/1):
+end('pedro_port'/1):
 
 
 
@@ -1223,105 +1210,13 @@ end('get_open_streams'/1):
 
 
 
-'broadcast'/1:
+'$broadcast'/1:
 
 
 $1:
 	pseudo_instr1(104, 0)
 	proceed
-end('broadcast'/1):
-
-
-
-'$elvin_connect'/1:
-
-
-$1:
-	pseudo_instr1(105, 0)
-	proceed
-end('$elvin_connect'/1):
-
-
-
-'$elvin_add_subscription'/1:
-
-
-$1:
-	pseudo_instr1(106, 0)
-	proceed
-end('$elvin_add_subscription'/1):
-
-
-
-'$elvin_delete_subscription'/1:
-
-
-$1:
-	pseudo_instr1(107, 0)
-	proceed
-end('$elvin_delete_subscription'/1):
-
-
-
-'elvin_subscriptions'/1:
-
-
-$1:
-	pseudo_instr1(108, 1)
-	get_x_value(0, 1)
-	proceed
-end('elvin_subscriptions'/1):
-
-
-
-'$elvin_add_notification'/1:
-
-
-$1:
-	pseudo_instr1(109, 0)
-	proceed
-end('$elvin_add_notification'/1):
-
-
-
-'chdir'/1:
-
-
-$1:
-	pseudo_instr1(110, 0)
-	proceed
-end('chdir'/1):
-
-
-
-'getcwd'/1:
-
-
-$1:
-	pseudo_instr1(111, 1)
-	get_x_value(0, 1)
-	proceed
-end('getcwd'/1):
-
-
-
-'float'/1:
-
-
-$1:
-	pseudo_instr1(112, 0)
-	proceed
-end('float'/1):
-
-
-
-'srandom'/1:
-
-
-$1:
-	pseudo_instr1(113, 0)
-	proceed
-end('srandom'/1):
+end('$broadcast'/1):
 
 
 
@@ -1329,20 +1224,21 @@ end('srandom'/1):
 
 
 $1:
-	pseudo_instr1(114, 1)
+	pseudo_instr1(105, 1)
 	get_x_value(0, 1)
 	proceed
 end('random'/1):
 
 
 
-'$icm_ping'/1:
+'$pedro_disconnect'/1:
 
 
 $1:
-	pseudo_instr1(115, 0)
+	pseudo_instr1(106, 1)
+	get_x_value(0, 1)
 	proceed
-end('$icm_ping'/1):
+end('$pedro_disconnect'/1):
 
 
 
@@ -1350,7 +1246,7 @@ end('$icm_ping'/1):
 
 
 $1:
-	pseudo_instr1(116, 1)
+	pseudo_instr1(107, 1)
 	get_x_value(0, 1)
 	proceed
 end('$make_cleanup_cp'/1):
@@ -1361,7 +1257,7 @@ end('$make_cleanup_cp'/1):
 
 
 $1:
-	pseudo_instr1(117, 0)
+	pseudo_instr1(108, 0)
 	proceed
 end('string'/1):
 
@@ -2232,14 +2128,13 @@ end('tcp_host_from_ip_address'/2):
 
 
 
-'get_msgstream_handle'/2:
+'$local_p2p'/2:
 
 
 $1:
-	pseudo_instr2(81, 0, 2)
-	get_x_value(1, 2)
+	pseudo_instr2(81, 0, 1)
 	proceed
-end('get_msgstream_handle'/2):
+end('$local_p2p'/2):
 
 
 
@@ -2329,23 +2224,24 @@ end('strerror'/2):
 
 
 
-'icm_handles_equal'/2:
+'$psi_socket_fd'/2:
 
 
 $1:
-	pseudo_instr2(90, 0, 1)
+	pseudo_instr2(90, 0, 2)
+	get_x_value(1, 2)
 	proceed
-end('icm_handles_equal'/2):
+end('$psi_socket_fd'/2):
 
 
 
-'icm_handles_qp_equal'/2:
+'$pedro_unsubscribe'/2:
 
 
 $1:
 	pseudo_instr2(91, 0, 1)
 	proceed
-end('icm_handles_qp_equal'/2):
+end('$pedro_unsubscribe'/2):
 
 
 
@@ -2577,14 +2473,14 @@ end('$put_line'/2):
 
 
 
-'$symbolic_address_to_icm_handle'/2:
+'$pedro_subscribe'/2:
 
 
 $1:
 	pseudo_instr2(114, 0, 2)
 	get_x_value(1, 2)
 	proceed
-end('$symbolic_address_to_icm_handle'/2):
+end('$pedro_subscribe'/2):
 
 
 
@@ -2845,13 +2741,14 @@ end('random'/3):
 
 
 
-'$icm_register'/3:
+'$string_concat'/3:
 
 
 $1:
-	pseudo_instr3(14, 0, 1, 2)
+	pseudo_instr3(14, 0, 1, 3)
+	get_x_value(2, 3)
 	proceed
-end('$icm_register'/3):
+end('$string_concat'/3):
 
 
 
@@ -3446,17 +3343,6 @@ end('$ipc_first'/3):
 
 
 
-'$string_concat'/3:
-
-
-$1:
-	pseudo_instr3(69, 0, 1, 3)
-	get_x_value(2, 3)
-	proceed
-end('$string_concat'/3):
-
-
-
 '$psi_dynamic'/4:
 
 
@@ -3555,13 +3441,13 @@ end('$call_predicate3'/4):
 
 
 
-'$ipc_send'/4:
+'$pedro_connect'/4:
 
 
 $1:
 	pseudo_instr4(9, 0, 1, 2, 3)
 	proceed
-end('$ipc_send'/4):
+end('$pedro_connect'/4):
 
 
 
@@ -3669,16 +3555,15 @@ end('$split_string'/4):
 
 
 
-'$ipc_get_message'/5:
+'$ipc_get_message'/4:
 
 
 $1:
-	pseudo_instr5(0, 5, 1, 6, 7, 4)
-	get_x_value(0, 5)
-	get_x_value(2, 6)
-	get_x_value(3, 7)
+	pseudo_instr4(19, 4, 1, 5, 3)
+	get_x_value(0, 4)
+	get_x_value(2, 5)
 	proceed
-end('$ipc_get_message'/5):
+end('$ipc_get_message'/4):
 
 
 
@@ -3686,34 +3571,9 @@ end('$ipc_get_message'/5):
 
 
 $1:
-	pseudo_instr5(1, 0, 1, 2, 3, 4)
+	pseudo_instr5(0, 0, 1, 2, 3, 4)
 	proceed
 end('$call_predicate4'/5):
-
-
-
-'icm_handle_from_components'/5:
-
-
-$1:
-	pseudo_instr5(2, 0, 1, 2, 3, 5)
-	get_x_value(4, 5)
-	proceed
-end('icm_handle_from_components'/5):
-
-
-
-'$icm_handle_to_components'/5:
-
-
-$1:
-	pseudo_instr5(3, 5, 6, 7, 8, 4)
-	get_x_value(0, 5)
-	get_x_value(1, 6)
-	get_x_value(2, 7)
-	get_x_value(3, 8)
-	proceed
-end('$icm_handle_to_components'/5):
 
 
 

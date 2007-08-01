@@ -75,20 +75,16 @@
 #include "io_qp.h"
 #include "protos.h"
 #include "thread_qp.h"
-#ifdef ICM_DEF
-#include "icm_handle.h"
-#endif
 #include "scheduler.h"
 #include "signals.h"
 #include "thread_table.h"
+#include "pedro_env.h"
+#include "write_support.h"
 
 extern Scheduler *scheduler;
 extern Signals *signals;
 extern ThreadTable *thread_table;
 extern ThreadOptions *thread_options;
-#ifdef ICM_DEF
-extern ICMMessageChannel * icm_channel;
-#endif
 
 //-----------------------------------------------
 //
@@ -377,11 +373,11 @@ QPifdstream::get_read(void)
 ///////////////////////////////////////////////////////////
 // QPimstream
 //////////////////////////////////////////////////////////
-#ifdef ICM_DEF
-QPimstream::QPimstream(icmHandle handle)
+QPimstream::QPimstream(string addr, PedroMessageChannel* pc)
   : QPStream(IMSTREAM), 
     stream(""),
-    sender_handle(handle), 
+    sender(addr), 
+    pedro_channel(pc),
     done_get(false) 
 { }
 
@@ -393,7 +389,7 @@ QPimstream::msgReady(void)
 
 void 
 QPimstream::pushString(string* st) 
-{ 
+{
   message_strings.push_back(st); 
 }
 
@@ -421,17 +417,10 @@ QPimstream::get(void)
   return (stream.get());
 }
 
-icmHandle 
-QPimstream::getSenderHandle(void)
-{ 
-  return sender_handle; 
-}
 
 bool
 QPimstream::isReady(void)
 {
-#ifdef ICM_DEF
-  
   if (done_get && !eof()) return true;
 
   if ( message_strings.empty())
@@ -444,24 +433,20 @@ QPimstream::isReady(void)
       return true;
     }
 
-#else // ICM_DEF
-      return false;
-#endif // ICM_DEF
 }
 
 void
 QPimstream::get_read(void)
 {
-#ifdef ICM_DEF
   while (message_strings.empty())
     {
       fd_set rfds, wfds;
       FD_ZERO(&rfds);
       FD_ZERO(&wfds);
       int max_fd = 0;
-      icm_channel->updateFDSETS(&rfds, &wfds, max_fd);
+      pedro_channel->updateFDSETS(&rfds, &wfds, max_fd);
       select(max_fd + 1, &rfds, &wfds, NULL, NULL);
-      icm_channel->ShuffleMessages();
+      pedro_channel->ShuffleMessages();
     }
   assert(!message_strings.empty());
   
@@ -469,14 +454,11 @@ QPimstream::get_read(void)
   stream.str(*msg);
   message_strings.pop_front();
   delete msg;
-
   stream.seekg(0, ios::beg);
   stream.clear();
   done_get = false;
 
-#endif // ICM_DEF
 }
-#endif
 ///////////////////////////////////////////////////////////
 // QPostream
 //////////////////////////////////////////////////////////
@@ -613,15 +595,27 @@ QPofdstream::send(void)
 ///////////////////////////////////////////////////////////
 // QPomstream
 //////////////////////////////////////////////////////////
-#ifdef ICM_DEF
-QPomstream::QPomstream(icmHandle handle, Thread* thread, 
-		       ICMEnvironment* icm_env)
+
+QPomstream::QPomstream(Object* to_th, Object* to_proc, Object* to_mach, 
+		       PedroMessageChannel* pc)
   : QPStream(OMSTREAM),
-    to_handle(handle), 
-    sender_thread(thread), 
-    icm_environment(icm_env), 
+    pedro_channel(pc), 
     auto_flush(false) 
-{}
+{ 
+  ostringstream strm;
+  strm << "p2pmsg(";
+  writeAtom(strm, to_th);
+  strm << ':';
+  writeAtom(strm, to_proc);
+  strm << '@';
+  writeAtom(strm, to_mach);
+  strm  << ", '$stream':";
+  writeAtom(strm, pedro_channel->getName());
+  strm << "@";
+  writeAtom(strm,pedro_channel->getHost());
+  strm << ", \"";
+  msg_header = strm.str();
+}
 
 bool 
 QPomstream::put(char ch)
@@ -717,24 +711,21 @@ QPomstream::set_autoflush(void)
 void
 QPomstream::send(void)
 {
-#ifdef ICM_DEF
-  icmStatus status;
-  string str = stream.str();
-  int size = str.length();
+  string thechars = stream.str();
+  addEscapes(thechars, '"');
 
-  icmDataRec data = { size, const_cast<char*>(str.c_str()) };
-  icmMsg message = icmFormatMsg(NULL, "%S", &data);
+  ostringstream strm;
+  strm << msg_header
+       << thechars
+       << "\")\n";
+  pedro_channel->send(strm.str());
 
-  status = icmSendMsg(icm_environment->Conn(),
-		      to_handle,
-		      icm_thread_handle(*icm_environment, *sender_thread),
-		      NULL,
-		      message);
-  assert(status == icmOk);
   stream.str("");
-#endif // ICM_DEF
+  if (pedro_channel->get_ack() == 0) {
+    cerr << "BAD ACK" << endl;
+  }
 }
-#endif
+
 
 ///////////////////////////////////////////////////////////
 // IOManager
@@ -760,42 +751,24 @@ IOManager::IOManager(QPStream *in, QPStream *out, QPStream *error)
   current_error = 2;
 }
 
-#ifdef ICM_DEF
 bool
-IOManager::updateStreamMessages(icmHandle sender, icmMsg message)
+IOManager::updateStreamMessages(string& from_addr, string& message) 
 {
   for (u_int i = 0; i < NUM_OPEN_STREAMS; i++)
     {
-      if (open_streams[i] != NULL 
-	  && open_streams[i]->Type() == IMSTREAM
-	  && icmSameHandle(sender, 
-			   open_streams[i]->getSenderHandle()) == icmOk)
+      if ((open_streams[i] != NULL) 
+	  && (open_streams[i]->Type() == IMSTREAM)
+	  && (open_streams[i]->getSender() == from_addr))
 	{
 	  // Found stream for from handle - extract message
 	  // and push onto stream message list
-	  icmDataRec data;
-	  icmStatus status = icmScanMsg(message, "%S", &data);
-	  if (status == icmOk)
-	    {
-	      // Nothing.
-	    }
-	  else if (status == icmFailed)
-	    {
-	      Fatal(__FUNCTION__, "Format of message doesn't match QP message format");
-	    }
-	  else if (status == icmError)
-	    {
-	      Fatal(__FUNCTION__, "icmScanMsg() returned icmError");
-	    }	
-	  string* new_string = new string(data.data, data.size);
+	  string* new_string = new string(message);
 	  open_streams[i]->pushString(new_string);
-	  free(data.data);
 	  return true;
 	}
     }
   return false;
 }
-#endif // ICM_DEF
 
 int 
 IOManager::OpenStream(QPStream* strm)

@@ -26,13 +26,16 @@
 
 #include <qapplication.h>
 #include <qwidget.h>
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
+//Added by qt3to4:
+#include <Q3PopupMenu>
+#include <QCloseEvent>
 #include <sys/types.h>
 #include <qstring.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qdialog.h>
-#include <qmainwindow.h>
-#include <qtextbrowser.h>
+#include <q3mainwindow.h>
+#include <q3textbrowser.h>
 #include <qcolordialog.h>
 
 #include "interact.h"
@@ -54,12 +57,12 @@ public:
   Xqp* p;
   QFont f;
   QColor c;
-  QTextBrowser *browser;
+  Q3TextBrowser *browser;
 };
 
 
 /** Xqp is the base class of the project */
-class Xqp : public QMainWindow
+class Xqp : public Q3MainWindow
 {
   Q_OBJECT 
     public:
@@ -93,7 +96,7 @@ private:
   static const int buff_size = 10000;
   char* read_buff;
 
-  QPopupMenu* view_menu;
+  Q3PopupMenu* view_menu;
   QTHelp* qthelp;
 
 public:

@@ -80,7 +80,7 @@ Thread::psi_env_getenv(Object *& name_arg, Object *& value_arg)
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
 
-  const char *env_value = getenv(atoms->getAtomString(name));
+  const char *env_value = getenv(OBJECT_CAST(Atom*, name)->getName());
   if (env_value == NULL)
     {
       return RV_FAIL;
@@ -117,8 +117,8 @@ Thread::psi_env_putenv(
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  const char *name_string = atoms->getAtomString(name);
-  const char *value_string = atoms->getAtomString(value);
+  const char *name_string = OBJECT_CAST(Atom*, name)->getName();
+  const char *value_string = OBJECT_CAST(Atom*, value)->getName();
 
   const size_t name_string_len = strlen(name_string);
   const size_t value_string_len = strlen(value_string);

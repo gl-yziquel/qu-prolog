@@ -64,6 +64,7 @@
 #include "thread_decode.h"
 #include "thread_table.h"
 #include "timeval.h"
+#include "pedro_env.h"
 
 // @internaldoc
 // @pred '$thread_fork'(Name, Goal, ThreadSizes)
@@ -151,7 +152,7 @@ Thread::psi_thread_fork(Object *& name_arg,
       //
       // Set up the thread's symbol.
       //
-      const char *symbol = atoms->getAtomString(OBJECT_CAST(Atom*, argN));
+      const char *symbol = OBJECT_CAST(Atom*, argN)->getName();
 
       // If nothing else has this name already...
       if (thread_table->LookupName(symbol) == (ThreadTableLoc) -1)
@@ -242,7 +243,7 @@ Thread::psi_thread_symbol(Object *& thread_arg, Object *& name_arg)
 
   if (nameT->isAtom())
     {
-      const string symbol(atoms->getAtomString(OBJECT_CAST(Atom*, nameT)));
+      const string symbol(OBJECT_CAST(Atom*, nameT)->getName());
       ThreadTableLoc loc = thread_table->LookupName(symbol);
       if (loc == (ThreadTableLoc) -1)
 	{
@@ -289,12 +290,15 @@ Thread::psi_thread_set_symbol(Object *& name_arg)
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
 
-  if ((argN == atoms->add("self")) || (argN == atoms->add("elvin")))
+  if ((argN == atoms->add("self")) 
+     || (argN == atoms->add("pedro"))
+     || (argN == atoms->add(""))
+     )
     {
       PSI_ERROR_RETURN(EV_VALUE, 1);
     }
 
-  const string new_symbol(atoms->getAtomString(OBJECT_CAST(Atom*, argN)));
+  const string new_symbol(OBJECT_CAST(Atom*, argN)->getName());
 
   // No change?
   if (TInfo().SymbolSet() && TInfo().Symbol() == new_symbol)
@@ -513,6 +517,8 @@ Thread::psi_thread_tid(Object *& thread_arg)
   return RV_SUCCESS;
 }
 
+extern PedroMessageChannel* pedro_channel;
+
 // @internaldoc
 // @pred thread_exit
 // @mode thread_exit is no-return
@@ -543,6 +549,7 @@ Thread::psi_thread_exit(void)
       // Remove entry from thread table.
       thread_table->RemoveName(TInfo().Symbol());
     }
+  if (pedro_channel != NULL) pedro_channel->delete_subscriptions(TInfo().ID());
   return RV_EXIT;
 }
 

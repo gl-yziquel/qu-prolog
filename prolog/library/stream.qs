@@ -732,7 +732,7 @@ $1:
 	proceed
 
 $2:
-	pseudo_instr1(117, 0)
+	pseudo_instr1(108, 0)
 	neck_cut
 	put_integer(2, 0)
 	get_x_value(1, 0)
@@ -1115,7 +1115,7 @@ $2:
 	set_x_value(4)
 	put_structure(1, 1)
 	set_constant('@')
-	set_constant('icmhandle')
+	set_constant('handle')
 	put_structure(1, 2)
 	set_constant('@')
 	set_constant('atom')
@@ -1137,42 +1137,7 @@ end('open_msgstream/3$0'/5):
 
 
 
-'open_msgstream/3$1'/2:
-
-	switch_on_term(0, $6, $2, $2, $3, $2, $2)
-
-$3:
-	switch_on_structure(0, 4, ['$default':$2, '$'/0:$4, '$icm_handle'/4:$5])
-
-$4:
-	try(2, $1)
-	trust($2)
-
-$5:
-	try(2, $1)
-	trust($2)
-
-$6:
-	try(2, $1)
-	trust($2)
-
-$1:
-	put_x_value(0, 2)
-	get_structure('$icm_handle', 4, 2)
-	unify_void(4)
-	neck_cut
-	get_x_value(1, 0)
-	proceed
-
-$2:
-	pseudo_instr2(114, 0, 2)
-	get_x_value(1, 2)
-	proceed
-end('open_msgstream/3$1'/2):
-
-
-
-'open_msgstream/3$2/5$0'/3:
+'open_msgstream/3$1/5$0'/3:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
@@ -1217,11 +1182,11 @@ $1:
 
 $2:
 	proceed
-end('open_msgstream/3$2/5$0'/3):
+end('open_msgstream/3$1/5$0'/3):
 
 
 
-'open_msgstream/3$2'/5:
+'open_msgstream/3$1'/5:
 
 	try(5, $1)
 	trust($2)
@@ -1234,7 +1199,7 @@ $1:
 	get_x_value(0, 3)
 	neck_cut
 	put_x_value(5, 1)
-	execute_predicate('open_msgstream/3$2/5$0', 3)
+	execute_predicate('open_msgstream/3$1/5$0', 3)
 
 $2:
 	put_structure(3, 1)
@@ -1248,7 +1213,7 @@ $2:
 	set_x_value(1)
 	set_constant('default')
 	execute_predicate('exception', 1)
-end('open_msgstream/3$2'/5):
+end('open_msgstream/3$1'/5):
 
 
 
@@ -1268,7 +1233,7 @@ $1:
 	set_x_value(2)
 	put_structure(1, 1)
 	set_constant('@')
-	set_constant('icmhandle')
+	set_constant('handle')
 	put_structure(1, 2)
 	set_constant('@')
 	set_constant('atom')
@@ -1287,38 +1252,44 @@ $1:
 	execute_predicate('instantiation_exception', 3)
 
 $2:
-	allocate(8)
-	get_y_variable(5, 0)
-	get_y_variable(4, 1)
+	allocate(7)
+	get_y_variable(4, 0)
+	get_y_variable(3, 1)
 	get_y_variable(1, 2)
-	get_y_level(7)
-	put_y_variable(2, 19)
+	get_y_level(6)
 	put_y_variable(0, 19)
-	put_y_value(4, 0)
-	put_y_variable(3, 1)
-	put_y_variable(6, 2)
-	put_y_value(5, 3)
+	put_y_value(3, 0)
+	put_y_variable(2, 1)
+	put_y_variable(5, 2)
+	put_y_value(4, 3)
 	put_y_value(1, 4)
-	call_predicate('open_msgstream/3$0', 5, 8)
-	cut(7)
+	call_predicate('open_msgstream/3$0', 5, 7)
+	cut(6)
 	put_y_value(0, 0)
 	get_structure('$prop', 7, 0)
-	unify_y_value(4)
-	unify_y_value(6)
+	unify_y_value(3)
+	unify_y_value(5)
 	unify_constant('msg')
 	unify_constant('none')
 	unify_constant('reset')
 	unify_constant('false')
 	unify_constant('text')
-	put_y_value(5, 0)
+	put_y_value(4, 0)
+	get_structure('@', 2, 0)
+	unify_x_variable(1)
+	unify_x_variable(0)
+	pseudo_instr2(79, 0, 2)
+	get_x_variable(0, 2)
+	pseudo_instr2(80, 2, 0)
+	put_x_variable(0, 3)
+	get_structure('@', 2, 3)
+	unify_x_value(1)
+	unify_x_value(2)
 	put_y_value(2, 1)
-	call_predicate('open_msgstream/3$1', 2, 6)
-	put_y_value(2, 0)
-	put_y_value(3, 1)
 	put_y_value(1, 2)
-	put_y_value(4, 3)
-	put_y_value(5, 4)
-	call_predicate('open_msgstream/3$2', 5, 2)
+	put_y_value(3, 3)
+	put_y_value(4, 4)
+	call_predicate('open_msgstream/3$1', 5, 2)
 	pseudo_instr2(100, 21, 20)
 	deallocate
 	proceed

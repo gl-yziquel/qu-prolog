@@ -84,7 +84,7 @@ ForeignInterface::makeCons(Object* h, Object* t)
 
 char*
 ForeignInterface::getAtomString(Object* a)
-{ return atoms->getAtomString(a); }
+{ return OBJECT_CAST(Atom*, a)->getName(); }
 
 bool 
 ForeignInterface::unify(Object* o1, Object* o2)

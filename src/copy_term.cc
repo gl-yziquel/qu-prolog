@@ -194,7 +194,7 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
 	heapobject* hcopy = target_heap.allocateHeapSpace(size);
 	heapobject* sterm = reinterpret_cast<heapobject*>(source_term);
 	Object* res = reinterpret_cast<Object*>(hcopy);
-	for (u_int i = 0; i <= size; i++)
+	for (u_int i = 0; i < size; i++)
 	  {
 	    *hcopy = *sterm;
 	    hcopy++;

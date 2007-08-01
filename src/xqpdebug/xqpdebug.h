@@ -26,20 +26,24 @@
 
 #include <qapplication.h>
 #include <qwidget.h>
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
+//Added by qt3to4:
+#include <QCloseEvent>
 #include <sys/types.h>
 #include <qstring.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qdialog.h>
-#include <qmainwindow.h>
-#include <qtextbrowser.h>
+#include <q3mainwindow.h>
+#include <q3textbrowser.h>
 #include <qcolordialog.h>
-
+#include <string>
 #include "interact.h"
 #include "qpconfig.h"
-#include "icm_env.h"
 
 
+using namespace std;
+
+class PedroConnection;
 
 /** Xqpdebug is the base class of the project */
 class Xqpdebug : public QWidget
@@ -72,7 +76,7 @@ private:
   Interact* qpint;
 
   QSocketNotifier* sn;
-  ICMEnvironment* icm_env;
+  PedroConnection* pedro_conn;
   string to_addr;
   string handle;
 public:
@@ -99,7 +103,7 @@ public:
   Xqpdebug* p;
   QFont f;
   QColor c;
-  QTextBrowser *browser;
+  Q3TextBrowser *browser;
 };
 
 #endif

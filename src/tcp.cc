@@ -57,6 +57,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #ifdef WIN32
         #include <io.h>
         #define _WINSOCKAPI_
@@ -71,6 +72,9 @@
         #include <arpa/inet.h>
         #include <netdb.h>
         #include <sys/utsname.h>
+        #include <netdb.h>
+        #include <sys/ioctl.h>
+        #include <net/if.h>
 #endif
 
 //#include <netinet/in.h>
@@ -78,6 +82,7 @@
 #include "netinet_in.h"
 #include "tcp_qp.h"
 #include "errors.h"
+#include "error_value.h"
 
 extern const char *Program;
 
@@ -182,29 +187,47 @@ LookupMachineIPAddress(const char *name)
   // First try to convert the host name as a dotted-decimal number.
   // Only if that fails do we call gethostbyname().
   //
-  u_long inaddr;
+  struct in_addr inp;
   hostent host_info;
   sockaddr_in remote_addr;
 
-  inaddr = inet_addr(name);
+  int res = inet_aton(name, &inp);
 
-  if (inaddr != INADDR_NONE)
+  if (res != 0)
     {
-      // it's dotted-decimal
-      memcpy((char *) &remote_addr.sin_addr,
-	     (char *) &inaddr,
-	     sizeof(inaddr));
-      host_info.h_name = NULL;
-
+      return inp.s_addr;
     }
   else
     {
+      char hostname[255];
+      strcpy(hostname, name);
+      if (strcmp(hostname, "localhost") == 0)
+	{
+	  if (gethostname(hostname, 255) != 0)
+	    {
+	      return 0;
+	    }
+	}
       hostent *hp;
       
-      if ( (hp = gethostbyname(name)) == NULL)
+      if ( (hp = gethostbyname(hostname)) == NULL)
+	{
+	  struct in_addr in;
+	  in.s_addr = inet_addr(hostname);
+	  hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+	}
+      if (hp == NULL)
+	{
+	  strcpy(hostname, "127.0.0.1");
+	  getIPfromifconfig(hostname);
+	  struct in_addr in;
+	  in.s_addr = inet_addr(hostname);
+	  hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+	}
+      if (hp == NULL)
 	{
 	  Warning(__FUNCTION__, "host name error");
-	  return false;
+	  return 0;
 	}
 
       host_info = *hp;    // found it by name, structure copy
@@ -236,10 +259,100 @@ LookupMachineIPAddress(void)
 }
 
 
+//
+// Do a connection to a socket
+//
 
 
+bool do_connection(int sockfd, int port, u_long ip_address)
+{
+  struct sockaddr_in add;
+  memset((char *)&add, 0, sizeof(add));
+  add.sin_family = AF_INET;
+  add.sin_port = port;
+  add.sin_addr.s_addr = ip_address;
+  const int ret = connect(sockfd, (struct sockaddr *)&add, sizeof(add));
+
+  if (ret == 0) return true;
+
+#ifdef WIN32
+  else if ((errno = WSAGetLastError() == WSAEINPROGRESS) && errno == WSAEWOULDBLOCK)
+#else
+  else if (errno == EINPROGRESS)
+#endif
+    {
+      fd_set fds;
+      
+      FD_ZERO(&fds);
+      FD_SET(sockfd, &fds);
+      
+#ifndef NDEBUG
+      int result = select(sockfd + 1, (fd_set *) NULL, &fds, 
+			  (fd_set *) NULL, NULL);
+#else
+      select(sockfd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, NULL);
+#endif
+      
+      assert(result && FD_ISSET(sockfd, &fds));
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
 
 
+// No DNS lookup - so use ifcofig to get IP
+
+void getIPfromifconfig(char* ip)
+{
+  struct ifreq *ifr, ifr_tmp;
+  struct ifconf ifc;
+  char buf[1024];
+  int s, i;
+  struct sockaddr_in *sin;
+
+  s = socket(AF_INET, SOCK_DGRAM, 0);
+  if (s == -1) {
+    fprintf(stderr, "Can't open socket for ifconfig\n");
+    exit(1);
+  }
+
+  ifc.ifc_len = sizeof(buf);
+  ifc.ifc_buf = buf;
+  ioctl(s, SIOCGIFCONF, &ifc);
+
+  for (i = 0; i < ifc.ifc_len; ) {
+    ifr = (struct ifreq *) &ifc.ifc_buf[i];
+    sin = (struct sockaddr_in *) &ifr->ifr_addr;
+    i += sizeof(struct ifreq);
+    /* skip nulls */
+    if (sin->sin_addr.s_addr == 0)
+      continue;
+    /* skip non AF_INET's */
+    if (ifr->ifr_addr.sa_family != AF_INET)
+      continue;
+
+#ifdef SIOCGIFFLAGS
+    memset(&ifr_tmp, 0, sizeof(ifr_tmp));
+    strncpy(ifr_tmp.ifr_name, ifr->ifr_name, sizeof(ifr_tmp.ifr_name) - 1);
+    if (ioctl(s, SIOCGIFFLAGS, (caddr_t) &ifr_tmp) < 0)
+#endif
+      ifr_tmp = *ifr;
+    
+    /* skip DOWN and loopback interfaces */
+    if (((ifr_tmp.ifr_flags & IFF_UP) == 0) ||
+          (ifr_tmp.ifr_flags & IFF_LOOPBACK))
+      continue;
+
+    close(s);
+    strcpy(ip, inet_ntoa(sin->sin_addr));
+    return;
+  }
+  close(s);
+  return;
+}
 
 
 

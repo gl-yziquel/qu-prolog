@@ -59,8 +59,6 @@
 //#include "dereference.h"
 #include "error_value.h"
 #include "heap_qp.h"
-#include "icm.h"
-#include "icm_handle.h"
 
 /* This stupid thing is for VC++ - it has trouble
  * with parens around pointers: eg (char*)
@@ -386,83 +384,6 @@ Heap::decode_recv_options(Object* options_object,
     }
 }
 
-
-#ifdef ICM_DEF
-bool
-Heap::decode_icm_handle(AtomTable& atoms,
-			Object*& handle_object,
-			icmHandle& handle)
-{
-  if (!handle_object->isStructure())
-    {
-      return false;
-    }
-
-  Structure* str = OBJECT_CAST(Structure*, handle_object);
-
-  if (str->getArity() != 4 || str->getFunctor() != atoms.add("$icm_handle"))
-    {
-      return false;
-    } 
-  Object* target_object = str->getArgument(1)->variableDereference();
-  Object* name_object = str->getArgument(2)->variableDereference();
-  Object* home_object = str->getArgument(3)->variableDereference();
-  Object* locations_object = str->getArgument(4)->variableDereference();
-
-  size_t length = 0;
-
-  if (! (target_object->isAtom() || target_object->isInteger()) ||
-      ! name_object->isAtom() ||
-      ! home_object->isAtom() ||
-      ! check_atom_list(locations_object, length)) 
-    {
-      return false;
-    }
-
-  string target;
-  if (target_object->isAtom())
-    {
-      ICMOutgoingTarget icm_outgoing_target(atoms.getAtomString(OBJECT_CAST(Atom*, target_object)));
-      target = icm_outgoing_target.Target();
-    }
-  else
-    {
-      ICMOutgoingTarget icm_outgoing_target(target_object->getInteger());
-      target = icm_outgoing_target.Target();
-    }
-
-  const char *name = atoms.getAtomString(OBJECT_CAST(Atom*, name_object));
-  const char *home = atoms.getAtomString(OBJECT_CAST(Atom*, home_object));
-
-  char **locations = new charptr[length + 1];
-  
-  for (size_t i = 0;
-       i < length;
-       i++,
-	 locations_object = OBJECT_CAST(Cons*, locations_object)->getTail()->variableDereference())
-    {
-      assert(OBJECT_CAST(Cons*, locations_object)->getHead()->variableDereference()->isAtom());
-      locations[i] = 
-	atoms.getAtomString(OBJECT_CAST(Cons*, 
-					locations_object)->getHead()->variableDereference());
-    }
-  
-  locations[length] = NULL;
-  
-  handle = icmMakeHandle(const_cast<char *>(target.c_str()), 
-			 const_cast<char *>(name),
-			 const_cast<char *>(home),
-			 length, locations);
-  
-  delete [] locations;
-// PORT ISSUE
-#if 0
-  icmKeepHandle(handle);
-#endif
-
-  return true;
-}
-#endif // ICM_DEF
 
 bool
 Heap::check_atom_list(Object* atom_list_object,

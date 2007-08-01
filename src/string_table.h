@@ -124,7 +124,7 @@ public:
   //
   // Add a new string to the table.
   //
-  StringLoc	add(const char *string);
+  char*	add(const char *string);
   
   //
   // Size of the string table.

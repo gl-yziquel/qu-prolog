@@ -914,7 +914,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
       assert(reinterpret_cast<Object*>(acode.Entries()[i])->isStructure());
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(acode.Entries()[i]));
       
-      if (isCompiled && tstruct->getFunctor() == AtomTable::call_pred &&
+      if (tstruct->getFunctor() == AtomTable::call_pred &&
 	  i == acode.lastEntry()-1)
 	{
 	  Structure* expred = newStructure(2);

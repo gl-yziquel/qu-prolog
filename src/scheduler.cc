@@ -69,10 +69,6 @@
 #include "code.h"
 #include "defs.h"
 #include "errors.h"
-#ifdef ICM_DEF
-#include "icm_handle.h"
-#include "icm_message.h"
-#endif
 #include "io_qp.h"
 #include "manager.h"
 #include "pred_table.h"
@@ -129,6 +125,7 @@ Scheduler::Scheduler(ThreadOptions& to, ThreadTable& tt,
 Scheduler::~Scheduler(void) { }
 
 extern int* sigint_pipe;
+extern bool in_sigint;
 
 bool Scheduler::poll_fds(Timeval& poll_timeout)
 {
@@ -179,10 +176,9 @@ bool Scheduler::poll_fds(Timeval& poll_timeout)
     {
       // Remember, select only works on sockets in windows
 #ifdef WIN32
-      result = WaitForMultipleObjects(hcount + 1, handles, true, NULL)
- > 0;
+      result = WaitForMultipleObjects(hcount + 1, handles, true, NULL);
 #else
-      result = select(max_fd + 1, &rfds, &wfds, NULL, NULL) > 0;
+      result = select(max_fd + 1, &rfds, &wfds, NULL, NULL);
 #endif
     }
   else
@@ -190,9 +186,9 @@ bool Scheduler::poll_fds(Timeval& poll_timeout)
       struct timeval timeout = {poll_timeout.Sec(), poll_timeout.MicroSec()};
 #ifdef WIN32
       result = WaitForMultipleObjects(hcount + 1, handles, true,
-                   timeout.tv_usec / 1000 + timeout.tv_sec*1000 ) > 0;
+                   timeout.tv_usec / 1000 + timeout.tv_sec*1000 );
 #else
-      result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout) > 0;
+      result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout);
 #endif
     }
 
@@ -217,7 +213,7 @@ Scheduler::Sleep()
   while (! InterQuantum())
     {
       // Were there any signals while we were napping?
-      if (signals.Status().testSignals())
+      if (signals.Status().testSignals() && !in_sigint)
 	{
 #ifdef DEBUG_SCHED
 	  cerr << __FUNCTION__ << " Start signal handler" << endl;
@@ -246,7 +242,7 @@ Scheduler::Sleep()
 // Perform all the inter quantum actions:
 //	Process messages
 // 	Check on threads blocked on IO
-//	Check on threads blocked on ICM
+//	Check on threads blocked on messages
 //	Check on threads blocked on waits
 //	Check on threads waiting on timeouts
 //
@@ -496,7 +492,8 @@ Scheduler::Schedule(void)
 	       << thread.TInfo().ID() << endl;
 #endif // DEBUG_SCHED
 	  const Thread::ReturnValue result = thread.Execute();
-#ifdef DEBUG_SCHED
+#ifdef DEBUG_SCHED 
+
 	  cerr << __FUNCTION__
 	       << " Exit execution of thread "
 	       << thread.TInfo().ID() << endl;
@@ -737,30 +734,31 @@ Scheduler::ShuffleAllMessages(void)
 Thread::ReturnValue
 Scheduler::HandleSignal(void)
 {
+  in_sigint = true;
 #ifndef WIN32 // This doesn't do ANYTHING
-        char buff[128];
-        read(sigint_pipe[0], buff, 120);
+  char buff[128];
+  read(sigint_pipe[0], buff, 120);
 #else
-        // This may have been removed by the tokeniser,
-        // should we be in the position of fake EOF.
-        if (!_eof(sigint_pipe[0]))
-        {
-                char buff[128];
-                read(sigint_pipe[0], buff, 120);
-        }
+  // This may have been removed by the tokeniser,
+  // should we be in the position of fake EOF.
+  if (!_eof(sigint_pipe[0]))
+    {
+      char buff[128];
+      read(sigint_pipe[0], buff, 120);
+    }
 #endif
-
+  
   Thread *thread = new Thread(NULL, thread_options);
-
+  
   const ThreadTableLoc loc = thread_table.AddID(thread);
   if (loc == (ThreadTableLoc) -1)
     {
       delete thread;
       Fatal(__FUNCTION__, "Couldn't create signal handler thread\n");
     }
-
+  
   thread->TInfo().SetID(loc);
-
+  
   Atom* sig_atom = atoms->add("handle_signal");
   Atom* predicate = atoms->add("$signal_thread_exit");
   Object* problem = thread->BuildCall(predicate, 0);
@@ -768,13 +766,13 @@ Scheduler::HandleSignal(void)
   thread->TInfo().Goal() =  sig_atom;
   thread_table.IncLive();
   thread->Condition(ThreadCondition::RUNNABLE);
-
+  
 #ifdef DEBUG_SCHED
   cerr << __FUNCTION__ << "  Start execution of signal handler" << endl;
 #endif
-
+  
   Thread::ReturnValue result;
-
+  
   while (true)
     {
       result = thread->Execute();
@@ -787,15 +785,16 @@ Scheduler::HandleSignal(void)
 	  break;
 	}
     }
-
+  
 #ifdef DEBUG_SCHED
   cerr << __FUNCTION__ << "  Stop execution of signal handler" << endl;
 #endif
-
+  
   thread_table.RemoveID(thread->TInfo().ID());
   thread_table.DecLive();
   delete thread;
-
+  in_sigint = false;
+  signals.Status().resetSignals();
   return result;
 }
 

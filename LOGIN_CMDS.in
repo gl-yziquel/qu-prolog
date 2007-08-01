@@ -1,9 +1,4 @@
 # Add this file to your ~/.login
-setenv ICMHOME @ICMHOME@
-setenv QPHOME @QPHOME@
 setenv QPPATH $QPHOME/bin
-setenv QPLIBPATH "."
 setenv MANPATH ${QPHOME}/doc/man
-setenv LD_LIBRARY_PATH ${ICMHOME}/lib
-setenv PATH ${PATH}:${QPPATH}:${ICMHOME}/bin
-setenv LD_RUN_PATH ${ICMHOME}/lib
+setenv PATH ${PATH}:${QPPATH}

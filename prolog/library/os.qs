@@ -376,14 +376,14 @@ end('access'/3):
 $1:
 	pseudo_instr1(1, 0)
 	neck_cut
-	pseudo_instr1(111, 1)
+	pseudo_instr1(75, 1)
 	get_x_value(0, 1)
 	proceed
 
 $2:
 	pseudo_instr1(2, 0)
 	neck_cut
-	pseudo_instr1(110, 0)
+	pseudo_instr1(74, 0)
 	proceed
 
 $3:
@@ -410,9 +410,9 @@ end('working_directory'/1):
 
 
 $1:
-	pseudo_instr1(111, 2)
+	pseudo_instr1(75, 2)
 	get_x_value(0, 2)
-	pseudo_instr1(110, 1)
+	pseudo_instr1(74, 1)
 	proceed
 end('working_directory'/2):
 
@@ -439,7 +439,7 @@ $1:
 	get_y_variable(0, 0)
 	pseudo_instr1(3, 20)
 	neck_cut
-	call_predicate('exit_all_thread_guis', 0, 1)
+	call_predicate('exit_debug_thread_gui', 0, 1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('$halt', 1)

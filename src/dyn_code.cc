@@ -99,8 +99,8 @@ Thread::psi_code_top(Object*& object1)
 
 
 //
-// psi_get_opcode(opcode, buffer, offset)
-// Get an opcode from the code area at offset from buffer.
+// psi_get_opcode(opcode, pc, offset)
+// Get an opcode from the code area at offset from pc.
 // mode(out,in,in)
 //
 Thread::ReturnValue
@@ -114,7 +114,8 @@ Thread::psi_get_opcode(Object*& object1, Object*& object2, Object*& object3)
   assert(val2->isNumber());
   assert(val3->isNumber());
   
-  offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
+  CodeLoc pc = reinterpret_cast<CodeLoc>(val2->getInteger());
+  offset = pc + val3->getInteger();
   
   object1 = heap.newInteger(getInstruction(offset));
   
@@ -280,7 +281,7 @@ Thread::psi_get_pred(Object*& object1, Object*& object2, Object*& object3)
 }
 
 //
-// psi_get_entry(offset, linkblock, predtype)
+// psi_get_entry(pc, linkblock, predtype)
 // Get the code for this block.
 // mode(out,in, out)
 //
@@ -290,10 +291,10 @@ Thread::psi_get_entry(Object*& object1, Object*& object2, Object*& object3)
   Object* val2 = object2->variableDereference();
   assert(val2->isNumber());
   assert(val2->getInteger() != 0);
-  CodeLoc code = reinterpret_cast<CodeLoc>((val2->getInteger()) +
-					   Code::SIZE_OF_INSTRUCTION + Code::SIZE_OF_NUMBER + Code::SIZE_OF_ADDRESS); 
+  LinkedClause* clause = (LinkedClause*)(val2->getInteger());
+  CodeLoc pc = clause->getCodeBlock()->getCode();
   
-  object1 = heap.newInteger(reinterpret_cast<word32>(getCodeLoc(code)));
+  object1 = heap.newInteger(reinterpret_cast<word32>(pc));
   object3 = heap.newInteger(0);
   return(RV_SUCCESS);
 }

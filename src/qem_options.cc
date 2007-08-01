@@ -70,6 +70,7 @@
 
 #include "defaults.h"
 
+
 QemOptions::QemOptions(int argc, char **argv)
   : Options("[-d code-size]\n"
 	    "\t[-p predicate-table-size]\n"
@@ -85,8 +86,8 @@ QemOptions::QemOptions(int argc, char **argv)
 	    "\t[-h heap-size]\n"
 	    "\t[-H scratchpad-size]\n"
 	    "\t[-z thread-table-size]\n"
-	    "\t[-N icm-server-name]\n"
-	    "\t[-P icm-server-port]\n"
+	    "\t[-N pedro-server-name]\n"
+	    "\t[-P pedro-server-port]\n"
 	    "\t[-A process-symbol]\n"
 	    "\t[-L]\n"	// Standalone
 	    "\t[-X]\n"	// QuAM level debugging turned on.
@@ -107,14 +108,14 @@ QemOptions::QemOptions(int argc, char **argv)
     thread_table_size(THREAD_TABLE_SIZE),
     stand_alone(STAND_ALONE),
     qx_file(QX_FILE),
-    icm_server(ICM_SERVER),
-    icm_port(ICM_PORT),
+    pedro_server(PEDRO_SERVER),
+    pedro_port(PEDRO_PORT),
     process_symbol(PROCESS_SYMBOL),
     debugging(DEBUGGING)
 {
   int32 c;
 
-  static const char *opts =  "d:p:s:m:a:B:O:i::n:C:e:h:H:Q:z:N:P:A:LX";
+  static const char *opts =  "d:p:s:m:a:B:O:i:n:C:e:h:H:Q:z:N:P:A:LX";
 
   //
   // Parse command line options.
@@ -179,11 +180,11 @@ QemOptions::QemOptions(int argc, char **argv)
 	  break;
 	case 'N':
 	  // Will override earlier setting of standalone flag
-	  icm_server.Value(optarg);
+	  pedro_server.Value(optarg);
 	  stand_alone.Value(false);
 	  break;
 	case 'P':
-	  icm_port.Value(atoi(optarg));
+	  pedro_port.Value(atoi(optarg));
 	  break;
 	case 'A':
 	  process_symbol.Value(optarg);

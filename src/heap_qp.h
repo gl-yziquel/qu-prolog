@@ -80,9 +80,6 @@
 #include "objects.h" // What's going to get created on the heap
 
 #include "error_value.h"
-#ifndef WIN32
-#include "icm.h"
-#endif
 #include "io_qp.h"
 #include "name_table.h"
 #include "prolog_value.h"
@@ -266,7 +263,7 @@ truth3 fastEqual(PrologValue&, PrologValue&);
 #include "unravel.h"
 #include "yield.h"
                                        
-#ifdef QP_DEBUG
+#ifndef NDEBUG
   void printMe(AtomTable&);
 #endif
 };
@@ -278,7 +275,7 @@ truth3 fastEqual(PrologValue&, PrologValue&);
 // Default constructor
 //
 inline Heap::Heap(char* name, u_long size, bool GC)
-  : data( new heapobject[size * K] )
+  : data( new heapobject[size] )
 {
   //
   // Ensure that the heap is a sensible size
@@ -291,8 +288,8 @@ inline Heap::Heap(char* name, u_long size, bool GC)
   //
   assert(sizeof (heapobject) == sizeof (void *));
 
-  top = data + size * K / sizeof (heapobject);
-  gcMark = data + (9 * size * K) / (10 * sizeof (heapobject)); // 90% of heap
+  top = data + size;
+  gcMark = data + (9 * size) / 10; // 90% of heap
   next = data;
   highwater = data;
   doGC = GC;

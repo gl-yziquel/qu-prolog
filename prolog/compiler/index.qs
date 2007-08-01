@@ -521,7 +521,7 @@ $5:
 	execute_predicate('$classify/2$2', 3)
 
 $6:
-	pseudo_instr1(112, 0)
+	pseudo_instr1(85, 0)
 	neck_cut
 	pseudo_instr2(36, 0, 2)
 	get_x_variable(0, 2)

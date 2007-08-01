@@ -90,7 +90,7 @@ const word32 NAME_TABLE_SIZE  = 10000;
 const word32 HEAP_SIZE  = 400;			// K
 const word32 ENVIRONMENT_STACK_SIZE = 64;	// K
 const word32 CHOICE_STACK_SIZE  = 64;		// K
-const word32 BINDING_TRAIL_SIZE  = 64;	       	// K
+const word32 BINDING_TRAIL_SIZE  = 32;	       	// K
 const word32 OTHER_TRAIL_SIZE = 32;		// K
 const word32 SCRATCHPAD_SIZE = 100;             // K
 const word32 IP_TABLE_SIZE = 10000;                 
@@ -118,12 +118,12 @@ const bool STAND_ALONE = false;
 //
 // Default nameserver.
 //
-char *ICM_SERVER = NULL;
+char *PEDRO_SERVER = "localhost";
 
 //
 // Default nameserver port.
 //
-const u_short ICM_PORT = 0;
+const u_short PEDRO_PORT = 4550;
 
 //
 // Default process symbol.

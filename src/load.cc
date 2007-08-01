@@ -86,7 +86,7 @@ Thread::psi_load(Object *& object1, Object*& object2)
 
   assert(val1->isAtom());
 
-  string filename = atoms->getAtomString(val1);
+  string filename = OBJECT_CAST(Atom*, val1)->getName();
   wordexp(filename);
   char file[1024];
   strcpy(file, filename.c_str());
