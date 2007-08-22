@@ -1,6 +1,9 @@
 // get_args.cc - Put the list of atoms onto the heap in WAM format.
 //		 argv is the list of atoms on the mainline call.
 //
+//
+// Also manages initial goal passed in with -g switch
+//
 // ##Copyright##
 // 
 // Copyright (C) 2000-2004
@@ -61,6 +64,7 @@
 
 extern AtomTable *atoms;
 extern QemOptions *qem_options;
+extern char *initial_goal;
 
 //
 // Put the list of atoms onto the heap in WAM format. 
@@ -83,7 +87,18 @@ Thread::psi_get_args(Object *& object1)
 }
 
 
-
+//
+// Extract the initial goal as a string - fails if no initial goal
+//
+Thread::ReturnValue 
+Thread::psi_initial_goal(Object *& object1)
+{
+  if (initial_goal == NULL) {
+    return(RV_FAIL);
+  }
+  object1 = heap.newStringObject(initial_goal);
+  return(RV_SUCCESS);
+}
 
 
 

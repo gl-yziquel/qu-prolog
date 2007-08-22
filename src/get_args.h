@@ -1,6 +1,8 @@
 // get_args.h - Put the list of atoms onto the heap in WAM format.
 //		 argv is the arrey of atoms on the mainline call.
 //
+// Also manages initial goal passed in with -g switch
+//
 // ##Copyright##
 // 
 // Copyright (C) 2000-2004
@@ -66,5 +68,11 @@ public:
 // mode(out)
 //
 ReturnValue psi_get_args(Object *& );
+
+
+//
+// Extract the initial goal as a string - fails if no initial goal
+//
+ReturnValue psi_initial_goal(Object *& );
 
 #endif	// GET_ARGS_H

@@ -89,6 +89,7 @@ private:
   Option<char *> pedro_server;
   Option<u_short> pedro_port;	// Host byte order.
   Option<char *> process_symbol;
+  Option<char *> initial_goal;
   Option<bool> debugging;
 
   int prolog_argc;
@@ -120,6 +121,8 @@ public:
   u_short PedroPort(void) const { return pedro_port.Value(); }
   
   char *ProcessSymbol(void) const { return process_symbol.Value(); }
+
+  char *InitialGoal(void) const { return initial_goal.Value(); }
 
   bool Debugging(void) const { return debugging.Value(); }
 

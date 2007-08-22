@@ -40,6 +40,9 @@ qp \- Qu-Prolog interpreter
 [
 \-A process-symbol
 ]
+[
+\-g initial-goal
+]
 .SH DESCRIPTION
 \f4qp\f1 is the Qu-Prolog interpreter.
 It repeatedly prompts for and solves queries.
@@ -118,6 +121,10 @@ If the name is supplied then the qp GUI will start unless
 dumb 
 ]
 appears as the last switch.
+.TP
+\-g initial-goal
+.I initial-goal
+will be executed at the start of the interpreter
 
 .SH ENVIRONMENT
 .TP 10

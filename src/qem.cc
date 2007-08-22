@@ -126,6 +126,7 @@ Signals *signals = NULL;
 ThreadTable *thread_table = NULL;
 ThreadOptions *thread_options = NULL;
 char *process_symbol = NULL;
+char *initial_goal = NULL;
 UserHashState* user_hash = new UserHashState(100, 10);
 int errorno = 0;
 
@@ -279,6 +280,11 @@ main(int32 argc, char** argv)
   failblock[1] = 0;
   failblock[2] = 0;
   failblock[3] = FAIL;
+  
+  if (qem_options->InitialGoal() != NULL) {
+    initial_goal = new char[strlen(qem_options->InitialGoal()) + 1];
+    strcpy(initial_goal, qem_options->InitialGoal());
+  }
 
   // Thread table.
   thread_table = new ThreadTable(qem_options->ThreadTableSize());

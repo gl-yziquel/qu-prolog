@@ -130,6 +130,12 @@ const u_short PEDRO_PORT = 4550;
 //
 char *PROCESS_SYMBOL = NULL;
 
+
+//
+// Default initial goal
+//
+char* INITIAL_GOAL = NULL;
+
 //
 // Default debugging value.
 //

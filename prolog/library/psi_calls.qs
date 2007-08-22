@@ -1263,6 +1263,17 @@ end('string'/1):
 
 
 
+'$initial_goal'/1:
+
+
+$1:
+	pseudo_instr1(109, 1)
+	get_x_value(0, 1)
+	proceed
+end('$initial_goal'/1):
+
+
+
 'is'/2:
 
 

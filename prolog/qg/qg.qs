@@ -105,7 +105,7 @@ end('$load_qg_rulefile'/1):
 
 
 
-'$query_qg2007_8_1_10_22_10_462/0$0'/0:
+'$query_qg2007_8_22_10_23_0_812/0$0'/0:
 
 
 $1:
@@ -142,23 +142,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_qg2007_8_1_10_22_10_462/0$0'/0):
+end('$query_qg2007_8_22_10_23_0_812/0$0'/0):
 
 
 
-'$query_qg2007_8_1_10_22_10_462'/0:
+'$query_qg2007_8_22_10_23_0_812'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_qg2007_8_1_10_22_10_462/0$0', 0, 0)
+	call_predicate('$query_qg2007_8_22_10_23_0_812/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_qg2007_8_1_10_22_10_462'/0):
+end('$query_qg2007_8_22_10_23_0_812'/0):
 
 
 
@@ -166,7 +166,7 @@ end('$query_qg2007_8_1_10_22_10_462'/0):
 
 
 $1:
-	execute_predicate('$query_qg2007_8_1_10_22_10_462', 0)
+	execute_predicate('$query_qg2007_8_22_10_23_0_812', 0)
 end('$query'/0):
 
 

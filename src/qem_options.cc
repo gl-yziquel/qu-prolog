@@ -89,6 +89,7 @@ QemOptions::QemOptions(int argc, char **argv)
 	    "\t[-N pedro-server-name]\n"
 	    "\t[-P pedro-server-port]\n"
 	    "\t[-A process-symbol]\n"
+            "\t[-g initial-goal]\n"
 	    "\t[-L]\n"	// Standalone
 	    "\t[-X]\n"	// QuAM level debugging turned on.
 	    "\t-Q qx-file\n"),
@@ -111,11 +112,12 @@ QemOptions::QemOptions(int argc, char **argv)
     pedro_server(PEDRO_SERVER),
     pedro_port(PEDRO_PORT),
     process_symbol(PROCESS_SYMBOL),
+    initial_goal(INITIAL_GOAL),
     debugging(DEBUGGING)
 {
   int32 c;
 
-  static const char *opts =  "d:p:s:m:a:B:O:i:n:C:e:h:H:Q:z:N:P:A:LX";
+  static const char *opts =  "d:p:s:m:a:B:O:i:n:C:e:h:H:Q:z:N:P:A:g:LX";
 
   //
   // Parse command line options.
@@ -188,6 +190,9 @@ QemOptions::QemOptions(int argc, char **argv)
 	  break;
 	case 'A':
 	  process_symbol.Value(optarg);
+	  break;
+	case 'g':
+	  initial_goal.Value(optarg);
 	  break;
 	case 'L':
 	  // Will override earlier setting of name server name

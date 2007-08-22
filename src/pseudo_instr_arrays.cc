@@ -187,7 +187,8 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_random_float,	1,	"psi_random_float"}, 
 	{&Thread::psi_pedro_disconnect,	1,	"psi_pedro_disconnect"}, 
 	{&Thread::psi_make_cleanup_cp,	1,	"psi_make_cleanup_cp"}, 
-	{&Thread::psi_string,	0,	"psi_string"}
+	{&Thread::psi_string,	0,	"psi_string"}, 
+	{&Thread::psi_initial_goal,	1,	"psi_initial_goal"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
