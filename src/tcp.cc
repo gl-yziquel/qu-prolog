@@ -211,12 +211,12 @@ LookupMachineIPAddress(const char *name)
       hostent *hp;
       
       if ( (hp = gethostbyname(hostname)) == NULL)
-	{
-	  struct in_addr in;
-	  in.s_addr = inet_addr(hostname);
-	  hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-	}
-      if (hp == NULL)
+// 	{
+// 	  struct in_addr in;
+// 	  in.s_addr = inet_addr(hostname);
+// 	  hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+// 	}
+//       if (hp == NULL)
 	{
 	  strcpy(hostname, "127.0.0.1");
 	  getIPfromifconfig(hostname);

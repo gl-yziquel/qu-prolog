@@ -312,7 +312,7 @@ main(int32 argc, char** argv)
     pedro_channel->connect(sockfd, sock);
     if (!pedro_channel->pedro_register(atoms->add(qem_options->ProcessSymbol()))) {
       Fatal(__FUNCTION__, "Cannot register");
-    }
+    }   
   }
  
 

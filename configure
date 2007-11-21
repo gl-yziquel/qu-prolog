@@ -6447,7 +6447,7 @@ _ACEOF
 fi
 #------------------------------------------------------------------------------
 
-ac_config_files="$ac_config_files LOGIN_CMDS Makefile PROFILE_CMDS bin/Makefile bin/kq bin/qc bin/qc1.boot bin/qcc bin/qppp prolog/Makefile prolog/compiler/Makefile prolog/library/Makefile prolog/qc1/Makefile prolog/qecat/Makefile prolog/qg/Makefile prolog/qp/Makefile src/Makefile src/Makefile.heap src/Makefile.ipc src/Makefile.library src/Makefile.psi src/Makefile.qa src/Makefile.qdeal src/Makefile.qem src/Makefile.ql src/Makefile.qod src/Makefile.thread src/xqpdebug/xqpdebug.pro"
+ac_config_files="$ac_config_files LOGIN_CMDS Makefile PROFILE_CMDS bin/Makefile bin/kq bin/qc bin/qc1.boot bin/qcc bin/qppp prolog/Makefile prolog/compiler/Makefile prolog/library/Makefile prolog/qc1/Makefile prolog/qecat/Makefile prolog/qg/Makefile prolog/qp/Makefile src/Makefile src/Makefile.heap src/Makefile.ipc src/Makefile.library src/Makefile.psi src/Makefile.qa src/Makefile.qdeal src/Makefile.qem src/Makefile.ql src/Makefile.qod src/Makefile.thread"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -7030,7 +7030,6 @@ do
     "src/Makefile.ql") CONFIG_FILES="$CONFIG_FILES src/Makefile.ql" ;;
     "src/Makefile.qod") CONFIG_FILES="$CONFIG_FILES src/Makefile.qod" ;;
     "src/Makefile.thread") CONFIG_FILES="$CONFIG_FILES src/Makefile.thread" ;;
-    "src/xqpdebug/xqpdebug.pro") CONFIG_FILES="$CONFIG_FILES src/xqpdebug/xqpdebug.pro" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

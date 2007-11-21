@@ -281,9 +281,6 @@ $2:
 	pseudo_instr1(2, 0)
 	neck_cut
 	pseudo_instr1(89, 0)
-	put_constant('localhost', 1)
-	pseudo_instr2(79, 1, 0)
-	pseudo_instr2(80, 1, 0)
 	proceed
 
 $3:
@@ -416,12 +413,13 @@ $2:
 	pseudo_instr1(90, 0)
 	get_structure('@', 2, 0)
 	unify_x_ref(0)
-	unify_y_value(0)
+	unify_x_variable(1)
 	get_structure(':', 2, 0)
 	unify_void(1)
 	unify_y_value(1)
+	put_y_value(0, 0)
 	deallocate
-	proceed
+	execute_predicate('$same_host', 2)
 end('$is_local_p2p'/2):
 
 

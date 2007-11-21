@@ -403,8 +403,18 @@ end('thread_wait_on_goal/2$0'/3):
 
 'thread_wait_on_goal'/2:
 
+	try(2, $1)
+	trust($2)
 
 $1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('call', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
 	allocate(4)
 	get_y_variable(3, 0)
 	get_y_variable(2, 1)

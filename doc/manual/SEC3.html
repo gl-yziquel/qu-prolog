@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.1 Reference Manual - Built-in Predicates
+Qu-Prolog 8.2 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -8362,6 +8362,12 @@ Disconnect from the Pedro server.
 <BR> <KBD>mode pedro_disconnect</KBD>
 </BLOCKQUOTE>
 
+<a name="pedro_is_connected"></a><KBD>pedro_is_connected</KBD>
+<BLOCKQUOTE>
+Succeeds if and only if the process is connected to Pedro.
+<BR> <KBD>mode pedro_is_connected</KBD>
+</BLOCKQUOTE>
+
 
 <a name="pedro_register"></a><KBD>pedro_register(Name)</KBD>
 <BLOCKQUOTE>
@@ -8377,6 +8383,12 @@ connects with the Pedro server and registers the supplied name.
 <BLOCKQUOTE>
 Deregisters the current name with the Pedro server.
 <BR> <KBD>mode pedro_deregister</KBD>
+</BLOCKQUOTE>
+
+<a name="pedro_is_registered"></a><KBD>pedro_is_registered</KBD>
+<BLOCKQUOTE>
+Succeeds if and only if the process is registered with Pedro.
+<BR> <KBD>mode pedro_is_registered</KBD>
 </BLOCKQUOTE>
 
 <a name="pedro_subscribe"></a><KBD>pedro_subscribe(Head, Body, ID)</KBD>

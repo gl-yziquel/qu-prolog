@@ -1,6 +1,6 @@
-Welcome to Qu-Prolog 8.1.
+Welcome to Qu-Prolog 8.2.
 
-Qu-Prolog 8.1 is an extended Prolog with built-in support for quantifiers, 
+Qu-Prolog 8.2 is an extended Prolog with built-in support for quantifiers, 
 object-variables and substitutions. It is designed as an implementation
 language for systems such as interactive theorem provers.
 

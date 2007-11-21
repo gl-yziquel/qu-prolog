@@ -239,24 +239,15 @@ machine_ip_address(Heap& heap,
 	      return 0;
 	    }
 	}
-      // PORT
       hostent *hp = gethostbyname(hostname);
-      if (hp == NULL)
-      {
-        struct in_addr in;
-        in.s_addr = inet_addr(hostname);
-       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-    }
+//       if (hp == NULL)
+//       {
+//         struct in_addr in;
+//         in.s_addr = inet_addr(hostname);
+//        hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+//     }
 	  
-      /*
-      hostent *hp = NULL;
-      if (hp != gethostbyname(hostname))
-        {
-          struct in_addr in;
-          in.s_addr = inet_addr(hostname);
-          hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-        }
-	*/
+
 #ifndef WIN32
       endhostent();
 #endif
@@ -467,7 +458,7 @@ Thread::psi_tcp_socket(
   const int fd = static_cast<const int>(socket(AF_INET, type, protocol));
   if (fd < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   Socket *socket = new Socket(type, protocol, fd);
@@ -596,7 +587,7 @@ Thread::psi_tcp_setsockopt(Object *& socket_arg, Object *& option_arg,
 			     SOL_SOCKET, opt, (char *)&val, sizeof(val));
   if (ret < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
     
   return RV_SUCCESS;
@@ -715,7 +706,7 @@ Thread::psi_tcp_getsockopt(
   if (getsockopt(socket->getFD(), SOL_SOCKET, opt,
 		 (char *)&val, &len))
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   value_arg = heap.newInteger(val);
@@ -770,7 +761,7 @@ Thread::psi_tcp_bind(Object *& socket_arg,
 			 (struct sockaddr *) &server, sizeof(server));
   if (ret < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0); 
+      PSI_ERROR_RETURN(EV_SYSTEM, errno); 
     }
 
   socket->setBind();
@@ -804,7 +795,7 @@ Thread::psi_tcp_listen(Object *& socket_arg)
   const int ret = listen(socket->getFD(), 5);
   if (ret < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   socket->setListen();
@@ -853,7 +844,7 @@ Thread::psi_tcp_accept(Object *& socket_arg,
 			       &length));
   if (newsockfd < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
   
   Socket *newsocket = new Socket(0, 0, newsockfd);
@@ -905,7 +896,7 @@ Thread::psi_tcp_connect1(
     }
   else
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 }
 
@@ -1032,18 +1023,18 @@ Thread::psi_tcp_getsockname(
 
   if (getsockname(socket->getFD(),(struct sockaddr *)&addr,&length) < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   if (gethostname(io_buf, IO_BUF_LENGTH) < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   hostent *hp = gethostbyname(io_buf);
   if (hp == NULL)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   port_arg = heap.newInteger(ntohs(addr.sin_port));
@@ -1078,7 +1069,7 @@ Thread::psi_tcp_getpeername(
 
   if (getpeername(socket->getFD(),(struct sockaddr *)&addr,&length) < 0)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   port_arg = heap.newInteger(ntohs(addr.sin_port));
@@ -1118,16 +1109,16 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
     {
       if (gethostname(hostname, 1000) != 0)
 	{
-	  PSI_ERROR_RETURN(EV_SYSTEM, 0);
+	  PSI_ERROR_RETURN(EV_SYSTEM, errno);
 	}
     }
   hostent *hp = gethostbyname(hostname);
-  if (hp == NULL)
-    {
-      struct in_addr in;
-      in.s_addr = inet_addr(hostname);
-      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-    }
+//   if (hp == NULL)
+//     {
+//       struct in_addr in;
+//       in.s_addr = inet_addr(hostname);
+//       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+//     }
 
   if (hp == NULL)
     {
@@ -1139,7 +1130,7 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
     }
   if (hp == NULL)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 #ifndef WIN32
   endhostent();
@@ -1176,7 +1167,7 @@ Thread::psi_tcp_host_from_ip_address(Object *& host_arg,
 #endif
   if (hp == NULL)
     {
-      PSI_ERROR_RETURN(EV_SYSTEM, 0);
+      PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
 
   host_arg = atoms->add(hp->h_name);

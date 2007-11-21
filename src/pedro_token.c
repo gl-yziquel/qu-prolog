@@ -819,27 +819,27 @@ YY_RULE_SETUP
 case 13:
 YY_RULE_SETUP
 #line 42 "pedro_token.l"
-{ return OBRA_TOKEN; }
+{ *val = 0; return OBRA_TOKEN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 43 "pedro_token.l"
-{ return CBRA_TOKEN; }
+{ *val = 0; return CBRA_TOKEN; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 44 "pedro_token.l"
-{ return COMMA_TOKEN; }
+{ *val = 0; return COMMA_TOKEN; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 45 "pedro_token.l"
-{ return OSBRA_TOKEN; }
+{ *val = 0; return OSBRA_TOKEN; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 46 "pedro_token.l"
-{ return CSBRA_TOKEN; }
+{ *val = 0; return CSBRA_TOKEN; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP

@@ -93,7 +93,6 @@ int parseargs(Thread* th, AtomTable& atoms, VarMap& vmap,
 Object* parse_basic(Thread* th, AtomTable& atoms, VarMap& vmap, 
 		    ObjectsStack& stk, bool remember)
 {
-  assert(curr_token != NULL);
   switch (curr_token_type) {
   case ERROR_TOKEN:
   case NEWLINE_TOKEN:
@@ -666,7 +665,11 @@ PedroMessage::constructMessage(Object*& sender, Object*& msgterm,
     msgterm = AtomTable::semi;
     return;
   }
-  assert(term->isStructure());
+  if (!term->isStructure()) {
+    sender = atoms.add("pedro");
+    msgterm = term;
+    return;
+  }
   Structure* sterm = OBJECT_CAST(Structure*, term);
   if (sterm->getFunctor() == atoms.add("p2pmsg")) {
     int arity = sterm->getArity();
@@ -959,30 +962,34 @@ PedroMessageChannel::connect(int f, int s)
 
   char hostname[1000];
   gethostname(hostname, 1000);
-  hostent *hp = gethostbyname(hostname); 
-  // if we can get the host then try to see if
-  // we can get host by address from hp
-  if (hp != NULL) {
-      struct in_addr in;
-      //      in.s_addr = htonl(*(int*)(hp->h_addr));
-      in.s_addr = *(int*)(hp->h_addr);
-      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-  }
-
+  hostent *hp = gethostbyname(hostname);
   if (hp == NULL)
     {
-      // if either we can't get host by name or address then try to 
-      // use ifconfig
-      // if ifconfig finds suitable ip then use that otherwise use given
-      // hostname
+      // if we can't get host by name then try to use ifconfig
       strcpy(hostname, "127.0.0.1");
       getIPfromifconfig(hostname);
       host = atoms->add(hostname);
     }
-  else
-    {
-      host = atoms->add(hp->h_name);
-    }
+  // if we can get the host then try to see if
+  // we can get host by address from hp
+  else {
+      struct in_addr in;
+      struct in_addr in_copy;
+      in.s_addr = *(int*)(hp->h_addr);
+      in_copy.s_addr = *(int*)(hp->h_addr);
+      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+      if (hp == NULL) 
+        {
+          // we can't look up name given address so just use dotted IP
+          host = atoms->add(inet_ntoa(in_copy));
+        } 
+      else 
+        {
+          host = atoms->add(hp->h_name);
+        }
+  }
+
+
 
   /* get ready for server connection */
   if (listen(sock, 1) == -1) {

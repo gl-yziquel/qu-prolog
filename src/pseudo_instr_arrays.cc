@@ -75,7 +75,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_signal_thread_exit,	0,	"psi_signal_thread_exit"}, 
 	{&Thread::psi_gc,	0,	"psi_gc"}, 
 	{&Thread::psi_pedro_deregister,	0,	"psi_pedro_deregister"}, 
-	{&Thread::psi_pedro_is_connected,	0,	"psi_pedro_is_connected"}
+	{&Thread::psi_pedro_is_connected,	0,	"psi_pedro_is_connected"}, 
+	{&Thread::psi_pedro_is_registered,	0,	"psi_pedro_is_registered"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {

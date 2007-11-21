@@ -1,5 +1,5 @@
 
-
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -7,8 +7,64 @@
 #include <iostream>
 #include <sstream>
 #include <assert.h>
-
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/utsname.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
 #include "pedro_connection.h"
+
+
+// No DNS lookup - so use ifcofig to get IP
+void getIPfromifconfig(char* ip)
+{
+  struct ifreq *ifr, ifr_tmp;
+  struct ifconf ifc;
+  char buf[1024];
+  int s, i;
+  struct sockaddr_in *sin;
+
+  s = socket(AF_INET, SOCK_DGRAM, 0);
+  if (s == -1) {
+    fprintf(stderr, "Can't open socket for ifconfig\n");
+    exit(1);
+  }
+
+  ifc.ifc_len = sizeof(buf);
+  ifc.ifc_buf = buf;
+  ioctl(s, SIOCGIFCONF, &ifc);
+
+  for (i = 0; i < ifc.ifc_len; ) {
+    ifr = (struct ifreq *) &ifc.ifc_buf[i];
+    sin = (struct sockaddr_in *) &ifr->ifr_addr;
+    i += sizeof(struct ifreq);
+    /* skip nulls */
+    if (sin->sin_addr.s_addr == 0)
+      continue;
+    /* skip non AF_INET's */
+    if (ifr->ifr_addr.sa_family != AF_INET)
+      continue;
+
+#ifdef SIOCGIFFLAGS
+    memset(&ifr_tmp, 0, sizeof(ifr_tmp));
+    strncpy(ifr_tmp.ifr_name, ifr->ifr_name, sizeof(ifr_tmp.ifr_name) - 1);
+    if (ioctl(s, SIOCGIFFLAGS, (caddr_t) &ifr_tmp) < 0)
+#endif
+      ifr_tmp = *ifr;
+    
+    /* skip DOWN and loopback interfaces */
+    if (((ifr_tmp.ifr_flags & IFF_UP) == 0) ||
+          (ifr_tmp.ifr_flags & IFF_LOOPBACK))
+      continue;
+
+    close(s);
+    strcpy(ip, inet_ntoa(sin->sin_addr));
+    return;
+  }
+  close(s);
+  return;
+}
+
 
 bool needsQuotes(string& str)
 {
@@ -91,12 +147,34 @@ PedroConnection::PedroConnection(string me, string other,
 
   char hostname[1000];
   gethostname(hostname, 1000);
-  host = hostname;
-  addQuotes(host);
-//   hostent *hp = gethostbyname(hostname);
-//   endhostent();
-//   host = hp->h_name;
 
+  hostent *hp = gethostbyname(hostname);
+  if (hp == NULL)
+    {
+      // if we can't get host by name then try to use ifconfig
+      strcpy(hostname, "127.0.0.1");
+      getIPfromifconfig(hostname);
+      host = hostname;
+    }
+  // if we can get the host then try to see if
+  // we can get host by address from hp
+  else {
+      struct in_addr in;
+      struct in_addr in_copy;
+      in.s_addr = *(int*)(hp->h_addr);
+      in_copy.s_addr = *(int*)(hp->h_addr);
+      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+      if (hp == NULL) 
+        {
+          // we can't look up name given address so just use dotted IP
+          host = inet_ntoa(in_copy);
+        } 
+      else 
+        {
+          host = hp->h_name;
+        }
+  }
+  addQuotes(host);
   /* get ready for server connection */
   if (listen(sock, 1) == -1) {
     fprintf(stderr, "Can't listen\n");

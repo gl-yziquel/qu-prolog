@@ -16,6 +16,8 @@ ReturnValue psi_pedro_notify(Object *&);
 
 ReturnValue psi_pedro_register(Object *& reg);
 
+ReturnValue psi_pedro_is_registered();
+
 ReturnValue psi_pedro_deregister();
 
 ReturnValue psi_thread_handle(Object*& handle_obj);

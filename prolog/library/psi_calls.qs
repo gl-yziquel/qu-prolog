@@ -138,6 +138,16 @@ end('pedro_is_connected'/0):
 
 
 
+'pedro_is_registered'/0:
+
+
+$1:
+	pseudo_instr0(14)
+	proceed
+end('pedro_is_registered'/0):
+
+
+
 'compound'/1:
 
 

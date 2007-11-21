@@ -138,12 +138,31 @@ Thread::psi_pedro_deregister()
 }
 
 Thread::ReturnValue
+Thread::psi_pedro_is_registered()
+{
+  if (pedro_channel->getName() == NULL)
+    return RV_FAIL;
+  else
+    return RV_SUCCESS;
+}
+
+
+Thread::ReturnValue
 Thread::psi_thread_handle(Object*& handle_obj)
 {
   if (!pedro_channel->isConnected())
     {
-      Warning(Program, "Not connected");
-      return RV_FAIL;
+      Structure* cstr = heap.newStructure(2);
+      cstr->setFunctor(AtomTable::colon);
+      cstr->setArgument(1, atoms->add(TInfo().Symbol().c_str()));
+      cstr->setArgument(2, atoms->add("UnnamedProcess"));
+      
+      Structure* atstr = heap.newStructure(2);
+      atstr->setFunctor(AtomTable::at);
+      atstr->setArgument(1, cstr);
+      atstr->setArgument(2, atoms->add("localhost"));
+      handle_obj = atstr;
+      return RV_SUCCESS;
     }
   if (pedro_channel->getName() == NULL)
     {

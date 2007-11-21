@@ -315,14 +315,17 @@ end('$or_call'/3):
 
 
 $1:
-	allocate(2)
-	get_y_variable(1, 1)
-	put_y_variable(0, 1)
-	call_predicate('$mc_inline', 2, 2)
-	put_y_value(0, 0)
-	put_y_value(1, 1)
+	allocate(3)
+	get_y_variable(2, 1)
+	get_y_level(0)
+	put_y_variable(1, 1)
+	call_predicate('$mc_inline', 2, 3)
+	put_y_value(1, 0)
+	put_y_value(2, 1)
+	call_predicate('$call_2', 2, 1)
+	cut(0)
 	deallocate
-	execute_predicate('$call_2', 2)
+	proceed
 end('$message_choice'/2):
 
 

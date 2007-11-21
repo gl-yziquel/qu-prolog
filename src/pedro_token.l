@@ -39,11 +39,11 @@ UPPER [A-Z]
 
 
 
-"("        { return OBRA_TOKEN; }
-")"        { return CBRA_TOKEN; }
-","        { return COMMA_TOKEN; }
-"["        { return OSBRA_TOKEN; }
-"]"        { return CSBRA_TOKEN; }
+"("        { *val = 0; return OBRA_TOKEN; }
+")"        { *val = 0; return CBRA_TOKEN; }
+","        { *val = 0; return COMMA_TOKEN; }
+"["        { *val = 0; return OSBRA_TOKEN; }
+"]"        { *val = 0; return CSBRA_TOKEN; }
 
 
 [_A-Z][A-Za-z0-9_]*  {
