@@ -65,13 +65,13 @@ Heap::IsTimeout(Object* cell)
     {
       return (cell == AtomTable::block);
     }
-  else if (cell->isNumber())
+  else if (cell->isInteger())
     {
       return cell->getInteger() >= 0;
     }
   else 
     {
-      return (cell->isDouble() && (cell->getInteger() >= 0));
+      return (cell->isDouble() && (cell->getDouble() >= 0));
     }
 }
 

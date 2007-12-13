@@ -3,6 +3,7 @@
 #include "tcp_qp.h"
 
 #include "pedro_env.h"
+#include "write_support.h"
 
 extern int pedro_port;
 extern char* pedro_address;

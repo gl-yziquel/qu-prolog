@@ -515,10 +515,66 @@ char *yytext;
 
 YY_BUFFER_STATE buffstate;
 
-
+void copyWithoutEscapes(char* in, char* out, int len, char quote)
+{
+  int pos = 0;
+  int i = 0;
+  while (i < len) {
+      char c = in[i];
+      if (c == '\\') {
+	i++;
+	c = in[i];
+	switch ((int)c)
+	  {
+	  case 'a': 
+	    out[pos] = '\a';
+	    break;
+	  case 'b':
+  	    out[pos] = '\b';
+	    break;
+	  case 't': 
+ 	    out[pos] = '\t';
+	    break;
+	  case 'n':
+  	    out[pos] = '\n';
+	    break;
+	  case 'v':
+ 	    out[pos] = '\v';
+	    break;
+	  case 'f':
+  	    out[pos] = '\f';
+            pos++;
+            out[pos] = 'f';
+	    break;
+	  case 'r':
+ 	    out[pos] = '\r';
+	    break;
+	  case '\\': 
+ 	    out[pos] = '\\';
+	    break;
+	  default:
+            if (c == quote)
+	      {
+	        out[pos] = c;
+	      }
+	    else
+	      {
+		assert(false);
+	      }
+	    break;
+	  }
+      }
+      else {
+	out[pos] = c;
+      }
+      i++;
+      pos++;
+    }
+  out[pos] = '\0';
+}
 
 #define YY_DECL int scanner(Thread* th, AtomTable* atoms, VarMap* vmap, Object** val, bool remember)
-#line 522 "pedro_token.c"
+#line 578 "pedro_token.c"
 
 #define INITIAL 0
 
@@ -671,9 +727,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 23 "pedro_token.l"
+#line 79 "pedro_token.l"
 
-#line 677 "pedro_token.c"
+#line 733 "pedro_token.c"
 
 	if ( !(yy_init) )
 		{
@@ -758,92 +814,92 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 24 "pedro_token.l"
+#line 80 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 25 "pedro_token.l"
+#line 81 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 26 "pedro_token.l"
+#line 82 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 27 "pedro_token.l"
+#line 83 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 28 "pedro_token.l"
+#line 84 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 30 "pedro_token.l"
+#line 86 "pedro_token.l"
 {*val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 31 "pedro_token.l"
+#line 87 "pedro_token.l"
 {*val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 32 "pedro_token.l"
+#line 88 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 33 "pedro_token.l"
+#line 89 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 34 "pedro_token.l"
+#line 90 "pedro_token.l"
 { *val = th->TheHeap().newDouble(atof(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 36 "pedro_token.l"
+#line 92 "pedro_token.l"
 { *val = th->TheHeap().newInteger(atoi(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 37 "pedro_token.l"
+#line 93 "pedro_token.l"
 { *val = th->TheHeap().newInteger(atoi(yytext)); return TERM_TOKEN; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 42 "pedro_token.l"
+#line 98 "pedro_token.l"
 { *val = 0; return OBRA_TOKEN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 43 "pedro_token.l"
+#line 99 "pedro_token.l"
 { *val = 0; return CBRA_TOKEN; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 44 "pedro_token.l"
+#line 100 "pedro_token.l"
 { *val = 0; return COMMA_TOKEN; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 45 "pedro_token.l"
+#line 101 "pedro_token.l"
 { *val = 0; return OSBRA_TOKEN; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 46 "pedro_token.l"
+#line 102 "pedro_token.l"
 { *val = 0; return CSBRA_TOKEN; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 49 "pedro_token.l"
+#line 105 "pedro_token.l"
 {
                       if (yytext[0] == '_') {
                         if (yytext[1] == '\0') *val = th->TheHeap().newVariable();
@@ -862,18 +918,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 65 "pedro_token.l"
+#line 121 "pedro_token.l"
 { *val = atoms->add(yytext); return TERM_TOKEN; }
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 67 "pedro_token.l"
+#line 123 "pedro_token.l"
 { 
                           int size = strlen(yytext);
                           char* copy = new char[size];
-                          strncpy(copy, yytext+1, size-2);
-                          copy[size-2] = '\0';
+                          copyWithoutEscapes(yytext+1, copy, size-2, '\'');
                           *val = atoms->add(copy); 
                           delete [] copy;
                           return TERM_TOKEN; 
@@ -882,43 +937,42 @@ YY_RULE_SETUP
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 77 "pedro_token.l"
+#line 132 "pedro_token.l"
 { 
                           int size = strlen(yytext);
                           char* copy = new char[size];
-                          strncpy(copy, yytext+1, size-2);
-                          copy[size-2] = '\0';
+                          copyWithoutEscapes(yytext+1, copy, size-2, '"'); /* " */
                           *val = th->TheHeap().newStringObject(copy); 
                           delete [] copy;
                           return TERM_TOKEN; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 86 "pedro_token.l"
+#line 140 "pedro_token.l"
 { *val = atoms->add(yytext); return TERM_TOKEN; }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 88 "pedro_token.l"
+#line 142 "pedro_token.l"
 { return NEWLINE_TOKEN; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 89 "pedro_token.l"
+#line 143 "pedro_token.l"
 
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 91 "pedro_token.l"
+#line 145 "pedro_token.l"
 { return ERROR_TOKEN; } 
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 93 "pedro_token.l"
+#line 147 "pedro_token.l"
 ECHO;
 	YY_BREAK
-#line 922 "pedro_token.c"
+#line 976 "pedro_token.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1904,7 +1958,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 93 "pedro_token.l"
+#line 147 "pedro_token.l"
 
 
 

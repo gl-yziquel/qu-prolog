@@ -2124,7 +2124,7 @@ end('$debug_call'/1):
 
 
 
-'$print_port/2$0/4$0/4$0/4$0'/4:
+'$print_port/2$0/4$0/4$0'/4:
 
 	try(4, $1)
 	trust($2)
@@ -2138,11 +2138,11 @@ $1:
 
 $2:
 	proceed
-end('$print_port/2$0/4$0/4$0/4$0'/4):
+end('$print_port/2$0/4$0/4$0'/4):
 
 
 
-'$print_port/2$0/4$0/4$0'/4:
+'$print_port/2$0/4$0'/4:
 
 	try(4, $1)
 	trust($2)
@@ -2150,39 +2150,12 @@ end('$print_port/2$0/4$0/4$0/4$0'/4):
 $1:
 	allocate(1)
 	get_y_level(0)
-	call_predicate('$print_port/2$0/4$0/4$0/4$0', 4, 1)
+	call_predicate('$print_port/2$0/4$0/4$0', 4, 1)
 	cut(0)
 	fail
 
 $2:
 	proceed
-end('$print_port/2$0/4$0/4$0'/4):
-
-
-
-'$print_port/2$0/4$0'/4:
-
-
-$1:
-	allocate(4)
-	get_y_variable(3, 0)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
-	put_constant('$debugger_status', 1)
-	pseudo_instr2(73, 1, 0)
-	put_constant('debug', 1)
-	get_x_value(0, 1)
-	neck_cut
-	put_y_value(3, 0)
-	put_y_value(2, 1)
-	call_predicate('$spypoint', 2, 4)
-	put_y_value(3, 0)
-	put_y_value(2, 1)
-	put_y_value(1, 2)
-	put_y_value(0, 3)
-	deallocate
-	execute_predicate('$print_port/2$0/4$0/4$0', 4)
 end('$print_port/2$0/4$0'/4):
 
 
@@ -2201,6 +2174,24 @@ $1:
 	proceed
 
 $2:
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_y_variable(0, 3)
+	put_constant('$debugger_status', 1)
+	pseudo_instr2(73, 1, 0)
+	put_constant('debug', 1)
+	get_x_value(0, 1)
+	neck_cut
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	call_predicate('$spypoint', 2, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
+	deallocate
 	execute_predicate('$print_port/2$0/4$0', 4)
 end('$print_port/2$0'/4):
 

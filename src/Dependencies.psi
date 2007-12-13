@@ -508,7 +508,8 @@ pedro_escapes.o: pedro_escapes.cc thread_qp.h area_offsets.h defs.h \
   signal_escapes.h state.h statistics.h stream_escapes.h string_escapes.h \
   structure.h sub_escape.h symbols.h system_qp.h tcp_escapes.h \
   temperature.h thread_escapes.h token.h trace_escapes.h unify.h \
-  user_hash_table_escapes.h varname.h write.h tcp_qp.h pedro_env.h
+  user_hash_table_escapes.h varname.h write.h tcp_qp.h pedro_env.h \
+  write_support.h
 ip.o: ip.cc atom_table.h config.h ../config.h area_offsets.h defs.h \
   debug.h hash_table.h timestamp.h int.h errors.h magic.h qem_options.h \
   option.h options.h string_table.h stack_qp.h page_table.h objects.h \

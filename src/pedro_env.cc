@@ -837,8 +837,9 @@ PedroMessageChannel::pushMessage(int id, string m)
   if (!thread_table.IsValid(tid)) return;
 
   Thread* thread = thread_table.LookupID(tid);
-  assert(thread != NULL);
-  thread->MessageQueue().push_back(new PedroMessage(m));
+  if (thread != NULL) {
+    thread->MessageQueue().push_back(new PedroMessage(m));
+  }
 }
 
 bool

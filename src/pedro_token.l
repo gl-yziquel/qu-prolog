@@ -9,7 +9,63 @@
 
 YY_BUFFER_STATE buffstate;
 
-
+void copyWithoutEscapes(char* in, char* out, int len, char quote)
+{
+  int pos = 0;
+  int i = 0;
+  while (i < len) {
+      char c = in[i];
+      if (c == '\\') {
+	i++;
+	c = in[i];
+	switch ((int)c)
+	  {
+	  case 'a': 
+	    out[pos] = '\a';
+	    break;
+	  case 'b':
+  	    out[pos] = '\b';
+	    break;
+	  case 't': 
+ 	    out[pos] = '\t';
+	    break;
+	  case 'n':
+  	    out[pos] = '\n';
+	    break;
+	  case 'v':
+ 	    out[pos] = '\v';
+	    break;
+	  case 'f':
+  	    out[pos] = '\f';
+            pos++;
+            out[pos] = 'f';
+	    break;
+	  case 'r':
+ 	    out[pos] = '\r';
+	    break;
+	  case '\\': 
+ 	    out[pos] = '\\';
+	    break;
+	  default:
+            if (c == quote)
+	      {
+	        out[pos] = c;
+	      }
+	    else
+	      {
+		assert(false);
+	      }
+	    break;
+	  }
+      }
+      else {
+	out[pos] = c;
+      }
+      i++;
+      pos++;
+    }
+  out[pos] = '\0';
+}
 
 #define YY_DECL int scanner(Thread* th, AtomTable* atoms, VarMap* vmap, Object** val, bool remember)
 %}
@@ -67,8 +123,7 @@ UPPER [A-Z]
 "'"[^'\\]*("\\".[^'\\]*)*"'"  { 
                           int size = strlen(yytext);
                           char* copy = new char[size];
-                          strncpy(copy, yytext+1, size-2);
-                          copy[size-2] = '\0';
+                          copyWithoutEscapes(yytext+1, copy, size-2, '\'');
                           *val = atoms->add(copy); 
                           delete [] copy;
                           return TERM_TOKEN; 
@@ -77,8 +132,7 @@ UPPER [A-Z]
 "\""[^\"\\]*("\\".[^\"\\]*)*"\""  { 
                           int size = strlen(yytext);
                           char* copy = new char[size];
-                          strncpy(copy, yytext+1, size-2);
-                          copy[size-2] = '\0';
+                          copyWithoutEscapes(yytext+1, copy, size-2, '"'); /* " */
                           *val = th->TheHeap().newStringObject(copy); 
                           delete [] copy;
                           return TERM_TOKEN; }

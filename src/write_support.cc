@@ -125,13 +125,13 @@ void addEscapes(string& str, char quote)
 	  tmp.push_back('\\');
 	  break;
 	default:
-	  if (c == quote)
+          if (c == quote)
 	    {
 	      tmp.push_back('\\');
 	      tmp.push_back(c);
 	    }
 	  else
-	      tmp.push_back(c);
+            tmp.push_back(c);
 	  break;
 	}
     }
@@ -176,7 +176,7 @@ void removeEscapes(string& str, char quote)
 	    tmp.push_back('\\');
 	    break;
 	  default:
-	    if (c == quote)
+            if (c == quote)
 	      {
 		tmp.push_back(c);
 	      }

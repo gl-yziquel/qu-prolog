@@ -617,9 +617,8 @@ $4:
 $5:
 	get_structure('message_choice', 1, 0)
 	unify_x_variable(0)
-	get_structure('$$mc$$', 1, 1)
 	allocate(6)
-	unify_y_variable(4)
+	get_y_variable(4, 1)
 	get_y_variable(3, 2)
 	get_y_variable(2, 3)
 	get_y_variable(1, 4)

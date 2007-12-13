@@ -147,6 +147,24 @@ end('ipc_recv'/2):
 
 
 
+'ipc_recv/3$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$is_timeout', 1, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('ipc_recv/3$0'/1):
+
+
+
 'ipc_recv'/3:
 
 
@@ -168,7 +186,7 @@ $1:
 	put_y_value(5, 4)
 	call_predicate('$ipc_peek', 5, 5)
 	put_y_value(4, 0)
-	call_predicate('$is_not_timeout', 1, 4)
+	call_predicate('ipc_recv/3$0', 1, 4)
 	put_y_value(2, 0)
 	put_y_value(3, 1)
 	call_predicate('$same_handle_from', 2, 2)
@@ -201,6 +219,24 @@ end('ipc_peek'/2):
 
 
 
+'ipc_peek/3$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$is_timeout', 1, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('ipc_peek/3$0'/1):
+
+
+
 'ipc_peek'/3:
 
 
@@ -220,7 +256,7 @@ $1:
 	put_y_value(3, 4)
 	call_predicate('$ipc_peek', 5, 3)
 	put_y_value(2, 0)
-	call_predicate('$is_not_timeout', 1, 2)
+	call_predicate('ipc_peek/3$0', 1, 2)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
 	deallocate
