@@ -67,7 +67,7 @@ end('main'/1):
 	trust($2)
 
 $1:
-	pseudo_instr1(109, 0)
+	pseudo_instr1(106, 0)
 	get_x_variable(1, 0)
 	allocate(3)
 	get_y_level(0)

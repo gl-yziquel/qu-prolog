@@ -1427,28 +1427,28 @@ end('$zero_parent_op'/3):
 
 '$static_op_decl'/4:
 
-	switch_on_term(0, $57, 'fail', 'fail', 'fail', 'fail', $52)
-
-$52:
-	switch_on_constant(0, 128, ['$default':'fail', ':-':$53, '-->':$2, '?-':$4, ';':$5, '->':$6, ',':$7, '\\+':$8, 'spy':$9, 'nospy':$10, '=':$11, '\\=':$12, '?=':$13, '==':$14, '\\==':$15, '@<':$16, '@=':$17, '@=<':$18, '@>':$19, '@>=':$20, '=..':$21, 'is':$22, '=:=':$23, '=\\=':$24, '<':$25, '=<':$26, '>':$27, '>=':$28, 'not_free_in':$29, 'is_free_in':$30, 'is_not_free_in':$31, '+':$54, '-':$55, '/\\':$34, '\\/':$35, '*':$36, '/':$37, '//':$38, 'rem':$39, 'mod':$40, '<<':$41, '>>':$42, '**':$43, '^':$44, '?':$45, '@':$56, '\\':$49, ':':$51])
+	switch_on_term(0, $58, 'fail', 'fail', 'fail', 'fail', $53)
 
 $53:
-	try(4, $1)
-	trust($3)
+	switch_on_constant(0, 128, ['$default':'fail', ':-':$54, '-->':$2, '?-':$4, ';':$5, '|':$6, '->':$7, ',':$8, '\\+':$9, 'spy':$10, 'nospy':$11, '=':$12, '\\=':$13, '?=':$14, '==':$15, '\\==':$16, '@<':$17, '@=':$18, '@=<':$19, '@>':$20, '@>=':$21, '=..':$22, 'is':$23, '=:=':$24, '=\\=':$25, '<':$26, '=<':$27, '>':$28, '>=':$29, 'not_free_in':$30, 'is_free_in':$31, 'is_not_free_in':$32, '+':$55, '-':$56, '/\\':$35, '\\/':$36, '*':$37, '/':$38, '//':$39, 'rem':$40, 'mod':$41, '<<':$42, '>>':$43, '**':$44, '^':$45, '?':$46, '@':$57, '\\':$50, ':':$52])
 
 $54:
-	try(4, $32)
-	trust($47)
+	try(4, $1)
+	trust($3)
 
 $55:
 	try(4, $33)
 	trust($48)
 
 $56:
-	try(4, $46)
-	trust($50)
+	try(4, $34)
+	trust($49)
 
 $57:
+	try(4, $47)
+	trust($51)
+
+$58:
 	try(4, $1)
 	retry($2)
 	retry($3)
@@ -1499,7 +1499,8 @@ $57:
 	retry($48)
 	retry($49)
 	retry($50)
-	trust($51)
+	retry($51)
+	trust($52)
 
 $1:
 	get_constant(':-', 0)
@@ -1537,321 +1538,328 @@ $5:
 	proceed
 
 $6:
+	get_constant('|', 0)
+	get_constant('infix', 1)
+	get_integer(1100, 2)
+	get_constant('xfy', 3)
+	proceed
+
+$7:
 	get_constant('->', 0)
 	get_constant('infix', 1)
 	get_integer(1050, 2)
 	get_constant('xfy', 3)
 	proceed
 
-$7:
+$8:
 	get_constant(',', 0)
 	get_constant('infix', 1)
 	get_integer(1000, 2)
 	get_constant('xfy', 3)
 	proceed
 
-$8:
+$9:
 	get_constant('\\+', 0)
 	get_constant('prefix', 1)
 	get_integer(900, 2)
 	get_constant('fy', 3)
 	proceed
 
-$9:
+$10:
 	get_constant('spy', 0)
 	get_constant('prefix', 1)
 	get_integer(900, 2)
 	get_constant('fy', 3)
 	proceed
 
-$10:
+$11:
 	get_constant('nospy', 0)
 	get_constant('prefix', 1)
 	get_integer(900, 2)
 	get_constant('fy', 3)
 	proceed
 
-$11:
+$12:
 	get_constant('=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$12:
+$13:
 	get_constant('\\=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$13:
+$14:
 	get_constant('?=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$14:
+$15:
 	get_constant('==', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$15:
+$16:
 	get_constant('\\==', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$16:
+$17:
 	get_constant('@<', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$17:
+$18:
 	get_constant('@=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$18:
+$19:
 	get_constant('@=<', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$19:
+$20:
 	get_constant('@>', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$20:
+$21:
 	get_constant('@>=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$21:
+$22:
 	get_constant('=..', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$22:
+$23:
 	get_constant('is', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$23:
+$24:
 	get_constant('=:=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$24:
+$25:
 	get_constant('=\\=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$25:
+$26:
 	get_constant('<', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$26:
+$27:
 	get_constant('=<', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$27:
+$28:
 	get_constant('>', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$28:
+$29:
 	get_constant('>=', 0)
 	get_constant('infix', 1)
 	get_integer(700, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$29:
+$30:
 	get_constant('not_free_in', 0)
 	get_constant('infix', 1)
 	get_integer(600, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$30:
+$31:
 	get_constant('is_free_in', 0)
 	get_constant('infix', 1)
 	get_integer(600, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$31:
+$32:
 	get_constant('is_not_free_in', 0)
 	get_constant('infix', 1)
 	get_integer(600, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$32:
-	get_constant('+', 0)
-	get_constant('infix', 1)
-	get_integer(500, 2)
-	get_constant('yfx', 3)
-	proceed
-
 $33:
-	get_constant('-', 0)
+	get_constant('+', 0)
 	get_constant('infix', 1)
 	get_integer(500, 2)
 	get_constant('yfx', 3)
 	proceed
 
 $34:
-	get_constant('/\\', 0)
+	get_constant('-', 0)
 	get_constant('infix', 1)
 	get_integer(500, 2)
 	get_constant('yfx', 3)
 	proceed
 
 $35:
-	get_constant('\\/', 0)
+	get_constant('/\\', 0)
 	get_constant('infix', 1)
 	get_integer(500, 2)
 	get_constant('yfx', 3)
 	proceed
 
 $36:
+	get_constant('\\/', 0)
+	get_constant('infix', 1)
+	get_integer(500, 2)
+	get_constant('yfx', 3)
+	proceed
+
+$37:
 	get_constant('*', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$37:
+$38:
 	get_constant('/', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$38:
+$39:
 	get_constant('//', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$39:
+$40:
 	get_constant('rem', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$40:
+$41:
 	get_constant('mod', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$41:
+$42:
 	get_constant('<<', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$42:
+$43:
 	get_constant('>>', 0)
 	get_constant('infix', 1)
 	get_integer(400, 2)
 	get_constant('yfx', 3)
 	proceed
 
-$43:
+$44:
 	get_constant('**', 0)
 	get_constant('infix', 1)
 	get_integer(200, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$44:
+$45:
 	get_constant('^', 0)
 	get_constant('infix', 1)
 	get_integer(200, 2)
 	get_constant('xfy', 3)
 	proceed
 
-$45:
+$46:
 	get_constant('?', 0)
 	get_constant('prefix', 1)
 	get_integer(200, 2)
 	get_constant('fy', 3)
 	proceed
 
-$46:
-	get_constant('@', 0)
-	get_constant('prefix', 1)
-	get_integer(200, 2)
-	get_constant('fy', 3)
-	proceed
-
 $47:
-	get_constant('+', 0)
+	get_constant('@', 0)
 	get_constant('prefix', 1)
 	get_integer(200, 2)
 	get_constant('fy', 3)
 	proceed
 
 $48:
-	get_constant('-', 0)
+	get_constant('+', 0)
 	get_constant('prefix', 1)
 	get_integer(200, 2)
 	get_constant('fy', 3)
 	proceed
 
 $49:
-	get_constant('\\', 0)
+	get_constant('-', 0)
 	get_constant('prefix', 1)
 	get_integer(200, 2)
 	get_constant('fy', 3)
 	proceed
 
 $50:
+	get_constant('\\', 0)
+	get_constant('prefix', 1)
+	get_integer(200, 2)
+	get_constant('fy', 3)
+	proceed
+
+$51:
 	get_constant('@', 0)
 	get_constant('infix', 1)
 	get_integer(100, 2)
 	get_constant('xfx', 3)
 	proceed
 
-$51:
+$52:
 	get_constant(':', 0)
 	get_constant('infix', 1)
 	get_integer(50, 2)

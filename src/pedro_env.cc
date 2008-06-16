@@ -60,7 +60,8 @@ Object* parse_prec1050(Thread* th, AtomTable& atoms, VarMap& vmap,
 Object* parse_prec1100(Thread* th, AtomTable& atoms, VarMap& vmap, 
 		       ObjectsStack& stk, bool remember);
 
-
+extern int pedro_port;
+extern char* pedro_address;
 
 static int curr_token_type = ERROR_TOKEN;
 static Object* curr_token = NULL;
@@ -134,7 +135,15 @@ Object* parse_basic(Thread* th, AtomTable& atoms, VarMap& vmap,
 	  lst_tmp->setTail(tmp);
 	  lst_tmp = tmp;
 	}
-      lst_tmp->setTail(AtomTable::nil);
+      if (curr_token_type == VBAR_TOKEN) {
+        next_token(th, atoms, vmap, remember);
+        t = parse_prec700(th, atoms, vmap, stk, remember);
+        assert(t != NULL);
+        lst_tmp->setTail(t);
+      }
+      else {
+        lst_tmp->setTail(AtomTable::nil);
+      }
       assert(curr_token_type == CSBRA_TOKEN); 
       next_token(th, atoms, vmap, remember);
       return lst;
@@ -551,7 +560,7 @@ void write_term(Object* term, int prec, ostringstream& strm)
       }
     case Object::tAtom:
       {
-	writeAtom(strm, term);
+	writePedroAtom(strm, term);
 	break;
       }
     case Object::tString:
@@ -812,10 +821,10 @@ PedroMessageChannel::pushMessage(int id, string m)
 	// Now get the string part - the message argument should be a string
 	// starting and ending with "
 	string::size_type loc_quote1 =  m.find('"', loc_comma2);
-	assert(loc_quote1 != string::npos);
+	if (loc_quote1 == string::npos) return;
 	string::size_type loc_quote2 =  m.find_last_of('"');
-	assert(loc_quote2 != string::npos);
-	assert(loc_quote1 < loc_quote2);
+	if (loc_quote2 == string::npos) return;
+	if (loc_quote1 >= loc_quote2) return;
 	string message =  m.substr(loc_quote1+1, loc_quote2 - loc_quote1 - 1);
 	removeEscapes(message, '"');
 	iom.updateStreamMessages(from_addr, message);
@@ -918,49 +927,18 @@ PedroMessageChannel::delete_subscriptions(int tid)
     ostringstream strm;
     strm << "unsubscribe(" << id << ")\n";
     string s = strm.str();
-    send(s);
+    send(s); 
+    get_ack();
     entry.pop_front();
   } 
 }
 
 
-void 
-PedroMessageChannel::connect(int f, int s)
+bool 
+PedroMessageChannel::connect(int pedro_port, u_long ip_address)
 {
-  ack_fd = f; 
-  socket = s;
-
-  /* Set up client for server connections */
-  const int sock = (int)(::socket(AF_INET, SOCK_STREAM, 0));
-  if (sock < 0)
-    {
-      fprintf(stderr, "Can't open socket\n");
-      exit(1);
-    }
-  struct sockaddr_in client;
-
-  client.sin_family = AF_INET;
-  client.sin_addr.s_addr = ((u_long)INADDR_ANY);
-  client.sin_port = htons(0);
-
-  if (bind(sock, (struct sockaddr *) &client, sizeof(client)) != 0)
-    { 
-      close(sock);
-      fprintf(stderr, "Can't bind socket\n");
-      exit(1);
-    }
-  /* get the port for this socket */
-  struct sockaddr_in addr;
-  socklen_t length = sizeof(struct sockaddr_in);
-
-  if (getsockname(sock,(struct sockaddr *)&addr,&length) < 0)
-    {
-      fprintf(stderr, "Error: getsockname\n");
-      exit(1);
-    }
-  int port = ntohs(addr.sin_port);
-
-
+ 
+  // get my host name
   char hostname[1000];
   gethostname(hostname, 1000);
   hostent *hp = gethostbyname(hostname);
@@ -990,35 +968,51 @@ PedroMessageChannel::connect(int f, int s)
         }
   }
 
-
-
-  /* get ready for server connection */
-  if (listen(sock, 1) == -1) {
-    fprintf(stderr, "Can't listen\n");
-    exit(1);
+  // Create a socket connection for ack
+  ack_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
+  u_short port = ntohs(pedro_port);
+  if (!do_connection(ack_fd, port, ip_address)) {
+    close(ack_fd);
+    return false;
   }
 
- /* send port to server so server can connect */
+ 
+  // create data socket
+  fd = ::socket(AF_INET, SOCK_STREAM, 0);
+  port = ntohs(pedro_port+1);
+  if (!do_connection(fd, port, ip_address)) {
+    close(ack_fd);
+    close(fd);
+    return false;
+  }
+
+  // get the client ID
+  uint id = (uint)get_ack();
+
+  // send the client ID on data socket
   ostringstream strm;
-  strm << port << "\n";
+  strm << id << "\n";
   string st = strm.str();
   int len = st.length();
-  write(ack_fd, st.c_str(), len);
-
-
-  struct sockaddr_in saddr;
-  socklen_t slength = sizeof(struct sockaddr_in);
-  fd = (int)(accept(sock, (struct sockaddr *) &saddr, &slength));
-  /* server is now connected - this socket is used for data */
-  if (fd < 0)
-    {
-      close(ack_fd);
-      close(sock);
-      fprintf(stderr, "Can't accept\n");
+  write(fd, st.c_str(), len);
+  // read flag on data socket
+  char buff[32];
+  int size;
+  int offset = 0;
+  while (1) {
+    size = recv(fd, buff + offset, 30 - offset, 0);
+    offset += size;
+    if (offset > 25) {
+      fprintf(stderr, "Can't get flag\n");
       exit(1);
     }
-  close(sock);
-
+    if (buff[offset-1] == '\n') {
+      buff[offset] = '\0';
+      break;
+    }
+  }
+  // buff now contains flag - test if "ok\n"
+  return (strcmp(buff, "ok\n") == 0);
 }
 
 /* disconnect */
@@ -1026,8 +1020,9 @@ void
 PedroMessageChannel::disconnect()
 {
   close(ack_fd);
+  close(fd);
   fd = -1; 
-  socket = -1;
+  ack_fd = -1;
 }
 
 

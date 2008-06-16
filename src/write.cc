@@ -112,7 +112,7 @@ writeqAtom(const char *s, QPStream *stream)
 {
   string atomname(s);
   addEscapes(atomname, '\'');
-  if (SafeAtom(atomname.c_str()))
+  if (SafeAtom(atomname.c_str(), true))
     {
       *stream << atomname.c_str();
     }

@@ -3222,8 +3222,11 @@ $1:
 
 $2:
 	get_list(0)
-	unify_constant('|')
+	unify_x_ref(4)
 	unify_x_variable(0)
+	get_structure('infix', 4, 4)
+	unify_constant('|')
+	unify_void(3)
 	allocate(2)
 	get_y_variable(1, 3)
 	neck_cut

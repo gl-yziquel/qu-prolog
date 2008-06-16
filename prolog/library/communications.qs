@@ -134,11 +134,6 @@ end('$same_host/2$3'/2):
 	trust($4)
 
 $1:
-	get_x_value(0, 1)
-	neck_cut
-	proceed
-
-$2:
 	allocate(2)
 	get_y_variable(0, 1)
 	get_y_level(1)
@@ -152,7 +147,7 @@ $2:
 	deallocate
 	execute_predicate('$same_host/2$1', 2)
 
-$3:
+$2:
 	allocate(2)
 	get_y_variable(0, 0)
 	get_x_variable(0, 1)
@@ -166,6 +161,11 @@ $3:
 	put_y_value(0, 1)
 	deallocate
 	execute_predicate('$same_host/2$3', 2)
+
+$3:
+	get_x_value(0, 1)
+	neck_cut
+	proceed
 
 $4:
 	pseudo_instr2(79, 0, 2)
@@ -592,47 +592,47 @@ $1:
 	get_structure(',', 2, 0)
 	unify_x_ref(0)
 	unify_x_ref(1)
-	get_structure('$get_level', 1, 0)
+	get_structure('$ipc_peek', 5, 0)
 	unify_x_value(2)
+	unify_x_value(3)
+	unify_x_value(4)
+	unify_constant('block')
+	unify_constant('false')
 	get_structure(',', 2, 1)
 	unify_x_ref(0)
 	unify_x_value(6)
-	get_structure('$ipc_peek', 5, 0)
-	unify_x_value(3)
-	unify_x_value(4)
+	get_structure('$get_level', 1, 0)
 	unify_x_value(5)
-	unify_constant('block')
-	unify_constant('false')
 	proceed
 
 $2:
 	get_structure(',', 2, 1)
 	unify_x_ref(1)
 	unify_x_ref(8)
-	get_structure('$get_level', 1, 1)
-	unify_x_value(2)
-	get_structure(',', 2, 8)
-	unify_x_ref(1)
-	unify_x_ref(8)
 	get_structure('$ipc_peek', 5, 1)
+	unify_x_value(2)
 	unify_x_value(3)
 	unify_x_value(4)
-	unify_x_value(5)
 	unify_x_value(0)
 	unify_constant('false')
-	get_structure(';', 2, 8)
+	get_structure(',', 2, 8)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('$get_level', 1, 0)
+	unify_x_value(5)
+	get_structure(';', 2, 1)
 	unify_x_ref(0)
 	unify_x_value(6)
 	get_structure(',', 2, 0)
 	unify_x_ref(0)
 	unify_x_ref(1)
 	get_structure('$is_timeout', 1, 0)
-	unify_x_value(3)
+	unify_x_value(2)
 	get_structure(',', 2, 1)
 	unify_x_ref(0)
 	unify_x_value(7)
 	get_structure('$cut', 1, 0)
-	unify_x_value(2)
+	unify_x_value(5)
 	proceed
 end('$mc_inline/2$0'/8):
 
@@ -654,10 +654,10 @@ $1:
 	call_predicate('$mc_gen_choices', 8, 8)
 	put_y_value(2, 0)
 	put_y_value(7, 1)
-	put_y_value(0, 2)
-	put_y_value(5, 3)
-	put_y_value(4, 4)
-	put_y_value(3, 5)
+	put_y_value(5, 2)
+	put_y_value(4, 3)
+	put_y_value(3, 4)
+	put_y_value(0, 5)
 	put_y_value(6, 6)
 	put_y_value(1, 7)
 	deallocate
@@ -950,7 +950,7 @@ end('$mc_get_msg_addr_code'/5):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$0'/0:
+'$query_communications2008_6_17_8_17_7_583/0$0'/0:
 
 
 $1:
@@ -963,11 +963,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$0'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$0'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$1'/0:
+'$query_communications2008_6_17_8_17_7_583/0$1'/0:
 
 
 $1:
@@ -980,11 +980,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$1'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$1'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$2'/0:
+'$query_communications2008_6_17_8_17_7_583/0$2'/0:
 
 
 $1:
@@ -997,11 +997,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$2'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$2'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$3'/0:
+'$query_communications2008_6_17_8_17_7_583/0$3'/0:
 
 
 $1:
@@ -1014,11 +1014,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$3'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$3'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$4'/0:
+'$query_communications2008_6_17_8_17_7_583/0$4'/0:
 
 
 $1:
@@ -1031,11 +1031,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$4'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$4'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$5'/0:
+'$query_communications2008_6_17_8_17_7_583/0$5'/0:
 
 
 $1:
@@ -1048,11 +1048,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$5'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$5'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$6'/0:
+'$query_communications2008_6_17_8_17_7_583/0$6'/0:
 
 
 $1:
@@ -1065,11 +1065,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$6'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$6'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$7'/0:
+'$query_communications2008_6_17_8_17_7_583/0$7'/0:
 
 
 $1:
@@ -1082,11 +1082,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$7'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$7'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$8'/0:
+'$query_communications2008_6_17_8_17_7_583/0$8'/0:
 
 
 $1:
@@ -1099,11 +1099,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$8'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$8'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981/0$9'/0:
+'$query_communications2008_6_17_8_17_7_583/0$9'/0:
 
 
 $1:
@@ -1116,11 +1116,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications2007_12_13_12_46_3_981/0$9'/0):
+end('$query_communications2008_6_17_8_17_7_583/0$9'/0):
 
 
 
-'$query_communications2007_12_13_12_46_3_981'/0:
+'$query_communications2008_6_17_8_17_7_583'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1136,57 +1136,57 @@ end('$query_communications2007_12_13_12_46_3_981/0$9'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$0', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$1', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$2', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$3', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$4', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$5', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$5', 0, 0)
 	fail
 
 $7:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$6', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$6', 0, 0)
 	fail
 
 $8:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$7', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$7', 0, 0)
 	fail
 
 $9:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$8', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$8', 0, 0)
 	fail
 
 $10:
 	allocate(0)
-	call_predicate('$query_communications2007_12_13_12_46_3_981/0$9', 0, 0)
+	call_predicate('$query_communications2008_6_17_8_17_7_583/0$9', 0, 0)
 	fail
 
 $11:
 	proceed
-end('$query_communications2007_12_13_12_46_3_981'/0):
+end('$query_communications2008_6_17_8_17_7_583'/0):
 
 
 
@@ -1194,7 +1194,7 @@ end('$query_communications2007_12_13_12_46_3_981'/0):
 
 
 $1:
-	execute_predicate('$query_communications2007_12_13_12_46_3_981', 0)
+	execute_predicate('$query_communications2008_6_17_8_17_7_583', 0)
 end('$query'/0):
 
 

@@ -422,7 +422,7 @@ end('tcp_bind'/2):
 
 
 $1:
-	pseudo_instr4(10, 0, 2, 3, 4)
+	pseudo_instr4(9, 0, 2, 3, 4)
 	get_x_value(1, 2)
 	proceed
 end('tcp_accept'/2):

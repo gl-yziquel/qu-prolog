@@ -148,6 +148,16 @@ end('pedro_is_registered'/0):
 
 
 
+'pedro_disconnect'/0:
+
+
+$1:
+	pseudo_instr0(15)
+	proceed
+end('pedro_disconnect'/0):
+
+
+
 'compound'/1:
 
 
@@ -1241,14 +1251,14 @@ end('random'/1):
 
 
 
-'$pedro_disconnect'/1:
+'$initial_goal'/1:
 
 
 $1:
 	pseudo_instr1(106, 1)
 	get_x_value(0, 1)
 	proceed
-end('$pedro_disconnect'/1):
+end('$initial_goal'/1):
 
 
 
@@ -1270,17 +1280,6 @@ $1:
 	pseudo_instr1(108, 0)
 	proceed
 end('string'/1):
-
-
-
-'$initial_goal'/1:
-
-
-$1:
-	pseudo_instr1(109, 1)
-	get_x_value(0, 1)
-	proceed
-end('$initial_goal'/1):
 
 
 
@@ -2601,6 +2600,16 @@ end('$atom_to_string'/2):
 
 
 
+'$pedro_connect'/2:
+
+
+$1:
+	pseudo_instr2(124, 0, 1)
+	proceed
+end('$pedro_connect'/2):
+
+
+
 'functor'/3:
 
 
@@ -3462,21 +3471,11 @@ end('$call_predicate3'/4):
 
 
 
-'$pedro_connect'/4:
-
-
-$1:
-	pseudo_instr4(9, 0, 1, 2, 3)
-	proceed
-end('$pedro_connect'/4):
-
-
-
 'tcp_accept'/4:
 
 
 $1:
-	pseudo_instr4(10, 0, 4, 5, 6)
+	pseudo_instr4(9, 0, 4, 5, 6)
 	get_x_value(1, 4)
 	get_x_value(2, 5)
 	get_x_value(3, 6)
@@ -3489,7 +3488,7 @@ end('tcp_accept'/4):
 
 
 $1:
-	pseudo_instr4(11, 0, 1, 4, 5)
+	pseudo_instr4(10, 0, 1, 4, 5)
 	get_x_value(2, 4)
 	get_x_value(3, 5)
 	proceed
@@ -3501,7 +3500,7 @@ end('$psi_next_instr'/4):
 
 
 $1:
-	pseudo_instr4(12, 0, 1, 2, 4)
+	pseudo_instr4(11, 0, 1, 2, 4)
 	get_x_value(3, 4)
 	proceed
 end('$psi_assert'/4):
@@ -3512,7 +3511,7 @@ end('$psi_assert'/4):
 
 
 $1:
-	pseudo_instr4(13, 0, 1, 2, 4)
+	pseudo_instr4(12, 0, 1, 2, 4)
 	get_x_value(3, 4)
 	proceed
 end('$ccompile'/4):
@@ -3523,7 +3522,7 @@ end('$ccompile'/4):
 
 
 $1:
-	pseudo_instr4(14, 0, 1, 2, 3)
+	pseudo_instr4(13, 0, 1, 2, 3)
 	proceed
 end('$set_domains_apart'/4):
 
@@ -3533,7 +3532,7 @@ end('$set_domains_apart'/4):
 
 
 $1:
-	pseudo_instr4(15, 0, 1, 2, 4)
+	pseudo_instr4(14, 0, 1, 2, 4)
 	get_x_value(3, 4)
 	proceed
 end('$new_sub'/4):
@@ -3544,7 +3543,7 @@ end('$new_sub'/4):
 
 
 $1:
-	pseudo_instr4(16, 0, 1, 4, 5)
+	pseudo_instr4(15, 0, 1, 4, 5)
 	get_x_value(2, 4)
 	get_x_value(3, 5)
 	proceed
@@ -3556,7 +3555,7 @@ end('$get_first_clause'/4):
 
 
 $1:
-	pseudo_instr4(17, 0, 1, 4, 5)
+	pseudo_instr4(16, 0, 1, 4, 5)
 	get_x_value(2, 4)
 	get_x_value(3, 5)
 	proceed
@@ -3568,7 +3567,7 @@ end('$get_next_clause'/4):
 
 
 $1:
-	pseudo_instr4(18, 0, 1, 4, 5)
+	pseudo_instr4(17, 0, 1, 4, 5)
 	get_x_value(2, 4)
 	get_x_value(3, 5)
 	proceed
@@ -3580,7 +3579,7 @@ end('$split_string'/4):
 
 
 $1:
-	pseudo_instr4(19, 4, 1, 5, 3)
+	pseudo_instr4(18, 4, 1, 5, 3)
 	get_x_value(0, 4)
 	get_x_value(2, 5)
 	proceed

@@ -22,8 +22,7 @@ Thread::psi_pedro_is_connected()
 }
 
 Thread::ReturnValue
-Thread::psi_pedro_connect(Object *& fd_obj, Object *& socket_arg, 
-			  Object*& port_obj, Object*& addr_obj)
+Thread::psi_pedro_connect(Object*& port_obj, Object*& addr_obj)
 {
   if (pedro_channel->isConnected())
     {
@@ -32,26 +31,23 @@ Thread::psi_pedro_connect(Object *& fd_obj, Object *& socket_arg,
     }
 
 
-  Object* argS = socket_arg->variableDereference();
-  Object* argFD = fd_obj->variableDereference();
-
   pedro_port = port_obj->variableDereference()->getInteger();
   pedro_address = OBJECT_CAST(Atom*, addr_obj->variableDereference())->getName();
-
-  pedro_channel->connect(argFD->getInteger(), argS->getInteger());
- 
-  return RV_SUCCESS;
+  u_long ip_address = LookupMachineIPAddress(pedro_address);
+  if (pedro_channel->connect(pedro_port, ip_address))
+    return RV_SUCCESS;
+  else
+    return RV_FAIL;
 }
 
 Thread::ReturnValue
-Thread::psi_pedro_disconnect(Object* & sock)
+Thread::psi_pedro_disconnect()
 {
     if (!pedro_channel->isConnected())
     {
       Warning(Program, "Already disconnected");
       return RV_FAIL;
     }
-    sock = heap.newInteger(pedro_channel->getSocket());
     pedro_channel->disconnect();
     pedro_address = NULL;
     return RV_SUCCESS;

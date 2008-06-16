@@ -34,27 +34,9 @@ $1:
 	fail
 
 $2:
-	allocate(3)
-	get_y_variable(1, 0)
-	get_y_variable(0, 1)
-	put_y_variable(2, 2)
-	call_predicate('tcp_client', 3, 3)
-	pseudo_instr2(90, 22, 0)
-	pseudo_instr4(9, 0, 22, 21, 20)
-	deallocate
+	pseudo_instr2(124, 0, 1)
 	proceed
 end('pedro_connect'/2):
-
-
-
-'pedro_disconnect'/0:
-
-
-$1:
-	pseudo_instr1(106, 0)
-	pseudo_instr1(58, 0)
-	proceed
-end('pedro_disconnect'/0):
 
 
 

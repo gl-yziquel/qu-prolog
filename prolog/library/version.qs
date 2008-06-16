@@ -2,7 +2,7 @@
 
 
 $1:
-	get_constant('8.3', 0)
+	get_constant('8.5', 0)
 	proceed
 end('$version'/1):
 

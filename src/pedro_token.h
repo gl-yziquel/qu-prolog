@@ -20,4 +20,5 @@ int scanner(Thread* th, AtomTable* atoms, VarMap* vmap, Object** val, bool r);
 #define COMMA_TOKEN              4
 #define OSBRA_TOKEN              5
 #define CSBRA_TOKEN              6
-#define TERM_TOKEN               7
+#define VBAR_TOKEN               7
+#define TERM_TOKEN               8

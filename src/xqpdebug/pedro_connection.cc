@@ -14,6 +14,24 @@
 #include <net/if.h>
 #include "pedro_connection.h"
 
+int read_from_socket(int fd, char* buff)
+{  
+  int size;
+  int offset = 0;
+  while (1) {
+    size = recv(fd, buff + offset, 30 - offset, 0);
+    offset += size;
+    if (offset > 25) {
+      return 1;
+    }
+    if (buff[offset-1] == '\n') {
+      buff[offset] = '\0';
+      break;
+    }
+  }
+  return 0;
+}
+
 
 // No DNS lookup - so use ifcofig to get IP
 void getIPfromifconfig(char* ip)
@@ -99,7 +117,7 @@ PedroConnection::PedroConnection(string me, string other,
   struct sockaddr_in add;
   memset((char *)&add, 0, sizeof(add));
   add.sin_family = AF_INET;
-  add.sin_port = port;
+  add.sin_port =  htons((unsigned short)port);
   add.sin_addr.s_addr = ip;
   const int ret = connect(ack_fd, (struct sockaddr *)&add, sizeof(add));
 
@@ -117,33 +135,58 @@ PedroConnection::PedroConnection(string me, string other,
     }
   }
 
-  // now connected
+  // now connected - get client ID
+  char buff[32];
+  if (read_from_socket(ack_fd, buff) == 1){
+    cerr << "Can't complete connection" << endl;
+    close(ack_fd);
+    exit(1);
+  }
+  uint id;
+  istringstream stream1(buff);
+  stream1 >> id;
 
-  // set up for a connection from server
-  const int sock = (int)(::socket(AF_INET, SOCK_STREAM, 0));
-  struct sockaddr_in client;
+  // Now connect to data socket
+  data_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 
-  client.sin_family = AF_INET;
-  client.sin_addr.s_addr = ((u_long)INADDR_ANY);
-  client.sin_port = htons(0);
-
-  if (bind(sock, (struct sockaddr *) &client, sizeof(client)) != 0)
-    { 
-      close(sock);
-      cerr << "Can't bind socket" << endl;
-      exit(1);
-    }
-
-  /* get the port for this socket */
-  struct sockaddr_in addr;
-  socklen_t length = sizeof(struct sockaddr_in);
-
-  if (getsockname(sock,(struct sockaddr *)&addr,&length) < 0)
+  memset((char *)&add, 0, sizeof(add));
+  add.sin_family = AF_INET;
+  add.sin_port =  htons((unsigned short)(port+1));
+  add.sin_addr.s_addr = ip;
+  if(connect(data_fd, (struct sockaddr *)&add, sizeof(add)))
     {
-      fprintf(stderr, "Error: getsockname\n");
+      close(ack_fd);
+      close(data_fd);
+      fprintf(stderr, "Can't connect to data\n");
       exit(1);
     }
-  int cport = ntohs(addr.sin_port);
+  /* Send client ID on data socket and get back status */
+  ostringstream s1;
+  s1 << id << endl;
+  int size = s1.str().length();
+  int len = write(data_fd, s1.str().c_str(),  size);
+  if (len != size) {
+    cerr << "Can't complete connection" << endl;
+    close(ack_fd);
+    close(data_fd);
+    exit(1);
+  }
+  if ((read_from_socket(data_fd, buff) == 1) || (strcmp(buff, "ok\n") != 0)){
+    cerr << "Can't complete connection" << endl;
+    close(ack_fd);
+    close(data_fd);
+    exit(1);
+  }
+
+
+
+
+  s1.str("");
+  s1 << "register(" << my_address << ")\n";
+  if (!send(s1.str())) {
+    cerr << "Can't register" << endl;
+    exit(1);
+  }
 
   char hostname[1000];
   gethostname(hostname, 1000);
@@ -175,38 +218,7 @@ PedroConnection::PedroConnection(string me, string other,
         }
   }
   addQuotes(host);
-  /* get ready for server connection */
-  if (listen(sock, 1) == -1) {
-    fprintf(stderr, "Can't listen\n");
-    exit(1);
-  }
 
- /* send port to server so server can connect */
-  ostringstream strm;
-  strm << cport << "\n";
-  string st = strm.str();
-  int len = st.length();
-  write(ack_fd, st.c_str(), len);
-
-  struct sockaddr_in saddr;
-  socklen_t slength = sizeof(struct sockaddr_in);
-  data_fd = (int)(accept(sock, (struct sockaddr *) &saddr, &slength));
-  /* server is now connected - this socket is used for data */
-  if (data_fd < 0)
-    {
-      close(ack_fd);
-      close(sock);
-      cerr << "Can't accept" << endl;
-      exit(1);
-    }
-  close(sock);
-
-  strm.str("");
-  strm << "register(" << my_address << ")\n";
-  if (!send(strm.str())) {
-    cerr << "Can't register" << endl;
-    exit(1);
-  }
 }
 
 bool 

@@ -746,7 +746,7 @@ $1:
 	put_y_value(0, 2)
 	put_y_value(2, 3)
 	call_predicate('$assert_clause/3$1', 4, 4)
-	pseudo_instr4(12, 23, 22, 21, 0)
+	pseudo_instr4(11, 23, 22, 21, 0)
 	get_y_value(0, 0)
 	fail
 
@@ -837,7 +837,7 @@ $1:
 	put_y_value(4, 3)
 	call_predicate('$dbcompile/4$0', 4, 3)
 	put_constant('assert', 1)
-	pseudo_instr4(13, 22, 1, 21, 0)
+	pseudo_instr4(12, 22, 1, 21, 0)
 	get_y_value(0, 0)
 	deallocate
 	proceed

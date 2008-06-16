@@ -56,7 +56,6 @@ class PedroMessageChannel : public MessageChannel
 {
  private:
   int fd;
-  int socket;
   IOManager& iom;
   int ack_fd;
   string in;
@@ -71,7 +70,7 @@ class PedroMessageChannel : public MessageChannel
   void processTimeouts(Timeval& timeout) {};
 
   explicit PedroMessageChannel(ThreadTable& t, IOManager& i)
-    : MessageChannel(t), fd(-1), socket(-1), iom(i) 
+    : MessageChannel(t), fd(-1), iom(i) 
     { 
       thread_subs = new list<int>[t.Size()]; 
       name = NULL;
@@ -81,7 +80,7 @@ class PedroMessageChannel : public MessageChannel
   
   ~PedroMessageChannel() { delete [] thread_subs; }
 
-  void connect(int f, int s);
+  bool connect(int port, u_long ip);
   void disconnect();
 
   int subscribe(Object* t);
@@ -89,7 +88,6 @@ class PedroMessageChannel : public MessageChannel
   void delete_subscriptions(int tid);
   void attach_subscription(int id, Object* t);
   bool notify(Object* t);
-  int getSocket() { return socket; }
   bool isConnected() { return fd != -1; }
   bool pedro_register(Object* regname);
   bool pedro_deregister(Object* regname);

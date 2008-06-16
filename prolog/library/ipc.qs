@@ -289,7 +289,7 @@ $1:
 	proceed
 
 $2:
-	pseudo_instr4(19, 4, 0, 5, 3)
+	pseudo_instr4(18, 4, 0, 5, 3)
 	get_x_variable(0, 4)
 	get_x_value(2, 5)
 	get_x_value(1, 0)

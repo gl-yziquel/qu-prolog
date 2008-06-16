@@ -76,7 +76,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_gc,	0,	"psi_gc"}, 
 	{&Thread::psi_pedro_deregister,	0,	"psi_pedro_deregister"}, 
 	{&Thread::psi_pedro_is_connected,	0,	"psi_pedro_is_connected"}, 
-	{&Thread::psi_pedro_is_registered,	0,	"psi_pedro_is_registered"}
+	{&Thread::psi_pedro_is_registered,	0,	"psi_pedro_is_registered"}, 
+	{&Thread::psi_pedro_disconnect,	0,	"psi_pedro_disconnect"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {
@@ -186,10 +187,9 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_get_open_streams,	1,	"psi_get_open_streams"}, 
 	{&Thread::psi_broadcast,	0,	"psi_broadcast"}, 
 	{&Thread::psi_random_float,	1,	"psi_random_float"}, 
-	{&Thread::psi_pedro_disconnect,	1,	"psi_pedro_disconnect"}, 
+	{&Thread::psi_initial_goal,	1,	"psi_initial_goal"}, 
 	{&Thread::psi_make_cleanup_cp,	1,	"psi_make_cleanup_cp"}, 
-	{&Thread::psi_string,	0,	"psi_string"}, 
-	{&Thread::psi_initial_goal,	1,	"psi_initial_goal"}
+	{&Thread::psi_string,	0,	"psi_string"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -316,7 +316,8 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_stream_to_string,	1,	"psi_stream_to_string"}, 
 	{&Thread::psi_list_to_string,	1,	"psi_list_to_string"}, 
 	{&Thread::psi_string_to_atom,	1,	"psi_string_to_atom"}, 
-	{&Thread::psi_atom_to_string,	1,	"psi_atom_to_string"}
+	{&Thread::psi_atom_to_string,	1,	"psi_atom_to_string"}, 
+	{&Thread::psi_pedro_connect,	0,	"psi_pedro_connect"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -401,7 +402,6 @@ pseudo_instr4_data pseudo_instr4_array[] =
 	{&Thread::psi_encoded_read,	6,	"psi_encoded_read"}, 
 	{&Thread::psi_quantify,	0,	"psi_quantify"}, 
 	{&Thread::psi_call_predicate3,	0,	"psi_call_predicate3"}, 
-	{&Thread::psi_pedro_connect,	0,	"psi_pedro_connect"}, 
 	{&Thread::psi_tcp_accept,	7,	"psi_tcp_accept"}, 
 	{&Thread::psi_next_instr,	3,	"psi_next_instr"}, 
 	{&Thread::psi_assert,	1,	"psi_assert"}, 

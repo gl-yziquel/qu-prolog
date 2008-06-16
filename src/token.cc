@@ -181,7 +181,7 @@ const	int8	ChType[ASCII_SIZE + 1] =
     //  p       q       r       s       t       u       v       w       
     LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,  LOWER,
     //  x       y       z       {       |       }       ~       ^?      
-    LOWER,  LOWER,  LOWER,  PUNCT,  PUNCT,  PUNCT,  SIGN,   SPACE,
+    LOWER,  LOWER,  LOWER,  PUNCT,  SIGN,  PUNCT,  SIGN,   SPACE,
     //  128     129     130     131     132     133     134     135     
     SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,  SPACE,
     //   136     137     138     139     140     141     142     143     

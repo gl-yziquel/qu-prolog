@@ -67,7 +67,7 @@ $1:
 	pseudo_instr3(0, 27, 0, 1)
 	pseudo_instr3(66, 0, 1, 2)
 	get_y_value(6, 2)
-	pseudo_instr4(16, 27, 26, 0, 1)
+	pseudo_instr4(15, 27, 26, 0, 1)
 	get_y_value(5, 0)
 	get_y_value(4, 1)
 	call_predicate('$qdeal/2$0', 0, 7)

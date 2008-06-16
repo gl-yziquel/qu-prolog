@@ -14,14 +14,13 @@ extern AtomTable* atoms;
   6.  #$&*+-./:<=>?@^~\
 */
 bool
-SafeAtom(const char *s)
+SafeAtom(const char *s, bool vbar)
 {
   if (*s == '\0' ||
-      streq(s, ".") ||
-      streq(s, "|"))
+      streq(s, "."))
     {
       //
-      // Null atom ('') or a single full stop ('.') or a single '|' is unsafe.
+      // Null atom ('') or a single full stop ('.').
       //
       return(false);
     }
@@ -65,6 +64,10 @@ SafeAtom(const char *s)
 	{
 	  if (strchr("#$&*+-./:<=>?@^~\\|", *s) != NULL)
 	    {
+              // if vbar is false then a '|' is considered unsafe
+              if (!vbar && (*s == '|')) {
+                  return false;
+                }
 	      //
 	      // index finds the given character in the 'safe'
 	      // range.  So check the next character.
@@ -199,7 +202,24 @@ void writeAtom(ostream& strm, Object* a)
   assert(a->isAtom());
   string name(OBJECT_CAST(Atom*, a)->getName());
   addEscapes(name, '\'');
-  if (SafeAtom(name.c_str()))
+  if (SafeAtom(name.c_str(), true))
+    {
+      strm << name;
+    }
+  else
+    {
+      strm << '\'';
+      strm << name;
+      strm << '\'';
+    }
+}
+
+void writePedroAtom(ostream& strm, Object* a)
+{
+  assert(a->isAtom());
+  string name(OBJECT_CAST(Atom*, a)->getName());
+  addEscapes(name, '\'');
+  if (SafeAtom(name.c_str(), false))
     {
       strm << name;
     }

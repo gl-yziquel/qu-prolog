@@ -94,7 +94,7 @@ $2:
 	pseudo_instr3(0, 23, 0, 1)
 	pseudo_instr3(66, 0, 1, 2)
 	get_y_value(7, 2)
-	pseudo_instr4(16, 23, 27, 0, 1)
+	pseudo_instr4(15, 23, 27, 0, 1)
 	get_y_value(6, 0)
 	get_y_value(5, 1)
 	call_predicate('clause/2$0', 0, 8)
@@ -150,7 +150,7 @@ $1:
 	proceed
 
 $2:
-	pseudo_instr4(17, 0, 1, 3, 5)
+	pseudo_instr4(16, 0, 1, 3, 5)
 	get_x_variable(0, 3)
 	get_x_variable(3, 5)
 	execute_predicate('$get_clause_ref', 5)

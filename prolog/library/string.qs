@@ -549,7 +549,7 @@ $2:
 	put_y_variable(2, 2)
 	put_integer(0, 0)
 	call_predicate('between', 3, 4)
-	pseudo_instr4(18, 23, 22, 0, 1)
+	pseudo_instr4(17, 23, 22, 0, 1)
 	get_y_value(1, 0)
 	get_y_value(0, 1)
 	deallocate
@@ -734,9 +734,9 @@ $3:
 	call_predicate('between', 3, 6)
 	pseudo_instr3(3, 25, 21, 0)
 	get_y_value(4, 0)
-	pseudo_instr4(18, 23, 22, 0, 1)
+	pseudo_instr4(17, 23, 22, 0, 1)
 	get_x_variable(0, 1)
-	pseudo_instr4(18, 0, 21, 1, 2)
+	pseudo_instr4(17, 0, 21, 1, 2)
 	get_y_value(0, 1)
 	deallocate
 	proceed

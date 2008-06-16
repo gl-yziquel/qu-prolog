@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.3 Reference Manual - Built-in Predicates
+Qu-Prolog 8.5 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -7345,6 +7345,13 @@ Succeed if <KBD>Term</KBD> is a thawed variable.
 
 <P>Note from this example that the interpreter displays all delays related to the query in the <KBD>provided</KBD> section.
 </BLOCKQUOTE>
+<P><KBD><a name="get_var_delays"></a>get_var_delays(Var, DelayList)</KBD>
+
+<BLOCKQUOTE>
+<KBD>DelayList</KBD> is the list of delayed problems associated with 
+<KBD>Var</KBD>.
+<BR><KBD>mode get_var_delays(@var, ?closed_list(goal))</KBD>
+</BLOCKQUOTE>
 
 <P><KBD><a name="get_unify_delays"></a>get_unify_delays(DelayList)</KBD>
 
@@ -7401,6 +7408,12 @@ Retry all the unsolved delayed problems.
 <BR>B = 3
 <BR>L = []
 </KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="retry_var_delays"></a>retry_var_delays(Var)</KBD>
+
+<BLOCKQUOTE>
+Retry all the delayed problems associated with <KBD>Var</KBD>.
 </BLOCKQUOTE>
 
 <P><KBD><a name="retry_woken_delays"></a>retry_woken_delays</KBD>

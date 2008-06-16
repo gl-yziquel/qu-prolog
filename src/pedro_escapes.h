@@ -4,9 +4,9 @@ public:
 
 ReturnValue psi_pedro_is_connected();
 
-ReturnValue psi_pedro_connect(Object *&, Object *&, Object *&, Object *&);
+ReturnValue psi_pedro_connect(Object *&, Object *&);
 
-ReturnValue psi_pedro_disconnect(Object *&);
+ReturnValue psi_pedro_disconnect();
 
 ReturnValue psi_pedro_subscribe(Object *&, Object *&);
 

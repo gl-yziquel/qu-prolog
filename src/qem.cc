@@ -300,16 +300,10 @@ main(int32 argc, char** argv)
   if (qem_options->ProcessSymbol() != NULL) {
     process_symbol = new char[strlen(qem_options->ProcessSymbol()) + 1];
     strcpy(process_symbol, qem_options->ProcessSymbol());
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     u_long ip_address = LookupMachineIPAddress(pedro_address);
-    u_short port = ntohs(pedro_port);
-    Socket *socket = new Socket(SOCK_STREAM, 0, sockfd);
-    socket->setSocket();
-    int sock = sockm->OpenSocket(socket);
-    if (!do_connection(sockfd, port, ip_address)) {
+    if (!pedro_channel->connect(pedro_port, ip_address)) {
       Fatal(__FUNCTION__, "Cannot connect to Pedro");
     }
-    pedro_channel->connect(sockfd, sock);
     if (!pedro_channel->pedro_register(atoms->add(qem_options->ProcessSymbol()))) {
       Fatal(__FUNCTION__, "Cannot register");
     }   

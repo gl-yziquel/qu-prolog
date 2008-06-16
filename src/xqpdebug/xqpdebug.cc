@@ -115,7 +115,7 @@ Xqpdebug::Xqpdebug(char* threadname, char* processname,
 		   char* machineid, char* portstr)
   : QWidget()
 {
-  int port = ntohs(atoi(portstr));
+  int port = atoi(portstr);
   u_long ip = htonl((u_long)atol(machineid));
   char gui_name[1024];
   sprintf(gui_name, "%s_%s_debug_gui", threadname, processname);

@@ -235,7 +235,7 @@ $2:
 	call_predicate('$length', 3, 5)
 	put_integer(256, 0)
 	pseudo_instr2(1, 24, 0)
-	pseudo_instr4(15, 24, 23, 22, 0)
+	pseudo_instr4(14, 24, 23, 22, 0)
 	get_x_variable(1, 0)
 	put_y_value(1, 0)
 	put_y_value(0, 2)

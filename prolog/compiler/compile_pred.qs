@@ -211,7 +211,7 @@ $1:
 	put_y_value(2, 1)
 	call_predicate('$internal_form', 2, 3)
 	put_constant('compile', 1)
-	pseudo_instr4(13, 22, 1, 21, 0)
+	pseudo_instr4(12, 22, 1, 21, 0)
 	cut(0)
 	deallocate
 	proceed

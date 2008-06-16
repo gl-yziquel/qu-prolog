@@ -1981,3 +1981,100 @@ end('$delay_until_or'/3):
 
 
 
+'retry_var_delays/1$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_constant('$retry_make_progress', 1)
+	pseudo_instr2(4, 1, 0)
+	put_constant('fail', 1)
+	get_x_value(0, 1)
+	neck_cut
+	proceed
+
+$2:
+	execute_predicate('retry_var_delays', 1)
+end('retry_var_delays/1$0'/1):
+
+
+
+'retry_var_delays'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_variable(0, 0)
+	pseudo_instr1(1, 20)
+	neck_cut
+	put_constant('$retry_make_progress', 0)
+	put_constant('fail', 1)
+	pseudo_instr2(3, 0, 1)
+	pseudo_instr2(49, 20, 0)
+	put_constant('all', 1)
+	call_predicate('$do_delay_list', 2, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('retry_var_delays/1$0', 1)
+
+$2:
+	proceed
+end('retry_var_delays'/1):
+
+
+
+'get_var_delays'/2:
+
+
+$1:
+	pseudo_instr2(49, 0, 2)
+	get_x_variable(0, 2)
+	execute_predicate('$get_var_delays_aux', 2)
+end('get_var_delays'/2):
+
+
+
+'$get_var_delays_aux'/2:
+
+	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
+
+$4:
+	try(2, $2)
+	trust($3)
+
+$5:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure(',', 2, 2)
+	unify_x_variable(2)
+	unify_x_variable(3)
+	get_list(1)
+	unify_x_value(3)
+	unify_x_variable(1)
+	pseudo_instr1(41, 2)
+	neck_cut
+	execute_predicate('$get_var_delays_aux', 2)
+
+$3:
+	get_list(0)
+	unify_void(1)
+	unify_x_variable(0)
+	execute_predicate('$get_var_delays_aux', 2)
+end('$get_var_delays_aux'/2):
+
+
+
