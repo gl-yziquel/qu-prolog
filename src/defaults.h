@@ -115,10 +115,6 @@ char *QX_FILE = NULL;
 //
 const bool STAND_ALONE = false;
 
-//
-// Default nameserver.
-//
-char *PEDRO_SERVER = "localhost";
 
 //
 // Default nameserver port.

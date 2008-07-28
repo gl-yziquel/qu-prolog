@@ -11,6 +11,9 @@ qppp_x:
 
 .PHONY: clean
 clean:
+	$(RM) Makefile kq qc qcc qc1.boot qppp
+
+##BLOCK##
 
 .PHONY: depend
 depend:
@@ -21,6 +24,8 @@ clobber:
 .PHONY: distclean
 distclean: clobber
 	$(RM) Makefile kq qc qcc qc1.boot qppp
+##ENDBLOCK##
+
 
 .DEFAULT:
 	@echo "*** unknown target $@ (ignored)"

@@ -34,4 +34,8 @@ $(LIBRARY.thread): $(OBJECTS.thread)
 .PHONY: install.thread
 install.thread: all.thread
 
+.PHONY:	clean.thread
+clean.thread:
+	$(RM) $(OBJECTS.thread) $(LIBRARY.thread) Makefile.thread
+
 

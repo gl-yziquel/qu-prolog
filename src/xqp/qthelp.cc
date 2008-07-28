@@ -20,7 +20,7 @@
 
 #include "qthelp.h"
 
-static char* text = 
+const char* text = 
 "<H2>Using the Qu-Prolog interpreter GUI</H2>\n\
 The GUI behaves much like the dumb terminal interface to qp. \
 Output (stdout and stderr) appears in the GUI text window and \
@@ -73,16 +73,15 @@ this can be used when the query needs to be edited.\
 
 
 QTHelp::QTHelp(QWidget *p)
-  : Q3MainWindow(p)
+  : QMainWindow(p)
 {
-  help = new Q3TextEdit(this);
+  help = new QTextEdit(this);
   setCentralWidget(help);
   parent = p;
   resize(600,400);
-  help->setText(text);
-  help->setTextFormat(Qt::RichText);
+  help->setHtml(text);
   help->setReadOnly(true);
-  setCaption("XQP Help");
+  setWindowTitle("XQP Help");
   show();
 }
 

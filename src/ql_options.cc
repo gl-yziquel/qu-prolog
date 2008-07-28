@@ -69,7 +69,7 @@
 
 #include "defaults.h"
 
-static const char *EXECUTABLE_FILE = NULL;
+//static char *EXECUTABLE_FILE = NULL;
 
 QlOptions::QlOptions(int argc, char **argv)
   : Options("[-d code-size]\n"
@@ -84,11 +84,10 @@ QlOptions::QlOptions(int argc, char **argv)
     atom_table_size(ATOM_TABLE_SIZE),
     predicate_table_size(PREDICATE_TABLE_SIZE),
     string_map_size(STRING_MAP_SIZE),
-    executable_file(EXECUTABLE_FILE)
+    executable_file(NULL)
 {
   int32 c;
-
-  static const char *opts =  "d:a:s:m:u:M:p:o:";
+  static const char opts[] =  "d:a:s:m:u:M:p:o:";
 
   //
   // Parse command line options.

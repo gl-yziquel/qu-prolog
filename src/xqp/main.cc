@@ -19,9 +19,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h>
-#include <fstream.h>
+#include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -30,6 +30,7 @@
 
 #include "xqp.h"
 
+using namespace std;
 
 // Create 2 sockets for unidirectional communication to and from qp
 int socket_main_to_qp[2], socket_qp_to_main[2];
@@ -78,7 +79,9 @@ int main(int argc, char *argv[])
 
       // exec qp
       char* qp_args[argc+1];
-      qp_args[0] = "qp";
+      char* qpstr = new char[strlen("qp")+1];
+      strcpy(qpstr, "qp");
+      qp_args[0] = qpstr;
       for (int i = 1; i < argc; i++) 
 	{
 	  qp_args[i] = argv[i];
@@ -99,7 +102,6 @@ int main(int argc, char *argv[])
       QApplication a(argc, argv);
       Xqp *xqp = new Xqp(socket_qp_to_main[0],
 			 socket_main_to_qp[1], PID);
-      a.setMainWidget(xqp);
       xqp->show();  
 
       int exitval =  a.exec();

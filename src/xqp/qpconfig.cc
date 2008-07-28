@@ -31,25 +31,25 @@ QPConfig::QPConfig(Xqp* xe)
 {
 
    QString sf =  default_font.toString();
-   QString fontstring = readEntry("/Xqp/font", sf);
+   QString fontstring = value("/Xqp/font", sf).toString();
    font.fromString(fontstring);
    QString def_cname = default_color.name();
-   QString cname = readEntry("/Xqp/color", def_cname);
+   QString cname = value("/Xqp/color", def_cname).toString();
    color = QColor(cname);
-   x = readNumEntry("/Xqp/x", 0);
-   y = readNumEntry("/Xqp/y", 0);
-   width = readNumEntry("/Xqp/width", 800);
-   height = readNumEntry("/Xqp/height", 800);
+   x = value("/Xqp/x", 0).toInt();
+   y = value("/Xqp/y", 0).toInt();
+   width = value("/Xqp/width", 800).toInt();
+   height = value("/Xqp/height", 800).toInt();
 }
 
 QPConfig::~QPConfig()
 {
-   writeEntry("/Xqp/font", font.toString());
-   writeEntry("/Xqp/color", color.name());
-   writeEntry("/Xqp/x",parent-> x());
-   writeEntry("/Xqp/y", parent->y());
-   writeEntry("/Xqp/width", parent->width());
-   writeEntry("/Xqp/height", parent->height());
+   setValue("/Xqp/font", font.toString());
+   setValue("/Xqp/color", color.name());
+   setValue("/Xqp/x",parent-> x());
+   setValue("/Xqp/y", parent->y());
+   setValue("/Xqp/width", parent->width());
+   setValue("/Xqp/height", parent->height());
 }
 
 void QPConfig::setQPFont(const QFont& f)

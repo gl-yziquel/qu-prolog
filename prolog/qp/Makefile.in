@@ -15,6 +15,10 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJECTS)
 	$(COMPILE.qc) -o $(PROGRAM) $(OBJECTS)
 
+.PHONY:	clean
+clean:
+	$(RM) Makefile $(OBJECTS) 
+
 
 %.qo: %.qs
 	$(COMPILE.qc) -c -o $@ $<

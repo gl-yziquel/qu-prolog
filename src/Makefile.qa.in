@@ -33,4 +33,8 @@ install.qa: @QPHOME@/bin/$(COMMAND.qa)
 @QPHOME@/bin/$(COMMAND.qa): $(COMMAND.qa)
 	@INSTALL@ $(COMMAND.qa) @QPHOME@/bin
 
+.PHONY:	clean.qa
+clean.qa:
+	$(RM) $(OBJECTS.qa) $(COMMAND.qa) Makefile.qa
+
 

@@ -20,4 +20,8 @@ install.qdeal: @QPHOME@/bin/$(COMMAND.qdeal)
 @QPHOME@/bin/$(COMMAND.qdeal): $(COMMAND.qdeal)
 	@INSTALL@ $(COMMAND.qdeal) @QPHOME@/bin
 
+.PHONY:	clean.qdeal
+clean.qdeal:
+	$(RM) $(OBJECTS.qdeal) $(COMMAND.qdeal) Makefile.qdeal
+
 

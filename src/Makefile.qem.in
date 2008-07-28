@@ -20,4 +20,8 @@ install.qem: @QPHOME@/bin/$(COMMAND.qem)
 @QPHOME@/bin/$(COMMAND.qem): $(COMMAND.qem)
 	@INSTALL@ $(COMMAND.qem) @QPHOME@/bin
 
+.PHONY:	clean.qem
+clean.qem:
+	$(RM) $(OBJECTS.qem) $(COMMAND.qem) Makefile.qem
+
 

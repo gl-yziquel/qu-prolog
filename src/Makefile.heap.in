@@ -36,4 +36,8 @@ $(LIBRARY.heap): $(OBJECTS.heap)
 .PHONY: install.heap
 install.heap: all.heap
 
+.PHONY:	clean.heap
+clean.heap:
+	$(RM) Makefile.heap $(LIBRARY.heap) $(OBJECTS.heap)
+
 

@@ -97,6 +97,10 @@ ASMS = $(QPASMS) $(QSSOURCES)
 .PHONY:	all
 all: $(OBJECTS)
 
+.PHONY:	clean
+clean:
+	$(RM) $(OBJECTS) Makefile
+
 
 %.qo: %.qs
 	$(COMPILE.qc) -c -o $@ $<

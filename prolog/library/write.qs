@@ -5374,7 +5374,7 @@ end('$stdout_int'/1):
 
 $1:
 	put_constant('stdout', 0)
-	put_integer(10, 1)
+	put_integer(32, 1)
 	pseudo_instr2(8, 0, 1)
 	proceed
 end('$stdout_nl'/0):

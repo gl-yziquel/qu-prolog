@@ -23,7 +23,7 @@ void skip_to_closing_quote(const QString pattern,
 			   QString& line, int& pos)
 {
   if (line == QString::null) return;
-  int n = line.find(QRegExp(pattern), pos);
+  int n = line.indexOf(QRegExp(pattern), pos);
   if (n != -1)
     {
       pos = n+pattern.length();
@@ -38,7 +38,7 @@ void skip_to_closing_quote(const QString pattern,
 
 bool graphic_char(QChar c)
 {
-    switch ((int)(c.toAscii()))
+    switch (c.toAscii())
     {
        case '-':
        case '/':
@@ -70,7 +70,7 @@ bool graphic_char(QChar c)
 bool end_of_term(QString& line, int pos)
 {
    if (line == QString::null) return false;
-   int n = line.find(QRegExp("('|\x0022|/\\*|%|\\.\\s|\\.$)"), pos);
+   int n = line.indexOf(QRegExp("('|\x0022|/\\*|%|\\.\\s|\\.$)"), pos);
    if (n == -1)
      {
        return false;

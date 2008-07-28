@@ -332,12 +332,13 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
       // Remember the current value for the TZ environment variable
       char* oldTZ = getenv("TZ");
       // Set TZ to UTC time
-      (void)putenv("TZ=UTC");
+      char envstring[1000];
+      sprintf(envstring, "TZ=UTC");
+      (void)putenv(envstring);
       // In UTC time localtime and gmtime are the same and so mktime gives
       // the inverse of gmtime
       time_t etime = mktime(&tmtime);
       // Reset the TZ variable
-      char envstring[1000];
       sprintf(envstring, "TZ=%s", oldTZ);
       (void)putenv(envstring);
       if (etime == (time_t)(-1))
@@ -486,7 +487,7 @@ Thread::psi_signal_to_atom(Object *& signum, Object *& sigatom)
       PSI_ERROR_RETURN(EV_RANGE, 1);
     }
 
-  char *str = NULL;
+  const char *str;
 
   switch (sig)
     {

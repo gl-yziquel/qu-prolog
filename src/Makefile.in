@@ -20,6 +20,7 @@ export ALL_COMMANDS=$(addprefix all.,$(QP_COMMANDS))
 export TARGETS = $(QP_LIBRARIES) $(QP_COMMANDS)
 
 export INSTALL = $(addprefix install.,$(TARGETS))
+export CLEAN = $(addprefix clean.,$(TARGETS))
 
 export DEPEND_TARGETS = $(QP_LIBRARIES) $(QP_COMMANDS)
 export DEPEND = $(addprefix depend.,$(DEPEND_TARGETS))
@@ -88,6 +89,9 @@ $(BIG_LIBRARY): $(LIBRARY_OBJECTS)
 
 .PHONY: install
 install: $(INSTALL)
+
+.PHONY:	clean
+clean: $(CLEAN)
 
 
 

@@ -68,5 +68,9 @@ $(LIBRARY.psi): $(OBJECTS.psi)
 .PHONY: install.psi
 install.psi: all.psi
 
+.PHONY:	clean.psi
+clean.psi:
+	$(RM) $(OBJECTS.psi) $(LIBRARY.psi)
+
 
 

@@ -123,7 +123,7 @@ void addEscapes(string& str, char quote)
 	  tmp.push_back('\\');
 	  tmp.push_back('r');
 	  break;
-	case 92:  
+        case 92:  
 	  tmp.push_back('\\');
 	  tmp.push_back('\\');
 	  break;
@@ -218,13 +218,13 @@ void writePedroAtom(ostream& strm, Object* a)
 {
   assert(a->isAtom());
   string name(OBJECT_CAST(Atom*, a)->getName());
-  addEscapes(name, '\'');
   if (SafeAtom(name.c_str(), false))
     {
       strm << name;
     }
   else
     {
+      addEscapes(name, '\'');
       strm << '\'';
       strm << name;
       strm << '\'';

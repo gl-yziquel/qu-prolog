@@ -74,7 +74,7 @@ private:
   Option<word32> atom_table_size;
   Option<word32> predicate_table_size;
   Option<word32> string_map_size;
-  Option<const char *> executable_file;
+  Option<char *> executable_file;
 
   int num_object_files;
 

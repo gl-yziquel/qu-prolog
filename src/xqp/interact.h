@@ -21,21 +21,16 @@
 #define INTERACT_H
 
 #include <qwidget.h>
-#include <q3textedit.h>
+#include <qtextedit.h>
 #include <qstring.h>
-//Added by qt3to4:
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <Q3PtrList>
-#include <fstream.h>
-#include <q3accel.h>
+#include <fstream>
 #include <qregexp.h>
 #include <qsocketnotifier.h>
 #include <qstringlist.h>
 
 
 
-class Interact : public Q3TextEdit  {
+class Interact : public QTextEdit  {
   Q_OBJECT
     public: 
   Interact(QWidget *box);
@@ -55,22 +50,20 @@ class Interact : public Q3TextEdit  {
   
  private:
   QWidget* parent;
-  int para;
   int indent;
-  int currpara;
-  int currindent;
   bool readonly;
   bool in_query;
   bool in_history;
-  Q3PtrList<QString> history;
+  QList<QString*> history;
+  int hist_pos;
   QString* firstHistoryItem(void);
   QString* nextHistoryItem(void);
   QString* previousHistoryItem(void);
   void addHistoryItem(QString* s);
 
  protected:
-  void contentsMouseReleaseEvent(QMouseEvent*);
-  void contentsMousePressEvent(QMouseEvent*);
+  void mouseReleaseEvent(QMouseEvent*);
+  void mousePressEvent(QMouseEvent*);
   void cut();
   void keyPressEvent(QKeyEvent *);
   void clear() {}

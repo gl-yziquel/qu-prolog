@@ -21,13 +21,11 @@
 #define XQPQUERIES_H
 
 #include <qwidget.h>
-#include <q3mainwindow.h>
-#include <q3textedit.h>
-//Added by qt3to4:
-#include <QKeyEvent>
+#include <qmainwindow.h>
+#include <qtextedit.h>
 
 
-class XQPQueries : public Q3MainWindow
+class XQPQueries : public QMainWindow
 {
   Q_OBJECT
     public:
@@ -40,7 +38,7 @@ public slots:
  void process_text(QString);
  void process_return();
  private:
-  Q3TextEdit* queries;
+  QTextEdit* queries;
   QWidget* parent;
   
  protected:

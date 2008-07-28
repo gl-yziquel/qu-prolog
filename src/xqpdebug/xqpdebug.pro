@@ -8,5 +8,3 @@ INCLUDEPATH += .
 # Input
 HEADERS += interact.h qpconfig.h xqpdebug.h pedro_connection.h
 SOURCES += interact.cc main.cc qpconfig.cc xqpdebug.cc pedro_connection.cc
-#The following line was inserted by qt3to4
-QT +=  qt3support 

@@ -2158,12 +2158,12 @@ end('$parse_start_term/6$1'/1):
 
 '$parse_start_term'/6:
 
-	switch_on_term(0, $33, $18, $18, $19, $18, $27)
+	switch_on_term(0, $35, $20, $20, $21, $20, $29)
 
-$19:
-	switch_on_structure(0, 16, ['$default':$18, '$'/0:$20, 'var'/2:$21, 'string'/1:$22, 'atom'/1:$23, 'number'/1:$24, 'double'/1:$25, 'obvar'/2:$26])
+$21:
+	switch_on_structure(0, 16, ['$default':$20, '$'/0:$22, 'var'/2:$23, 'string'/1:$24, 'atom'/1:$25, 'number'/1:$26, 'double'/1:$27, 'obvar'/2:$28])
 
-$20:
+$22:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -2171,65 +2171,69 @@ $20:
 	retry($5)
 	retry($6)
 	retry($7)
+	retry($8)
 	retry($9)
-	retry($10)
 	retry($11)
-	trust($18)
-
-$21:
-	try(6, $1)
-	trust($18)
-
-$22:
-	try(6, $2)
-	trust($18)
+	retry($12)
+	retry($13)
+	trust($20)
 
 $23:
-	try(6, $3)
-	retry($4)
-	retry($9)
-	retry($10)
-	retry($11)
-	trust($18)
+	try(6, $1)
+	trust($20)
 
 $24:
-	try(6, $5)
-	trust($18)
+	try(6, $2)
+	trust($20)
 
 $25:
-	try(6, $6)
-	trust($18)
+	try(6, $3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($11)
+	retry($12)
+	retry($13)
+	trust($20)
 
 $26:
 	try(6, $7)
-	trust($18)
+	trust($20)
 
 $27:
-	switch_on_constant(0, 16, ['$default':$18, 'quant_escape':$28, '[':$29, '(':$30, ' (':$31, '{':$32])
+	try(6, $8)
+	trust($20)
 
 $28:
-	try(6, $8)
-	trust($18)
+	try(6, $9)
+	trust($20)
 
 $29:
-	try(6, $12)
-	retry($13)
-	trust($18)
+	switch_on_constant(0, 16, ['$default':$20, 'quant_escape':$30, '[':$31, '(':$32, ' (':$33, '{':$34])
 
 $30:
-	try(6, $14)
-	trust($18)
+	try(6, $10)
+	trust($20)
 
 $31:
-	try(6, $15)
-	trust($18)
+	try(6, $14)
+	retry($15)
+	trust($20)
 
 $32:
 	try(6, $16)
-	retry($17)
-	trust($18)
+	trust($20)
 
 $33:
+	try(6, $17)
+	trust($20)
+
+$34:
+	try(6, $18)
+	retry($19)
+	trust($20)
+
+$35:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -2247,7 +2251,9 @@ $33:
 	retry($15)
 	retry($16)
 	retry($17)
-	trust($18)
+	retry($18)
+	retry($19)
+	trust($20)
 
 $1:
 	get_structure('var', 2, 0)
@@ -2327,6 +2333,42 @@ $4:
 	execute_predicate('$parse_after_term', 7)
 
 $5:
+	get_structure('atom', 1, 0)
+	unify_constant('+')
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_variable(0)
+	get_structure('number', 1, 1)
+	unify_x_variable(1)
+	get_x_variable(7, 3)
+	get_x_variable(8, 4)
+	get_x_variable(6, 5)
+	neck_cut
+	put_x_value(2, 3)
+	put_x_value(7, 4)
+	put_x_value(8, 5)
+	put_integer(0, 2)
+	execute_predicate('$parse_after_term', 7)
+
+$6:
+	get_structure('atom', 1, 0)
+	unify_constant('+')
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_variable(0)
+	get_structure('double', 1, 1)
+	unify_x_variable(1)
+	get_x_variable(7, 3)
+	get_x_variable(8, 4)
+	get_x_variable(6, 5)
+	neck_cut
+	put_x_value(2, 3)
+	put_x_value(7, 4)
+	put_x_value(8, 5)
+	put_integer(0, 2)
+	execute_predicate('$parse_after_term', 7)
+
+$7:
 	get_structure('number', 1, 0)
 	unify_x_variable(7)
 	get_x_variable(0, 1)
@@ -2341,7 +2383,7 @@ $5:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$6:
+$8:
 	get_structure('double', 1, 0)
 	unify_x_variable(7)
 	get_x_variable(0, 1)
@@ -2356,7 +2398,7 @@ $6:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$7:
+$9:
 	get_structure('obvar', 2, 0)
 	unify_x_variable(7)
 	unify_void(1)
@@ -2372,7 +2414,7 @@ $7:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$8:
+$10:
 	get_constant('quant_escape', 0)
 	get_list(1)
 	unify_x_variable(0)
@@ -2409,7 +2451,7 @@ $8:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$9:
+$11:
 	get_structure('atom', 1, 0)
 	allocate(10)
 	unify_y_variable(9)
@@ -2443,7 +2485,7 @@ $9:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$10:
+$12:
 	get_structure('atom', 1, 0)
 	allocate(10)
 	unify_y_variable(9)
@@ -2480,7 +2522,7 @@ $10:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$11:
+$13:
 	get_structure('atom', 1, 0)
 	unify_x_variable(7)
 	get_x_variable(0, 1)
@@ -2495,7 +2537,7 @@ $11:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$12:
+$14:
 	get_constant('[', 0)
 	get_list(1)
 	unify_constant(']')
@@ -2511,7 +2553,7 @@ $12:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$13:
+$15:
 	get_constant('[', 0)
 	get_x_variable(0, 1)
 	allocate(9)
@@ -2545,7 +2587,7 @@ $13:
 	deallocate
 	execute_predicate('$parse_substitution_or_list', 6)
 
-$14:
+$16:
 	get_constant('(', 0)
 	get_x_variable(0, 1)
 	allocate(7)
@@ -2574,7 +2616,7 @@ $14:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$15:
+$17:
 	get_constant(' (', 0)
 	get_x_variable(0, 1)
 	allocate(7)
@@ -2603,7 +2645,7 @@ $15:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$16:
+$18:
 	get_constant('{', 0)
 	get_list(1)
 	unify_constant('}')
@@ -2619,7 +2661,7 @@ $16:
 	put_integer(0, 2)
 	execute_predicate('$parse_after_term', 7)
 
-$17:
+$19:
 	get_constant('{', 0)
 	get_x_variable(0, 1)
 	allocate(7)
@@ -2650,7 +2692,7 @@ $17:
 	deallocate
 	execute_predicate('$parse_after_term', 7)
 
-$18:
+$20:
 	get_x_variable(6, 1)
 	put_list(1)
 	set_x_value(0)

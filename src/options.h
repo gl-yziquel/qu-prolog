@@ -61,14 +61,14 @@
 class Options
 {
 protected:
-  char *usage;
+  const char *usage;
   bool valid;
 
 public:
   const char *Usage(void) const { return usage; }
   bool Valid(void) const { return valid; }
 
-  explicit Options(char *u) : usage(u), valid(false) {}
+  explicit Options(const char *u) : usage(u), valid(false) {}
 };
 
 #endif	// OPTIONS_H

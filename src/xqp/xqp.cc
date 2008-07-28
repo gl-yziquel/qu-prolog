@@ -26,15 +26,11 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qapplication.h>
-#include <q3popupmenu.h>
-#include <q3mainwindow.h>
+#include <qmenu.h>
+#include <qmainwindow.h>
 #include <qmenubar.h>
-#include <q3vbox.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
-#include <q3listbox.h>
-//Added by qt3to4:
-#include <QCloseEvent>
 
 #include "xqp.h"
 #include "interact.h"
@@ -46,7 +42,7 @@ using namespace std;
 
 // Dialog box for configuration
 ConfigDialog::ConfigDialog(Xqp *parent, QFont xqpf, QColor xqpc)
-  : QDialog(parent, "Configuration", TRUE)
+  : QDialog(parent)
 {
      QPushButton *ok, *cancel, *font, *colour;
      ok = new QPushButton("OK", this);
@@ -65,11 +61,14 @@ ConfigDialog::ConfigDialog(Xqp *parent, QFont xqpf, QColor xqpc)
      cancel->setGeometry(190,200,120,40);
      font->setGeometry(10,10,150,40);
      colour->setGeometry(170,10,150,40);
-     browser = new Q3TextBrowser(this);
+     browser = new QTextBrowser(this);
      browser->setGeometry(10,80,310,100);
      browser->setText("AaBb :- \n| ?-");
      browser->setFont(f);
-     browser->setPaper(QBrush(c));
+
+     QPalette p=browser->palette();
+     p.setColor(QPalette::Base, c); 
+     browser->setPalette(p);
 
      connect(ok, SIGNAL(clicked()), SLOT(accept()));
      connect(cancel, SIGNAL(clicked()), SLOT(reject()));
@@ -94,7 +93,9 @@ void ConfigDialog::choose_colour()
   QColor pick = QColorDialog::getColor(c, this);
   if (pick.isValid())
     {
-      browser->setPaper(QBrush(pick));
+      QPalette p=browser->palette();
+      p.setColor(QPalette::Base, pick); 
+      browser->setPalette(p);
       c = pick;
     }
 }
@@ -107,42 +108,41 @@ void ConfigDialog::accept()
 
 
 Xqp::Xqp(int e_stdout, int e_stdin, pid_t c_pid)
-  : Q3MainWindow()
+  : QMainWindow()
 {
   config = new QPConfig(this);
   qp_stdin = e_stdin;
   qp_stdout = e_stdout;
   child_pid = c_pid;
 
-  setCaption("XQP");
+  setWindowTitle("XQP");
   move(config->getX(), config->getY());
   resize(config->getWidth(), config->getHeight());
   read_buff = new char[buff_size+2];
   qpint = new Interact(this);
   qpint->setFont(config->qpFont());
-  qpint->setPaper(QBrush(config->qpColor()));
+  QPalette p=qpint->palette();
+  p.setColor(QPalette::Base, config->qpColor()); 
+  qpint->setPalette(p);
   setCentralWidget(qpint);
   qpint->setFocus();
   qpint->setReadOnly(false);  
   // Set up menu items
   // File menu
-  Q3PopupMenu* file = new Q3PopupMenu(this);
-  file->insertItem("Open Query File", qpint, SLOT(openQueryFile()));
-  file->insertItem("Save History", qpint, SLOT(saveHistory()));
-  file->insertItem("Save Session", qpint, SLOT(saveSession()));
-  file->insertItem("Configure", this, SLOT(configure_int()));
-  menuBar()->insertItem("File", file);
+  QMenu* file = menuBar()->addMenu("File");
+  file->addAction("Open Query File", qpint, SLOT(openQueryFile()), 0);
+  file->addAction("Save History", qpint, SLOT(saveHistory()), 0);
+  file->addAction("Save Session", qpint, SLOT(saveSession()), 0);
+  file->addAction("Configure", this, SLOT(configure_int()), 0);
   
-  Q3PopupMenu* sigs = new Q3PopupMenu(this);
-  sigs->insertItem("SIGINT", this, SLOT(process_CTRL_C()));
-  menuBar()->insertItem("Signals", sigs);
+  QMenu* sigs = menuBar()->addMenu("Signals");
+  sigs->addAction("SIGINT", this, SLOT(process_CTRL_C()), 0);
   
   
   // Help menu
-  Q3PopupMenu* help = new Q3PopupMenu(this);
-  help->insertItem("Help", this, SLOT(showHelp()));
-  help->insertItem("About", this, SLOT(showAbout()));
-  menuBar()->insertItem("Help", help);
+  QMenu* help = menuBar()->addMenu("Help");
+  help->addAction("Help", this, SLOT(showHelp()), 0);
+  help->addAction("About", this, SLOT(showAbout()), 0);
 
   //connect(this, SIGNAL(exit_signal()), a, SLOT(quit()) );
 
@@ -158,21 +158,21 @@ Xqp::Xqp(int e_stdout, int e_stdin, pid_t c_pid)
 
 void Xqp::process_qp_cmd(QString cmd)
 {
-   qpint->setColor(Qt::blue);
+   qpint->setTextColor(Qt::blue);
    qpint->insert_at_end(cmd);
-   qpint->setColor(Qt::black);
+   qpint->setTextColor(Qt::black);
    send_cmd_to_qp(cmd);
 }
 
 void Xqp::send_cmd_to_qp(QString cmd)
 {
-   write(qp_stdin, cmd.ascii(), cmd.length());
+   write(qp_stdin, cmd.toAscii(), cmd.length());
 }
 
   
 void Xqp::closeEvent(QCloseEvent *e)
 {
-  Q3MainWindow::closeEvent(e);
+  QMainWindow::closeEvent(e);
 }
 
 
@@ -187,8 +187,7 @@ void Xqp::process_char(int s)
     }
   read_buff[no] = '\0';
   QString inq = QString(read_buff);
-
-  qpint->setColor(Qt::black);
+  qpint->setTextColor(Qt::black);
   qpint->insert_at_end(inq);
 }
 
@@ -209,7 +208,9 @@ void Xqp::setConfigs(QFont f, QColor c)
   config->setQPFont(f);
   qpint->setFont(config->qpFont());
   config->setQPColor(c);
-  qpint->setPaper(QBrush(config->qpColor()));
+  QPalette p=qpint->palette();
+  p.setColor(QPalette::Base, config->qpColor()); 
+  qpint->setPalette(p);
 }
 void Xqp::configure_int()
 {

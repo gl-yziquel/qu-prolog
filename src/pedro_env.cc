@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include <string>
 #include <sstream>
 #include <stdio.h>
@@ -681,8 +682,7 @@ PedroMessage::constructMessage(Object*& sender, Object*& msgterm,
   }
   Structure* sterm = OBJECT_CAST(Structure*, term);
   if (sterm->getFunctor() == atoms.add("p2pmsg")) {
-    int arity = sterm->getArity();
-    assert(arity == 2);
+    assert(sterm->getArity() == 2);
     sender = sterm->getArgument(1);
     msgterm = sterm->getArgument(2);
   }

@@ -19,4 +19,8 @@ install.ql: @QPHOME@/bin/$(COMMAND.ql)
 @QPHOME@/bin/$(COMMAND.ql): $(COMMAND.ql)
 	@INSTALL@ $(COMMAND.ql) @QPHOME@/bin
 
+.PHONY:	clean.ql
+clean.ql:
+	$(RM) $(OBJECTS.ql) $(COMMAND.ql) Makefile.ql
+
 

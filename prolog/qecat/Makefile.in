@@ -16,6 +16,10 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJECTS)
 	$(COMPILE.qc) -L -o $(PROGRAM) $(OBJECTS)
 
+.PHONY:	clean
+clean:
+	$(RM) $(OBJECTS) 
+
 
 %.qo: %.qs
 	$(COMPILE.qc) -c -o $@ $<

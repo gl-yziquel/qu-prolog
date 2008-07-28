@@ -51,3 +51,9 @@ xqp:
 	@$(MAKE) -C @QPHOME@/src/xqpdebug
 	/usr/bin/install @XQP@ @QPHOME@/bin
 	/usr/bin/install @XQPDEBUG@ @QPHOME@/bin
+
+.PHONY: clean
+clean:
+	@$(MAKE) -C @QPHOME@/bin	$(PARALLEL) clean
+	@$(MAKE) -C @QPHOME@/src	$(PARALLEL) clean
+	@$(MAKE) -C @QPHOME@/prolog	$(PARALLEL) clean

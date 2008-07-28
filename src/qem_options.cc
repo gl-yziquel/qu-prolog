@@ -109,7 +109,7 @@ QemOptions::QemOptions(int argc, char **argv)
     thread_table_size(THREAD_TABLE_SIZE),
     stand_alone(STAND_ALONE),
     qx_file(QX_FILE),
-    pedro_server(PEDRO_SERVER),
+    pedro_server(NULL),
     pedro_port(PEDRO_PORT),
     process_symbol(PROCESS_SYMBOL),
     initial_goal(INITIAL_GOAL),
@@ -118,6 +118,10 @@ QemOptions::QemOptions(int argc, char **argv)
   int32 c;
 
   static const char *opts =  "d:p:s:m:a:B:O:i:n:C:e:h:H:Q:z:N:P:A:g:LX";
+
+  char* lh = new char[10];
+  strcpy(lh, "localhost");
+  pedro_server.Value(lh);
 
   //
   // Parse command line options.

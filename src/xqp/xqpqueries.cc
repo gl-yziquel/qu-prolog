@@ -19,24 +19,24 @@
 
 #include "xqpqueries.h"
 #include "term.h"
-//Added by qt3to4:
 #include <QKeyEvent>
 
 XQPQueries::XQPQueries(QWidget *p, QString& name, QString text)
-  : Q3MainWindow(p, name)
+  : QMainWindow(p)
 {
-  queries = new Q3TextEdit(this);
+  queries = new QTextEdit(this);
   setCentralWidget(queries);
   parent = p;
   resize(400,300);
   //  queries->setReadOnly(true);
   queries->setText(text);
   name.prepend("Queries File: ");
-  setCaption(name);
+  setWindowTitle(name);
   show();
-  queries->setCursorPosition(0,0);
+  QTextCursor cursor(queries->textCursor());
+  cursor.movePosition(QTextCursor::Start);
+  queries->setTextCursor(cursor);
   queries->setFocus();
-  
 }
 
 XQPQueries::~XQPQueries()
@@ -51,12 +51,9 @@ void XQPQueries::keyPressEvent(QKeyEvent * k)
       QString text = "";
       while (true)
 	{
-	  int p,i;
-	  queries->getCursorPosition(&p, &i);
-	  i =  queries->paragraphLength(p);
-	  queries->setSelection(p, 0, p, i);
-	  QString line = queries->selectedText();
-	  queries->setSelection(p+1,0,p+1,0);
+	  QTextCursor cursor(queries->textCursor());
+	  cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+	  QString line = cursor.selectedText();
 	  text.append(line);
 	  text.append("\n");
 	  if (end_of_term(text, 0))
@@ -90,6 +87,6 @@ void XQPQueries::keyPressEvent(QKeyEvent * k)
     }
   else
     {
-      Q3MainWindow::keyPressEvent(k);
+      QMainWindow::keyPressEvent(k);
     }
 }

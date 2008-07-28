@@ -111,7 +111,6 @@ void
 writeqAtom(const char *s, QPStream *stream)
 {
   string atomname(s);
-  addEscapes(atomname, '\'');
   if (SafeAtom(atomname.c_str(), true))
     {
       *stream << atomname.c_str();
@@ -121,6 +120,7 @@ writeqAtom(const char *s, QPStream *stream)
       //
       // The atom is not safe.  Quotes are needed.
       //
+      addEscapes(atomname, '\'');
       *stream << '\'';
       *stream << atomname.c_str();
       *stream << '\'';

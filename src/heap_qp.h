@@ -110,14 +110,14 @@ private:
   heapobject *data;      // The heap proper (ie. an array of heapobjects)
   heapobject *savedTop;   // Saved top for backtracking
   heapobject *gcMark;    // The point at which to trigger garbage collection
-  char *heapname;        // The name of the heap
+  const char *heapname;        // The name of the heap
   bool doGC;             // does garbage collection happen for this heap
 
 public:
   //
   // Constructor and destructor
   //
-  inline Heap(char *name, u_long size, bool GC = false);
+  inline Heap(const char *name, u_long size, bool GC = false);
   inline ~Heap(void);
 
 private:
@@ -126,7 +126,7 @@ private:
   void outOfSpace(void);
 
   // Return the name of the area (for debugging purposes)
-  inline char *getAreaName(void) const;
+  inline const char *getAreaName(void) const;
 
 public:
   //
@@ -274,7 +274,7 @@ truth3 fastEqual(PrologValue&, PrologValue&);
 //
 // Default constructor
 //
-inline Heap::Heap(char* name, u_long size, bool GC)
+inline Heap::Heap(const char* name, u_long size, bool GC)
   : data( new heapobject[size] )
 {
   //
@@ -357,7 +357,7 @@ Heap::allocateHeapSpace(size_t numHeapObjs)
 //
 // Return the name of the code area, for inclusion in error messages.
 //
-inline char *Heap::getAreaName(void) const
+inline const char *Heap::getAreaName(void) const
 {
   return heapname;
 }

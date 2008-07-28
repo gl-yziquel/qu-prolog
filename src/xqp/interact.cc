@@ -26,66 +26,62 @@
 #include "term.h"
 #include "xqpqueries.h"
 #include <qmessagebox.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 #include <qfile.h>
-//Added by qt3to4:
-#include <QEvent>
-#include <QMouseEvent>
+#include <qtextstream.h>
 #include <QKeyEvent>
 
 using namespace std;
 
 Interact::Interact( QWidget *box )
-  : Q3TextEdit(box)
+  : QTextEdit(box)
 {
   parent = box;
-  setTextFormat(Qt::PlainText);
   setFont( QFont( "Lucidatypewriter", 12, QFont::Normal ) );
-  para = 0;
   indent = 0;
-  connect(this, SIGNAL(returnPressed()), this, SLOT(processReturn()));
+  readonly = false;
   connect(this, SIGNAL(send_cmd(QString)), box, SLOT(send_cmd_to_qp(QString)));
   in_history = false;
+  hist_pos = 0;
   //setPaper(QBrush(yellow));
 }
 
 void Interact::insert_at_end(QString s)
 {
-  para = paragraphs()-1;
-  indent = paragraphLength(para);
-  setCursorPosition(para, indent);
-  insert(s);
-  para = paragraphs()-1;
-  indent = paragraphLength(para);
-  setCursorPosition(para, indent);
-  setColor(Qt::blue);
-  int n = s.find(QRegExp("'| \\?- $"));
-  in_query = (n != -1);
+  insertPlainText(s);
+  QTextCursor cursor(textCursor());
+  cursor.movePosition(QTextCursor::End);
+  setTextCursor(cursor);
+  setTextColor(Qt::blue);
+  in_query = (s.contains(QRegExp("'| \\?- $")));
+  if (in_query) indent = cursor.position();
 }
 
 void Interact::processF5(QString s)
 {
-  int p = paragraphs()-1;
-  int i = paragraphLength(para);
-  setCursorPosition(p, i);
-  insert(s);
+  QTextCursor cursor(textCursor());
+  cursor.movePosition(QTextCursor::End);
+  cursor.insertText(s);
+  setTextCursor(cursor);
 }
 
 void Interact::processReturn()
 {
-  int p = paragraphs()-1;
-  int i = paragraphLength(p);
-  setSelection(para, indent, p, i);
+  QTextCursor cursor(textCursor());
+  cursor.setPosition(indent);
+  cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
   in_history = false;
-  QString cmd = selectedText();
-  setSelection(p, i, p, i);
+  QString cmd = cursor.selectedText();
   if (!in_query || end_of_term(cmd, 0))
     {
-      para = p;
-      indent = i;
+      cmd.append("\n");
       send_cmd(cmd);
       cmd.truncate(cmd.length()-1);
-      if (in_query) addHistoryItem(new QString(cmd));
+      if (in_query)
+        {
+          addHistoryItem(new QString(cmd));
+          hist_pos = 0;
+        }
       in_query = false;
     }
 }
@@ -95,46 +91,46 @@ Interact::~Interact()
 {
 }
 
-void Interact::contentsMouseReleaseEvent(QMouseEvent* e)
+void Interact::mouseReleaseEvent(QMouseEvent* e)
 {
-  int p,i;
-  getCursorPosition(&p,&i);
-  if ((p < para) || ((p == para) && (i < indent)))
+  QTextCursor cursor(textCursor());
+  int p = cursor.position();
+  if (p < indent)
     {
       if (e->button() != Qt::MidButton)
-	Q3TextEdit::contentsMouseReleaseEvent(e);
-      setCursorPosition(currpara,currindent);
+	QTextEdit::mouseReleaseEvent(e);
+      cursor.movePosition(QTextCursor::End);
+      setTextCursor(cursor);
       readonly = true;
     }
   else
     {
-      Q3TextEdit::contentsMouseReleaseEvent(e);
+      QTextEdit::mouseReleaseEvent(e);
       readonly = false;
     }
 }
 
-void Interact::contentsMousePressEvent(QMouseEvent* e)
+void Interact::mousePressEvent(QMouseEvent* e)
 {
-  getCursorPosition(&currpara, &currindent);
   if (e->button() == Qt::MidButton)
     {
       QMouseEvent lbe(QEvent::MouseButtonPress, e->pos(), 
-		      Qt::LeftButton, Qt::LeftButton);
-      Q3TextEdit::contentsMousePressEvent(&lbe);
-      Q3TextEdit::contentsMouseReleaseEvent(&lbe);
+		      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+      QTextEdit::mousePressEvent(&lbe);
+      QTextEdit::mouseReleaseEvent(&lbe);
     }
-  Q3TextEdit::contentsMousePressEvent(e);
+  QTextEdit::mousePressEvent(e);
 }
 
 void Interact::cut()
 {
-  if (readonly) Q3TextEdit::copy();
-  else Q3TextEdit::cut();
+  if (readonly) QTextEdit::copy();
+  else QTextEdit::cut();
 }
 
 void Interact::paste()
 {
-  if (!readonly) Q3TextEdit::paste();
+  if (!readonly) QTextEdit::paste();
 }
 
 void Interact::keyPressEvent(QKeyEvent *k)
@@ -142,10 +138,10 @@ void Interact::keyPressEvent(QKeyEvent *k)
   int key_pressed = k->key();
   if (key_pressed == Qt::Key_Control)
     {
-      Q3TextEdit::keyPressEvent(k);
+      QTextEdit::keyPressEvent(k);
       return;
     }
-  if (k->state() == Qt::ControlButton)
+  if (k->modifiers() == Qt::ControlModifier)
     {
       in_history = false;
       if (key_pressed == 'D')
@@ -155,28 +151,32 @@ void Interact::keyPressEvent(QKeyEvent *k)
         } 
       if (key_pressed == 'C')
 	{
-	  Q3TextEdit::keyPressEvent(k);
+	  QTextEdit::keyPressEvent(k);
 	  return;
 	}
     }
   if (readonly)
     {
       in_history = false;
-      int p = paragraphs()-1;
-      int i = paragraphLength(p);
-
-      setSelection(p,i,p,i);
+      QTextCursor cursor(textCursor());
+      cursor.movePosition(QTextCursor::End);
+      setTextCursor(cursor);
+    }
+  if (key_pressed == Qt::Key_Return)
+    {
+      processReturn();
     }
   if ((key_pressed == Qt::Key_Backspace)
       || (key_pressed == Qt::Key_Left))
     {
+      int p;
       in_history = false;
-      int p,i;
-      getCursorPosition(&p,&i);
-      if ((p < para) || ((p == para) && (i <= indent)))
-	{
-	  return;
-	}
+      QTextCursor cursor(textCursor());
+      p = cursor.position();
+      if (p <= indent)
+        {
+          return;
+        }
     }
   if (key_pressed == Qt::Key_Up)
     {
@@ -192,50 +192,50 @@ void Interact::keyPressEvent(QKeyEvent *k)
       in_history = true;
       if (item != NULL)
 	{
-	  int p = paragraphs()-1;
-	  int i = paragraphLength(p);
-	  
-	  setSelection(para,indent,p,i);
-	  insert(*item);
+	  QTextCursor cursor(textCursor());
+	  cursor.setPosition(indent);
+	  cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+	  cursor.removeSelectedText();
+	  insertPlainText(*item);
 	}
       return;
     }
-   if (key_pressed == Qt::Key_Down)
+  if (key_pressed == Qt::Key_Down)
     {
        QString* item = previousHistoryItem();
+       QTextCursor cursor(textCursor());
+       cursor.setPosition(indent);
+       cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+       cursor.removeSelectedText();
        if ( item != NULL)
          {
-	   int p = paragraphs()-1;
-	   int i = paragraphLength(p);
-	   
-	   setSelection(para,indent,p,i);
-	   insert(*item);
+	   insertPlainText(*item);
           }
        else
 	 {
-	   int p = paragraphs()-1;
-	   int i = paragraphLength(p);
-
-	   setSelection(para,indent,p,i);
-	   insert("");
+	   insertPlainText("");
 	 }
        return;
     }
   if (key_pressed == Qt::Key_Home)
     {
       in_history = false;
-      if (k->state() == Qt::ControlButton)
+      if (k->modifiers() == Qt::ControlModifier)
 	{
-	  setCursorPosition(para,indent);
+	  QTextCursor cursor(textCursor());
+	  cursor.setPosition(indent);
+	  setTextCursor(cursor);
 	  return;
 	}
       else
 	{
-	  int p,i;
-	  getCursorPosition(&p,&i);
-	  if (p >= para)
+	  int p;
+	  QTextCursor cursor(textCursor());
+	  cursor.movePosition(QTextCursor::StartOfBlock);
+	  p = cursor.position();
+	  if (p > indent)
 	    {
-	      setCursorPosition(p, 0);
+	      setTextCursor(cursor);
 	    }
 	  return;
 	}
@@ -243,12 +243,14 @@ void Interact::keyPressEvent(QKeyEvent *k)
   if (key_pressed == Qt::Key_PageUp)
     {
       in_history = false;
-      setCursorPosition(para,indent);
+      QTextCursor cursor(textCursor());
+      cursor.setPosition(indent);
+      setTextCursor(cursor);
       return;
     }
 
   in_history = false;
-  Q3TextEdit::keyPressEvent(k);
+  QTextEdit::keyPressEvent(k);
 }
 
 void Interact::addHistoryItem(QString* s)
@@ -258,31 +260,32 @@ void Interact::addHistoryItem(QString* s)
 
 QString* Interact::firstHistoryItem(void)
 {
+    if (history.size() == 0) return NULL;
     return history.first();
 }
 
 QString* Interact::nextHistoryItem(void)
 {
-    if (history.current() == NULL) history.first();
-    return history.next();
+    if (history.size() <= hist_pos+1) return NULL;
+    return history[++hist_pos];
 }
 
 QString* Interact::previousHistoryItem(void)
 {
-    if (history.current() == NULL) history.last();
-    return history.prev();
+    if (hist_pos == 0) return NULL;
+    return history[--hist_pos];
 }
 
 void Interact::openQueryFile()
 {
-  QString fileName = Q3FileDialog::getOpenFileName(QString::null, "*", this);
+  QString fileName = QFileDialog::getOpenFileName(this, QString::null, QString::null, "*");
   if (fileName != QString::null)
     {
       QFile f(fileName);
       if (f.open(QIODevice::ReadOnly))
 	{
 	  QTextStream t(&f);
-	  XQPQueries* xqp_queries = new XQPQueries(parent, fileName, t.read());
+	  XQPQueries* xqp_queries = new XQPQueries(parent, fileName, t.readAll());
 	  xqp_queries->setFont(font());
 	  connect(xqp_queries, SIGNAL(process_text(QString)), this, SLOT(processF5(QString)));
 	  connect(xqp_queries, SIGNAL(process_return()), this, SLOT(processReturn()));
@@ -293,17 +296,17 @@ void Interact::openQueryFile()
 
 void Interact::saveHistory()
 {  
-  QString fileName = Q3FileDialog::getSaveFileName(QString::null, "*", this);
+  QString fileName = QFileDialog::getSaveFileName(this, QString::null, QString::null, "*");
   if (fileName != QString::null)
     {
       QFile f(fileName);
       if (f.open(QIODevice::WriteOnly))
 	{
 	  QString* item = firstHistoryItem();
+	  QTextStream out(&f);
 	  while (item != NULL)
 	    {
-	      f.writeBlock(*item, item->length());
-	      f.writeBlock("\n", 1);
+	      out << *item << "\n";
 	      item = nextHistoryItem();
 	    }
 	  f.close();
@@ -313,14 +316,15 @@ void Interact::saveHistory()
 
 void Interact::saveSession()
 {
-  QString fileName = Q3FileDialog::getSaveFileName(QString::null, "*", this);
+  QString fileName = QFileDialog::getSaveFileName(this, QString::null, QString::null, "*");
   if (fileName != QString::null)
     {
       QFile f(fileName);
       if (f.open(QIODevice::WriteOnly))
 	{
-	  QString s = text();
-	  f.writeBlock(s, s.length());
+	  QString s = toPlainText();
+	  QTextStream out(&f);
+	  out << s;
 	  f.close();
 	}
     }

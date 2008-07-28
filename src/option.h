@@ -66,7 +66,10 @@ public:
   const Type Value(void) const { return value; }
   void Value(Type v) { value = v; }
 
-  Option(Type v) : value(v) {}
+  //Option(Type v) : value(v) {}
+  Option(Type v){
+    value = v;
+  }
 };
 
 #endif	// OPTION_H

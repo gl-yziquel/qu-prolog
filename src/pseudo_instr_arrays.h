@@ -64,38 +64,38 @@
 struct pseudo_instr0_data {
   Thread::ReturnValue (Thread::*funct)(void); // pointer to function
   int32	mode;			 // bit representation of mode of args
-  char *name;			// Used by QuAM tracer
+  const char *name;			// Used by QuAM tracer
 };
 
 struct pseudo_instr1_data {
   Thread::ReturnValue (Thread::*funct)(Object*&); // pointer to function
   int32	mode;			// bit representation of mode of args
-  char *name;			// Used by QuAM tracer
+  const char *name;			// Used by QuAM tracer
 };
   
 struct pseudo_instr2_data {
   Thread::ReturnValue (Thread::*funct)(Object*&, Object*&);
   int32	mode;
-  char *name;			// Used by QuAM tracer
+  const char *name;			// Used by QuAM tracer
 };
   
 struct pseudo_instr3_data {
   Thread::ReturnValue (Thread::*funct)(Object*&, Object*&, Object*&);
   int32	mode;
-  char *name;			// Used by QuAM tracer
+  const char *name;			// Used by QuAM tracer
 };
   
 struct pseudo_instr4_data {
   Thread::ReturnValue (Thread::*funct)(Object*&, Object*&, Object*&, Object*&);
   int32	mode;
-  char *name;			// Used by QuAM tracer
+  const char *name;			// Used by QuAM tracer
 };
   
 struct pseudo_instr5_data {
   Thread::ReturnValue (Thread::*funct)(Object*&, Object*&, Object*&, 
 				       Object*&, Object*&);
   int32 mode;
-  char *name;
+  const char *name;
 };
 
 extern pseudo_instr0_data pseudo_instr0_array[];

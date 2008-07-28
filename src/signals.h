@@ -58,7 +58,9 @@
 #ifndef	SIGNALS_H
 #define	SIGNALS_H
 
+
 #include <signal.h>
+#include <string.h>
 
 #include "debug.h"
 #include "defs.h"
@@ -121,7 +123,11 @@ private:
     //
     // Initialise the entry.
     //
-    void init(char *n) { name = n; }
+    void init(const char *n) {
+      int len = strlen(n);
+      name = new char[len+1];
+      strcpy(name, n);
+    }
 
   public:    
     Signal(void) : signal(0), name(NULL) { }
