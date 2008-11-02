@@ -738,7 +738,7 @@ escape_builtin(Object* goal, WordArray& life)
 	    assert(t->isVariable());
 	    OBJECT_CAST(Reference*, t)->setCollectedFlag();
 	    updateLife(life, t);
-	    return true;
+	    return true; 
 	}
       return (functor == AtomTable::ccut ||
 	      functor == AtomTable::cut_ancestor ||

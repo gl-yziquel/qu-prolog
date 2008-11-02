@@ -151,43 +151,21 @@ xreglife::addRange(int i, int s, int e)
       reginfo[i] = add;
       return true;
     }
-  if (e < n->getStart())
+  llist* next = n;
+  while (next != NULL)
     {
-      llist* add = new llist;
-      add->getStart() = s;
-      add->getEnd() = e;
-      add->getNext() = n;
-      reginfo[i] = add;
-      return true;
-    }
-  llist* next = n->getNext();
-  while (next != NULL && s > next->getStart())
-    {
-      n = next;
+      if ((e >= next->getStart()) and (next->getEnd() >= s))
+        {
+          return false;
+        }
       next = next->getNext();
     }
-  if (next == NULL)
-    {
-      if (s < n->getEnd())
-	{
-	  return false;
-	}
-      llist* add = new llist;
-      add->getStart() = s;
-      add->getEnd() = e;
-      n->getNext() = add;
-      return true;
-    }
-  if ((e > next->getStart()) || (s < n->getEnd()))
-    {
-      return false;
-    }
-  
+  // no conflict
   llist* add = new llist;
   add->getStart() = s;
   add->getEnd() = e;
-  add->getNext() = next;
-  n->getNext() = add;
+  add->getNext() = n;
+  reginfo[i] = add;
   return true;
 }
 
@@ -383,6 +361,7 @@ void make_live(Object* reg, Object* other, Object** xreg_life)
     }
 }
 
+
 void make_dead(Object* reg, Object** xreg_life)
 {
   assert(reg == reg->variableDereference());
@@ -399,6 +378,19 @@ void make_dead(Object* reg, Object** xreg_life)
       assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
       xreg_life[arg->getInteger()] = AtomTable::failure;
     }
+}
+
+void make_pseudo_dead(Object* reg, Object** xreg_life)
+{
+  for (u_int i = 0; i < NUMBER_X_REGISTERS; i++)
+    {
+      if (equal_regs(xreg_life[i],reg))
+        {
+           xreg_life[i] = AtomTable::failure;
+           break;
+        }
+    }
+  make_dead(reg, xreg_life);
 }
 
 bool is_live(Object* reg, Object* other, Object** xreg_life)

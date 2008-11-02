@@ -47,24 +47,24 @@ usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
 #
 # location of Qu-Prolog project
 #
-PATH=/home/pjr/qp_dev/rel/qp8.6/bin:$PATH
+PATH=/home/pjr/qp_dev/rel/qp8.7/bin:$PATH
 
 #
 # names of Qu-Prolog binaries
 #
-preprocess=/home/pjr/qp_dev/rel/qp8.6/bin/qppp
-expand=/home/pjr/qp_dev/rel/qp8.6/bin/qg
-compile=/home/pjr/qp_dev/rel/qp8.6/bin/qc1
+preprocess=/home/pjr/qp_dev/rel/qp8.7/bin/qppp
+expand=/home/pjr/qp_dev/rel/qp8.7/bin/qg
+compile=/home/pjr/qp_dev/rel/qp8.7/bin/qc1
 compversion=qup
-assemble=/home/pjr/qp_dev/rel/qp8.6/bin/qa
-link=/home/pjr/qp_dev/rel/qp8.6/bin/ql
-execute=/home/pjr/qp_dev/rel/qp8.6/bin/qem
+assemble=/home/pjr/qp_dev/rel/qp8.7/bin/qa
+link=/home/pjr/qp_dev/rel/qp8.7/bin/ql
+execute=/home/pjr/qp_dev/rel/qp8.7/bin/qem
 
 #
 # Use the line below when dynamic search for libraries is implemented.
 #
 # libqofiles=""
-libqofiles="/home/pjr/qp_dev/rel/qp8.6/prolog/compiler/*.qo /home/pjr/qp_dev/rel/qp8.6/prolog/library/*.qo"
+libqofiles="/home/pjr/qp_dev/rel/qp8.7/prolog/compiler/*.qo /home/pjr/qp_dev/rel/qp8.7/prolog/library/*.qo"
 
 qlfiles=""
 qlefiles=""

@@ -75,6 +75,7 @@ Heap::alloc_registers(WordArray& life, xreglife& xregisters,
   for (int i = 0; i < life.lastEntry(); i++)
     {
       Object* term = reinterpret_cast<Object*>(life.Entries()[i])->variableDereference();
+
       if (term->isStructure() && OBJECT_CAST(Structure*, term)->getFunctor() == AtomTable::unify_ref)
 	{
 	  term = OBJECT_CAST(Structure*, term)->getArgument(1);
@@ -583,7 +584,6 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 {
   Object* xreg_life[NUMBER_X_REGISTERS];
   init_live(xreg_life);
-
   for (int i = 0; i < ecode.lastEntry(); i++)
     {
       assert(reinterpret_cast<Object*>(ecode.Entries()[i])->isStructure());
@@ -792,7 +792,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	  int m = pseudo_instr1_array[arg1->getInteger()].mode;
 	  if (m & 1)
 	    {
-	      make_dead(tstruct->getArgument(2)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(2)->variableDereference(), 
 			xreg_life);
 	    }
 	  acode.addEntry(reinterpret_cast<word32>(tstruct));
@@ -804,12 +804,12 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	  int m = pseudo_instr2_array[arg1->getInteger()].mode;
 	  if (m & 2)
 	    {
-	      make_dead(tstruct->getArgument(2)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(2)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 1)
 	    {
-	      make_dead(tstruct->getArgument(3)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(3)->variableDereference(), 
 			xreg_life);
 	    }
 	  acode.addEntry(reinterpret_cast<word32>(tstruct));
@@ -821,17 +821,17 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	  int m = pseudo_instr3_array[arg1->getInteger()].mode;
 	  if (m & 4)
 	    {
-	      make_dead(tstruct->getArgument(2)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(2)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 2)
 	    {
-	      make_dead(tstruct->getArgument(3)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(3)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 1)
 	    {
-	      make_dead(tstruct->getArgument(4)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(4)->variableDereference(), 
 			xreg_life);
 	    }
 	  acode.addEntry(reinterpret_cast<word32>(tstruct));
@@ -843,22 +843,22 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	  int m = pseudo_instr4_array[arg1->getInteger()].mode;
 	  if (m & 8)
 	    {
-	      make_dead(tstruct->getArgument(2)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(2)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 4)
 	    {
-	      make_dead(tstruct->getArgument(3)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(3)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 2)
 	    {
-	      make_dead(tstruct->getArgument(4)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(4)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 1)
 	    {
-	      make_dead(tstruct->getArgument(5)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(5)->variableDereference(), 
 			xreg_life);
 	    }
 	  acode.addEntry(reinterpret_cast<word32>(tstruct));
@@ -870,27 +870,27 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	  int m = pseudo_instr5_array[arg1->getInteger()].mode;
 	  if (m & 16)
 	    {
-	      make_dead(tstruct->getArgument(2)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(2)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 8)
 	    {
-	      make_dead(tstruct->getArgument(3)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(3)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 4)
 	    {
-	      make_dead(tstruct->getArgument(4)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(4)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 2)
 	    {
-	      make_dead(tstruct->getArgument(5)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(5)->variableDereference(), 
 			xreg_life);
 	    }
 	  if (m & 1)
 	    {
-	      make_dead(tstruct->getArgument(6)->variableDereference(), 
+	      make_pseudo_dead(tstruct->getArgument(6)->variableDereference(), 
 			xreg_life);
 	    }
 	  acode.addEntry(reinterpret_cast<word32>(tstruct));
@@ -908,6 +908,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 void
 Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 {
+
   bool alloc = false;
   for (int i = 0; i < acode.lastEntry(); i++)
     {

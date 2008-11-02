@@ -260,6 +260,7 @@ void prefer_registers(WordArray&, xreglife&, WordArray&, int);
 void init_live(Object**);
 void make_live(Object*, Object*, Object**);
 void make_dead(Object*, Object**);
+void make_pseudo_dead(Object*, Object**);
 bool is_live(Object*, Object*, Object**);
 
 bool any_assoc_putset(Object*, int, WordArray&);

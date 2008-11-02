@@ -208,7 +208,7 @@ Thread::psi_get_number(Object*& object1, Object*& object2, Object*& object3)
   
   offset = reinterpret_cast<CodeLoc>(val2->getInteger() + val3->getInteger());
    
-  object1 = heap.newInteger(getInteger(offset));
+  object1 = heap.newInteger(getNumber(offset));
   
   return(RV_SUCCESS);
 }
