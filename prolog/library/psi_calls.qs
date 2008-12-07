@@ -2493,14 +2493,14 @@ end('$put_line'/2):
 
 
 
-'$pedro_subscribe'/2:
+'ip_array_get_entries'/2:
 
 
 $1:
 	pseudo_instr2(114, 0, 2)
 	get_x_value(1, 2)
 	proceed
-end('$pedro_subscribe'/2):
+end('ip_array_get_entries'/2):
 
 
 
@@ -2607,6 +2607,28 @@ $1:
 	pseudo_instr2(124, 0, 1)
 	proceed
 end('$pedro_connect'/2):
+
+
+
+'$pedro_subscribe'/2:
+
+
+$1:
+	pseudo_instr2(125, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$pedro_subscribe'/2):
+
+
+
+'hash_variable'/2:
+
+
+$1:
+	pseudo_instr2(126, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('hash_variable'/2):
 
 
 
@@ -3370,6 +3392,16 @@ $1:
 	get_x_value(2, 3)
 	proceed
 end('$ipc_first'/3):
+
+
+
+'setarg'/3:
+
+
+$1:
+	pseudo_instr3(69, 0, 1, 2)
+	proceed
+end('setarg'/3):
 
 
 

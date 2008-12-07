@@ -82,8 +82,11 @@ Thread::psi_not_free_in(Object *& object1, Object *& object2)
   heap.prologValueDereference(pval2);
   
   assert(obvar->isObjectVariable());
-  
-  return (BOOL_TO_RV(notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval2)));
+
+  quick_tidy_check = true;
+  bool result = notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval2);
+  quick_tidy_check = false;
+  return (BOOL_TO_RV(result));
 }
 
 //
@@ -110,13 +113,17 @@ Thread::psi_not_free_in_var_simplify(Object *& object1, Object *& object2)
 
   if (pval2.getTerm()->isAnyVariable())
     {
-      return(BOOL_TO_RV(notFreeInVarSimp(OBJECT_CAST(ObjectVariable*, obvar),
-				         pval2)));
+      quick_tidy_check = true;
+      bool result = notFreeInVarSimp(OBJECT_CAST(ObjectVariable*, obvar),pval2);
+      quick_tidy_check = false;
+      return(BOOL_TO_RV(result));
     }
   else
     {
-      return(BOOL_TO_RV(notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), 
-                                  pval2)));
+      quick_tidy_check = true;
+      bool result = notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval2);
+      quick_tidy_check = false;
+      return(BOOL_TO_RV(result));
     }
 }
 
@@ -138,8 +145,10 @@ Thread::psi_not_free_in_nfi_simp(Object*& obvar, Object*& term)
   assert(ov->isObjectVariable());
   assert(term->hasLegalSub());
   PrologValue pv(term);
- 
-  return(BOOL_TO_RV(notFreeInNFISimp(OBJECT_CAST(ObjectVariable*, ov), pv)));
+  quick_tidy_check = true;
+  bool result = notFreeInNFISimp(OBJECT_CAST(ObjectVariable*, ov), pv);
+  quick_tidy_check = false;
+  return(BOOL_TO_RV(result));
 }  
 
 //
@@ -153,9 +162,9 @@ Thread::psi_is_not_free_in(Object*& obvar, Object*& term)
   assert(ov->isObjectVariable());
   assert(term->hasLegalSub());
   PrologValue pv(term);
- 
+  quick_tidy_check = true;
   truth3 result = freeness_test(OBJECT_CAST(ObjectVariable*, ov), pv);
-
+  quick_tidy_check = false;
   return(BOOL_TO_RV(result == false));
 }  
 
@@ -171,9 +180,9 @@ Thread::psi_is_free_in(Object*& obvar, Object*& term)
   assert(ov->isObjectVariable());
   assert(term->hasLegalSub());
   PrologValue pv(term);
- 
+  quick_tidy_check = true;
   truth3 result = freeness_test(OBJECT_CAST(ObjectVariable*, ov), pv);
-  
+  quick_tidy_check = false;
   return(BOOL_TO_RV(result == true));
 }  
 

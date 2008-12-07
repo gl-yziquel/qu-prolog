@@ -127,11 +127,29 @@ inline void updateAndTrailObject(heapobject* ptr, Object* value, u_int offset)
   //
   // Don't trail only if ptr is after saved top on the heap
   //
-  if (ptr < heap.getSavedTop() || ptr >= heap.getTop())
-    {
-      assert(((heapobject*)(*(ptr+offset)) == NULL) || !reinterpret_cast<Object*>(*(ptr+offset))->isSubstitutionBlock());
-      otherTrail.push(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
+  if (quick_tidy_check) {
+    if ((ptr < heap.getSavedTop()) || (ptr >=  heap.getTop())) {
+      heapobject* ptroffval = (heapobject*)(*(ptr+offset));
+      assert((ptroffval == NULL) || !reinterpret_cast<Object*>(ptroffval)->isSubstitutionBlock());
+      otherTrail.push(ptr, reinterpret_cast<Object*>(ptroffval), offset);
     }
+  } else {
+    UpdatableObjectEntry entry(ptr, value, offset);
+    HeapAndTrailsChoice state = 
+      choiceStack.getHeapAndTrailsState(currentChoicePoint);
+    heapobject* savedHT;
+    TrailLoc savedBindingTrailTop;
+    TrailLoc savedOtherTrailTop;
+    
+    state.restore(savedHT, savedBindingTrailTop, savedOtherTrailTop); 
+
+    if (!entry.tidy(otherTrail.getTop(), savedOtherTrailTop, savedHT, heap))
+      {
+        heapobject* ptroffval = (heapobject*)(*(ptr+offset));
+        assert((ptroffval == NULL) || !reinterpret_cast<Object*>(ptroffval)->isSubstitutionBlock());
+        otherTrail.push(ptr, reinterpret_cast<Object*>(ptroffval), offset);
+      }
+  }
   *(ptr+offset) = reinterpret_cast<heapobject>(value); 
 }
 
@@ -139,17 +157,33 @@ inline void updateAndTrailObject(heapobject* ptr, Object* value, u_int offset)
 // Update and trail an implicit parameter entry
 //
 inline void updateAndTrailIP(heapobject* ptr, Object* value,
-                                     u_int offset = 0)
+                             u_int offset = 0)
 {
   assert(ptr != NULL);
   assert(value != NULL);
   //
   // Don't trail only if ptr is after saved top on the heap
   //
-  if (ptr < heap.getSavedTop() || ptr >= heap.getTop())
-    {
-      otherTrail.push(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
-    }
+  if (quick_tidy_check) {
+    if (ptr < heap.getSavedTop() || ptr >= heap.getTop())
+      {
+        otherTrail.push(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
+      }
+  } else {
+    UpdatableObjectEntry entry(ptr, value, offset);
+    HeapAndTrailsChoice state = 
+      choiceStack.getHeapAndTrailsState(currentChoicePoint);
+    heapobject* savedHT;
+    TrailLoc savedBindingTrailTop;
+    TrailLoc savedOtherTrailTop;
+    
+    state.restore(savedHT, savedBindingTrailTop, savedOtherTrailTop); 
+    
+    if (!entry.tidy(otherTrail.getTop(), savedOtherTrailTop, savedHT, heap))
+      {
+        otherTrail.push(ptr, reinterpret_cast<Object*>(*(ptr+offset)), offset);
+      }
+  }
   *(ptr+offset) = reinterpret_cast<heapobject>(value); 
 }
 
@@ -159,12 +193,30 @@ inline void trailTag(Object* o)
   //
   // Don't trail only if o is after saved top on the heap
   //
-  if (reinterpret_cast<heapobject*>(o) < heap.getSavedTop() ||
-      reinterpret_cast<heapobject*>(o) >= heap.getTop())
-    {
-      otherTrail.push(reinterpret_cast<heapobject*>(o), 
-		 *(reinterpret_cast<heapobject*>(o)));
-    }
+  if (quick_tidy_check) {
+    if (reinterpret_cast<heapobject*>(o) < heap.getSavedTop() ||
+        reinterpret_cast<heapobject*>(o) >= heap.getTop())
+      {
+        otherTrail.push(reinterpret_cast<heapobject*>(o), 
+                        *(reinterpret_cast<heapobject*>(o)));
+      }
+  } else {
+    UpdatableTagEntry entry(reinterpret_cast<heapobject*>(o), 
+                            *(reinterpret_cast<heapobject*>(o)));
+    HeapAndTrailsChoice state = 
+      choiceStack.getHeapAndTrailsState(currentChoicePoint);
+    heapobject* savedHT;
+    TrailLoc savedBindingTrailTop;
+    TrailLoc savedOtherTrailTop;
+    
+    state.restore(savedHT, savedBindingTrailTop, savedOtherTrailTop); 
+    
+    if (!entry.tidy(otherTrail.getTop(), savedOtherTrailTop, savedHT, heap))
+      {        
+        otherTrail.push(reinterpret_cast<heapobject*>(o), 
+                        *(reinterpret_cast<heapobject*>(o)));
+      }
+  }
 }
 
 //

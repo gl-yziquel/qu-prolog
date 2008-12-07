@@ -1093,9 +1093,9 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	  Object* arg1 = tstruct->getArgument(3)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(4)->variableDereference();
 	  int reg;
-	  if (t2 == AtomTable::value && equal_regs(arg1, arg2) ||
-	      t1 == AtomTable::meta && t2 == AtomTable::variable &&
-	      equal_regs(arg1, arg2) && is_xreg(arg1, reg))
+	  if ((t2 == AtomTable::value && equal_regs(arg1, arg2)) ||
+	      (t1 == AtomTable::meta && t2 == AtomTable::variable &&
+	      equal_regs(arg1, arg2) && is_xreg(arg1, reg)))
 	    {
 	      continue;
 	    }

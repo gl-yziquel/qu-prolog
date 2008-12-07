@@ -307,7 +307,7 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_simplify_term,	1,	"psi_simplify_term"}, 
 	{&Thread::psi_is_not_free_in,	0,	"psi_is_not_free_in"}, 
 	{&Thread::psi_put_line,	0,	"psi_put_line"}, 
-	{&Thread::psi_pedro_subscribe,	1,	"psi_pedro_subscribe"}, 
+	{&Thread::psi_ip_get_array_entries,	1,	"psi_ip_get_array_entries"}, 
 	{&Thread::psi_write_float,	0,	"psi_write_float"}, 
 	{&Thread::psi_select,	1,	"psi_select"}, 
 	{&Thread::psi_write_string,	0,	"psi_write_string"}, 
@@ -317,7 +317,9 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_list_to_string,	1,	"psi_list_to_string"}, 
 	{&Thread::psi_string_to_atom,	1,	"psi_string_to_atom"}, 
 	{&Thread::psi_atom_to_string,	1,	"psi_atom_to_string"}, 
-	{&Thread::psi_pedro_connect,	0,	"psi_pedro_connect"}
+	{&Thread::psi_pedro_connect,	0,	"psi_pedro_connect"}, 
+	{&Thread::psi_pedro_subscribe,	1,	"psi_pedro_subscribe"}, 
+	{&Thread::psi_hash_variable,	1,	"psi_hash_variable"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -389,7 +391,8 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_user_ht_insert,	0,	"psi_user_ht_insert"}, 
 	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
 	{&Thread::psi_get_integer,	4,	"psi_get_integer"}, 
-	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}
+	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}, 
+	{&Thread::psi_setarg,	0,	"psi_setarg"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {

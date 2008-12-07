@@ -2277,12 +2277,12 @@ end('$psi1_decl'/6):
 
 '$psi2_decl'/7:
 
-	switch_on_term(0, $127, 'fail', 'fail', 'fail', 'fail', $126)
+	switch_on_term(0, $129, 'fail', 'fail', 'fail', 'fail', $128)
 
-$126:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120, 120:$121, 121:$122, 122:$123, 123:$124, 124:$125])
+$128:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120, 120:$121, 121:$122, 122:$123, 123:$124, 124:$125, 125:$126, 126:$127])
 
-$127:
+$129:
 	try(7, $1)
 	retry($2)
 	retry($3)
@@ -2407,7 +2407,9 @@ $127:
 	retry($122)
 	retry($123)
 	retry($124)
-	trust($125)
+	retry($125)
+	retry($126)
+	trust($127)
 
 $1:
 	get_integer(0, 0)
@@ -5469,8 +5471,8 @@ $114:
 
 $115:
 	get_integer(114, 0)
-	get_constant('psi_pedro_subscribe', 4)
-	get_structure('$pedro_subscribe', 2, 1)
+	get_constant('psi_ip_get_array_entries', 4)
+	get_structure('ip_array_get_entries', 2, 1)
 	unify_x_variable(0)
 	unify_x_variable(1)
 	get_x_value(0, 2)
@@ -5484,13 +5486,15 @@ $115:
 	get_list(6)
 	unify_x_ref(0)
 	unify_constant('[]')
-	get_structure('pedro_subscribe', 2, 0)
+	get_structure('ip_get_array_entries', 2, 0)
 	unify_x_ref(0)
 	unify_x_ref(1)
 	get_structure('@', 1, 0)
-	unify_constant('term')
-	get_structure('?', 1, 1)
-	unify_constant('integer')
+	unify_constant('atom')
+	get_structure('-', 1, 1)
+	unify_x_ref(0)
+	get_structure('list', 1, 0)
+	unify_constant('atomic')
 	proceed
 
 $116:
@@ -5782,18 +5786,70 @@ $125:
 	get_structure('@', 1, 1)
 	unify_constant('atom')
 	proceed
+
+$126:
+	get_integer(125, 0)
+	get_constant('psi_pedro_subscribe', 4)
+	get_structure('$pedro_subscribe', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('pedro_subscribe', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('?', 1, 1)
+	unify_constant('integer')
+	proceed
+
+$127:
+	get_integer(126, 0)
+	get_constant('psi_hash_variable', 4)
+	get_structure('hash_variable', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('hash_variable', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('?', 1, 1)
+	unify_constant('integer')
+	proceed
 end('$psi2_decl'/7):
 
 
 
 '$psi3_decl'/8:
 
-	switch_on_term(0, $71, 'fail', 'fail', 'fail', 'fail', $70)
-
-$70:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69])
+	switch_on_term(0, $72, 'fail', 'fail', 'fail', 'fail', $71)
 
 $71:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70])
+
+$72:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -5862,7 +5918,8 @@ $71:
 	retry($66)
 	retry($67)
 	retry($68)
-	trust($69)
+	retry($69)
+	trust($70)
 
 $1:
 	get_integer(0, 0)
@@ -8222,6 +8279,40 @@ $69:
 	get_structure('+', 1, 2)
 	unify_constant('ipc_ref')
 	proceed
+
+$70:
+	get_integer(69, 0)
+	get_constant('psi_setarg', 5)
+	get_structure('setarg', 3, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(5)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(5, 4)
+	get_list(6)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(7)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('setarg', 3, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	get_structure('@', 1, 0)
+	unify_constant('integer')
+	get_structure('+', 1, 1)
+	unify_constant('compound')
+	get_structure('@', 1, 2)
+	unify_constant('term')
+	proceed
 end('$psi3_decl'/8):
 
 
@@ -9118,7 +9209,7 @@ end('$psi5_decl'/10):
 
 
 
-'$query_pseudo_instr2008_11_3_8_48_24_810/0$0'/0:
+'$query_pseudo_instr2008_12_8_8_10_37_290/0$0'/0:
 
 
 $1:
@@ -9131,11 +9222,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2008_11_3_8_48_24_810/0$0'/0):
+end('$query_pseudo_instr2008_12_8_8_10_37_290/0$0'/0):
 
 
 
-'$query_pseudo_instr2008_11_3_8_48_24_810/0$1'/0:
+'$query_pseudo_instr2008_12_8_8_10_37_290/0$1'/0:
 
 
 $1:
@@ -9148,11 +9239,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2008_11_3_8_48_24_810/0$1'/0):
+end('$query_pseudo_instr2008_12_8_8_10_37_290/0$1'/0):
 
 
 
-'$query_pseudo_instr2008_11_3_8_48_24_810/0$2'/0:
+'$query_pseudo_instr2008_12_8_8_10_37_290/0$2'/0:
 
 
 $1:
@@ -9165,11 +9256,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2008_11_3_8_48_24_810/0$2'/0):
+end('$query_pseudo_instr2008_12_8_8_10_37_290/0$2'/0):
 
 
 
-'$query_pseudo_instr2008_11_3_8_48_24_810'/0:
+'$query_pseudo_instr2008_12_8_8_10_37_290'/0:
 
 	try(0, $1)
 	retry($2)
@@ -9178,22 +9269,22 @@ end('$query_pseudo_instr2008_11_3_8_48_24_810/0$2'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2008_11_3_8_48_24_810/0$0', 0, 0)
+	call_predicate('$query_pseudo_instr2008_12_8_8_10_37_290/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2008_11_3_8_48_24_810/0$1', 0, 0)
+	call_predicate('$query_pseudo_instr2008_12_8_8_10_37_290/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2008_11_3_8_48_24_810/0$2', 0, 0)
+	call_predicate('$query_pseudo_instr2008_12_8_8_10_37_290/0$2', 0, 0)
 	fail
 
 $4:
 	proceed
-end('$query_pseudo_instr2008_11_3_8_48_24_810'/0):
+end('$query_pseudo_instr2008_12_8_8_10_37_290'/0):
 
 
 
@@ -9201,7 +9292,7 @@ end('$query_pseudo_instr2008_11_3_8_48_24_810'/0):
 
 
 $1:
-	execute_predicate('$query_pseudo_instr2008_11_3_8_48_24_810', 0)
+	execute_predicate('$query_pseudo_instr2008_12_8_8_10_37_290', 0)
 end('$query'/0):
 
 

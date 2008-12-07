@@ -337,7 +337,7 @@ Thread::Execute(void)
       CodeLoc trace_pc = PC;
       trace.TraceStart(*this);
 #endif
-
+      assert(!quick_tidy_check);
       switch(getInstruction(PC))
 	{
 	  //
@@ -1961,6 +1961,7 @@ Thread::Execute(void)
 		    const word32 arity = getNumber(loc);
 		    gc(arity);
                   }
+
 		PC = address;
 	      }
 	  }
@@ -2203,11 +2204,11 @@ Thread::Execute(void)
 		PC = HandleFastRetry(problem);
 	      }
 	    else if (currentChoicePoint > cutPoint)
-	      {
-		currentChoicePoint = cutPoint; 
-		choiceStack.cut(cutPoint);
-		tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
-	      }
+              {
+                currentChoicePoint = cutPoint; 
+                choiceStack.cut(cutPoint);
+                tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+              }
 	  }
 	  VMBREAK; 
 	  
@@ -2266,7 +2267,7 @@ Thread::Execute(void)
 		  {
 		    currentChoicePoint = cutY;
 		    choiceStack.cut(cutY);
-		    tidyTrails(choiceStack.getHeapAndTrailsState(cutY));
+                    tidyTrails(choiceStack.getHeapAndTrailsState(cutY));
 		  }
 	      }
 	  }

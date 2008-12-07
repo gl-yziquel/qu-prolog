@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.7 Reference Manual - Built-in Predicates
+Qu-Prolog 8.8 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -3049,6 +3049,19 @@ Succeed when <KBD>Term1</KBD> and <KBD>Term2</KBD> are both atomic or compound a
 <BR><KBD>mode same_args(@atomic, +compound, @integer, @integer, @integer)</KBD>			
 
 </BLOCKQUOTE>
+
+<P><KBD><a name="setarg"></a>setarg(N, Term, Argument)</KBD>
+
+<BLOCKQUOTE>
+The <KBD>N</KBD>-th argument of <KBD>Term</KBD> is replaced by <KBD>Argument</KBD>.
+<BR><KBD>mode setarg(@integer, +compound, +term)</KBD>
+<P> Warning: this predicate does a backtrackable destructive update of the structure.
+<P>If <KBD>Term</KBD> has no <KBD>N</KBD>-th argument then an out-of-range exception will occur.
+
+
+</BLOCKQUOTE>
+
+
 
 <P><KBD><a name="atom_chars"></a>atom_chars(Atom, AtomList)</KBD>
 
@@ -6992,6 +7005,10 @@ the expected maximum number of data items then the time to access/update
 entries will remain constant.
 <BR><KBD>mode ip_array_init(@atom, @integer)</KBD>
 </BLOCKQUOTE>
+
+<P><KBD><a name="ip_array_get_entries"></a>ip_array_get_entries(Name, Entries)</KBD>
+<P> This predicate returns a list of the ip array indices that have a corresponding value. The entries can then be used to interate through the ip array
+and extract all the stored values.
 
 <P>The following predicates define `methods' for a stack whose state is stored in an implicit parameter with name <KBD>stack</KBD>.
 

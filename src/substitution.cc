@@ -205,7 +205,10 @@ Heap::invert(Thread& th, Object *sub_list, PrologValue& term)
 	      // Do free in test for ordinary object variable.
 	      PrologValue object_variable(OBJECT_CAST(Cons*, list)->getTail(),
 					  sub->getDomain(i));
-	      if (! th.internalNotFreeIn(object_variable, term))
+              th.set_quick_tidy_check(true);
+              bool result = th.internalNotFreeIn(object_variable, term);
+              th.set_quick_tidy_check(false);
+	      if (! result)
 		{
 		  return false;
 		}

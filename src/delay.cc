@@ -64,24 +64,24 @@
 // The Layout of Delayed Problems
 //
 // +------------+     
-// | VARIABLE   |                   +------------+   +------------+
-// +------------+                   | STRUCTURE	-+-> |     ,/2    |
-// | DELAY LIST | ----------------> | LIST     | |   | REFERENCE -+-> (status)
-// +------------+   		        +----------+-+   |		     -+-> (problem)
-//      ^	            		               |     +------------+
-//      |		         	                   v
-//      |		        	                   ...
+// | VARIABLE   |               +------------+   +------------+
+// +------------+               | STRUCTURE -+-> |     ,/2    |
+// | DELAY LIST | ------------> | LIST     | |   | REFERENCE -+-> (status)
+// +------------+   	        +----------+-+   |	     -+-> (problem)
+//      ^	            		         +------------+
+//      |		                   v
+//      |		        	   ...
 //      |
-//      |	        	        +------------+
-//      |		                |     ,/2    |<-+
+//      |	                +------------+
+//      |		        |     ,/2    |<-+
 //      |             (status)<-+- REFERENCE |  |
-//	    +-----------------------+- REFERENCE |  |
-//				                +------------+  |
-//						                        |
-//			            +-------+   +-----------++
+//	+-----------------------+- REFERENCE |  |
+//				+------------+  |
+//					        |
+//			+-------+   +-----------++
 // $delayed_problems =	| LIST -+-> | STRUCTURE	||
-//			            +-------+   | LIST      -+--> ...
-//				                    +------------+
+//		        +-------+   | LIST      -+--> ...
+//		                    +------------+
 //
 // New delayed problem is added to the front of list associated with 
 // the variable.
@@ -233,11 +233,14 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
           if (count == 0)
             {
 	      PrologValue temp_term(var1.getTerm());
+              quick_tidy_check = true;
 #ifdef QP_DEBUG
-	      assert(notFreeIn(objdom, temp_term));
+              bool result = notFreeIn(objdom, temp_term);
+	      assert(result);
 #else
-	      (void)notFreeIn(objdom, temp_term);
+              (void)notFreeIn(objdom, temp_term);	      
 #endif
+              quick_tidy_check = false;
             }
           else
             {
@@ -254,11 +257,13 @@ Thread::stripUnmatchedSubsFirst(PrologValue& var1, PrologValue& var2)
                 }
 	      Object* new_sub_list = heap.newSubstitutionBlockList(newsub, AtomTable::nil);
 	      PrologValue temp_term(new_sub_list, var1.getTerm());
+              quick_tidy_check = true;
 #ifdef QP_DEBUG
 	      assert(notFreeIn(objdom, temp_term));
 #else
 	      (void)notFreeIn(objdom, temp_term);
 #endif
+              quick_tidy_check = false;
             }
           doms[i] = NULL;
           finalsize--;
@@ -420,7 +425,9 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 		      for (size_t n = 1; n <= sub1array[m]->getSize(); n++)
 			{
 			  PrologValue t(sub1array[m]->getRange(n));
-			  (void)notFreeIn(object_variable, t);
+                          quick_tidy_check = true;
+			  (void)notFreeIn(object_variable, t);  
+                          quick_tidy_check = false;
 			}
 		    }
 		  generateNFIConstraints(object_variable, term2);
@@ -429,7 +436,9 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 		      for (size_t n = 1; n <= sub2array[m]->getSize(); n++)
 			{
 			  PrologValue t(sub2array[m]->getRange(n));
+                          quick_tidy_check = true;
 			  (void)notFreeIn(object_variable, t);
+                          quick_tidy_check = false;
 			}
 		    }
 		}
@@ -456,7 +465,10 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 			}
 		    }
 		  PrologValue tmp(subst, term1.getTerm());
-		  if (! internalNotFreeIn(domain, tmp))
+                  quick_tidy_check = true;
+                  bool result = internalNotFreeIn(domain, tmp);
+                  quick_tidy_check = false;
+		  if (! result)
 		    {
 		      // Free locals can't be removed.
                       delete sub1array;
@@ -523,7 +535,10 @@ Thread::balanceLocals(PrologValue& term1, PrologValue& term2)
 		    }
 		}
 	      PrologValue tmp(subst, term2.getTerm());
-	      if (! internalNotFreeIn(domain, tmp))
+              quick_tidy_check = true;
+              bool result = internalNotFreeIn(domain, tmp);
+              quick_tidy_check = false;
+              if (! result)
 		{
 		  // Free locals can't be removed.
                   delete sub1array;
@@ -581,7 +596,9 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
     case Object::tObjVar:
       {
 	PrologValue t(tm);
+        quick_tidy_check = true;
 	(void)(notFreeIn(object_variable, t));
+        quick_tidy_check = false;
       }
       break;
     case Object::tShort:
@@ -649,7 +666,9 @@ Thread::generateNFIConstraints(ObjectVariable *object_variable,
           if (! domain->isLocalObjectVariable())
 	    {
 	      PrologValue dom_t(domain);
+              quick_tidy_check = true;
 	      (void)(notFreeIn(object_variable, dom_t));
+              quick_tidy_check = false;
 	    }
 	}
     }
@@ -907,7 +926,7 @@ Thread::retry_delays(delaytype type)
   Object* mp = atoms->add("$retry_make_progress");
   Object* s = AtomTable::failure;
   (void)psi_ip_set(mp,s); 
-
+  bool quick_tidy_save = quick_tidy_check;
   
   while (true)
     {
@@ -968,7 +987,10 @@ Thread::retry_delays(delaytype type)
 		  OBJECT_CAST(Variable*, vdstatus)->thaw();
 		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
                   int counter = 0;
-		  if (equalEqual(pval1, pval2, counter))
+                  quick_tidy_check = true;
+                  bool result = equalEqual(pval1, pval2, counter);
+                  quick_tidy_check = quick_tidy_save;
+		  if (result)
 		    {
 		      continue;
 		    }
@@ -990,7 +1012,10 @@ Thread::retry_delays(delaytype type)
 		  OBJECT_CAST(Variable*, vdstatus)->thaw();
 		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
 		  // Simplify first
-		  if (notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval))
+                  quick_tidy_check = true;
+                  bool result = notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval);
+                  quick_tidy_check = quick_tidy_save;
+		  if (result)
 		    {
 		      continue;
 		    }
@@ -1010,7 +1035,10 @@ Thread::retry_delays(delaytype type)
 		  trailTag(vdstatus);
 		  OBJECT_CAST(Variable*, vdstatus)->thaw();
 		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
-		  if (!notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval))
+                  quick_tidy_check = true;
+                  bool result = notFreeIn(OBJECT_CAST(ObjectVariable*, obvar), pval);
+                  quick_tidy_check = quick_tidy_save;
+		  if (!result)
 		    {
 		      return false;
 		    }
@@ -1033,8 +1061,10 @@ Thread::retry_delays(delaytype type)
 		  trailTag(vdstatus);
 		  OBJECT_CAST(Variable*, vdstatus)->thaw();
 		  assert(!OBJECT_CAST(Variable*, vdstatus)->isFrozen());
-		  if (!notFreeInVarSimp(OBJECT_CAST(ObjectVariable*, obvar), 
-					pvalcopy))
+                  quick_tidy_check = true;
+                  bool result = notFreeInVarSimp(OBJECT_CAST(ObjectVariable*, obvar), pvalcopy);
+                  quick_tidy_check = quick_tidy_save;
+		  if (!result)
 		    {
 		      return false;
 		    }

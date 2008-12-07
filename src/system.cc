@@ -226,7 +226,8 @@ Thread::psi_mktemp(Object *& object1, Object *& object2)
 #ifdef WIN32
   (void)(_mktemp(atom_buf1));
 #else
-  (void)(mkstemp(atom_buf1));
+  int ret = mkstemp(atom_buf1);
+  if (ret == -1) return(RV_FAIL);
 #endif
   object2 = atoms->add(atom_buf1);
   

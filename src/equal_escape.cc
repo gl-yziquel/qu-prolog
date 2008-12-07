@@ -105,7 +105,10 @@ Thread::psi_equal_equal(Object *& term1, Object *& term2)
   heap.prologValueDereference(pval2);
 
   int counter = 0;
-  return BOOL_TO_RV(equalEqual(pval1, pval2, counter));
+  quick_tidy_check = true;
+  bool result = equalEqual(pval1, pval2, counter);
+  quick_tidy_check = false;
+  return BOOL_TO_RV(result);
 }
 
 
@@ -117,7 +120,9 @@ Thread::ReturnValue
 Thread::psi_simplify_term(Object *& term1, Object *& term2)
 {
   PrologValue pterm(term1);
+  quick_tidy_check = true;
   (void)simplify_term(pterm, term2);
+  quick_tidy_check = false;
   return RV_SUCCESS;
 }
 
@@ -130,7 +135,9 @@ Thread::ReturnValue
 Thread::psi_simplify_term3(Object *& term1, Object *& term2, Object *& issimp)
 {
   PrologValue pterm(term1);
+  quick_tidy_check = true;
   bool result = simplify_term(pterm, term2);
+  quick_tidy_check = false;
   if (result)
     {
       issimp = AtomTable::success;

@@ -162,10 +162,10 @@ Heap::isBindingList(Object* o) const
       Object* head = 
 	OBJECT_CAST(Cons*, list)->getHead()->variableDereference();
       if (!(head->isObjectVariable() || 
-	    head->isStructure() && 
+	    (head->isStructure() && 
 	    OBJECT_CAST(Structure*, head)->getArity() == 2 &&
 	    OBJECT_CAST(Structure*, head)->getFunctor() == AtomTable::colon &&
-	    OBJECT_CAST(Structure*, head)->getArgument(1)->variableDereference()->isObjectVariable()))
+	    OBJECT_CAST(Structure*, head)->getArgument(1)->variableDereference()->isObjectVariable())))
 	{
 	  return false;
 	}

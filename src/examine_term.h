@@ -163,6 +163,6 @@ ReturnValue psi_string(Object *& object1);
 //
 ReturnValue psi_fast_simplify(Object *& , Object *& );
 
-
+ReturnValue psi_hash_variable(Object *& , Object *& );
 
 #endif // EXAMINE_TERM_H

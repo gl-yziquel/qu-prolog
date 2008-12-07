@@ -587,7 +587,11 @@ void
 QPofdstream::send(void)
 {
   if (fd == NO_FD) return;
-  write(fd, stream.str().data(), static_cast<u_int>(stream.str().length()));
+  u_int size = static_cast<u_int>(stream.str().length());
+  u_int res = write(fd, stream.str().data(), size);
+  if (res != size) {
+	cerr << "IO:send: can't write to fd" << endl;
+  }
   stream.str("");
 }
 

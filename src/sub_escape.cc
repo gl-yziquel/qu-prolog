@@ -185,7 +185,7 @@ Thread::psi_new_sub(Object *& object1,
   assert(val1->isShort());
   assert(0 <= val1->getInteger() &&
                (u_int)(val1->getInteger()) <= ARITY_MAX);
-  assert(val2->isNil() || val2->isCons() && OBJECT_CAST(Cons*, val2)->isSubstitutionBlockList());
+  assert(val2->isNil() ||(val2->isCons() && OBJECT_CAST(Cons*, val2)->isSubstitutionBlockList()));
 
   assert(val3->isCons());
   //

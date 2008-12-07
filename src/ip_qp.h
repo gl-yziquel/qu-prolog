@@ -85,6 +85,11 @@ ReturnValue	psi_ip_lookup(Object *& , Object *& );
 //
 ReturnValue psi_ip_lookupA(Object *& , Object *& , Object *& );
 
+// psi_ip_get_array_keys(name, values)
+// return all the keys for the IP array name
+// mode(in, out)
+//
+ReturnValue psi_ip_get_array_entries(Object *&, Object *&);
 
 // psi_ip_array_clear(key)
 // Clear (initilize) an IP array.

@@ -136,7 +136,9 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   //
 #ifndef WIN32
   strcpy(output, "/tmp/symXXXXXX");
-  mkstemp(output);
+  int ret = mkstemp(output);
+  if (ret == -1) return(false);
+
 #ifdef SOLARIS
   strm << "ld -G ";
 #else

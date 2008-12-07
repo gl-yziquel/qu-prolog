@@ -340,7 +340,16 @@ Thread::psi_fast_simplify(Object *& object1, Object *& object2)
   return RV_SUCCESS;
 }
 
+Thread::ReturnValue
+Thread::psi_hash_variable(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
 
+  if (!val1->isVariable()) return RV_FAIL;
+
+  object2 = heap.newInteger((int)val1);
+  return RV_SUCCESS;
+}
 
 
 

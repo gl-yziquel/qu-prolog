@@ -251,7 +251,7 @@ size_t read_atom(string& buf, const size_t len)
 	  done = (c != '\'');
 	}
 
-      if(!done)
+      if(!done) {
 	if(c == '\n') 
 	  {
 	    i++;
@@ -321,6 +321,7 @@ size_t read_atom(string& buf, const size_t len)
 	    buf.push_back(c);
 	    c = yyinput();
 	  }
+        }
     }
   
   unput(c);

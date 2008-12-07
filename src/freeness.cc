@@ -69,8 +69,8 @@ bool
 Thread::notFreeInStructure(ObjectVariable *object_variable,
 			   PrologValue& term, bool gen_delays)
 {
+  assert(quick_tidy_check);
   assert(term.getTerm()->isStructure());
-
   Object *sub_block_list = term.getSubstitutionBlockList();
   Structure *structure = OBJECT_CAST(Structure*, term.getTerm());
 
@@ -108,6 +108,7 @@ bool
 Thread::notFreeInList(ObjectVariable *object_variable,
 		      PrologValue& list, bool gen_delays)
 {
+  assert(quick_tidy_check);
   assert(list.getTerm()->isCons());
 
   Object *l = list.getTerm();
@@ -138,6 +139,7 @@ bool
 Thread::notFreeInQuantifier(ObjectVariable *object_variable,
 			    PrologValue& term, bool gen_delays)
 {
+  assert(quick_tidy_check);
   assert(term.getTerm()->isQuantifiedTerm());
   assert(object_variable == object_variable->variableDereference());
 
@@ -298,6 +300,7 @@ bool
 Thread::notFreeInVar(ObjectVariable *object_variable,
 		     PrologValue& var, bool gen_delays)
 {
+  assert(quick_tidy_check);
   assert(var.getTerm()->isAnyVariable());
   assert(object_variable == object_variable->variableDereference());
 
@@ -376,6 +379,7 @@ bool
 Thread::notFreeIn(ObjectVariable *object_variable, PrologValue& term,
 		  bool gen_delays)
 {
+  assert(quick_tidy_check);
   object_variable = OBJECT_CAST(ObjectVariable*, object_variable->variableDereference());
   heap.prologValueDereference(term);
   if (term.getSubstitutionBlockList()->isCons())
@@ -435,6 +439,7 @@ bool
 Thread::internalNotFreeIn(PrologValue object_variable,
 			  PrologValue term)
 {
+  assert(quick_tidy_check);
   assert(object_variable.getTerm()->isObjectVariable());
 
   Object *sub_block_list = object_variable.getSubstitutionBlockList();
@@ -551,6 +556,7 @@ bool
 Thread::notFreeInVarSimp(ObjectVariable *object_variable,
 			 PrologValue& term)
 {
+  assert(quick_tidy_check);
   assert(term.getTerm()->isAnyVariable());
   assert(object_variable == object_variable->variableDereference());
 
@@ -1048,6 +1054,7 @@ bool
 Thread::notFreeInNFISimp(ObjectVariable *object_variable,
 			 PrologValue& term)
 {
+  assert(quick_tidy_check);
   heap.prologValueDereference(term);
   if (term.getSubstitutionBlockList()->isCons())
     {
@@ -1088,9 +1095,9 @@ Thread::notFreeInNFISimp(ObjectVariable *object_variable,
 
       assert(object_variable == object_variable->variableDereference());
       if (ran.getTerm()->isConstant() ||
-	  ran.getTerm()->isObjectVariable() &&
+	  (ran.getTerm()->isObjectVariable() &&
 	  ran.getSubstitutionBlockList()->isNil() &&
-	  object_variable->distinctFrom(ran.getTerm()))
+	  object_variable->distinctFrom(ran.getTerm())))
 	{
 	  new_sub_block->setRange(i, AtomTable::dollar);
 	}
@@ -1127,6 +1134,7 @@ Thread::notFreeInNFISimp(ObjectVariable *object_variable,
 truth3 
 Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 {
+  assert(quick_tidy_check);
   assert(obvar == obvar->variableDereference());
   heap.prologValueDereference(term);
   switch (term.getTerm()->tTag())
@@ -1216,6 +1224,7 @@ Thread::freeness_test(ObjectVariable* obvar, PrologValue& term)
 truth3 
 Thread::freeness_test_quant(ObjectVariable* obvar, PrologValue& term)
 {
+  assert(quick_tidy_check);
   QuantifiedTerm* quant = 
     OBJECT_CAST(QuantifiedTerm*, term.getTerm());
 
@@ -1316,6 +1325,7 @@ Thread::freeness_test_quant(ObjectVariable* obvar, PrologValue& term)
 truth3 
 Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 {
+  assert(quick_tidy_check);
   if (term.getSubstitutionBlockList()->isCons())
     {
       heap.dropSubFromTerm(*this, term);
@@ -1381,6 +1391,7 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 		}
 	    }
 	  pushDownStack.push(dom);
+  assert(quick_tidy_check);
 	  if (gen_nfi_delays(dom, term.getTerm()) && retry_delays())
 	    {
 	      PrologValue newterm(term.getSubstitutionBlockList(), dom);
@@ -1437,7 +1448,8 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 	    {
 	      setDistinct(dom, before);
 	    }
-	}
+	}  
+assert(quick_tidy_check);
       if (gen_nfi_delays(dom, term.getTerm()) && retry_delays())
 	{
 	  PrologValue newterm(term.getSubstitutionBlockList(), dom);
@@ -1471,6 +1483,7 @@ Thread::freeness_test_var(ObjectVariable* obvar, PrologValue& term)
 truth3 
 Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
 {
+  assert(quick_tidy_check);
   if (term.getSubstitutionBlockList()->isCons())
     {
       heap.dropSubFromTerm(*this, term);
@@ -1590,6 +1603,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
     {
       pushDownStack.popNEntries(pushDownStack.size() - old_size);
       heap.setSavedTop(savesavedtop);
+
       return truth3::UNSURE;
     }
   // add extra test for obvar
@@ -1647,6 +1661,7 @@ Thread::freeness_test_obvar(ObjectVariable* obvar, PrologValue& term)
   otherTrail.backtrackTo(savedOtherTrailTop);
   assert(otherTrail.check(heap));
   pushDownStack.popNEntries(pushDownStack.size() - old_size);
+
   if (result == false)
     {
       return false;

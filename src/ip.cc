@@ -453,6 +453,63 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
   return(RV_SUCCESS);
 }
 
+// psi_ip_get_array_keys(name, values)
+// return all the keys for the IP array name
+// mode(in, out)
+//
+Thread::ReturnValue
+Thread::psi_ip_get_array_entries(Object *& object1, Object *& object2)
+{
+  Object *name_object = heap.dereference(object1);
+  if (name_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (! name_object->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  Object *current_value = ipTable.getImplicitPara(name_object);
+  Object *result = AtomTable::nil;
+  size_t array_size;
+
+  if (current_value == NULL)
+    {
+      object2 = result;
+      return RV_SUCCESS;
+    }
+  if (! current_value->isStructure() || 
+      OBJECT_CAST(Structure*, current_value)->getFunctor() 
+      != AtomTable::arrayIP)
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+  array_size = OBJECT_CAST(Structure*, current_value)->getArity();
+  for (size_t i = 1; i <= array_size; i++)
+    {
+      Object* entry = OBJECT_CAST(Structure*, current_value)->getArgument(i);
+      if (!entry->isNil())
+        {
+          Object *array_ptr = entry;
+          for (;
+               array_ptr->isCons();
+               array_ptr = OBJECT_CAST(Cons*, array_ptr)->getTail()->variableDereference())
+            {
+              Object *array_val_head =  
+                OBJECT_CAST(Cons*, array_ptr)->getHead()->variableDereference();
+              
+              assert(array_val_head->isStructure());
+              
+              Object *list_hash = 
+                OBJECT_CAST(Structure*, array_val_head)->getArgument(2)->variableDereference();
+              result = heap.newCons(list_hash, result);
+            }
+        }
+    }
+  object2 = result;
+  return RV_SUCCESS;;
+}
 
 // psi_ip_array_clear(key)
 // Clear (initilize) an IP array.

@@ -79,8 +79,8 @@ NameTable::set(NameEntry key, Thread& th)
       // Add a new entry.
       //
   assert(! key.getValue()->isSubstitutionBlock());
-      th.updateAndTrailObject(valuePtr, key.getValue(), 0);
-      name = key.getName();
+  th.updateAndTrailObject(valuePtr, key.getValue(), 0);
+  name = key.getName();
 }
 
 void

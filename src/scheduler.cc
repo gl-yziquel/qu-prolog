@@ -737,7 +737,10 @@ Scheduler::HandleSignal(void)
   in_sigint = true;
 #ifndef WIN32 // This doesn't do ANYTHING
   char buff[128];
-  read(sigint_pipe[0], buff, 120);
+  int ret = read(sigint_pipe[0], buff, 120);
+  if (ret == 120) {
+	cerr << "HandleSignal: read too much" << endl;
+  }
 #else
   // This may have been removed by the tokeniser,
   // should we be in the position of fake EOF.

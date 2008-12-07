@@ -154,7 +154,8 @@ handle_sigint(int)
     {
       char buff[128];
       buff[0] = 'a';
-      write(sigint_pipe[1], buff, 1);
+      int res = write(sigint_pipe[1], buff, 1);
+      if (res != 1) cerr << "Signals:  can't write to pipe" << endl;
       signals->Increment(SIGINT);
       signals->Status().setSignals();
     } else {
@@ -185,7 +186,11 @@ main(int32 argc, char** argv)
   _pipe(sigint_pipe, 256, _O_BINARY);
 //  SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_LINE_INPUT|ENABLE_ECHO_INPUT);
 #else
-  pipe(sigint_pipe);
+  int ret = pipe(sigint_pipe);
+  if (ret == -1) {
+   cerr << "Can't create signal pipe" << endl;
+   abort();
+  }
   fcntl(sigint_pipe[0], F_SETFL, O_NONBLOCK);
 #endif
 

@@ -1852,9 +1852,9 @@ end('with_debugging_off'/1):
 
 
 
-'$debug_call/1$0/4$0/2$0/1$0'/1:
+'$debug_call/1$0/4$0/2$0/1$0'/2:
 
-	try(1, $1)
+	try(2, $1)
 	trust($2)
 
 $1:
@@ -1864,12 +1864,8 @@ $1:
 	proceed
 
 $2:
-	get_x_variable(1, 0)
-	put_structure(1, 0)
-	set_constant('call')
-	set_x_value(1)
-	execute_predicate('call_predicate', 1)
-end('$debug_call/1$0/4$0/2$0/1$0'/1):
+	execute_predicate('$call_2', 2)
+end('$debug_call/1$0/4$0/2$0/1$0'/2):
 
 
 
@@ -1879,18 +1875,22 @@ end('$debug_call/1$0/4$0/2$0/1$0'/1):
 	trust($2)
 
 $1:
-	allocate(3)
-	get_y_variable(1, 0)
-	get_y_level(2)
+	allocate(4)
+	get_y_variable(2, 0)
+	get_y_level(3)
+	put_y_variable(1, 19)
 	put_y_variable(0, 19)
-	call_predicate('is_dynamic_call', 1, 3)
-	cut(2)
-	put_y_value(1, 0)
+	call_predicate('is_dynamic_call', 1, 4)
+	cut(3)
+	pseudo_instr1(7, 0)
+	get_y_value(1, 0)
+	put_y_value(2, 0)
 	put_y_value(0, 1)
-	call_predicate('clause', 2, 1)
+	call_predicate('clause', 2, 2)
 	put_y_value(0, 0)
+	put_y_value(1, 1)
 	deallocate
-	execute_predicate('$debug_call/1$0/4$0/2$0/1$0', 1)
+	execute_predicate('$debug_call/1$0/4$0/2$0/1$0', 2)
 
 $2:
 	execute_predicate('call_predicate', 1)

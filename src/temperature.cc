@@ -300,7 +300,7 @@ Thread::psi_freeze_var(Object *& object1)
     }
 
   Object* object = pval1.getTerm();
-  if (object->isVariable())
+  if (object->isVariable()) {
     if (OBJECT_CAST(Variable*, object)->isThawed())
       {
 	trailTag(object);
@@ -312,7 +312,7 @@ Thread::psi_freeze_var(Object *& object1)
 	trailTag(object);
 	OBJECT_CAST(ObjectVariable*, object)->freeze();
       }
-
+  }
 
   return RV_SUCCESS;
 }

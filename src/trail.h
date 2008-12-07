@@ -125,14 +125,16 @@ class UpdatableObjectEntry : public TrailEntry
     bool tidy(TrailLoc tloc, TrailLoc stop, heapobject* savedHeapTop, 
 	      Heap& heap)
     {
-      if (addr != NULL && addr >= heap.getSavedTop() && addr < heap.getTop())
+      if (addr == NULL)
 	{
 	  return true;
 	}
-      if (addr == NULL)
+      //if (addr >= heap.getSavedTop() && addr < heap.getTop())
+      if (addr >= savedHeapTop && addr < heap.getTop())
 	{
-	  return false;
+	  return true;
 	}
+
       TrailLoc loc = tloc;
       while (loc < stop)
 	{
@@ -140,7 +142,7 @@ class UpdatableObjectEntry : public TrailEntry
 	  if (*entry == *this)
 	    {
 	      addr = NULL;
-	      break;
+	      return true; // XXX break;
 	    }
 	  loc += entry->size();
 	}
@@ -220,7 +222,28 @@ class UpdatableTagEntry : public TrailEntry
     bool tidy(TrailLoc tloc, TrailLoc stop, heapobject* savedHeapTop, 
 	      Heap& heap)
     {
-      return (addr >= heap.getSavedTop() && addr < heap.getTop());
+      //return (addr >= heap.getSavedTop() && addr < heap.getTop());
+      if (addr == NULL)
+	{
+	  return true;
+	}
+      if (addr >= savedHeapTop && addr < heap.getTop())
+	{
+	  return true;
+	}
+
+      TrailLoc loc = tloc;
+      while (loc < stop)
+	{
+	  TrailEntry* entry = (TrailEntry*)loc;
+	  if (*entry == *this)
+	    {
+	      addr = NULL;
+	      return true; // XXX break;
+	    }
+	  loc += entry->size();
+	}
+      return false;
     }
 
     void gc_mark(Heap& heap, ObjectsStack& gcstack,
@@ -239,6 +262,9 @@ class UpdatableTagEntry : public TrailEntry
 	  addr = NULL;
 	}
     }
+
+    virtual bool operator==(const UpdatableTagEntry& t) const 
+    {return (addr == t.addr); }
 
 #ifdef QP_DEBUG
     bool check(Heap& heap) const {return true;}

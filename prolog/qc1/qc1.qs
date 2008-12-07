@@ -7,7 +7,7 @@ end('main'/1):
 
 
 
-'$query_qc12008_11_3_8_48_27_880/0$0'/0:
+'$query_qc12008_12_8_8_10_40_663/0$0'/0:
 
 
 $1:
@@ -44,23 +44,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_qc12008_11_3_8_48_27_880/0$0'/0):
+end('$query_qc12008_12_8_8_10_40_663/0$0'/0):
 
 
 
-'$query_qc12008_11_3_8_48_27_880'/0:
+'$query_qc12008_12_8_8_10_40_663'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_qc12008_11_3_8_48_27_880/0$0', 0, 0)
+	call_predicate('$query_qc12008_12_8_8_10_40_663/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_qc12008_11_3_8_48_27_880'/0):
+end('$query_qc12008_12_8_8_10_40_663'/0):
 
 
 
@@ -68,7 +68,7 @@ end('$query_qc12008_11_3_8_48_27_880'/0):
 
 
 $1:
-	execute_predicate('$query_qc12008_11_3_8_48_27_880', 0)
+	execute_predicate('$query_qc12008_12_8_8_10_40_663', 0)
 end('$query'/0):
 
 

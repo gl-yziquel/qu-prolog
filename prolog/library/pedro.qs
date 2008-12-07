@@ -71,11 +71,18 @@ end('pedro_subscribe/3$0'/1):
 
 
 $1:
+	get_x_variable(3, 0)
 	allocate(1)
 	get_y_variable(0, 2)
-	pseudo_instr1(68, 2)
-	put_y_value(0, 3)
-	call_predicate('$pedro_subscribe_aux', 4, 1)
+	pseudo_instr1(68, 0)
+	get_x_variable(2, 0)
+	put_structure(3, 0)
+	set_constant('subscribe')
+	set_x_value(3)
+	set_x_value(1)
+	set_x_value(2)
+	put_y_value(0, 1)
+	call_predicate('$pedro_subscribe_aux', 2, 1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('pedro_subscribe/3$0', 1)
@@ -83,19 +90,14 @@ end('pedro_subscribe'/3):
 
 
 
-'$pedro_subscribe_aux/4$0'/4:
+'$pedro_subscribe_aux/2$0'/2:
 
-	try(4, $1)
+	try(2, $1)
 	trust($2)
 
 $1:
-	put_x_variable(4, 5)
-	get_structure('subscribe', 3, 5)
-	unify_x_value(0)
-	unify_x_value(1)
-	unify_x_value(2)
-	pseudo_instr2(114, 4, 3)
-	get_x_variable(0, 3)
+	pseudo_instr2(125, 0, 1)
+	get_x_variable(0, 1)
 	neck_cut
 	put_constant('$pedro_subscribe_id', 1)
 	pseudo_instr2(74, 1, 0)
@@ -103,40 +105,36 @@ $1:
 
 $2:
 	allocate(1)
-	get_y_variable(0, 3)
+	get_y_variable(0, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$pedro_subscribe_aux/4$0'/4):
+end('$pedro_subscribe_aux/2$0'/2):
 
 
 
-'$pedro_subscribe_aux'/4:
+'$pedro_subscribe_aux'/2:
 
-	try(4, $1)
+	try(2, $1)
 	trust($2)
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	put_x_variable(3, 4)
-	get_structure(',', 2, 4)
-	unify_x_value(0)
-	unify_x_value(1)
-	pseudo_instr1(53, 3)
-	put_constant('$pedro_subscribe_id', 3)
-	put_integer(0, 4)
-	pseudo_instr2(74, 3, 4)
-	put_y_value(0, 3)
-	call_predicate('$pedro_subscribe_aux/4$0', 4, 0)
+	pseudo_instr1(53, 0)
+	put_constant('$pedro_subscribe_id', 1)
+	put_integer(0, 2)
+	pseudo_instr2(74, 1, 2)
+	put_y_value(0, 1)
+	call_predicate('$pedro_subscribe_aux/2$0', 2, 0)
 	fail
 
 $2:
-	put_constant('$pedro_subscribe_id', 1)
-	pseudo_instr2(73, 1, 0)
-	get_x_value(3, 0)
+	put_constant('$pedro_subscribe_id', 2)
+	pseudo_instr2(73, 2, 0)
+	get_x_value(1, 0)
 	proceed
-end('$pedro_subscribe_aux'/4):
+end('$pedro_subscribe_aux'/2):
 
 
 

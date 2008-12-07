@@ -795,9 +795,11 @@ PedroMessageChannel::pushMessage(int id, string m)
   string::size_type loc = m.find(p2pmsg_string, 0);
   if (loc == 0) {
     // p2p msg found - get the thread name
+    string::size_type loc_comma1 =  m.find(',', loc);
+    assert(loc_comma1 != string::npos);
     loc =  m.find('@', p2pmsg_string_len);
     string::size_type loc_colon =  m.find(':', p2pmsg_string_len);
-    if (loc_colon < loc) {
+    if ((loc < loc_comma1) && (loc_colon < loc)) {
       // has thread name
       // so strip off trailing spaces
       int i = loc_colon-1;
@@ -809,8 +811,6 @@ PedroMessageChannel::pushMessage(int id, string m)
       // if the thread name is '' then this is message stream
       // message
       if (thread_name == stream_string) {
-	string::size_type loc_comma1 =  m.find(',', loc);
-	assert(loc_comma1 != string::npos);
 	string::size_type loc_comma2 =  m.find(',', loc_comma1 + 1);
 	assert(loc_comma2 != string::npos);
 	string from_addr;
@@ -994,7 +994,11 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
   strm << id << "\n";
   string st = strm.str();
   int len = st.length();
-  write(fd, st.c_str(), len);
+  int num_written = write(fd, st.c_str(), len);
+  if (num_written != len) {
+    fprintf(stderr, "Pedro Connect: Can't send ID\n");
+    exit(1);
+  }
   // read flag on data socket
   char buff[32];
   int size;

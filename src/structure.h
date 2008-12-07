@@ -93,4 +93,12 @@ ReturnValue psi_put_structure(Object *& , Object *& ,
 ReturnValue psi_set_argument(Object *& , Object *& , 
 					      Object *& );
 
+
+//
+// psi_setarg(N, F, Arg)
+// mode(in,in,in)
+//
+// A backtrackabe destructive update to the N'th arg of F
+ReturnValue psi_setarg(Object *&, Object *&, Object *&);
+
 #endif // STRUCTURE_H

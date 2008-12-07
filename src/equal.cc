@@ -69,6 +69,7 @@ extern AtomTable *atoms;
 bool 
 Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 {
+  assert(quick_tidy_check);
   if (term1.getTerm()->tTag() != term2.getTerm()->tTag())
     {
       // different types
@@ -354,7 +355,6 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
         TrailLoc savedBindingTrailTop = bindingTrail.getTop();
         TrailLoc savedOtherTrailTop = otherTrail.getTop();
 	heap.setSavedTop(savedHT);
-
 	bool result;
 	bindAndTrail(term, domain);
 	if (!retry_delays())
@@ -406,7 +406,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 	heap.setSavedTop(savesavedtop);
 	bindingTrail.backtrackTo(savedBindingTrailTop);
 	assert(bindingTrail.check(heap));
-	otherTrail.backtrackTo(savedOtherTrailTop);
+	otherTrail.backtrackTo(savedOtherTrailTop);       
 	assert(otherTrail.check(heap));
 
 	return result;
@@ -428,6 +428,7 @@ Thread::equalEqual(PrologValue& term1, PrologValue& term2, int& counter)
 bool
 Thread::simplify_term(PrologValue& term, Object*& simpterm)
 {
+  assert(quick_tidy_check);
   heap.prologValueDereference(term);
   switch (term.getTerm()->tTag())
     {
@@ -586,6 +587,7 @@ Thread::simplify_term(PrologValue& term, Object*& simpterm)
 bool
 Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 {
+  assert(quick_tidy_check);
   // allocate buffer
   Object* index = 
     heap.newInteger(buffers.allocate(heap.getTop(), scratchpad.getTop()));
@@ -600,7 +602,7 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
   // save old top of push down stack
   int old_size = pushDownStack.size();
 
-
+ assert(quick_tidy_check);
   // process each substitution block
   for (Object* sub = term.getSubstitutionBlockList();
        sub->isCons();
@@ -648,6 +650,7 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 		}
 	    }
 	  pushDownStack.push(dom);
+          assert(quick_tidy_check);
 	  if (!retry_delays())
 	    {
 	      heap.setTop(savedHT);
@@ -656,7 +659,8 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 	      otherTrail.backtrackTo(savedOtherTrailTop);
 	      assert(otherTrail.check(heap));
 	      continue;
-	    }
+	    } 
+          assert(quick_tidy_check);
 	  if (term.getTerm()->isObjectVariable())
 	    {
 	      dom = OBJECT_CAST(ObjectVariable*, dom->variableDereference());
@@ -683,6 +687,7 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 	    }
 	  else if (term.getTerm()->isVariable())
 	    {
+assert(quick_tidy_check);
 	      if (gen_nfi_delays(dom, term.getTerm()) && retry_delays())
 		{
 		  Object* simpterm;
@@ -734,6 +739,7 @@ Thread::simplify_sub_term(PrologValue& term, Object*& simpterm, Object* tester)
 bool
 Thread::gen_nfi_delays(ObjectVariable* dom, Object* term)
 {
+  assert(quick_tidy_check);
   assert(term->isVariable());
   Object* var_delays = OBJECT_CAST(Reference*, term)->getDelays();
   for ( ; var_delays->isCons();
@@ -794,7 +800,9 @@ Thread::transform_with_tester(Object* simpterm, Object*& result,
     }
   PrologValue term(simpterm);
   tester = tester->variableDereference();
+
   truth3 free = freeness_test(OBJECT_CAST(ObjectVariable*, tester), term);
+
   if (free == true)
     {
       result = tester;

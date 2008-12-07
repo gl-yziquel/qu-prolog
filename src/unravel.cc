@@ -866,7 +866,7 @@ Heap::varunify(Object* a, Object* b, WordArray& unravelArray, WordArray& life)
     }
   if (a->isVariable())
     {
-      if (b->isStructure() && OBJECT_CAST(Structure*, b)->getFunctor()->variableDereference()->isConstant() || b->isCons())
+      if ((b->isStructure() && OBJECT_CAST(Structure*, b)->getFunctor()->variableDereference()->isConstant()) || b->isCons())
 	{
 	  xputget(a, b, unravelArray, life);
           return;
@@ -886,7 +886,7 @@ Heap::varunify(Object* a, Object* b, WordArray& unravelArray, WordArray& life)
     }
   if (b->isVariable())
     {
-      if (a->isStructure() && OBJECT_CAST(Structure*, a)->getFunctor()->variableDereference()->isConstant() || a->isCons())
+      if ((a->isStructure() && OBJECT_CAST(Structure*, a)->getFunctor()->variableDereference()->isConstant()) || a->isCons())
 	{
 	  xputget(b, a, unravelArray, life);
           return;
@@ -912,7 +912,7 @@ Heap::varunify(Object* a, Object* b, WordArray& unravelArray, WordArray& life)
       Object* bfun = bstruct->getFunctor()->variableDereference();
       u_int arity = static_cast<u_int>(astruct->getArity());
       if (arity != bstruct->getArity() ||
-	  afun->isAtom() && bfun->isAtom() && afun != bfun)
+	  (afun->isAtom() && bfun->isAtom() && afun != bfun))
 	{
           Structure* fstr = newStructure(1);
           fstr->setFunctor(AtomTable::failure);

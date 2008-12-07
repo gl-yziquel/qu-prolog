@@ -449,3 +449,79 @@ Thread::psi_set_argument(Object *& object1, Object *& object2, Object *& object3
 
 
 
+//
+// psi_setarg(N, F, Arg)
+// mode(in,in,in)
+//
+// A backtrackabe destructive update to the N'th arg of F
+Thread::ReturnValue 
+Thread::psi_setarg(Object *& object1, Object *& object2, Object *& object3)
+{
+  int32 		arity, i;
+  assert(object1->variableDereference()->hasLegalSub());
+  assert(object2->variableDereference()->hasLegalSub());
+  assert(object3->variableDereference()->hasLegalSub());
+  Object* funct = heap.dereference(object2);
+  Object* val1 = heap.dereference(object1);
+  Object* val3 = heap.dereference(object3);
+
+  if (!val1->isShort()) {
+    if (val1->isVariable())
+      {
+        PSI_ERROR_RETURN(EV_INST, 1);
+      }
+    else
+      {
+        PSI_ERROR_RETURN(EV_TYPE, 1);
+      }
+  }
+  i = val1->getInteger();
+
+  if (funct->isStructure())
+    {
+      Structure* str = OBJECT_CAST(Structure*, funct);
+      arity = static_cast<int32>(str->getArity());
+      
+      if ((i <= 0) || (i > arity)) {
+        PSI_ERROR_RETURN(EV_RANGE, 1);
+      }
+      
+      if(val3->isVariable())
+	{
+	  OBJECT_CAST(Variable*, val3)->setOccursCheck();
+	}
+      updateAndTrailObject(reinterpret_cast<heapobject*>(funct), val3, i+1);
+    }
+  else if (funct->isCons())
+    {
+      if ((i > 0) && (i <= 2)) {
+        PSI_ERROR_RETURN(EV_RANGE, 1);
+      }
+      if(val3->isVariable())
+        {
+          OBJECT_CAST(Variable*, val3)->setOccursCheck();
+        }
+      updateAndTrailObject(reinterpret_cast<heapobject*>(funct), val3, i); 
+    }	
+  else {
+    if (funct->isVariable())
+      {
+        PSI_ERROR_RETURN(EV_INST, 2);
+      }
+    else
+      {
+        PSI_ERROR_RETURN(EV_TYPE, 2);
+      }
+  }
+  
+  return(RV_SUCCESS);
+}
+
+
+
+
+
+
+
+
+

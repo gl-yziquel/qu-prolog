@@ -1755,18 +1755,20 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
       return false;
       break;
     case CrossTag(Object::UOther, Object::UOther):
-      if (term1.getTerm()->isVariable())
+      if (term1.getTerm()->isVariable()) {
 	if (term2.getTerm()->isVariable())
 	  return unifyVarVar(term1, term2, in_quant);
 	else
 	  return(unifyVariableTerm(term1, term2, in_quant));
+      }
       if (term2.getTerm()->isVariable())
 	return(unifyVariableTerm(term2, term1, in_quant));
-      if (term1.getTerm()->isObjectVariable())
+      if (term1.getTerm()->isObjectVariable()) {
 	if (term2.getTerm()->isObjectVariable())
 	  return unifyObjectVariables(term1, term2);
 	else
 	  return(unifyObjectVariableTerm(term1, term2));
+      }
       if (term2.getTerm()->isObjectVariable())
 	return(unifyObjectVariableTerm(term2, term1));
       assert(term1.getTerm()->isQuantifiedTerm());
@@ -2814,18 +2816,20 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
       break;
     case CrossTag(Object::UOther, Object::UOther):
       {
-	if (term1.getTerm()->isVariable())
+	if (term1.getTerm()->isVariable()) {
 	  if (term2.getTerm()->isVariable())
 	    return structuralUnifyVarVar(term1, term2);
 	  else if (term2.getTerm()->isObjectVariable())
 	    return structuralUnifyVarObjVar(term1, term2);
 	  else
 	    return structuralUnifyVarQuantifier(term1, term2);
-	if (term2.getTerm()->isVariable())
+        }
+	if (term2.getTerm()->isVariable()) {
 	  if (term1.getTerm()->isObjectVariable())
 	    return structuralUnifyVarObjVar(term2, term1);
 	  else
 	    return structuralUnifyVarQuantifier(term2, term1);
+        }
 	if (term1.getTerm()->isObjectVariable())
 	  return (term2.getTerm()->isObjectVariable() &&
 		  structuralUnifyObjVarObjVar(term1, term2));

@@ -155,6 +155,7 @@ private:
   PushDownStack	pushDownStack;
   
   bool localAreas;
+  bool quick_tidy_check;
   NameTable& names;
   IPTable& ipTable;
 
@@ -272,6 +273,10 @@ public:
       heap.setSavedTop(heap.getTop());
     }
 
+
+  bool is_quick_tidy_check() { return quick_tidy_check; }
+
+  void set_quick_tidy_check(bool f) { quick_tidy_check = f; }
 
   // Backtrack - reset tops of heap and trails and backtrack trails.
   void backtrackTo(const HeapAndTrailsChoice& state)
