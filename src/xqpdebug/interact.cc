@@ -24,7 +24,7 @@
 
 #include "interact.h"
 #include <qmessagebox.h>
-#include <q3filedialog.h>
+#include <qfiledialog.h>
 #include <qfile.h>
 //Added by qt3to4:
 #include <QEvent>
@@ -34,38 +34,33 @@
 using namespace std;
 
 Interact::Interact( QWidget *box )
-  : Q3TextEdit(box)
+  : QTextEdit(box)
 {
   parent = box;
-  setTextFormat(Qt::PlainText);
+  //setTextFormat(Qt::PlainText);
   setFont( QFont( "Lucidatypewriter", 12, QFont::Normal ) );
   para = 0;
   indent = 0;
-  connect(this, SIGNAL(returnPressed()), this, SLOT(processReturn()));
+  //connect(this, SIGNAL(returnPressed()), this, SLOT(processReturn()));
   connect(this, SIGNAL(send_cmd(QString)), box, SLOT(send_cmd_to_qp(QString)));
 }
 
 void Interact::insert_at_end(QString s)
 {
-  para = paragraphs()-1;
-  indent = paragraphLength(para);
-  setCursorPosition(para, indent);
-  insert(s);
-  para = paragraphs()-1;
-  indent = paragraphLength(para);
-  setCursorPosition(para, indent);
-  setColor(Qt::blue);
+  insertPlainText(s);
+  QTextCursor cursor(textCursor());
+  cursor.movePosition(QTextCursor::End);
+  setTextCursor(cursor);
+  setTextColor(Qt::blue);
+  indent = cursor.position();
 }
 
 void Interact::processReturn()
-{
-  int p = paragraphs()-1;
-  int i = paragraphLength(p);
-  setSelection(para, indent, p, i);
-  QString cmd = selectedText();
-  setSelection(p, i, p, i);
-  para = p;
-  indent = i;
+{ 
+  QTextCursor cursor(textCursor());
+  cursor.setPosition(indent);
+  cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+  QString cmd = cursor.selectedText();
   send_cmd(cmd);
   cmd.truncate(cmd.length()-1);
 }
@@ -75,46 +70,47 @@ Interact::~Interact()
 {
 }
 
-void Interact::contentsMouseReleaseEvent(QMouseEvent* e)
+void Interact::mouseReleaseEvent(QMouseEvent* e)
 {
-  int p,i;
-  getCursorPosition(&p,&i);
-  if ((p < para) || ((p == para) && (i < indent)))
+  QTextCursor cursor(textCursor());
+  int p = cursor.position();
+
+  if (p < indent)
     {
       if (e->button() != Qt::MidButton)
-	Q3TextEdit::contentsMouseReleaseEvent(e);
-      setCursorPosition(currpara,currindent);
+	QTextEdit::mouseReleaseEvent(e);
+      cursor.movePosition(QTextCursor::End);
+      setTextCursor(cursor);
       readonly = true;
     }
   else
     {
-      Q3TextEdit::contentsMouseReleaseEvent(e);
+      QTextEdit::mouseReleaseEvent(e);
       readonly = false;
     }
 }
 
-void Interact::contentsMousePressEvent(QMouseEvent* e)
+void Interact::mousePressEvent(QMouseEvent* e)
 {
-  getCursorPosition(&currpara, &currindent);
   if (e->button() == Qt::MidButton)
     {
       QMouseEvent lbe(QEvent::MouseButtonPress, e->pos(), 
-		      Qt::LeftButton, Qt::LeftButton);
-      Q3TextEdit::contentsMousePressEvent(&lbe);
-      Q3TextEdit::contentsMouseReleaseEvent(&lbe);
+		      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+      QTextEdit::mousePressEvent(&lbe);
+      QTextEdit::mouseReleaseEvent(&lbe);
     }
-  Q3TextEdit::contentsMousePressEvent(e);
+  QTextEdit::mousePressEvent(e);
 }
 
 void Interact::cut()
 {
-  if (readonly) Q3TextEdit::copy();
-  else Q3TextEdit::cut();
+  if (readonly) QTextEdit::copy();
+  else QTextEdit::cut();
 }
 
 void Interact::paste()
 {
-  if (!readonly) Q3TextEdit::paste();
+  if (!readonly) QTextEdit::paste();
 }
 
 void Interact::keyPressEvent(QKeyEvent *k)
@@ -122,10 +118,10 @@ void Interact::keyPressEvent(QKeyEvent *k)
   int key_pressed = k->key();
   if (key_pressed == Qt::Key_Control)
     {
-      Q3TextEdit::keyPressEvent(k);
+      QTextEdit::keyPressEvent(k);
       return;
     }
-  if (k->state() == Qt::ControlButton)
+  if (k->modifiers() == Qt::ControlModifier)
     {
       if (key_pressed == 'D')
         {
@@ -134,60 +130,67 @@ void Interact::keyPressEvent(QKeyEvent *k)
         } 
       if (key_pressed == 'C')
 	{
-	  Q3TextEdit::keyPressEvent(k);
+	  QTextEdit::keyPressEvent(k);
 	  return;
 	}
     }
   if (readonly)
     {
-      int p = paragraphs()-1;
-      int i = paragraphLength(p);
-
-      setSelection(p,i,p,i);
+      QTextCursor cursor(textCursor());
+      cursor.movePosition(QTextCursor::End);
+      setTextCursor(cursor);
     }
   if ((key_pressed == Qt::Key_Backspace)
       || (key_pressed == Qt::Key_Left))
     {
-      int p,i;
-      getCursorPosition(&p,&i);
-      if ((p < para) || ((p == para) && (i <= indent)))
-	{
-	  return;
-	}
+      int p;
+      QTextCursor cursor(textCursor());
+      p = cursor.position();
+      if (p <= indent)
+        {
+          return;
+        }
     }
   if (key_pressed == Qt::Key_Up)
     {
-      int p,i;
-      getCursorPosition(&p,&i);
-      if (p <= para)
-	{
-	  return;
-	}
+      int p;
+      QTextCursor cursor(textCursor());
+      p = cursor.position();
+      if (p <= indent)
+        {
+          return;
+        }
     }
   if (key_pressed == Qt::Key_Home)
     {
-      if (k->state() == Qt::ControlButton)
-	{
-	  setCursorPosition(para,indent);
+      if (k->modifiers() == Qt::ControlModifier)
+	{ 
+          QTextCursor cursor(textCursor());
+	  cursor.setPosition(indent);
+	  setTextCursor(cursor);
 	  return;
 	}
       else
 	{
-	  int p,i;
-	  getCursorPosition(&p,&i);
-	  if (p >= para)
+	  int p;
+	  QTextCursor cursor(textCursor());
+	  cursor.movePosition(QTextCursor::StartOfBlock);
+	  p = cursor.position();
+	  if (p > indent)
 	    {
-	      setCursorPosition(p, 0);
+	      setTextCursor(cursor);
 	    }
 	  return;
 	}
     }
   if (key_pressed == Qt::Key_PageUp)
-    {
-      setCursorPosition(para,indent);
+    {     
+      QTextCursor cursor(textCursor());
+      cursor.setPosition(indent);
+      setTextCursor(cursor);
       return;
     }
 
-  Q3TextEdit::keyPressEvent(k);
+  QTextEdit::keyPressEvent(k);
 }
 

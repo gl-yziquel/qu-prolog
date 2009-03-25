@@ -26,24 +26,24 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qapplication.h>
-#include <q3popupmenu.h>
-#include <q3mainwindow.h>
+//#include <qpopupmenu.h>
+#include <qmainwindow.h>
 #include <qmenubar.h>
-#include <q3vbox.h>
+//#include <qvbox.h>
 #include <qmessagebox.h>
 #include <qinputdialog.h>
-#include <q3listbox.h>
+//#include <qlistbox.h>
 //Added by qt3to4:
-#include <Q3HBoxLayout>
+#include <QHBoxLayout>
 #include <QCloseEvent>
-#include <Q3VBoxLayout>
+#include <QVBoxLayout>
 
 #include "xqpdebug.h"
 #include "interact.h"
 #include <qcolor.h>
 #include <qfontdialog.h>
 #include <qlayout.h>
-#include <q3buttongroup.h>
+#include <qbuttongroup.h>
 #include "pedro_connection.h"
 
 
@@ -51,7 +51,7 @@ using namespace std;
 
 // Dialog box for configuration
 ConfigDialog::ConfigDialog(Xqpdebug *parent, QFont xqpf, QColor xqpc)
-  : QDialog(parent, "Configuration", TRUE)
+  : QDialog(parent)  //, "Configuration", TRUE)
 {
   QPushButton *ok, *cancel, *font, *colour;
   ok = new QPushButton("OK", this);
@@ -70,11 +70,13 @@ ConfigDialog::ConfigDialog(Xqpdebug *parent, QFont xqpf, QColor xqpc)
   cancel->setGeometry(190,200,120,40);
   font->setGeometry(10,10,150,40);
   colour->setGeometry(170,10,150,40);
-  browser = new Q3TextBrowser(this);
+  browser = new QTextBrowser(this);
   browser->setGeometry(10,80,310,100);
   browser->setText("AaBb :- \n| ?-");
   browser->setFont(f);
-  browser->setPaper(QBrush(c));
+  QPalette p=browser->palette();
+  p.setColor(QPalette::Base, xqpc); 
+  browser->setPalette(p);
   
   connect(ok, SIGNAL(clicked()), SLOT(accept()));
   connect(cancel, SIGNAL(clicked()), SLOT(reject()));
@@ -99,8 +101,9 @@ void ConfigDialog::choose_colour()
   QColor pick = QColorDialog::getColor(c, this);
   if (pick.isValid())
     {
-      browser->setPaper(QBrush(pick));
-      c = pick;
+      QPalette p=browser->palette();
+      p.setColor(QPalette::Base, pick); 
+      browser->setPalette(p);
     }
 }
 
@@ -131,16 +134,17 @@ Xqpdebug::Xqpdebug(char* threadname, char* processname,
   caption.append(" ");
   caption.append(processname);
   caption.append(" GUI");
-  setCaption(caption);
+  setWindowTitle(caption);
   move(config->getX(), config->getY());
   resize(config->getWidth(), config->getHeight());
-  Q3VBoxLayout* v = new Q3VBoxLayout(this,5,5,"vvv");
+  QVBoxLayout* v = new QVBoxLayout(this);
   qpint = new Interact(this);
   qpint->setFont(config->qpFont());
-  qpint->setPaper(QBrush(config->qpColor()));
-  qpint->setReadOnly(false);  
+  QPalette p=qpint->palette();
+  p.setColor(QPalette::Base, config->qpColor()); 
+  qpint->setPalette(p);
   v->addWidget(qpint);
-  Q3HBoxLayout* h = new Q3HBoxLayout(v,3,"hhh");
+  QHBoxLayout* h = new QHBoxLayout();
   QPushButton* creap = new QPushButton("Creap", this);
   QPushButton* skip = new QPushButton("Skip", this);
   QPushButton* leap = new QPushButton("Leap", this);
@@ -159,8 +163,8 @@ Xqpdebug::Xqpdebug(char* threadname, char* processname,
   h->addWidget(exitd);
   h->addWidget(config);
   h->addWidget(about);
+  v->addLayout(h);
   show();
-
   qpint->setFocus();
 
 }
@@ -168,15 +172,15 @@ Xqpdebug::Xqpdebug(char* threadname, char* processname,
 
 void Xqpdebug::process_qp_cmd(QString cmd)
 {
-   qpint->setColor(Qt::blue);
+   qpint->setTextColor(Qt::blue);
    qpint->insert_at_end(cmd);
-   qpint->setColor(Qt::black);
+   qpint->setTextColor(Qt::black);
    send_cmd_to_qp(cmd);
 }
 
 void Xqpdebug::send_cmd_to_qp(QString cmd)
 {
-  string msg = string(cmd.ascii());
+  string msg = string(cmd.toAscii());
   pedro_conn->send_p2p(msg);
 }
 
@@ -215,7 +219,7 @@ void Xqpdebug::closeEvent(QCloseEvent *e)
 
 void
 Xqpdebug::process_msg(int)
-{
+{   
   while (pedro_conn->msgAvail())
     {
       string msg;
@@ -226,7 +230,7 @@ Xqpdebug::process_msg(int)
 	    emit close();
 	    return;
 	  }
-	qpint->setColor(Qt::black);
+	qpint->setTextColor(Qt::black);
 	qpint->insert_at_end(inq);
       }
     }
@@ -243,7 +247,9 @@ void Xqpdebug::setConfigs(QFont f, QColor c)
   config->setQPFont(f);
   qpint->setFont(config->qpFont());
   config->setQPColor(c);
-  qpint->setPaper(QBrush(config->qpColor()));
+  QPalette p=qpint->palette();
+  p.setColor(QPalette::Base, config->qpColor()); 
+  qpint->setPalette(p);
 }
 void Xqpdebug::configure_int()
 {

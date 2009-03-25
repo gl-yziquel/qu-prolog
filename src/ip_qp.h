@@ -103,5 +103,18 @@ ReturnValue psi_ip_array_clear(Object *& );
 //
 ReturnValue psi_ip_array_init(Object *& , Object *&);
 
+
+//
+// psi_ip_lookup_default(key, value,default)
+// Look up the value of an implicit parameter.
+// mode(in,out,in)
+//
+ReturnValue psi_ip_lookup_default(Object *&, Object *&, Object *&);
+
+// psi_ip_lookupA_default(key, hash_val, value, default)
+// Lookup a value for an array implicit parameter.
+// mode(in,in,out, in)
+//
+ReturnValue psi_ip_lookupA_default(Object *&, Object *&,  Object *&, Object *&);
 #endif	// IP_QP_H
 

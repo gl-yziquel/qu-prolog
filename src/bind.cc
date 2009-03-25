@@ -82,11 +82,23 @@ Thread::bindVariables(Variable *variable1, Variable *variable2)
     {
       junior = variable2;
       senior = variable1;
+      if (junior->getName() != NULL && senior->getName() == NULL)
+        {
+          senior = addExtraInfo(senior);
+          updateAndTrailObject(reinterpret_cast<heapobject*>(senior),
+                               junior->getName(), Reference::NameOffset);
+        }
     }
   else if (variable2->isFrozen())
     {
       junior = variable1;
       senior = variable2;
+      if (junior->getName() != NULL && senior->getName() == NULL)
+        {
+          senior = addExtraInfo(senior);
+          updateAndTrailObject(reinterpret_cast<heapobject*>(senior),
+                               junior->getName(), Reference::NameOffset);
+        }
     }
   else if ((reinterpret_cast<void*>(variable1) < reinterpret_cast<void*>(variable2)))
     {
@@ -99,11 +111,11 @@ Thread::bindVariables(Variable *variable1, Variable *variable2)
       senior = variable2;
     }
 
-  if (junior->getName() != NULL && senior->getName() == NULL)
+  if (junior->hasExtraInfo() && !senior->hasExtraInfo())
     {
-      senior = addExtraInfo(senior);
-      updateAndTrailObject(reinterpret_cast<heapobject*>(senior),
-                           junior->getName(), Reference::NameOffset);
+      Variable* tmp = junior;
+      junior = senior;
+      senior = tmp;
     }
 
   if (junior->getDelays()->isCons())

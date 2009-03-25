@@ -59,6 +59,7 @@
 #include "atom_table.h"
 #include "thread_qp.h"
 
+extern heapobject var_id_counter;
 //
 // psi_collect_vars(term, list)
 // Collect all the variables (and object_variables) in term into list
@@ -347,7 +348,20 @@ Thread::psi_hash_variable(Object *& object1, Object *& object2)
 
   if (!val1->isVariable()) return RV_FAIL;
 
-  object2 = heap.newInteger((int)val1);
+  Variable* variable = OBJECT_CAST(Variable*, val1);
+
+  variable = addExtraInfo(variable);
+
+  heapobject id = variable->getID();
+
+  if (id == 0)
+    {
+      var_id_counter++;
+      variable->setID(var_id_counter);
+      id = var_id_counter;
+    }
+
+  object2 = heap.newInteger((int)id);
   return RV_SUCCESS;
 }
 

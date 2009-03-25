@@ -619,7 +619,164 @@ Thread::psi_ip_array_init(Object *& object1, Object *& object2)
   return RV_SUCCESS;
 }
 
+//
+// psi_ip_lookup_default(key, value,default)
+// Look up the value of an implicit parameter.
+// mode(in,out,in)
+//
+Thread::ReturnValue
+Thread::psi_ip_lookup_default(Object *& object1, Object *& object2, Object *& object3)
+{
+  Object *name_object = heap.dereference(object1);
+  Object *default_val = heap.dereference(object3);
+  if (name_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (! name_object->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
 
+  Object *current_value = ipTable.getImplicitPara(name_object);
+  if (current_value != NULL &&
+      current_value->isStructure() && 
+      OBJECT_CAST(Structure*, current_value)->getFunctor()
+      == AtomTable::arrayIP)
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+  if (current_value == NULL)
+    {
+      Variable* ip_var = heap.newVariable();
+      ip_var->setReference(default_val);
+      
+      ipTable.setImplicitPara(name_object, ip_var, *this);
+
+      current_value = default_val;
+    }
+
+  object2 = current_value->variableDereference();
+
+  return RV_SUCCESS;
+}
+
+// psi_ip_lookupA_default(key, hash_val, value, default)
+// Lookup a value for an array implicit parameter.
+// mode(in,in,out, in)
+//
+Thread::ReturnValue
+Thread::psi_ip_lookupA_default(Object *& object1, Object *& object2, 
+                               Object *& object3, Object *& object4)
+{
+  Object *name_object = heap.dereference(object1);
+  Object *hash_val = heap.dereference(object2);
+  Object *current_ip_val;
+  Object *default_val = heap.dereference(object4);
+
+
+  /* get IP array name */
+  if (name_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (! name_object->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  /* get IP offset */
+  if (hash_val->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 2);
+    }
+  if (! hash_val->isConstant())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 2);
+    }
+
+  /* lookup value */
+  Object *current_value = ipTable.getImplicitPara(name_object);
+  
+  size_t array_size;
+  if (current_value == NULL)
+    {
+      current_value = heap.newStructure(ip_array_size);
+      OBJECT_CAST(Structure*, current_value)->setFunctor(AtomTable::arrayIP);
+      
+      for (size_t i = 1; i <= ip_array_size; i++)
+	{
+	  OBJECT_CAST(Structure*, current_value)->setArgument(i, AtomTable::nil);
+	}
+
+      array_size = ip_array_size;
+      ipTable.setImplicitPara(name_object, current_value, *this);
+    }
+  else
+    {
+      if (! current_value->isStructure() || 
+	  OBJECT_CAST(Structure*, current_value)->getFunctor() 
+	  != AtomTable::arrayIP)
+	{
+	  PSI_ERROR_RETURN(EV_TYPE, 1);
+	}
+      array_size = OBJECT_CAST(Structure*, current_value)->getArity();
+    }
+  
+  const int32 offset = 1 +
+    static_cast<int32>((hash_val->isNumber()
+     ? hash_val->getInteger() & (array_size-1) 
+     : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
+  
+  Object *array_val_list = 
+    OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
+  Object *array_ptr = array_val_list;
+
+  assert(array_ptr->isList());
+
+  for (;
+       array_ptr->isCons();
+       array_ptr = OBJECT_CAST(Cons*, array_ptr)->getTail()->variableDereference())
+    {
+      Object *array_val_head =  
+	OBJECT_CAST(Cons*, array_ptr)->getHead()->variableDereference();
+
+      assert(array_val_head->isStructure());
+
+      Object *list_hash = 
+	OBJECT_CAST(Structure*, array_val_head)->getArgument(2)->variableDereference();
+
+      if (list_hash == hash_val ||
+	  (hash_val->isNumber() && list_hash->isNumber() &&
+	   hash_val->getInteger() == list_hash->getInteger()))
+	{
+	  object3 = OBJECT_CAST(Structure*, array_val_head)->getArgument(1)->variableDereference();
+	  return RV_SUCCESS;
+	}
+    }
+
+  assert(array_ptr->isNil());
+
+  // no value for this offset
+  Structure* array_val_head = heap.newStructure(2);
+  array_val_head->setFunctor(AtomTable::arrayIP);
+  array_val_head->setArgument(2, hash_val);
+      
+  Variable *ip_var = heap.newVariable();
+  ip_var->setReference(default_val);
+  array_val_head->setArgument(1, ip_var);
+  
+  current_ip_val = ip_var;
+  
+  Cons *new_array_val_list = heap.newCons(array_val_head, array_val_list);
+  
+  assert(current_value->isStructure());
+
+  updateAndTrailIP(reinterpret_cast<heapobject*>(current_value), 
+		   new_array_val_list, offset+1);
+  object3 = default_val;
+  return(RV_SUCCESS);
+}
 
 
 

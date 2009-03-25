@@ -1,3 +1,3 @@
 #! /bin/sh
 
-swipl -x /home/pjr/qp_dev/rel/qp8.8/bin/qc1.boot.po -F none -f none -t halt -g "main(['$1'])"
+swipl -x /home/pjr/qp_dev/rel/qp8.9/bin/qc1.boot.po -F none -f none -t halt -g "main(['$1'])"

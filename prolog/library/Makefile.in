@@ -14,6 +14,7 @@ SOURCES	= \
 	c_to_prolog.ql \
 	call.ql \
 	catch.ql \
+	chr_support.ql \
 	clause.ql \
 	communications.ql \
 	compare.ql \

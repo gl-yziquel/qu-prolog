@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   // Set up the GUI
   
   Xqpdebug *xqpdebug = new Xqpdebug(argv[1], argv[2], argv[3], argv[4]);
-  a.setMainWidget(xqpdebug);
+  //a.setMainWidget(xqpdebug);
   xqpdebug->show();  
   
   int exitval =  a.exec();

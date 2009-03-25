@@ -1339,34 +1339,6 @@ end('delay_until/2$0'/1):
 
 'delay_until/2$1'/2:
 
-	try(2, $1)
-	trust($2)
-
-$1:
-	get_x_variable(2, 0)
-	get_x_variable(0, 1)
-	pseudo_instr1(46, 2)
-	neck_cut
-	execute_predicate('call', 1)
-
-$2:
-	get_x_variable(2, 1)
-	pseudo_instr2(25, 0, 1)
-	put_x_value(1, 0)
-	put_structure(1, 3)
-	set_constant('nonvar')
-	set_x_value(1)
-	put_structure(2, 1)
-	set_constant('delay_until')
-	set_x_value(3)
-	set_x_value(2)
-	execute_predicate('delay', 2)
-end('delay_until/2$1'/2):
-
-
-
-'delay_until/2$2'/2:
-
 	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
 
 $4:
@@ -1392,18 +1364,18 @@ $2:
 	get_list(1)
 	unify_x_value(2)
 	unify_x_variable(1)
-	execute_predicate('delay_until/2$2', 2)
+	execute_predicate('delay_until/2$1', 2)
 
 $3:
 	get_list(0)
 	unify_void(1)
 	unify_x_variable(0)
-	execute_predicate('delay_until/2$2', 2)
-end('delay_until/2$2'/2):
+	execute_predicate('delay_until/2$1', 2)
+end('delay_until/2$1'/2):
 
 
 
-'delay_until/2$3'/3:
+'delay_until/2$2'/3:
 
 	switch_on_term(0, $3, $2, $3, $2, $2, $2)
 
@@ -1427,12 +1399,12 @@ $1:
 
 $2:
 	get_x_variable(0, 2)
-	execute_predicate('call', 1)
-end('delay_until/2$3'/3):
+	execute_predicate('call_predicate', 1)
+end('delay_until/2$2'/3):
 
 
 
-'delay_until/2$4/2$0'/1:
+'delay_until/2$3'/1:
 
 	try(1, $1)
 	trust($2)
@@ -1444,191 +1416,85 @@ $1:
 
 $2:
 	proceed
-end('delay_until/2$4/2$0'/1):
-
-
-
-'delay_until/2$4'/2:
-
-	try(2, $1)
-	trust($2)
-
-$1:
-	allocate(3)
-	get_y_variable(1, 0)
-	get_y_variable(0, 1)
-	pseudo_instr1(44, 21)
-	get_y_level(2)
-	call_predicate('delay_until/2$4/2$0', 1, 3)
-	cut(2)
-	pseudo_instr2(50, 21, 0)
-	get_x_variable(2, 0)
-	put_y_value(1, 0)
-	put_structure(2, 1)
-	set_constant('delay_until')
-	set_x_value(2)
-	set_y_value(0)
-	deallocate
-	execute_predicate('delay', 2)
-
-$2:
-	get_x_variable(0, 1)
-	execute_predicate('call', 1)
-end('delay_until/2$4'/2):
-
-
-
-'delay_until/2$5'/2:
-
-	switch_on_term(0, $6, $1, $1, $3, $1, $1)
-
-$3:
-	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, 'bound'/1:$5])
-
-$4:
-	try(2, $1)
-	trust($2)
-
-$5:
-	try(2, $1)
-	trust($2)
-
-$6:
-	try(2, $1)
-	trust($2)
-
-$1:
-	allocate(2)
-	get_y_variable(0, 1)
-	get_y_level(1)
-	call_predicate('call_predicate', 1, 2)
-	cut(1)
-	put_y_value(0, 0)
-	deallocate
-	execute_predicate('call', 1)
-
-$2:
-	get_x_variable(2, 0)
-	get_x_variable(3, 1)
-	get_structure('bound', 1, 0)
-	unify_x_variable(0)
-	put_structure(1, 4)
-	set_constant('$bound')
-	set_x_value(2)
-	put_structure(2, 1)
-	set_constant('delay_until')
-	set_x_value(4)
-	set_x_value(3)
-	execute_predicate('delay', 2)
-end('delay_until/2$5'/2):
-
-
-
-'delay_until/2$6'/3:
-
-	try(3, $1)
-	trust($2)
-
-$1:
-	allocate(2)
-	get_y_variable(0, 2)
-	get_y_level(1)
-	call_predicate('identical_or_apart', 2, 2)
-	cut(1)
-	put_y_value(0, 0)
-	deallocate
-	execute_predicate('call', 1)
-
-$2:
-	get_x_variable(3, 0)
-	put_x_variable(4, 5)
-	get_list(5)
-	unify_x_value(3)
-	unify_x_ref(5)
-	get_list(5)
-	unify_x_value(1)
-	unify_constant('[]')
-	pseudo_instr2(67, 4, 0)
-	put_structure(2, 4)
-	set_constant('identical_or_apart')
-	set_x_value(3)
-	set_x_value(1)
-	put_structure(2, 1)
-	set_constant('delay_until')
-	set_x_value(4)
-	set_x_value(2)
-	execute_predicate('$delay_disjunctive_list', 2)
-end('delay_until/2$6'/3):
+end('delay_until/2$3'/1):
 
 
 
 'delay_until'/2:
 
-	switch_on_term(0, $21, $20, $20, $11, $20, $20)
-
-$11:
-	switch_on_structure(0, 16, ['$default':$20, '$'/0:$12, 'or'/2:$13, 'and'/2:$14, 'nonvar'/1:$15, 'ground'/1:$16, 'bound'/1:$17, '$bound'/1:$18, 'identical_or_apart'/2:$19])
-
-$12:
-	try(2, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($7)
-	retry($8)
-	retry($9)
-	trust($10)
-
-$13:
-	try(2, $1)
-	retry($2)
-	retry($3)
-	trust($4)
-
-$14:
-	try(2, $1)
-	retry($2)
-	retry($3)
-	trust($5)
+	switch_on_term(0, $25, $24, $24, $15, $24, $24)
 
 $15:
-	try(2, $1)
-	retry($2)
-	retry($3)
-	trust($6)
+	switch_on_structure(0, 16, ['$default':$24, '$'/0:$16, 'or'/2:$17, 'and'/2:$18, 'nonvar'/1:$19, 'ground'/1:$20, 'bound'/1:$21, '$bound'/1:$22, 'identical_or_apart'/2:$23])
 
 $16:
 	try(2, $1)
 	retry($2)
 	retry($3)
-	trust($7)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	retry($9)
+	retry($10)
+	retry($11)
+	retry($12)
+	retry($13)
+	trust($14)
 
 $17:
 	try(2, $1)
 	retry($2)
 	retry($3)
-	trust($8)
+	trust($4)
 
 $18:
 	try(2, $1)
 	retry($2)
 	retry($3)
-	trust($9)
+	trust($5)
 
 $19:
 	try(2, $1)
 	retry($2)
 	retry($3)
-	trust($10)
+	retry($6)
+	trust($7)
 
 $20:
 	try(2, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($8)
 
 $21:
+	try(2, $1)
+	retry($2)
+	retry($3)
+	retry($9)
+	trust($10)
+
+$22:
+	try(2, $1)
+	retry($2)
+	retry($3)
+	retry($11)
+	trust($12)
+
+$23:
+	try(2, $1)
+	retry($2)
+	retry($3)
+	retry($13)
+	trust($14)
+
+$24:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$25:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -1638,11 +1504,16 @@ $21:
 	retry($7)
 	retry($8)
 	retry($9)
-	trust($10)
+	retry($10)
+	retry($11)
+	retry($12)
+	retry($13)
+	trust($14)
 
 $1:
 	get_x_variable(2, 0)
 	pseudo_instr1(1, 1)
+	neck_cut
 	put_structure(2, 0)
 	set_constant('delay_until')
 	set_x_value(2)
@@ -1728,10 +1599,28 @@ $5:
 
 $6:
 	get_structure('nonvar', 1, 0)
-	unify_x_variable(0)
-	execute_predicate('delay_until/2$1', 2)
+	unify_x_variable(2)
+	get_x_variable(0, 1)
+	pseudo_instr1(46, 2)
+	neck_cut
+	execute_predicate('call_predicate', 1)
 
 $7:
+	get_structure('nonvar', 1, 0)
+	unify_x_variable(0)
+	get_x_variable(2, 1)
+	pseudo_instr2(25, 0, 1)
+	put_x_value(1, 0)
+	put_structure(1, 3)
+	set_constant('nonvar')
+	set_x_value(1)
+	put_structure(2, 1)
+	set_constant('delay_until')
+	set_x_value(3)
+	set_x_value(2)
+	execute_predicate('delay', 2)
+
+$8:
 	get_structure('ground', 1, 0)
 	allocate(3)
 	unify_y_variable(2)
@@ -1740,30 +1629,100 @@ $7:
 	pseudo_instr2(67, 0, 1)
 	get_x_variable(0, 1)
 	put_y_variable(0, 1)
-	call_predicate('delay_until/2$2', 2, 3)
+	call_predicate('delay_until/2$1', 2, 3)
 	put_y_value(0, 0)
 	put_y_value(2, 1)
 	put_y_value(1, 2)
 	deallocate
-	execute_predicate('delay_until/2$3', 3)
-
-$8:
-	get_structure('bound', 1, 0)
-	unify_x_variable(0)
-	execute_predicate('delay_until/2$4', 2)
+	execute_predicate('delay_until/2$2', 3)
 
 $9:
-	get_structure('$bound', 1, 0)
-	unify_x_variable(0)
-	execute_predicate('delay_until/2$5', 2)
+	get_structure('bound', 1, 0)
+	allocate(3)
+	unify_y_variable(1)
+	get_y_variable(0, 1)
+	pseudo_instr1(44, 21)
+	get_y_level(2)
+	put_y_value(1, 0)
+	call_predicate('delay_until/2$3', 1, 3)
+	cut(2)
+	pseudo_instr2(50, 21, 0)
+	get_x_variable(2, 0)
+	put_y_value(1, 0)
+	put_structure(2, 1)
+	set_constant('delay_until')
+	set_x_value(2)
+	set_y_value(0)
+	deallocate
+	execute_predicate('delay', 2)
 
 $10:
+	get_structure('bound', 1, 0)
+	unify_void(1)
+	get_x_variable(0, 1)
+	execute_predicate('call_predicate', 1)
+
+$11:
+	get_structure('$bound', 1, 0)
+	unify_x_variable(0)
+	allocate(2)
+	get_y_variable(0, 1)
+	get_y_level(1)
+	call_predicate('call_predicate', 1, 2)
+	cut(1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('call_predicate', 1)
+
+$12:
+	get_x_variable(2, 0)
+	get_x_variable(3, 1)
+	get_structure('$bound', 1, 0)
+	unify_x_variable(0)
+	get_structure('bound', 1, 0)
+	unify_x_variable(0)
+	put_structure(2, 1)
+	set_constant('delay_until')
+	set_x_value(2)
+	set_x_value(3)
+	execute_predicate('delay', 2)
+
+$13:
 	get_structure('identical_or_apart', 2, 0)
 	unify_x_variable(0)
+	unify_x_variable(2)
+	allocate(2)
+	get_y_variable(0, 1)
+	get_y_level(1)
+	put_x_value(2, 1)
+	call_predicate('identical_or_apart', 2, 2)
+	cut(1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('call_predicate', 1)
+
+$14:
+	get_structure('identical_or_apart', 2, 0)
+	unify_x_variable(2)
 	unify_x_variable(3)
-	get_x_variable(2, 1)
-	put_x_value(3, 1)
-	execute_predicate('delay_until/2$6', 3)
+	get_x_variable(4, 1)
+	put_x_variable(1, 5)
+	get_list(5)
+	unify_x_value(2)
+	unify_x_ref(5)
+	get_list(5)
+	unify_x_value(3)
+	unify_constant('[]')
+	pseudo_instr2(67, 1, 0)
+	put_structure(2, 5)
+	set_constant('identical_or_apart')
+	set_x_value(2)
+	set_x_value(3)
+	put_structure(2, 1)
+	set_constant('delay_until')
+	set_x_value(5)
+	set_x_value(4)
+	execute_predicate('$delay_disjunctive_list', 2)
 end('delay_until'/2):
 
 

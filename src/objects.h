@@ -690,7 +690,7 @@ public:
 class Reference : public Object
 {
 protected:
-  Object *info[1];
+   heapobject info[1];
 
   // In a Variable that has extra information:
   // info[0] = reference
@@ -782,6 +782,9 @@ public:
   // to this var (with extra info).
 
   inline void copyTag(Object*);
+
+  inline heapobject getID(void) const;
+  inline void setID(heapobject);
   
 #ifdef QP_DEBUG
 public:
@@ -1789,14 +1792,14 @@ inline Object *Reference::getReference(void) const
 {
   assert(sizeof(Object *) == sizeof(heapobject));
 
-  return info[0];
+  return (Object*)(info[0]);
 }
 
 inline void Reference::setReference(Object *plobj)
 {
   assert(sizeof(Object *) == sizeof(heapobject));
 
-  info[0] = plobj;
+  info[0] = (heapobject)plobj;
 }
 
 
@@ -1817,7 +1820,7 @@ Reference::getName(void) const
 
   if(hasExtraInfo())
     {
-      return OBJECT_CAST(Atom *, info[1]);
+      return OBJECT_CAST(Atom *, (Object*)(info[1]));
     }
   else
     {
@@ -1833,7 +1836,7 @@ Reference::getNameAddress(void)
   // Only a valid operation if Reference has extra information
   assert(hasExtraInfo());
   
-  return reinterpret_cast<heapobject*>(&info[1]);
+  return &info[1];
 }
 
 inline void
@@ -1841,7 +1844,7 @@ Reference::setName(Object* name)
 {
   assert(name->isAtom());
   assert(hasExtraInfo());
-  info[1] = name;
+  info[1] = (heapobject)name;
 }
 
 inline Object *Reference::getDelays(void) const
@@ -1850,7 +1853,7 @@ inline Object *Reference::getDelays(void) const
 
   if (hasExtraInfo())
     {
-      return info[2];
+      return (Object*)(info[2]);
     }
   else
     {
@@ -1866,14 +1869,14 @@ Reference::setDelays(Object *delays)
   assert(hasExtraInfo());
   assert(delays->isList() || delays->isVariable());
 
-  info[2] = delays;
+  info[2] = (heapobject)delays;
 }
 
 inline heapobject*
 Reference::getDelaysAddress(void)
 {
   assert(hasExtraInfo());
-  return (reinterpret_cast<heapobject*>(&info[2]));
+  return &info[2];
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1932,7 +1935,7 @@ inline void Variable::setOccursCheckOther(void)
 
 inline size_t Variable::size(bool has_extra_info)
 {
-  return sizeof(Variable) / BYTES_PER_WORD + (has_extra_info ? 2 : 0);
+  return sizeof(Variable) / BYTES_PER_WORD + (has_extra_info ? 3 : 0);
 }
 
 inline bool Variable::isLifeSet(void) const
@@ -1959,6 +1962,16 @@ inline void Variable::copyTag(Object* other)
   tag |= (other->getTag() & ~TypeTagMask);
 }
   
+inline heapobject Variable::getID(void) const
+{
+  return info[3];
+}
+
+inline void Variable::setID(heapobject v)
+{
+  info[3] = v;
+}
+
 #ifdef QP_DEBUG
 inline void Variable::printMe(AtomTable& atoms, bool all)
 {
@@ -1999,7 +2012,7 @@ inline Object *ObjectVariable::getDistinctness(void) const
 
   assert(hasExtraInfo());
 
-  return info[3];
+  return (Object*)(info[3]);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -2033,7 +2046,7 @@ ObjectVariable::getDistinctnessAddress(void)
 
   assert(hasExtraInfo());
 
-  return reinterpret_cast<heapobject*>(&info[3]);
+  return &info[3];
 }
 
 inline void ObjectVariable::setDistinctness(Object *distinctness)
@@ -2043,7 +2056,7 @@ inline void ObjectVariable::setDistinctness(Object *distinctness)
   assert(hasExtraInfo());
   assert(distinctness->isList() || distinctness->isVariable());
 
-  info[3] = distinctness;
+  info[3] = (heapobject)distinctness;
 }
 
 inline size_t ObjectVariable::size(void) const

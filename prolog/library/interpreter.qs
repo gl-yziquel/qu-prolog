@@ -535,7 +535,7 @@ end('$print_result/1$0'/3):
 
 
 
-'$print_result/1$1'/3:
+'$print_result/1$1'/4:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
@@ -543,11 +543,11 @@ $3:
 	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
 
 $4:
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $5:
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
@@ -561,8 +561,9 @@ $1:
 	proceed
 
 $2:
+	get_x_variable(2, 3)
 	execute_predicate('$print_constraints_section', 3)
-end('$print_result/1$1'/3):
+end('$print_result/1$1'/4):
 
 
 
@@ -584,13 +585,14 @@ $5:
 $1:
 	get_constant('[]', 0)
 	neck_cut
-	pseudo_instr1(28, 0)
-	put_integer(10, 1)
-	pseudo_instr2(8, 0, 1)
 	allocate(3)
 	put_y_variable(2, 19)
 	put_y_variable(1, 19)
 	put_y_variable(0, 19)
+	call_predicate('$chr_print_constraints', 0, 3)
+	pseudo_instr1(28, 0)
+	put_integer(10, 1)
+	pseudo_instr2(8, 0, 1)
 	put_constant('yes', 1)
 	call_predicate('write_atom', 2, 3)
 	put_y_value(2, 1)
@@ -606,27 +608,78 @@ $1:
 
 $2:
 	pseudo_instr2(111, 0, 1)
-	allocate(4)
+	allocate(5)
 	get_y_variable(0, 1)
+	put_y_variable(4, 19)
 	put_y_variable(3, 19)
 	put_y_variable(2, 19)
 	put_y_variable(1, 19)
 	put_y_value(0, 0)
-	call_predicate('$print_bindings_section', 1, 4)
+	call_predicate('$print_bindings_section', 1, 5)
 	pseudo_instr2(67, 20, 0)
+	put_y_value(4, 1)
+	put_y_value(3, 2)
+	put_y_value(2, 3)
+	call_predicate('collect_constraints', 4, 5)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	call_predicate('$remove_chr_constraints', 2, 5)
+	call_predicate('$chr_print_constraints', 0, 5)
+	put_y_value(4, 0)
 	put_y_value(3, 1)
-	put_y_value(2, 2)
-	put_y_value(1, 3)
-	call_predicate('collect_constraints', 4, 4)
-	put_y_value(3, 0)
-	put_y_value(2, 1)
 	put_y_value(1, 2)
-	call_predicate('$print_result/1$1', 3, 1)
+	put_y_value(2, 3)
+	call_predicate('$print_result/1$1', 4, 1)
 	call_predicate('flush_output', 0, 1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('$interpreter_cont_section', 1)
 end('$print_result'/1):
+
+
+
+'$remove_chr_constraints'/2:
+
+	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
+
+$4:
+	try(2, $2)
+	trust($3)
+
+$5:
+	try(2, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('delay_until', 2, 2)
+	unify_x_ref(2)
+	unify_x_ref(3)
+	get_structure('bound', 1, 2)
+	unify_x_variable(2)
+	get_structure('$chr_process_var_delays', 2, 3)
+	unify_x_value(2)
+	unify_void(1)
+	neck_cut
+	execute_predicate('$remove_chr_constraints', 2)
+
+$3:
+	get_list(0)
+	unify_x_variable(2)
+	unify_x_variable(0)
+	get_list(1)
+	unify_x_value(2)
+	unify_x_variable(1)
+	execute_predicate('$remove_chr_constraints', 2)
+end('$remove_chr_constraints'/2):
 
 
 

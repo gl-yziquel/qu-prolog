@@ -1,11 +1,11 @@
 '$pseudo_instruction'/4:
 
-	switch_on_term(0, $346, 'fail', 'fail', $343, 'fail', $345)
+	switch_on_term(0, $348, 'fail', 'fail', $345, 'fail', $347)
 
-$343:
-	switch_on_structure(0, 1024, ['$default':'fail', '$'/0:$344, 'compound'/1:$17, 'var'/1:$18, 'atom'/1:$19, 'integer'/1:$20, 'obvar'/1:$21, 'quant'/1:$22, 'sub'/1:$23, '$get_level'/1:$24, '$delayneckcut'/1:$25, '$cut'/1:$26, '$get_qplibpath'/1:$27, 'get_args'/1:$28, '$psi_retract'/1:$29, '$save'/1:$30, '$restore'/1:$31, '$cputime'/1:$32, '$stat_memory'/1:$33, '$stat_program'/1:$34, '$empty_sub'/1:$35, '$call_predicate0'/1:$36, '$code_top'/1:$37, '$get_catch'/1:$38, '$set_catch'/1:$39, '$psi_resume'/1:$40, 'irandom'/1:$41, '$clear_signal'/1:$42, '$default_signal_handler'/1:$43, 'current_input'/1:$44, 'current_output'/1:$45, '$set_input'/1:$46, '$set_output'/1:$47, 'flush_output'/1:$48, 'at_end_of_stream'/1:$49, 'past_end_of_stream'/1:$50, '$reset_stream'/1:$51, '$local_obvar'/1:$52, '$new_obvar'/1:$53, '$valid_obvar_prefix'/1:$54, '$set_trace_level'/1:$55, 'freeze_var'/1:$56, 'thaw_var'/1:$57, 'frozen_var'/1:$58, 'thawed_var'/1:$59, 'atomic'/1:$60, 'any_variable'/1:$61, 'simple'/1:$62, 'nonvar'/1:$63, 'std_var'/1:$64, 'std_nonvar'/1:$65, 'std_compound'/1:$66, 'list'/1:$67, 'freeze_term'/1:$68, 'thaw_term'/1:$69, 'name_vars'/1:$70, 'ip_array_clear'/1:$71, '$ipc_commit'/1:$72, 'tcp_listen'/1:$73, 'tcp_checkconn'/1:$74, 'tcp_close'/1:$75, 'realtime'/1:$76, '$single_sub'/1:$77, 'tcp_is_socket'/1:$78, 'process_pid'/1:$79, 'thread_set_symbol'/1:$80, 'thread_goal'/1:$81, 'thread_is_thread'/1:$82, 'thread_is_runnable'/1:$83, 'thread_is_suspended'/1:$84, '$thread_tid'/1:$85, 'thread_suspend'/1:$86, 'thread_resume'/1:$87, '$thread_wait'/1:$88, '$thread_defaults'/1:$89, '$thread_set_defaults'/1:$90, 'chdir'/1:$91, 'getcwd'/1:$92, 'nsig'/1:$93, 'thread_errno'/1:$94, 'set_trace_flag'/1:$95, 'clear_trace_flag'/1:$96, 'test_trace_flag'/1:$97, '$tcp_connect2'/1:$98, 'stdin'/1:$99, 'stdout'/1:$100, 'stderr'/1:$101, 'float'/1:$102, 'srandom'/1:$103, '$pedro_notify'/1:$104, 'process_symbol'/1:$105, '$pedro_register'/1:$106, 'thread_handle'/1:$107, '$alloc_buffer'/1:$108, '$dealloc_buffer'/1:$109, '$debug_write'/1:$110, '$addExtraInfoToVars'/1:$111, '$reset_std_stream'/1:$112, 'current_threads'/1:$113, 'thread_exit'/1:$114, 'pedro_address'/1:$115, 'pedro_port'/1:$116, 'bound'/1:$117, '$psi_make_iterator'/1:$118, 'set_autoflush'/1:$119, 'get_open_streams'/1:$120, '$broadcast'/1:$121, 'random'/1:$122, '$initial_goal'/1:$123, '$make_cleanup_cp'/1:$124, 'string'/1:$125, 'is'/2:$126, '<'/2:$127, '=<'/2:$128, 'ip_set'/2:$129, 'ip_lookup'/2:$130, '$get_char'/2:$131, 'put_char'/2:$132, '$get_code'/2:$133, 'put_code'/2:$134, '$compare_pointers'/2:$135, '$set_flag'/2:$136, '$get_flag'/2:$137, '$copy_term_from_buffer'/2:$138, '$stat_atom'/2:$139, '$stat_predicate'/2:$140, '$stat_name'/2:$141, '$psi_write_atom'/2:$142, '$psi_writeq_atom'/2:$143, '$write_integer'/2:$144, '$write_var'/2:$145, '$writeR_var'/2:$146, '$write_obvar'/2:$147, '$writeR_obvar'/2:$148, '$writeq_obvar'/2:$149, '$get_substitution'/2:$150, 'sub_term'/2:$151, '$next_sub'/2:$152, '$sub_table_size'/2:$153, '$compress_sub_object_variable'/2:$154, '$reset_entry'/2:$155, 'atom_length'/2:$156, 'concat_atom'/2:$157, '$atom_codes'/2:$158, '$codes_atom'/2:$159, '$char_code'/2:$160, '$code_char'/2:$161, '$hash_double'/2:$162, 'hash_table_remove'/2:$163, '$number_codes'/2:$164, '$codes_number'/2:$165, '$close'/2:$166, '$stream_position'/2:$167, '$set_stream_position'/2:$168, '$line_number'/2:$169, '$stream_to_chars'/2:$170, '$stream_to_atom'/2:$171, '$system'/2:$172, '$mktemp'/2:$173, '$delay'/2:$174, '$delayed_problems_for_var'/2:$175, '$get_bound_structure'/2:$176, 'not_free_in'/2:$177, '$not_free_in_var_simplify'/2:$178, 'is_distinct'/2:$179, 'get_distinct'/2:$180, '$object_variable_name_to_prefix'/2:$181, '$readR_var'/2:$182, '$readR_obvar'/2:$183, 'quantifier'/2:$184, 'bound_var'/2:$185, 'body'/2:$186, 'check_binder'/2:$187, 'get_var_name'/2:$188, 'set_var_name'/2:$189, 'set_obvar_name'/2:$190, 'freeze_term'/2:$191, 'thaw_term'/2:$192, 'collect_vars'/2:$193, '$call_predicate1'/2:$194, '$increment'/2:$195, '$decrement'/2:$196, 'name_vars'/2:$197, 'get_unnamed_vars'/2:$198, 'global_state_lookup'/2:$199, 'global_state_set'/2:$200, 'global_state_increment'/2:$201, 'global_state_decrement'/2:$202, '$get_dynamic_chain'/2:$203, '$thread_goal'/2:$204, 'tcp_host_to_ip_address'/2:$205, 'tcp_host_from_ip_address'/2:$206, '$local_p2p'/2:$207, '$thread_symbol'/2:$208, '$load'/2:$209, 'is_free_in'/2:$210, 'pipe'/2:$211, 'env_getenv'/2:$212, 'env_putenv'/2:$213, 'signal_to_atom'/2:$214, 'strerror'/2:$215, '$psi_socket_fd'/2:$216, '$pedro_unsubscribe'/2:$217, 'uncurry'/2:$218, '$get_line'/2:$219, 'ip_array_init'/2:$220, 'copy_term'/2:$221, '$buffer_set_domains_apart'/2:$222, '$copy_substitution'/2:$223, '$copy_obvar_to_buffer_tail'/2:$224, '$stat_ip_table'/2:$225, '$set_stream_properties'/2:$226, '$get_stream_properties'/2:$227, 'set_std_stream'/2:$228, 'thread_push_goal'/2:$229, 'structural_unify'/2:$230, '$not_free_in_nfi_simp'/2:$231, '$require_nfi_simp'/2:$232, '$fast_simplify'/2:$233, 'gmtime'/2:$234, 'localtime'/2:$235, '=='/2:$236, 'simplify_term'/2:$237, 'is_not_free_in'/2:$238, '$put_line'/2:$239, 'ip_array_get_entries'/2:$240, '$write_float'/2:$241, 'select'/2:$242, '$write_string'/2:$243, '$writeq_string'/2:$244, 'string_length'/2:$245, '$stream_to_string'/2:$246, '$list_to_string'/2:$247, '$string_to_atom'/2:$248, '$atom_to_string'/2:$249, '$pedro_connect'/2:$250, '$pedro_subscribe'/2:$251, 'hash_variable'/2:$252, 'functor'/3:$253, 'arg'/3:$254, '$add'/3:$255, '$subtract'/3:$256, '$compare_var'/3:$257, '$compare_atom'/3:$258, '$fast_equal'/3:$259, '$stat_choice'/3:$260, '$stat_global'/3:$261, '$stat_local'/3:$262, '$stat_binding_trail'/3:$263, '$stat_code'/3:$264, '$stat_string'/3:$265, 'random'/3:$266, '$string_concat'/3:$267, '$set_domain'/3:$268, '$set_range'/3:$269, '$get_domain'/3:$270, '$get_range'/3:$271, '$build_sub_term'/3:$272, '$get_opcode'/3:$273, '$get_const'/3:$274, '$get_number'/3:$275, '$get_address'/3:$276, '$get_offset'/3:$277, '$get_pred'/3:$278, '$get_entry'/3:$279, '$copy_to_buffer_tail'/3:$280, 'concat_atom'/3:$281, 'hash_table_lookup'/3:$282, '$hash_table_search'/3:$283, '$open'/3:$284, '$get_atom_from_atom_table'/3:$285, '$symtype'/3:$286, '$access'/3:$287, '$read_next_token'/3:$288, '$encoded_write'/3:$289, '$call_predicate2'/3:$290, '$put_structure'/3:$291, '$set_argument'/3:$292, 'ip_set'/3:$293, 'ip_lookup'/3:$294, '$ipc_next'/3:$295, 'tcp_socket'/3:$296, 'tcp_setsockopt'/3:$297, 'tcp_getsockopt'/3:$298, 'tcp_bind'/3:$299, '$tcp_connect1'/3:$300, '$open_socket_stream'/3:$301, '$open_msgstream'/3:$302, 'tcp_getsockname'/3:$303, 'tcp_getpeername'/3:$304, '$tcp_service_to_proto_port'/3:$305, '$tcp_service_proto_to_port'/3:$306, '$tcp_service_from_proto_port'/3:$307, '$tcp_service_proto_from_port'/3:$308, '$thread_fork'/3:$309, '$psi_decompile'/3:$310, '$make_sub_from_buffer'/3:$311, '$stat_other_trail'/3:$312, 'simplify_term'/3:$313, '$get_double'/3:$314, '$stat_scratchpad'/3:$315, '$get_delays$'/3:$316, 'atom_concat2'/3:$317, 'hash_table_insert'/3:$318, '$predicate_stamp'/3:$319, '$get_integer'/3:$320, '$ipc_first'/3:$321, 'setarg'/3:$322, '$psi_dynamic'/4:$323, 'atom_search'/4:$324, '$sub_atom'/4:$325, '$load_foreign'/4:$326, '$open_string'/4:$327, '$get_pred_from_pred_table'/4:$328, '$encoded_read'/4:$329, 'quantify'/4:$330, '$call_predicate3'/4:$331, 'tcp_accept'/4:$332, '$psi_next_instr'/4:$333, '$psi_assert'/4:$334, '$ccompile'/4:$335, '$set_domains_apart'/4:$336, '$new_sub'/4:$337, '$get_first_clause'/4:$338, '$get_next_clause'/4:$339, '$split_string'/4:$340, '$ipc_get_message'/4:$341, '$call_predicate4'/5:$342])
+$345:
+	switch_on_structure(0, 1024, ['$default':'fail', '$'/0:$346, 'compound'/1:$17, 'var'/1:$18, 'atom'/1:$19, 'integer'/1:$20, 'obvar'/1:$21, 'quant'/1:$22, 'sub'/1:$23, '$get_level'/1:$24, '$delayneckcut'/1:$25, '$cut'/1:$26, '$get_qplibpath'/1:$27, 'get_args'/1:$28, '$psi_retract'/1:$29, '$save'/1:$30, '$restore'/1:$31, '$cputime'/1:$32, '$stat_memory'/1:$33, '$stat_program'/1:$34, '$empty_sub'/1:$35, '$call_predicate0'/1:$36, '$code_top'/1:$37, '$get_catch'/1:$38, '$set_catch'/1:$39, '$psi_resume'/1:$40, 'irandom'/1:$41, '$clear_signal'/1:$42, '$default_signal_handler'/1:$43, 'current_input'/1:$44, 'current_output'/1:$45, '$set_input'/1:$46, '$set_output'/1:$47, 'flush_output'/1:$48, 'at_end_of_stream'/1:$49, 'past_end_of_stream'/1:$50, '$reset_stream'/1:$51, '$local_obvar'/1:$52, '$new_obvar'/1:$53, '$valid_obvar_prefix'/1:$54, '$set_trace_level'/1:$55, 'freeze_var'/1:$56, 'thaw_var'/1:$57, 'frozen_var'/1:$58, 'thawed_var'/1:$59, 'atomic'/1:$60, 'any_variable'/1:$61, 'simple'/1:$62, 'nonvar'/1:$63, 'std_var'/1:$64, 'std_nonvar'/1:$65, 'std_compound'/1:$66, 'list'/1:$67, 'freeze_term'/1:$68, 'thaw_term'/1:$69, 'name_vars'/1:$70, 'ip_array_clear'/1:$71, '$ipc_commit'/1:$72, 'tcp_listen'/1:$73, 'tcp_checkconn'/1:$74, 'tcp_close'/1:$75, 'realtime'/1:$76, '$single_sub'/1:$77, 'tcp_is_socket'/1:$78, 'process_pid'/1:$79, 'thread_set_symbol'/1:$80, 'thread_goal'/1:$81, 'thread_is_thread'/1:$82, 'thread_is_runnable'/1:$83, 'thread_is_suspended'/1:$84, '$thread_tid'/1:$85, 'thread_suspend'/1:$86, 'thread_resume'/1:$87, '$thread_wait'/1:$88, '$thread_defaults'/1:$89, '$thread_set_defaults'/1:$90, 'chdir'/1:$91, 'getcwd'/1:$92, 'nsig'/1:$93, 'thread_errno'/1:$94, 'set_trace_flag'/1:$95, 'clear_trace_flag'/1:$96, 'test_trace_flag'/1:$97, '$tcp_connect2'/1:$98, 'stdin'/1:$99, 'stdout'/1:$100, 'stderr'/1:$101, 'float'/1:$102, 'srandom'/1:$103, '$pedro_notify'/1:$104, 'process_symbol'/1:$105, '$pedro_register'/1:$106, 'thread_handle'/1:$107, '$alloc_buffer'/1:$108, '$dealloc_buffer'/1:$109, '$debug_write'/1:$110, '$addExtraInfoToVars'/1:$111, '$reset_std_stream'/1:$112, 'current_threads'/1:$113, 'thread_exit'/1:$114, 'pedro_address'/1:$115, 'pedro_port'/1:$116, 'bound'/1:$117, '$psi_make_iterator'/1:$118, 'set_autoflush'/1:$119, 'get_open_streams'/1:$120, '$broadcast'/1:$121, 'random'/1:$122, '$initial_goal'/1:$123, '$make_cleanup_cp'/1:$124, 'string'/1:$125, 'is'/2:$126, '<'/2:$127, '=<'/2:$128, 'ip_set'/2:$129, 'ip_lookup'/2:$130, '$get_char'/2:$131, 'put_char'/2:$132, '$get_code'/2:$133, 'put_code'/2:$134, '$compare_pointers'/2:$135, '$set_flag'/2:$136, '$get_flag'/2:$137, '$copy_term_from_buffer'/2:$138, '$stat_atom'/2:$139, '$stat_predicate'/2:$140, '$stat_name'/2:$141, '$psi_write_atom'/2:$142, '$psi_writeq_atom'/2:$143, '$write_integer'/2:$144, '$write_var'/2:$145, '$writeR_var'/2:$146, '$write_obvar'/2:$147, '$writeR_obvar'/2:$148, '$writeq_obvar'/2:$149, '$get_substitution'/2:$150, 'sub_term'/2:$151, '$next_sub'/2:$152, '$sub_table_size'/2:$153, '$compress_sub_object_variable'/2:$154, '$reset_entry'/2:$155, 'atom_length'/2:$156, 'concat_atom'/2:$157, '$atom_codes'/2:$158, '$codes_atom'/2:$159, '$char_code'/2:$160, '$code_char'/2:$161, '$hash_double'/2:$162, 'hash_table_remove'/2:$163, '$number_codes'/2:$164, '$codes_number'/2:$165, '$close'/2:$166, '$stream_position'/2:$167, '$set_stream_position'/2:$168, '$line_number'/2:$169, '$stream_to_chars'/2:$170, '$stream_to_atom'/2:$171, '$system'/2:$172, '$mktemp'/2:$173, '$delay'/2:$174, '$delayed_problems_for_var'/2:$175, '$get_bound_structure'/2:$176, 'not_free_in'/2:$177, '$not_free_in_var_simplify'/2:$178, 'is_distinct'/2:$179, 'get_distinct'/2:$180, '$object_variable_name_to_prefix'/2:$181, '$readR_var'/2:$182, '$readR_obvar'/2:$183, 'quantifier'/2:$184, 'bound_var'/2:$185, 'body'/2:$186, 'check_binder'/2:$187, 'get_var_name'/2:$188, 'set_var_name'/2:$189, 'set_obvar_name'/2:$190, 'freeze_term'/2:$191, 'thaw_term'/2:$192, 'collect_vars'/2:$193, '$call_predicate1'/2:$194, '$increment'/2:$195, '$decrement'/2:$196, 'name_vars'/2:$197, 'get_unnamed_vars'/2:$198, 'global_state_lookup'/2:$199, 'global_state_set'/2:$200, 'global_state_increment'/2:$201, 'global_state_decrement'/2:$202, '$get_dynamic_chain'/2:$203, '$thread_goal'/2:$204, 'tcp_host_to_ip_address'/2:$205, 'tcp_host_from_ip_address'/2:$206, '$local_p2p'/2:$207, '$thread_symbol'/2:$208, '$load'/2:$209, 'is_free_in'/2:$210, 'pipe'/2:$211, 'env_getenv'/2:$212, 'env_putenv'/2:$213, 'signal_to_atom'/2:$214, 'strerror'/2:$215, '$psi_socket_fd'/2:$216, '$pedro_unsubscribe'/2:$217, 'uncurry'/2:$218, '$get_line'/2:$219, 'ip_array_init'/2:$220, 'copy_term'/2:$221, '$buffer_set_domains_apart'/2:$222, '$copy_substitution'/2:$223, '$copy_obvar_to_buffer_tail'/2:$224, '$stat_ip_table'/2:$225, '$set_stream_properties'/2:$226, '$get_stream_properties'/2:$227, 'set_std_stream'/2:$228, 'thread_push_goal'/2:$229, 'structural_unify'/2:$230, '$not_free_in_nfi_simp'/2:$231, '$require_nfi_simp'/2:$232, '$fast_simplify'/2:$233, 'gmtime'/2:$234, 'localtime'/2:$235, '=='/2:$236, 'simplify_term'/2:$237, 'is_not_free_in'/2:$238, '$put_line'/2:$239, 'ip_array_get_entries'/2:$240, '$write_float'/2:$241, 'select'/2:$242, '$write_string'/2:$243, '$writeq_string'/2:$244, 'string_length'/2:$245, '$stream_to_string'/2:$246, '$list_to_string'/2:$247, '$string_to_atom'/2:$248, '$atom_to_string'/2:$249, '$pedro_connect'/2:$250, '$pedro_subscribe'/2:$251, 'hash_variable'/2:$252, 'functor'/3:$253, 'arg'/3:$254, '$add'/3:$255, '$subtract'/3:$256, '$compare_var'/3:$257, '$compare_atom'/3:$258, '$fast_equal'/3:$259, '$stat_choice'/3:$260, '$stat_global'/3:$261, '$stat_local'/3:$262, '$stat_binding_trail'/3:$263, '$stat_code'/3:$264, '$stat_string'/3:$265, 'random'/3:$266, '$string_concat'/3:$267, '$set_domain'/3:$268, '$set_range'/3:$269, '$get_domain'/3:$270, '$get_range'/3:$271, '$build_sub_term'/3:$272, '$get_opcode'/3:$273, '$get_const'/3:$274, '$get_number'/3:$275, '$get_address'/3:$276, '$get_offset'/3:$277, '$get_pred'/3:$278, '$get_entry'/3:$279, '$copy_to_buffer_tail'/3:$280, 'concat_atom'/3:$281, 'hash_table_lookup'/3:$282, '$hash_table_search'/3:$283, '$open'/3:$284, '$get_atom_from_atom_table'/3:$285, '$symtype'/3:$286, '$access'/3:$287, '$read_next_token'/3:$288, '$encoded_write'/3:$289, '$call_predicate2'/3:$290, '$put_structure'/3:$291, '$set_argument'/3:$292, 'ip_set'/3:$293, 'ip_lookup'/3:$294, '$ipc_next'/3:$295, 'tcp_socket'/3:$296, 'tcp_setsockopt'/3:$297, 'tcp_getsockopt'/3:$298, 'tcp_bind'/3:$299, '$tcp_connect1'/3:$300, '$open_socket_stream'/3:$301, '$open_msgstream'/3:$302, 'tcp_getsockname'/3:$303, 'tcp_getpeername'/3:$304, '$tcp_service_to_proto_port'/3:$305, '$tcp_service_proto_to_port'/3:$306, '$tcp_service_from_proto_port'/3:$307, '$tcp_service_proto_from_port'/3:$308, '$thread_fork'/3:$309, '$psi_decompile'/3:$310, '$make_sub_from_buffer'/3:$311, '$stat_other_trail'/3:$312, 'simplify_term'/3:$313, '$get_double'/3:$314, '$stat_scratchpad'/3:$315, '$get_delays$'/3:$316, 'atom_concat2'/3:$317, 'hash_table_insert'/3:$318, '$predicate_stamp'/3:$319, '$get_integer'/3:$320, '$ipc_first'/3:$321, 'setarg'/3:$322, 'ip_lookup_default'/3:$323, '$psi_dynamic'/4:$324, 'atom_search'/4:$325, '$sub_atom'/4:$326, '$load_foreign'/4:$327, '$open_string'/4:$328, '$get_pred_from_pred_table'/4:$329, '$encoded_read'/4:$330, 'quantify'/4:$331, '$call_predicate3'/4:$332, 'tcp_accept'/4:$333, '$psi_next_instr'/4:$334, '$psi_assert'/4:$335, '$ccompile'/4:$336, '$set_domains_apart'/4:$337, '$new_sub'/4:$338, '$get_first_clause'/4:$339, '$get_next_clause'/4:$340, '$split_string'/4:$341, '$ipc_get_message'/4:$342, 'ip_lookup_default'/4:$343, '$call_predicate4'/5:$344])
 
-$344:
+$346:
 	try(4, $17)
 	retry($18)
 	retry($19)
@@ -331,12 +331,14 @@ $344:
 	retry($339)
 	retry($340)
 	retry($341)
-	trust($342)
+	retry($342)
+	retry($343)
+	trust($344)
 
-$345:
+$347:
 	switch_on_constant(0, 32, ['$default':'fail', '$failpt_to_catch':$1, '$catch_to_failpt':$2, '$clear_all_signals':$3, '$psidelay_resume':$4, '$compress_var_delays':$5, '$retry_nfi_obvars':$6, 'fast_retry_delays':$7, 'thread_yield':$8, 'thread_exit':$9, 'thread_is_initial_thread':$10, '$signal_thread_exit':$11, 'gc':$12, 'pedro_deregister':$13, 'pedro_is_connected':$14, 'pedro_is_registered':$15, 'pedro_disconnect':$16])
 
-$346:
+$348:
 	try(4, $1)
 	retry($2)
 	retry($3)
@@ -678,7 +680,9 @@ $346:
 	retry($339)
 	retry($340)
 	retry($341)
-	trust($342)
+	retry($342)
+	retry($343)
+	trust($344)
 
 $1:
 	get_constant('$failpt_to_catch', 0)
@@ -8303,6 +8307,41 @@ $322:
 	proceed
 
 $323:
+	get_structure('ip_lookup_default', 3, 0)
+	unify_x_variable(0)
+	unify_x_variable(4)
+	unify_x_variable(5)
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_ref(6)
+	get_structure('$psi_life', 1, 1)
+	unify_x_variable(1)
+	get_list(6)
+	unify_x_ref(6)
+	unify_x_ref(7)
+	get_structure('=', 2, 6)
+	unify_x_value(0)
+	unify_x_variable(0)
+	get_list(7)
+	unify_x_ref(6)
+	unify_constant('[]')
+	get_structure('=', 2, 6)
+	unify_x_value(5)
+	unify_x_variable(5)
+	get_structure('$pseudo_instr3', 4, 2)
+	unify_integer(70)
+	unify_x_value(0)
+	unify_x_value(1)
+	unify_x_value(5)
+	get_list(3)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('=', 2, 0)
+	unify_x_value(4)
+	unify_x_value(1)
+	proceed
+
+$324:
 	get_constant('[]', 3)
 	get_structure('$psi_dynamic', 4, 0)
 	unify_x_variable(0)
@@ -8341,7 +8380,7 @@ $323:
 	unify_x_value(4)
 	proceed
 
-$324:
+$325:
 	get_structure('atom_search', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8384,7 +8423,7 @@ $324:
 	unify_x_value(1)
 	proceed
 
-$325:
+$326:
 	get_structure('$sub_atom', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8427,7 +8466,7 @@ $325:
 	unify_x_value(1)
 	proceed
 
-$326:
+$327:
 	get_constant('[]', 3)
 	get_structure('$load_foreign', 4, 0)
 	unify_x_variable(0)
@@ -8466,7 +8505,7 @@ $326:
 	unify_x_value(4)
 	proceed
 
-$327:
+$328:
 	get_structure('$open_string', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8509,7 +8548,7 @@ $327:
 	unify_x_value(1)
 	proceed
 
-$328:
+$329:
 	get_structure('$get_pred_from_pred_table', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8562,7 +8601,7 @@ $328:
 	unify_x_value(8)
 	proceed
 
-$329:
+$330:
 	get_structure('$encoded_read', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8610,7 +8649,7 @@ $329:
 	unify_x_value(7)
 	proceed
 
-$330:
+$331:
 	get_constant('[]', 3)
 	get_structure('quantify', 4, 0)
 	unify_x_variable(0)
@@ -8649,7 +8688,7 @@ $330:
 	unify_x_value(4)
 	proceed
 
-$331:
+$332:
 	get_constant('[]', 3)
 	get_structure('$call_predicate3', 4, 0)
 	unify_x_variable(0)
@@ -8688,7 +8727,7 @@ $331:
 	unify_x_value(4)
 	proceed
 
-$332:
+$333:
 	get_structure('tcp_accept', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8741,7 +8780,7 @@ $332:
 	unify_x_value(8)
 	proceed
 
-$333:
+$334:
 	get_structure('$psi_next_instr', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8789,7 +8828,7 @@ $333:
 	unify_x_value(7)
 	proceed
 
-$334:
+$335:
 	get_structure('$psi_assert', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8832,7 +8871,7 @@ $334:
 	unify_x_value(1)
 	proceed
 
-$335:
+$336:
 	get_structure('$ccompile', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8875,7 +8914,7 @@ $335:
 	unify_x_value(1)
 	proceed
 
-$336:
+$337:
 	get_constant('[]', 3)
 	get_structure('$set_domains_apart', 4, 0)
 	unify_x_variable(0)
@@ -8914,7 +8953,7 @@ $336:
 	unify_x_value(4)
 	proceed
 
-$337:
+$338:
 	get_structure('$new_sub', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -8957,7 +8996,7 @@ $337:
 	unify_x_value(1)
 	proceed
 
-$338:
+$339:
 	get_structure('$get_first_clause', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -9005,7 +9044,7 @@ $338:
 	unify_x_value(7)
 	proceed
 
-$339:
+$340:
 	get_structure('$get_next_clause', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -9053,7 +9092,7 @@ $339:
 	unify_x_value(7)
 	proceed
 
-$340:
+$341:
 	get_structure('$split_string', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -9101,7 +9140,7 @@ $340:
 	unify_x_value(7)
 	proceed
 
-$341:
+$342:
 	get_structure('$ipc_get_message', 4, 0)
 	unify_x_variable(0)
 	unify_x_variable(4)
@@ -9149,7 +9188,50 @@ $341:
 	unify_x_value(7)
 	proceed
 
-$342:
+$343:
+	get_structure('ip_lookup_default', 4, 0)
+	unify_x_variable(0)
+	unify_x_variable(4)
+	unify_x_variable(5)
+	unify_x_variable(6)
+	get_list(1)
+	unify_x_ref(1)
+	unify_x_ref(7)
+	get_structure('$psi_life', 1, 1)
+	unify_x_variable(1)
+	get_list(7)
+	unify_x_ref(7)
+	unify_x_ref(8)
+	get_structure('=', 2, 7)
+	unify_x_value(0)
+	unify_x_variable(0)
+	get_list(8)
+	unify_x_ref(7)
+	unify_x_ref(8)
+	get_structure('=', 2, 7)
+	unify_x_value(4)
+	unify_x_variable(4)
+	get_list(8)
+	unify_x_ref(7)
+	unify_constant('[]')
+	get_structure('=', 2, 7)
+	unify_x_value(6)
+	unify_x_variable(6)
+	get_structure('$pseudo_instr4', 5, 2)
+	unify_integer(19)
+	unify_x_value(0)
+	unify_x_value(4)
+	unify_x_value(1)
+	unify_x_value(6)
+	get_list(3)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('=', 2, 0)
+	unify_x_value(5)
+	unify_x_value(1)
+	proceed
+
+$344:
 	get_constant('[]', 3)
 	get_structure('$call_predicate4', 5, 0)
 	unify_x_variable(0)

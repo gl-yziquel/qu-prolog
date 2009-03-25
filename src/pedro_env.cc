@@ -791,7 +791,7 @@ PedroMessageChannel::pushMessage(int id, string m)
 {
   ThreadTable& thread_table = getThreadTable();
   ThreadTableLoc tid = id;
-
+  string thread_name;
   string::size_type loc = m.find(p2pmsg_string, 0);
   if (loc == 0) {
     // p2p msg found - get the thread name
@@ -807,7 +807,7 @@ PedroMessageChannel::pushMessage(int id, string m)
       // and leading spaces
       int j = p2pmsg_string_len;
       while (m.at(j) == ' ') j++;
-      string thread_name = m.substr(j, i-j+1);
+      thread_name = m.substr(j, i-j+1);
       // if the thread name is '' then this is message stream
       // message
       if (thread_name == stream_string) {
@@ -831,17 +831,37 @@ PedroMessageChannel::pushMessage(int id, string m)
 
 	return;
       }
-
-      tid = thread_table.LookupName(thread_name.c_str());
-      if (tid == (ThreadTableLoc) -1)
-	return;
+    } else {
+      thread_name = "thread0";
     }
+
     // So this is a p2p message that is not being used as a message stream
     // erase the to address for this string because the recipient knows
     // who they are
     string::size_type loc_comma =  m.find(',', p2pmsg_string_len);
     assert(loc_comma != string::npos);
     m.erase(p2pmsg_string_len, loc_comma - p2pmsg_string_len + 1);
+
+    // is the thread name a quoted atom?
+    char first_char = thread_name[0];
+    if (first_char == '\'') {
+      thread_name.erase(0,1);
+      thread_name.erase(thread_name.length()-1);
+    }
+
+    if (isupper(first_char) || first_char == '_') {
+      for (word32 i = 0; i < thread_table.Size(); i++) {
+        Thread* thread = thread_table.LookupID(i);
+        if (thread != NULL) {
+          thread->MessageQueue().push_back(new PedroMessage(m));
+        }
+      }
+      return;
+    }
+    tid = thread_table.LookupName(thread_name.c_str());
+    if (tid == (ThreadTableLoc) -1)
+      return;
+
   }
   if (!thread_table.IsValid(tid)) return;
 

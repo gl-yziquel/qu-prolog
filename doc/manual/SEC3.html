@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.8 Reference Manual - Built-in Predicates
+Qu-Prolog 8.9 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -8347,13 +8347,14 @@ for the address of this thread.
 For non-Qu-Prolog processes for which the thread name is not relevant, handles
 can be of the form <KBD>ProcessName@MachineName</KBD>. If a process uses such
 a handle when sending a message to a Qu-Prolog process then the initial thread 
-(thread0) will receive the message.
+(thread0) will receive the message. If the thread name is a variable then
+all running threads on the process will receive the message.
 <P>
 It is also possible, when sending a message, to use a handle with either
-the process name or the machine name (but not both) being a variable. 
-In the first case all registered processes on that machine will receive
-the message. In the second case, all registered processes with that name 
-(on any machine) will receive the message. 
+the process name or the machine name being a variable. 
+If the process name is a variable all registered processes on that machine will receive
+the message. If the machine name is a variable all registered processes with that name 
+(on any machine) will receive the message. If both are variables then the message will be sent to all registered processes on all machines that have registered processes. 
 <P>
 All messages (both notifications and peer-to-peer), together with address
 information, received by a thread are
@@ -8807,17 +8808,141 @@ If <KBD>Port</KBD> is zero then some unused port will be chosen.
 
 
 
-
-
 <!-- Section 3.24 -->
 <H2>
-<A NAME="Section3.24">3.24 Miscellaneous</A>
+<A NAME="Section3.24">3.24 CHR System</A>
+</H2>
+This section briefly describes the Qu-Prolog implementation
+of the K.U.Leuven Constraint Handling Rules (CHR) system (see <KBD>http://www.cs.kuleuven.be/~dtai/projects/CHR/</KBD>). This implementation is reasonably consistent with that of SWI Prolog.
+
+<P>
+The syntax of CHR rules is given below.
+
+<KBD>
+<BR>
+<BR>chr_rules --> chr_rule, chr_rules.
+<BR>chr_rules --> [].
+<BR>
+<BR>chr_rule --> name, rule_part, pragma, ['.'].
+<BR>
+<BR>name --> atom, ['@'].
+<BR>name --> [].
+<BR>
+<BR>rule_part --> simplification_rule.
+<BR>rule_part --> propagation_rule.
+<BR>rule_part --> simpagation_rule.
+<BR>
+<BR>simplification_rule --> head, ['<=>'], guard, body.
+<BR>propagation_rule --> head, ['==>'], guard, body.
+<BR>simpagation_rule --> head, ['\'], head, ['<=>'], guard, body.
+<BR>
+<BR>head --> constraints.
+<BR>
+<BR>constraints --> constraint, constraint_id.
+<BR>constraints --> constraint, constraint_id, [','], constraints.
+<BR>
+<BR>constraint --> nonvar_term.
+<BR>
+<BR>constraint_id --> [].
+<BR>constraint_id --> ['#'], variable.
+<BR>constraint_id --> ['#', 'passive'] .
+<BR>
+<BR>guard --> [].
+<BR>guard --> goal, ['|'].
+<BR>
+<BR>body --> goal.
+<BR>
+<BR>pragma --> [].
+<BR>pragma --> ['pragma'], pragmas.
+<BR>
+<BR>pragmas --> pragma_part.
+<BR>pragmas --> pragma_part, [','], pragmas.
+<BR>
+<BR>pragma_part --> ['passive('], variable, [')'].
+</KBD>
+<P>
+The semantics of the rules are as follows.
+
+<P>
+Whenever a new constraint is added or some variable in an existing constraint
+is bound (causing the constraint of be retried) then the constraint becomes 
+'active'. The rules are then tried in order. If the active constraint together
+with other ('passive') constraints match the head of a rule and the guard 
+is true then the body of the rule is executed. Note that variables occurring
+in the constraints are not allowed to be bound when matching against the rule
+head or in the guard.
+<P>
+There are three rules types:
+
+<UL type="disc">
+<LI>Simplification
+<BR>The matched head constraints are removed from the constraint store.
+<LI>Propagation
+<BR>The matched head constraints are not removed and the rule cannot be replied
+to the same collection of constraints (in the same order) again.
+<LI>Simpagation
+<BR>The constraints before the <KBD>\</KBD> are retrained while the constraints
+after the <KBD>\</KBD> are removed.
+</UL>
+
+The following examples are adapted from the reference above.
+
+<KBD>
+<BR>
+<BR> %% CHR rules for less_than_or_equal
+<BR>
+<BR>:- chr_init.
+<BR>
+<BR>:- chr_constraint leq/2.
+<BR>
+<BR>reflexivity  @ leq(X,X) <=> true.
+<BR>antisymmetry @ leq(X,Y), leq(Y,X) <=> X = Y.
+<BR>idempotence  @ leq(X,Y) \ leq(X,Y) <=> true.
+<BR>transitivity @ leq(X,Y), leq(Y,Z) ==> leq(X,Z).
+</KBD>
+<P>
+
+The directive <KBD>chr_init</KBD> must occur before any 
+CHR directives or rules. This loads the CHR operator declarations and enables
+the term expansion rules to convert the rules to Qu-Prolog clauses.
+<P>
+The <KBD>chr_constraint</KBD> declares the allowed constraints. This is followed
+by the required rules. Normal Qu-Prolog code can be freely intermixed with
+CHR rules.
+<P>
+The next example uses the passive pragma.
+
+<KBD>
+<BR>
+<BR>:- chr_init.
+<BR>:- chr_constraint fibonacci/2.
+<BR>
+<BR>%% fibonacci(N,M) is true iff  M is the Nth Fibonacci number.
+<BR>
+<BR>fibonacci(N,M1) # Id \ fibonacci(N,M2) <=> var(M2) | M1 = M2 pragma passive(Id).
+<BR>
+<BR>fibonacci(0,M) ==> M = 1.
+<BR>
+<BR>fibonacci(1,M) ==> M = 1.
+<BR>
+<BR>fibonacci(N,M) ==> N > 1 |
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N1 is N-1,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fibonacci(N1,M1),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N2 is N-2,
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fibonacci(N2,M2),
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; M is M1 + M2.
+</KBD>
+<P>
+In this example, the first constraint in the first rule can only be passive.
+
+<!-- Section 3.25 -->
+<H2>
+<A NAME="Section3.25">3.24 Miscellaneous</A>
 </H2>
 
 <P>Predicates:
 
 <P><KBD><a name="os"></a>os(Term)</KBD>
-
 <BLOCKQUOTE>
 Access the operating system.
 

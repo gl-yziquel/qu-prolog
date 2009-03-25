@@ -26,15 +26,15 @@
 
 #include <qapplication.h>
 #include <qwidget.h>
-#include <q3mainwindow.h>
+#include <qmainwindow.h>
 //Added by qt3to4:
 #include <QCloseEvent>
 #include <sys/types.h>
 #include <qstring.h>
-#include <q3multilineedit.h>
+//#include <q3multilineedit.h>
 #include <qdialog.h>
-#include <q3mainwindow.h>
-#include <q3textbrowser.h>
+#include <qmainwindow.h>
+#include <qtextbrowser.h>
 #include <qcolordialog.h>
 #include <string>
 #include "interact.h"
@@ -103,7 +103,7 @@ public:
   Xqpdebug* p;
   QFont f;
   QColor c;
-  Q3TextBrowser *browser;
+  QTextBrowser *browser;
 };
 
 #endif

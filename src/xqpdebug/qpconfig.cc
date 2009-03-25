@@ -31,25 +31,25 @@ QPConfig::QPConfig(Xqpdebug* xe)
 {
 
    QString sf =  default_font.toString();
-   QString fontstring = readEntry("/Xqpdebug/font", sf);
+   QString fontstring = value("/Xqpdebug/font", sf).toString();
    font.fromString(fontstring);
    QString def_cname = default_color.name();
-   QString cname = readEntry("/Xqpdebug/color", def_cname);
+   QString cname = value("/Xqpdebug/color", def_cname).toString();
    color = QColor(cname);
-   x = readNumEntry("/Xqpdebug/x", 0);
-   y = readNumEntry("/Xqpdebug/y", 0);
-   width = readNumEntry("/Xqpdebug/width", 300);
-   height = readNumEntry("/Xqpdebug/height", 300);
+   x = value("/Xqpdebug/x", 0).toInt();
+   y = value("/Xqpdebug/y", 0).toInt();
+   width = value("/Xqpdebug/width", 300).toInt();
+   height = value("/Xqpdebug/height", 300).toInt();
 }
 
 QPConfig::~QPConfig()
 {
-   writeEntry("/Xqpdebug/font", font.toString());
-   writeEntry("/Xqpdebug/color", color.name());
-   writeEntry("/Xqpdebug/x",parent-> x());
-   writeEntry("/Xqpdebug/y", parent->y());
-   writeEntry("/Xqpdebug/width", parent->width());
-   writeEntry("/Xqpdebug/height", parent->height());
+   setValue("/Xqpdebug/font", font.toString());
+   setValue("/Xqpdebug/color", color.name());
+   setValue("/Xqpdebug/x",parent-> x());
+   setValue("/Xqpdebug/y", parent->y());
+   setValue("/Xqpdebug/width", parent->width());
+   setValue("/Xqpdebug/height", parent->height());
 }
 
 void QPConfig::setQPFont(const QFont& f)

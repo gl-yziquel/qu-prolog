@@ -746,6 +746,7 @@ Thread::delayProblem(Object *problem, Object *var)
 	}
     }
 
+
   // Add a new problem.
   Object *delay_prob = 
     heap.newDelay(problem,  OBJECT_CAST(Reference*, var)->getDelays());

@@ -160,8 +160,9 @@ void Xqp::process_qp_cmd(QString cmd)
 {
    qpint->setTextColor(Qt::blue);
    qpint->insert_at_end(cmd);
-   qpint->setTextColor(Qt::black);
+   //qpint->setTextColor(Qt::black);
    send_cmd_to_qp(cmd);
+   // qpint->setTextColor(Qt::blue);
 }
 
 void Xqp::send_cmd_to_qp(QString cmd)
@@ -189,6 +190,7 @@ void Xqp::process_char(int s)
   QString inq = QString(read_buff);
   qpint->setTextColor(Qt::black);
   qpint->insert_at_end(inq);
+  qpint->setTextColor(Qt::blue);
 }
 
 

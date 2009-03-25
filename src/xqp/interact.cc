@@ -43,7 +43,6 @@ Interact::Interact( QWidget *box )
   connect(this, SIGNAL(send_cmd(QString)), box, SLOT(send_cmd_to_qp(QString)));
   in_history = false;
   hist_pos = 0;
-  //setPaper(QBrush(yellow));
 }
 
 void Interact::insert_at_end(QString s)
@@ -54,7 +53,8 @@ void Interact::insert_at_end(QString s)
   setTextCursor(cursor);
   setTextColor(Qt::blue);
   in_query = (s.contains(QRegExp("'| \\?- $")));
-  if (in_query) indent = cursor.position();
+  //if (in_query) 
+  indent = cursor.position();
 }
 
 void Interact::processF5(QString s)
@@ -72,6 +72,7 @@ void Interact::processReturn()
   cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
   in_history = false;
   QString cmd = cursor.selectedText();
+  cmd.replace(QChar::ParagraphSeparator, QString("\n"));
   if (!in_query || end_of_term(cmd, 0))
     {
       cmd.append("\n");
@@ -196,6 +197,7 @@ void Interact::keyPressEvent(QKeyEvent *k)
 	  cursor.setPosition(indent);
 	  cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
 	  cursor.removeSelectedText();
+          setTextColor(Qt::blue);
 	  insertPlainText(*item);
 	}
       return;
@@ -207,12 +209,14 @@ void Interact::keyPressEvent(QKeyEvent *k)
        cursor.setPosition(indent);
        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
        cursor.removeSelectedText();
+       setTextColor(Qt::blue);
        if ( item != NULL)
          {
 	   insertPlainText(*item);
           }
        else
 	 {
+           in_history = false;
 	   insertPlainText("");
 	 }
        return;

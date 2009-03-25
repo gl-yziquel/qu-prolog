@@ -392,7 +392,8 @@ pseudo_instr3_data pseudo_instr3_array[] =
 	{&Thread::psi_predicate_stamp,	1,	"psi_predicate_stamp"}, 
 	{&Thread::psi_get_integer,	4,	"psi_get_integer"}, 
 	{&Thread::psi_ipc_first,	1,	"psi_ipc_first"}, 
-	{&Thread::psi_setarg,	0,	"psi_setarg"}
+	{&Thread::psi_setarg,	0,	"psi_setarg"}, 
+	{&Thread::psi_ip_lookup_default,	2,	"psi_ip_lookup_default"}
 };
 pseudo_instr4_data pseudo_instr4_array[] =
 {
@@ -414,7 +415,8 @@ pseudo_instr4_data pseudo_instr4_array[] =
 	{&Thread::psi_get_first_clause,	3,	"psi_get_first_clause"}, 
 	{&Thread::psi_get_next_clause,	3,	"psi_get_next_clause"}, 
 	{&Thread::psi_split_string,	3,	"psi_split_string"}, 
-	{&Thread::psi_ipc_get_message,	10,	"psi_ipc_get_message"}
+	{&Thread::psi_ipc_get_message,	10,	"psi_ipc_get_message"}, 
+	{&Thread::psi_ip_lookupA_default,	2,	"psi_ip_lookupA_default"}
 };
 pseudo_instr5_data pseudo_instr5_array[] =
 {

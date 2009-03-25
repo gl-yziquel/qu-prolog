@@ -2,34 +2,28 @@
 
 
 $1:
-	pseudo_instr1(91, 3)
+	get_x_variable(3, 0)
+	pseudo_instr1(91, 0)
+	get_x_variable(4, 0)
 	allocate(1)
 	get_y_level(0)
-	put_structure(4, 4)
+	put_structure(4, 0)
 	set_constant('$findall')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(0)
-	set_x_variable(0)
-	put_structure(2, 1)
-	set_constant('=')
-	set_x_value(2)
-	set_x_value(0)
-	put_structure(2, 0)
-	set_constant(',')
 	set_x_value(4)
 	set_x_value(1)
-	put_x_variable(2, 1)
-	put_structure(1, 4)
-	set_constant('$dealloc_buffer')
 	set_x_value(3)
+	set_x_value(2)
+	put_x_variable(2, 1)
 	put_structure(1, 3)
+	set_constant('$dealloc_buffer')
+	set_x_value(4)
+	put_structure(1, 4)
 	set_constant('throw')
 	set_x_value(2)
 	put_structure(2, 2)
 	set_constant(',')
-	set_x_value(4)
 	set_x_value(3)
+	set_x_value(4)
 	call_predicate('catch', 3, 1)
 	cut(0)
 	deallocate
@@ -39,6 +33,22 @@ end('findall'/3):
 
 
 '$findall'/4:
+
+
+$1:
+	allocate(2)
+	get_y_variable(1, 3)
+	put_y_variable(0, 3)
+	call_predicate('$findall1', 4, 2)
+	put_y_value(1, 0)
+	get_y_value(0, 0)
+	deallocate
+	proceed
+end('$findall'/4):
+
+
+
+'$findall1'/4:
 
 	try(4, $1)
 	trust($2)
@@ -58,7 +68,7 @@ $2:
 	get_x_value(3, 1)
 	pseudo_instr1(92, 0)
 	proceed
-end('$findall'/4):
+end('$findall1'/4):
 
 
 

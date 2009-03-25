@@ -13,6 +13,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include "pedro_connection.h"
+#include <string.h>
 
 int read_from_socket(int fd, char* buff)
 {  

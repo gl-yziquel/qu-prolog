@@ -3405,6 +3405,17 @@ end('setarg'/3):
 
 
 
+'ip_lookup_default'/3:
+
+
+$1:
+	pseudo_instr3(70, 0, 3, 2)
+	get_x_value(1, 3)
+	proceed
+end('ip_lookup_default'/3):
+
+
+
 '$psi_dynamic'/4:
 
 
@@ -3616,6 +3627,17 @@ $1:
 	get_x_value(2, 5)
 	proceed
 end('$ipc_get_message'/4):
+
+
+
+'ip_lookup_default'/4:
+
+
+$1:
+	pseudo_instr4(19, 0, 1, 4, 3)
+	get_x_value(2, 4)
+	proceed
+end('ip_lookup_default'/4):
 
 
 

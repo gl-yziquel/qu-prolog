@@ -421,6 +421,7 @@ Heap::newVariable(const bool has_extra_info)
 	reinterpret_cast<heapobject>((Object*)NULL);           // name
       x[3] = 
 	reinterpret_cast<heapobject>(AtomTable::nil);   // delayed problems
+      x[4] = 0;
     }
 
   return reinterpret_cast<Variable *>(x);

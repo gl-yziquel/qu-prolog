@@ -931,26 +931,10 @@ end('$read_one_case'/4):
 
 '$is_compiler_call'/1:
 
-	switch_on_term(0, $17, 'fail', 'fail', $15, 'fail', 'fail')
-
-$15:
-	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$16, 'op'/3:$1, 'op'/4:$2, 'obvar_prefix'/1:$3, 'obvar_prefix'/2:$4, 'remove_obvar_prefix'/1:$5, 'remove_obvar_prefix'/2:$6, 'op_table'/1:$7, 'op_table_inherit'/2:$8, 'inline'/2:$9, 'inline'/3:$10, 'dynamic'/1:$11, 'abolish'/1:$12, 'index'/3:$13, 'compile_time_only'/1:$14])
+	switch_on_term(0, $18, 'fail', 'fail', $16, 'fail', $15)
 
 $16:
-	try(1, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($7)
-	retry($8)
-	retry($9)
-	retry($10)
-	retry($11)
-	retry($12)
-	retry($13)
-	trust($14)
+	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$17, 'op'/3:$1, 'op'/4:$2, 'obvar_prefix'/1:$3, 'obvar_prefix'/2:$4, 'remove_obvar_prefix'/1:$5, 'remove_obvar_prefix'/2:$6, 'op_table'/1:$7, 'op_table_inherit'/2:$8, 'inline'/2:$9, 'inline'/3:$10, 'dynamic'/1:$11, 'abolish'/1:$12, 'index'/3:$13, 'compile_time_only'/1:$14])
 
 $17:
 	try(1, $1)
@@ -967,6 +951,23 @@ $17:
 	retry($12)
 	retry($13)
 	trust($14)
+
+$18:
+	try(1, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	retry($9)
+	retry($10)
+	retry($11)
+	retry($12)
+	retry($13)
+	retry($14)
+	trust($15)
 
 $1:
 	get_structure('op', 3, 0)
@@ -1036,6 +1037,10 @@ $13:
 $14:
 	get_structure('compile_time_only', 1, 0)
 	unify_void(1)
+	proceed
+
+$15:
+	get_constant('chr_init', 0)
 	proceed
 end('$is_compiler_call'/1):
 

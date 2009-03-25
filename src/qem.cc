@@ -134,7 +134,7 @@ int pedro_port = 0;
 char* pedro_address = NULL;
 
 CodeLoc failblock;
-
+heapobject var_id_counter = 1;
 
 PedroMessageChannel* pedro_channel = NULL;
 
