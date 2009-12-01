@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -76,14 +73,14 @@ class QPStream;
 class WordArray
 {
 private:
-  word32    *base;
+  wordptr   *base;
   int       size;
   int       last;
 
 public:
   explicit WordArray(int s)
     { 
-      base = new word32[s];
+      base = new wordptr[s];
       size = s; 
       last = 0;
     }
@@ -96,7 +93,7 @@ public:
 	}
     }
 
-  inline void addEntry(word32 entry)
+  inline void addEntry(wordptr entry)
     {
       if (last + 1 >= size)
 	{
@@ -105,7 +102,7 @@ public:
       base[last++] = entry;
     }
 
-  inline word32 *Entries(void) { return base; }
+  inline wordptr *Entries(void) { return base; }
 
   inline int lastEntry(void) { return last; }
 
@@ -245,11 +242,11 @@ void build_lifetime(WordArray&, xreglife&, WordArray&);
 
 void updateLife(WordArray&, Object*);
 
-bool is_xreg(Object*, int&);
+bool is_xreg(Object*, long&);
 
 bool is_yreg(Object*);
 
-int yreg_num(Object*);
+long yreg_num(Object*);
 
 bool equal_regs(Object*, Object*);
 
@@ -267,7 +264,7 @@ bool any_assoc_putset(Object*, int, WordArray&);
 
 bool alloc_needed(Object*);
 
-int psi_reg(Object*);
+long psi_reg(Object*);
 
 void writeCAtom(char*, QPStream*);
 

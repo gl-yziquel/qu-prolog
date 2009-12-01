@@ -473,3 +473,12 @@ end('thread_atomic_goal'/1):
 
 
 
+'false'/0:
+
+
+$1:
+	fail
+end('false'/0):
+
+
+

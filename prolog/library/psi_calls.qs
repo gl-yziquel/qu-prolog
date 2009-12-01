@@ -158,6 +158,16 @@ end('pedro_disconnect'/0):
 
 
 
+'$clear_gc_throw'/0:
+
+
+$1:
+	pseudo_instr0(16)
+	proceed
+end('$clear_gc_throw'/0):
+
+
+
 'compound'/1:
 
 

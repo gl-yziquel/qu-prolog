@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -122,7 +119,7 @@ Thread::psi_open(Object *& filename_arg,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  const word32 mode = argAM->getInteger();
+  const wordptr mode = argAM->getInteger();
   
   if (!(mode <= AM_APPEND))
     {
@@ -227,7 +224,7 @@ Thread::psi_open_string(Object *& string_arg,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  word32 mode = argAM->getInteger();
+  wordptr mode = argAM->getInteger();
   
   if (!(mode <= AM_APPEND))
     {
@@ -369,7 +366,7 @@ Thread::psi_close(Object *& stream_arg,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
   
-  const word32 force_val = force->getInteger();     // PJR used??
+  const wordptr force_val = force->getInteger();     // PJR used??
   if (!(force_val <= 1))
     {
       PSI_ERROR_RETURN(EV_VALUE, 2);
@@ -397,7 +394,7 @@ Thread::psi_current_input(Object *& stream_arg)
 Thread::ReturnValue
 Thread::psi_current_output(Object *& stream_arg)
 {
-  stream_arg = heap.newInteger((word32) iom->CurrentOutput());
+  stream_arg = heap.newInteger((wordptr) iom->CurrentOutput());
   return RV_SUCCESS;
 }
 
@@ -675,7 +672,7 @@ Thread::psi_line_number(Object *& stream_arg, Object *& line_num_arg)
 Thread::ReturnValue 
 Thread::psi_stdin(Object *& stream_object)
 {
-  stream_object = heap.newInteger(reinterpret_cast<word32>(iom->StdIn()));
+  stream_object = heap.newInteger(reinterpret_cast<wordptr>(iom->StdIn()));
 
   return RV_SUCCESS;
 }
@@ -687,7 +684,7 @@ Thread::psi_stdin(Object *& stream_object)
 Thread::ReturnValue 
 Thread::psi_stdout(Object *& stream_object)
 {
-  stream_object = heap.newInteger(reinterpret_cast<word32>(iom->StdOut()));
+  stream_object = heap.newInteger(reinterpret_cast<wordptr>(iom->StdOut()));
 
   return RV_SUCCESS;
 }
@@ -699,7 +696,7 @@ Thread::psi_stdout(Object *& stream_object)
 Thread::ReturnValue 
 Thread::psi_stderr(Object *& stream_object)
 {
-  stream_object = heap.newInteger(reinterpret_cast<word32>(iom->StdErr()));
+  stream_object = heap.newInteger(reinterpret_cast<wordptr>(iom->StdErr()));
 
   return RV_SUCCESS;
 }
@@ -726,7 +723,7 @@ Thread::psi_open_msgstream(Object *& address,
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
-  word32 mode = argAM->getInteger();
+  wordptr mode = argAM->getInteger();
   
   if (!(mode < AM_APPEND))
     {

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -177,7 +174,6 @@ main(int32 argc, char** argv)
 {
   // set the out-of-memory handler
   std::set_new_handler(noMoreMemory);
-
   //http://www.codersource.net/win32_createnamedpipe.html
   //http://www-106.ibm.com/developerworks/linux/library/l-rt4/?open&t=grl,l=252,p=pipes
   //Pipes in windows are 1000x more complex and painful than this.
@@ -237,7 +233,6 @@ main(int32 argc, char** argv)
   predicates = new PredTab(atoms, qem_options->PredicateTableSize());
 
   code = new Code(qem_options->CodeSize());
-
   // Load executable file.
   LoadExecutable(qem_options->QxFile(), *code, *atoms, *predicates);
 

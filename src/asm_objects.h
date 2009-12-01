@@ -1,6 +1,6 @@
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -10,9 +10,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -141,7 +138,7 @@ public:
       constant = new ASMInt<Code::ConstantSizedType>(0);
       constant->Value(UnsignedMax(constant->Value()));
     }
-  
+
   ~ConstantLabel(void)	{ }
   
   bool operator==(const ConstantLabel& cl) const

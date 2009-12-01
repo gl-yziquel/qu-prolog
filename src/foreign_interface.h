@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -74,7 +71,7 @@ class ForeignInterfaceBase
   virtual ~ForeignInterfaceBase() {}
   virtual Object* getXReg(int i) = 0;
   virtual Object* makeAtom(const char* s) = 0;
-  virtual Object* makeInteger(const int i) = 0;
+  virtual Object* makeInteger(const long i) = 0;
   virtual Object* makeDouble(const double d) = 0;
   virtual Structure* makeStructure(const int n) = 0;
   virtual Object* makeCons(Object* h, Object* t) = 0;
@@ -89,7 +86,7 @@ class ForeignInterface : public ForeignInterfaceBase
     
     Object* getXReg(int i); 
     Object* makeAtom(const char* s); 
-    Object* makeInteger(const int i); 
+    Object* makeInteger(const long i); 
     Object* makeDouble(const double d);
     Structure* makeStructure(const int n);
     Object* makeCons(Object* h, Object* t);

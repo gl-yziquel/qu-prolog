@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -90,7 +87,7 @@ protected:
   //
   // Initial hashing calculation.
   //
-  virtual	word32		hashFunction(const HashEntry entry) const = 0;
+  virtual	wordptr		hashFunction(const HashEntry entry) const = 0;
   
   //
   // Search for the entry in the hash table.

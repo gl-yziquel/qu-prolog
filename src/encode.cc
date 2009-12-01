@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -214,7 +211,7 @@ EncodeWrite::encodeWriteSub(Thread& th,
 // Encode write a number
 //
 bool
-EncodeWrite::writeEncodeNumber(QPStream& stream, const int32 val)
+EncodeWrite::writeEncodeNumber(QPStream& stream, const long val)
 {
   return(writeEncodeChar(stream, static_cast<word8>((val & 0xff000000) >> 24)) &&
 	 writeEncodeChar(stream, static_cast<word8>((val & 0x00ff0000) >> 16)) &&
@@ -370,9 +367,24 @@ EncodeWrite::encodeWriteTerm(Thread& th,
       break;
     case Object::tShort:
     case Object::tLong:
-      return(writeEncodeChar(stream, EncodeMap::ENCODE_INTEGER) &&
-	     writeEncodeNumber(stream, term->getInteger()));
-      break;
+      {
+	long val = term->getInteger();
+	if ((val < INT_MIN) || (val > INT_MAX))
+	  {
+	    bool result = writeEncodeChar(stream, EncodeMap::ENCODE_STRUCTURE) &&
+	      writeEncodeNumber(stream, 2) &&
+	      encodeWriteTerm(th, heap, stream, AtomTable::int64,
+			      atoms, remember, names);
+	    result &= writeEncodeChar(stream, EncodeMap::ENCODE_INTEGER) &&
+	      writeEncodeNumber(stream, val >> 32);
+	    result &=writeEncodeChar(stream, EncodeMap::ENCODE_INTEGER) &&
+	      writeEncodeNumber(stream, val & 0xffffffff);
+	  return result;
+	  }
+	return(writeEncodeChar(stream, EncodeMap::ENCODE_INTEGER) &&
+	       writeEncodeNumber(stream, val));
+	break;
+      }
     case Object::tDouble:
       return(writeEncodeChar(stream, EncodeMap::ENCODE_DOUBLE) &&
 	     writeEncodeDouble(stream, term->getDouble()));
@@ -446,7 +458,7 @@ EncodeRead::encodeReadChar(QPStream& stream, word8& c)
 // Read a number.
 //
 bool
-EncodeRead::encodeReadNumber(QPStream& stream, int32& num)
+EncodeRead::encodeReadNumber(QPStream& stream, long& num)
 {
   word8 c;
   bool result;
@@ -534,7 +546,7 @@ EncodeRead::encodeReadSub(Thread& th,
   bool result = encodeReadChar(stream, c);
   do {
 //    word32 tag = c;
-    int32 size;
+    long size;
     result &= encodeReadNumber(stream, size);
     SubstitutionBlock* subblock = heap.newSubstitutionBlock(size);
 //    *(reinterpret_cast<word32*>(subblock)) |= tag;
@@ -710,19 +722,38 @@ EncodeRead::encodeReadTerm(Thread& th,
       break;
     case EncodeMap::ENCODE_STRUCTURE:
       {
-	int32 length;
+	long length;
 	if (! encodeReadNumber(stream, length))
           {
             return false;
           }
-
-	Structure* str = heap.newStructure(length);
+	assert((ulong)length <= MaxArity);
 	Object* temp;
 	if (! encodeReadTerm(th, heap, stream, temp,
 			      atoms, remember, names))
           {
             return false;
           }
+	if ((length == 2) && (temp == AtomTable::int64))
+	  {
+	    long part1, part2;
+	    if (!encodeReadChar(stream, c)) return false;
+	    assert(c ==  EncodeMap::ENCODE_INTEGER);
+	    if (! encodeReadNumber(stream, part1))
+	      {
+		return false;
+	      }
+            if (!encodeReadChar(stream, c)) return false;
+            assert(c == EncodeMap::ENCODE_INTEGER);
+            if (! encodeReadNumber(stream, part2))
+              {
+                return false;
+              }
+	    long result = (part1 << 32) | part2;
+	    term = heap.newInteger(result);
+	    return true;
+	  }
+	Structure* str = heap.newStructure(length);
 	str->setFunctor(temp);
 	for (int32 i = 1; i <= length; i++)
 	  {
@@ -771,7 +802,7 @@ EncodeRead::encodeReadTerm(Thread& th,
       break;
     case EncodeMap::ENCODE_INTEGER:
       {
-	int32 integer;
+	long integer;
 	result = encodeReadNumber(stream, integer);
 	term = heap.newInteger(integer);
 	return result;

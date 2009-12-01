@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (C) 1999 
+ * Copyright (C) 2000-2009 
  * Department of Computer Science and Electrical Engineering, 
  * The University of Queensland
  */

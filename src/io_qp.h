@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -397,7 +394,7 @@ class QPStream
       abort();
     }
 
-  virtual void operator<<(const int n)
+  virtual void operator<<(const long n)
     {
       assert(isOutput());
       abort();
@@ -716,7 +713,7 @@ class QPostream: public QPStream
       (*stream) << s;
     }
 
-  void operator<<(const int n)
+  void operator<<(const long n)
     {
       (*stream) << n;
     }
@@ -789,7 +786,7 @@ class QPostringstream: public QPStream
       stream << s;
     }
 
-  void operator<<(const int n)
+  void operator<<(const long n)
     {
       stream << n;
     }
@@ -860,7 +857,7 @@ class QPofdstream: public QPStream
 
   void operator<<(const char* s);
 
-  void operator<<(const int n);
+  void operator<<(const long n);
 
   void operator<<(const double n);
 
@@ -920,7 +917,7 @@ class QPomstream: public QPStream
 
   void operator<<(const char* s);
 
-  void operator<<(const int n);
+  void operator<<(const long n);
 
   void operator<<(const double n);
 

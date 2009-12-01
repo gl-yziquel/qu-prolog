@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -74,20 +71,20 @@ void addPerms(Object* tmp, WordArray& perms, int& numys)
       if (!arg->isPerm())
 	{
 	  numys++;
-	  perms.addEntry(reinterpret_cast<word32>(arg));
+	  perms.addEntry(reinterpret_cast<wordptr>(arg));
 	  arg->setPermFlag();
 	}
       else
 	{
 	  for (int i = 0; i < perms.lastEntry(); i++)
 	    {
-	      if (reinterpret_cast<word32>(arg) == perms.Entries()[i])
+	      if (reinterpret_cast<wordptr>(arg) == perms.Entries()[i])
 		{
 		  perms.Entries()[i] = 0;
 		  break;
 		}
 	    }
-	  perms.addEntry(reinterpret_cast<word32>(arg));
+	  perms.addEntry(reinterpret_cast<wordptr>(arg));
 	}
     }
 }
@@ -152,20 +149,20 @@ Thread::permvars(Object* clause, WordArray& perms, int& numys)
 	  if (!arg->isPerm())
 	    {
 	      numys++;
-	      perms.addEntry(reinterpret_cast<word32>(arg));
+	      perms.addEntry(reinterpret_cast<wordptr>(arg));
 	      arg->setPermFlag();
 	    }
 	  else
 	    {
 	      for (int i = 0; i < perms.lastEntry(); i++)
 		{
-		  if (reinterpret_cast<word32>(arg) == perms.Entries()[i])
+		  if (reinterpret_cast<wordptr>(arg) == perms.Entries()[i])
 		    {
 		      perms.Entries()[i] = 0;
 		      break;
 		    }
 		}
-	      perms.addEntry(reinterpret_cast<word32>(arg));
+	      perms.addEntry(reinterpret_cast<wordptr>(arg));
 	    }
 	}
       else
@@ -347,7 +344,7 @@ Thread::psi_ccompile(Object*& clause, Object*& type,
     }
   else
     {
-      codeptr = heap.newInteger(reinterpret_cast<word32>(dumpInstructions(array2)));
+      codeptr = heap.newInteger(reinterpret_cast<wordptr>(dumpInstructions(array2)));
     }
   return RV_SUCCESS;
 }

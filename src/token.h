@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -77,7 +74,7 @@ inline bool IsLayout(const signed char c);
 // 
 // Output messages for detected syntax errors. 
 //
-inline void SyntaxError(int32& Integer, const int32 err);
+inline void SyntaxError(long& Integer, const int32 err);
 
 //
 // Peek ahead one character
@@ -128,14 +125,14 @@ inline void Putback(QPStream *InStrm, const int c);
 //      has to be continued over \c
 //      several lines.\n".
 //
-int32 ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer);
+int32 ReadCharacter(QPStream *InStrm, const signed char q, long& Integer);
 
 //
 // GetToken() reads a single token from the input stream and returns the
 // token type.  The value of the token is stored in one of the
 // variables: Integer, Simple, String.
 //
-int32 GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple, Object*& String);
+int32 GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, Object*& String);
 
 public:
 //

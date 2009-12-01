@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -244,7 +241,18 @@ void update_forward_pointers(Heap& heap, GCBits& gcbits)
 	      
 	      updateGC(ptr, next_free);
 	      int size = term->size_dispatch();
-	      if (!term->isNumber())
+              if (term->isVariableOther()) 
+                {
+                  assert(size == 5);
+                  heapobject* last = term->last();
+                  for (heapobject* next = term->storage(); 
+                       next < last; next++)
+                    {
+                      if (heap.isHeapPtr(reinterpret_cast<heapobject*>(*next)))
+                        threadGC(next);
+                    }
+                }
+	      else if (!term->isNumber())
 		{
 		  heapobject* last = term->last();
 		  for (heapobject* next = term->storage(); 

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -80,9 +77,9 @@ extern Scheduler *scheduler;
 // Maximum sizes:
 //
 static const	word32	ASCII_SIZE 	= 256;
-static const	word32	MAX_INT32 	= (1UL << 31) - 1;	// max integer
-static const	word32	MAX_INT_LIMIT	= MAX_INT32 / 10;
-static const	word32	MAX_DIGIT_LIMIT	= MAX_INT32 % 10;
+static const	wordlong	MAX_LONG 	= (1UL << (BITS_PER_WORD-1)) - 1;	// max long
+static const	wordlong	MAX_LONG_LIMIT	= MAX_LONG / 10;
+static const	word32	MAX_DIGIT_LIMIT	= MAX_LONG % 10;
 
 //
 // Special characters:
@@ -331,7 +328,7 @@ Thread::IsLayout(const signed char c)
 // Output messages for detected syntax errors. 
 //
 inline void 
-Thread::SyntaxError(int32& Integer, const int32 err)
+Thread::SyntaxError(long& Integer, const int32 err)
 {
   Integer = err;
 }
@@ -451,7 +448,7 @@ Thread::RecoverQuotedName(QPStream *InStrm, const bool put)
 //      several lines.\n".
 //
 int32
-Thread::ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer)
+Thread::ReadCharacter(QPStream *InStrm, const signed char q, long& Integer)
 {
   int c = Get(InStrm);
 
@@ -656,9 +653,10 @@ Thread::ReadCharacter(QPStream *InStrm, const signed char q, int32& Integer)
 // variables: Integer, Simple, String.
 //
 int32
-Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple, Object*& String)
+Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, Object*& String)
 {
-  int32		digit, base, BaseMax, BaseDigit, n, i;
+  int32		digit, base, n, i;
+  long BaseMax, BaseDigit;
   int d, e;
   char		*s = Simple;
   char          number[128];
@@ -680,8 +678,8 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
       do 
 	{
 	  digit = DigVal(c);
-	  if ((Integer > (int32) MAX_INT_LIMIT) ||
-	      (Integer == (int32) MAX_INT_LIMIT && digit > (int32) MAX_DIGIT_LIMIT))
+	  if ((Integer > (long) MAX_LONG_LIMIT) ||
+	      (Integer == (long) MAX_LONG_LIMIT && digit > (long) MAX_DIGIT_LIMIT))
 	    {
 	      RecoverNumber(InStrm, 10);
 
@@ -702,7 +700,7 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
       
       if (c == TERMIN)
         {
-	  sprintf(number, "%d", Integer);
+	  sprintf(number, "%ld", Integer);
 	  size_t len = strlen(number);
 	  numptr = number + len;
 	  *numptr++ = c;
@@ -740,7 +738,7 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
         }
       if (c == 'e')
         {
-	  sprintf(number, "%d", Integer);
+	  sprintf(number, "%ld", Integer);
 	  size_t len = strlen(number);
 	  numptr = number + len;
 	  *numptr++ = c;
@@ -792,14 +790,14 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
 	  else
 	    {
 	      Integer = 0;
-	      BaseMax = MAX_INT32 / base;
-	      BaseDigit = MAX_INT32 % base;
+	      BaseMax = MAX_LONG / base;
+	      BaseDigit = MAX_LONG % base;
 	      c = Get(InStrm);
 	      digit = DigVal(c);
 	      while (digit < base)
 		{
-		  if ((Integer > BaseMax) ||
-		      (Integer == BaseMax &&
+		  if ((Integer > BaseMax) || 
+		      ((Integer == BaseMax) &&
 		       digit > BaseDigit))
 		    {
 		      RecoverNumber(InStrm, base);
@@ -810,6 +808,13 @@ Thread::GetToken(QPStream *InStrm, int32& Integer, double& Double, char *Simple,
 		  c = Get(InStrm);
 		  digit = DigVal(c);
 		}
+	      if (digit != 99) 
+		{
+		  RecoverNumber(InStrm, base);
+		  SyntaxError(Integer, INT_OVERFLOW);
+		  return(ERROR_TOKEN);
+		}
+ 
 	    }
 	}
       Putback(InStrm, c);
@@ -1140,7 +1145,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
 
   errno = 0;
 
-  int32	Integer;
+  long	Integer;
   Object* String;
   double Double;
 	

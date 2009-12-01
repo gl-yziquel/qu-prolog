@@ -10,7 +10,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -20,9 +20,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -74,7 +71,9 @@
 //
 // Default size in K for different global areas.
 //
-const word32 CODE_SIZE = 400;
+// SIZE_MULTIPLIER is used to double all sizes for 64-bit systems.
+const word32 SIZE_MULTIPLIER = (sizeof(void *) / sizeof(word32));
+const word32 CODE_SIZE = 400 * SIZE_MULTIPLIER;
 const word32 STRING_TABLE_SIZE = 64;
 
 //

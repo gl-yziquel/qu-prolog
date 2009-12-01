@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -90,7 +87,7 @@ constants(Object* cell, AtomTable& atoms)
 // This procedure is used for instructions that have a hash table.
 //
 static void
-hashInstruct(CodeLoc & pc, word32 instruct,int array[],
+hashInstruct(CodeLoc & pc, word32 instruct,long array[],
 	     int & arr_index,AtomTable& atoms,Code& code)
   
 {
@@ -107,7 +104,7 @@ hashInstruct(CodeLoc & pc, word32 instruct,int array[],
       Object* val_const;
 
       if (startofhash != pc) cout << ", ";
-      word32 val_addr = getAddress(pc);
+      wordptr val_addr = getAddress(pc);
       val_arity = getNumber(pc);
       const word32 offset = getOffset(pc);
 
@@ -120,7 +117,7 @@ hashInstruct(CodeLoc & pc, word32 instruct,int array[],
           if ((instruct == SWITCH_ON_CONSTANT) && 
               (val_arity == ConstEntry::INTEGER_TYPE))
             {
-              cout << (int32)val_addr;
+              cout << (long)val_addr;
             }
           else
             {
@@ -144,7 +141,7 @@ hashInstruct(CodeLoc & pc, word32 instruct,int array[],
 	  const CodeLoc address = offset + startofhash;
 	  int i;
 	  for (i = 0;
-	       (signed) address != array[i] && i <= arr_index;
+	       (signed long) address != array[i] && i <= arr_index;
 	       i++)
 	    ;
 
@@ -155,7 +152,7 @@ hashInstruct(CodeLoc & pc, word32 instruct,int array[],
 		{
 		  Fatal(__FUNCTION__, "too many labels");
 		}
-	      array[arr_index] = (signed) address;
+	      array[arr_index] = (signed long) address;
 	    }
 	  cout << ":$" << i;
 	}
@@ -168,7 +165,7 @@ hashInstruct(CodeLoc & pc, word32 instruct,int array[],
 static void
 outputParams(int length, int commaflag, char coded_array[],
 	     CodeLoc & pc,
-	     AtomTable& atoms,int array[],int & arr_index,
+	     AtomTable& atoms,long array[],int & arr_index,
 	     CodeLoc end_of_inst, Code& code)	
 {
   int 	i;
@@ -232,12 +229,12 @@ outputParams(int length, int commaflag, char coded_array[],
 	    {	
 	      i=0;
 	      address = end_of_inst + offset;
-	      while( ((signed) address != array[i]) && 
+	      while( ((signed long) address != array[i]) && 
 		     (i <= arr_index)) i++;
 	      if (i >  arr_index) 
 		{
 		  arr_index++;
-		  array[arr_index] = (signed) address;
+		  array[arr_index] = (signed long) address;
 		}
 	      cout << "$" << i;
 	    }
@@ -274,7 +271,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 	word32 	arity,
 		instruct,
 		size;
-	int 	array[NUM_OF_OFFSETS];
+	long 	array[NUM_OF_OFFSETS];
 	int 	arr_index,
 		i,
 		paramflag,
@@ -302,7 +299,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 		//
 		const char *name_string = OBJECT_CAST(Atom*, predicate)->getName();
 		cout << "\'" << name_string << "\'/" << arity << ':';
-		cout <<	"  (" << (word32)pc << ")";
+		cout <<	"  (" << (wordptr)pc << ")";
 
                 if (predicates.getCode(predicates.lookUp(predicate,arity, &atoms, &code)).type() == PredCode::STATIC_PRED)
                   {
@@ -334,7 +331,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 		//
 		// Initialize offset array.
 		//
-		for (i=0; i< NUM_OF_OFFSETS; i++) array[i] = -1; 
+		for (i=0; i< NUM_OF_OFFSETS; i++) array[i] = -1L; 
 		arr_index = 0;
 		start_of_pred = pc;
 		while ( pc < (start_of_pred+size) ) // for each instruction do:
@@ -344,7 +341,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 			//
 			//	Check for any labels to be printed.
 			//
-			while (((signed) pc != array[i]) &&
+			while (((signed long) pc != array[i]) &&
 			       (i <= arr_index)) i++;
 			if (i <= arr_index)
 			{
@@ -358,7 +355,7 @@ void deassembler(Code& code, AtomTable& atoms, PredTab& predicates,
 			end_of_inst = start_of_inst + opsizes[instruct];
 			if (PrintAddr)
 			{
-				cout << (word32)(pc - 1) << "\t";
+				cout << (wordptr)(pc - 1) << "\t";
 			}
 			cout <<  "\t" << opnames[instruct];
 			const char *coded_inst = operands[instruct];

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -69,7 +66,7 @@
 //
 // The value stored in atomic when the entry is empty.
 //
-const word32 EMPTY_ENTRY = WORD32_MAX;
+const wordptr EMPTY_ENTRY = WORDPTR_MAX;
 
 
 //
@@ -80,14 +77,14 @@ class ConstEntry
 
 private:
 
-  word32 atomic;
+  wordptr atomic;
   word8 type;
   word16 offset;
 
 public:
   ConstEntry(void) { }
 
-  ConstEntry(const word32 constant, const word16 t) 
+  ConstEntry(const wordptr constant, const word16 t) 
     : atomic(constant), type(static_cast<word8>(t)) { }
 
   //
@@ -119,7 +116,7 @@ public:
   //
   // Hash on the constant.
   //
-  word32 hashFn(void) const 
+  wordptr hashFn(void) const 
     { 
       return atomic;
     }
@@ -151,7 +148,7 @@ public:
     {
       assert(type == ATOM_TYPE);
       AtomLoc loc = atoms.getOffset(reinterpret_cast<Atom*>(atomic));
-      atomic = static_cast<word32>(loc);
+      atomic = static_cast<wordptr>(loc);
     }
 
   //
@@ -160,7 +157,7 @@ public:
   void offsetToPointer(AtomTable& atoms)
     {
       assert(type == ATOM_TYPE);
-      atomic = reinterpret_cast<word32>(atoms.getAddress(atomic));
+      atomic = reinterpret_cast<wordptr>(atoms.getAddress(atomic));
     }
 
 
@@ -172,15 +169,15 @@ public:
     {
       if (type == ATOM_TYPE)
 	{
-	  atomic = reinterpret_cast<word32>(string_map.convert(string_base, 
-                                                               atomic));
+	  atomic = reinterpret_cast<wordptr>(string_map.convert(string_base, 
+                                                                atomic));
 	}
     }
   
   //
   // Initialise the record.
   //
-  void assign(const word32 constant, const word16 t) 
+  void assign(const wordptr constant, const word16 t) 
     { 
       atomic = constant; 
       type = static_cast<word8>(t);
@@ -195,7 +192,7 @@ class ConstantTable : public CodeHashTable <ConstEntry>
   
 private:
   
-  word32 hashFunction(const ConstEntry entry) const
+  wordptr hashFunction(const ConstEntry entry) const
     { return(entry.hashFn()); }
 
 public:
@@ -217,13 +214,13 @@ class StructEntry
   
 private:
   
-  word32 atomic;
+  wordptr atomic;
   word32 arity;
   word32 offset;
   
 public:
   StructEntry(void) { }
-  StructEntry(const word32 structure, const word32 a) :
+  StructEntry(const wordptr structure, const word32 a) :
     atomic(structure), arity(a)
     { }
   
@@ -251,7 +248,7 @@ public:
   //
   // Hash on the constant.
   //
-  word32 hashFn(void) const
+  wordptr hashFn(void) const
     {
       return((atomic) ^ arity); 
     }
@@ -283,13 +280,13 @@ public:
   //
   void relocate(const StringMap& string_map, const StringMapLoc string_base)
   {
-    atomic = reinterpret_cast<word32>(string_map.convert(string_base, atomic));
+    atomic = reinterpret_cast<wordptr>(string_map.convert(string_base, atomic));
   }
 
   //
   // Initialise the record.
   //
-  void assign(const word32 constant, const word32 n)
+  void assign(const wordptr constant, const word32 n)
   {
     atomic = constant;
     arity = n;
@@ -309,7 +306,7 @@ public:
   //
   void offsetToPointer(AtomTable& atoms)
     {
-      atomic = reinterpret_cast<word32>(atoms.getAddress(atomic));
+      atomic = reinterpret_cast<wordptr>(atoms.getAddress(atomic));
     }
 };
 
@@ -321,7 +318,7 @@ class StructureTable : public CodeHashTable <StructEntry>
 
 private:
 
-  word32 hashFunction(const StructEntry entry) const
+  wordptr hashFunction(const StructEntry entry) const
   { return(entry.hashFn()); }
 
 public:

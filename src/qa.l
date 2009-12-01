@@ -1,7 +1,7 @@
 %option noyywrap
 %{
 /*
- * Copyright (C) 1990, 1996
+ * Copyright (C) 2000-2009 
  *
  * Department of Computer Science,
  * University of Queensland
@@ -173,7 +173,7 @@ end			{
 				return DOUBLE_TOKEN;
 			}
 [[:digit:]]+		{
-				yylval.number_value = atoi(yytext);
+				yylval.number_value = atol(yytext);
 				return NUMBER_TOKEN;
 			}
 

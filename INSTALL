@@ -1,4 +1,4 @@
-Installing Qu-Prolog 8.9
+Installing Qu-Prolog 8.10
 
 Execute the following
 
@@ -8,7 +8,7 @@ make
 
 This should have build the system.
 
-The config files have been pre-built using LINUX RedHat 9.0 and
+The config files have been pre-built using LINUX Ubuntu and
 so you may need to run autoconf before configure if you are using
 different versions of LINUX or UNIX.
 
@@ -30,11 +30,6 @@ Then try
 ./configure --with-gcclib=PATH
 where PATH is the path to the STL library includes.
 
-Qu-Prolog has been build on LINUX (Redhat 6.0 or greater).
-
-It has also been ported to SOLARIS using the gcc version 2.95.2 compiler.
-
-
 
 QT GUI
 ------
@@ -45,7 +40,7 @@ following
 make xqp
 
 Before doing this you should check that the environment variable QTDIR is
-set to the QT home - e.g. /usr/lib/qt-3.1.
+set to the QT home.
 
 Installing on MacOSX
 --------------------

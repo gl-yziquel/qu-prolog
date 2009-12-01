@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -271,6 +268,7 @@ public:
   static Atom *acos;
   static Atom *atan;
   static Atom *log;
+  static Atom *int64;
 
   static Atom *block;
   static Atom *poll;
@@ -287,6 +285,8 @@ public:
   static Atom *recoverable;
   static Atom *retry_woken_delays;
   static Atom *exception;
+  static Atom *throw_call;
+  static Atom *out_of_heap;
   static Atom *call_exception;
   static Atom *default_atom;
   static Atom *qup_shorten;
@@ -475,6 +475,7 @@ public:
     acos = add("acos");
     atan = add("atan");
     log = add("log");
+    int64 = add("$int64");
 
 
     stream_stdin = add("stdin");
@@ -499,6 +500,8 @@ public:
     recoverable = add("recoverable");
     retry_woken_delays = add("retry_woken_delays");
     exception = add("exception");
+    throw_call = add("throw");
+    out_of_heap = add("out_of_heap");
     call_exception = add("$call_exception");
     default_atom = add("default");
     qup_shorten = add("$qup_shorten");
@@ -633,6 +636,7 @@ public:
 //
 inline bool AtomKey::operator==(const Atom& entry) const
 {
+  assert(entry.isAtom());
   return streq(string, entry.getStringTablePtr());
 }
 

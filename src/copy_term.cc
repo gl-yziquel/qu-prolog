@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -212,6 +209,7 @@ Heap::copy_term(Object* source_term, Heap& target_heap,
     case Object::tStruct:
       {
 	Structure* source_struct = OBJECT_CAST(Structure*, source_term);
+	assert(source_struct->getArity() <= MaxArity);
 	Structure* target_term
 	  = target_heap.newStructure(source_struct->getArity());
 	
@@ -425,6 +423,7 @@ Heap::copy_share_term(Object* source_term, Heap& target_heap,
     case Object::tStruct:
       {
 	Structure* source_struct = OBJECT_CAST(Structure*, source_term);
+	assert(source_struct->getArity() <= MaxArity);
 	Structure* target_term
 	  = target_heap.newStructure(source_struct->getArity());
 	

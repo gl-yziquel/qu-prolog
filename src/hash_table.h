@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -273,7 +270,6 @@ HashLoc
 HashTable<HashType, HashKey>::search(const HashKey key) const
 {
   HashLoc loc = hashFunction(key) & tableSizeMask;
-
   for (word32 increment = 1;
        ! inspectEntry(loc).isEmpty();
        loc = (loc + increment) & tableSizeMask, increment++)

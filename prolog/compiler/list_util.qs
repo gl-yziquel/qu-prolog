@@ -101,8 +101,9 @@ $5:
 
 $1:
 	get_integer(0, 0)
-	get_constant('[]', 1)
 	neck_cut
+	put_constant('[]', 0)
+	get_x_value(1, 0)
 	proceed
 
 $2:

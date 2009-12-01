@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -73,7 +70,9 @@ typedef SHORT_TYPE		int16;
 typedef unsigned SHORT_TYPE	word16;
 typedef INT_TYPE		int32;
 typedef unsigned INT_TYPE	word32;
-typedef word32                  heapobject;
+typedef unsigned long         	wordlong;
+typedef unsigned long         	wordptr;
+typedef wordptr                 heapobject;
 typedef word8 	*CodeLoc;
 
 //
@@ -87,6 +86,7 @@ const	word32	NUMBER_X_REGISTERS	= 20;
 const	word32	PILE_SIZE		= 1;
 
 const word32 WORD32_MAX	= (word32) -1;
+const wordptr WORDPTR_MAX = (wordptr) -1L;
 
 const word32 NULL_LOC	= 0;
 const word32 EMPTY_LOC	= WORD32_MAX;

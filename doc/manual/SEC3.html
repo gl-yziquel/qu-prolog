@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.9 Reference Manual - Built-in Predicates
+Qu-Prolog 8.10 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -434,13 +434,18 @@ Succeed if <KBD>Goal1</KBD> succeeds.  <KBD>Goal2</KBD> is executed after <KBD>G
 <BR><KBD>unwind_protect((assert(fact(a,b)), p), retract(fact(a,b)))</KBD>
 </BLOCKQUOTE>
 
-<P><KBD><a name="call_cleanup"></a>call_cleanup(Goal1, Goal2)</KBD>
+<P><KBD><a name="setup_call_cleanup"></a>setup_call_cleanup(Goal0, Goal1, Goal2)</KBD>
  <BLOCKQUOTE>
- Calls <KBD>Goal1</KBD> and whenever this call fails or succeeds deterministically,
+First calls <KBD>Goal0</KBD> deterministically then 
+ calls <KBD>Goal1</KBD> and whenever this call fails or succeeds deterministically,
  then <KBD>Goal2</KBD> is called. It is similar to <KBD>unwind_protect</KBD>. The main difference is that <KBD>unwind_protect</KBD> is called on success
  (even if choice points remain) whereas <KBD>call_cleanup</KBD> is called
  on success only when <KBD>Goal1</KBD> has no more choices.
 
+</BLOCKQUOTE>
+<P><KBD><a name="call_cleanup"></a>call_cleanup(Goal1, Goal2)</KBD>
+ <BLOCKQUOTE>
+The same as <KBD>setup_call_cleanup(true, Goal1, Goal2)</KBD>
 </BLOCKQUOTE>
 
 <H2>

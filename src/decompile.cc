@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -1545,7 +1542,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
             ConstEntry constant; 
 	    if (val->isAtom())
 	      {
-		constant.assign(reinterpret_cast<word32>(val), 
+		constant.assign(reinterpret_cast<wordptr>(val), 
 				ConstEntry::ATOM_TYPE);
 	      }
 	    else
@@ -1609,7 +1606,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
                   }
               }                                
 
-            StructEntry structure(reinterpret_cast<word32>(func), arity);
+            StructEntry structure(reinterpret_cast<wordptr>(func), arity);
 
             const word32 label = CodeStructTable.lookUp(structure);
 
@@ -1655,7 +1652,7 @@ Thread::next_instr(CodeLoc programCounter, Object* head, Object* &first,
                 arity = 0;
               }
                                                                                                             
-            StructEntry structure(reinterpret_cast<word32>(q),  arity);
+            StructEntry structure(reinterpret_cast<wordptr>(q),  arity);
 
             const word32 label = CodeQuantTable.lookUp(structure);
             if (label == Code::FAIL)

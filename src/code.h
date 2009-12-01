@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -111,6 +108,26 @@ inline word32	get4Bytes(CodeLoc& loc)
   return(data);
 }
 
+inline wordptr	getPtrBytes(CodeLoc& loc)
+{
+#if BITS_PER_WORD == 64
+  wordptr data = static_cast<wordptr>(get4Bytes(loc));
+  return (data << 32) | static_cast<wordptr>(get4Bytes(loc));
+#else
+  return get4Bytes(loc);
+#endif
+}
+inline long  getLongBytes(CodeLoc& loc)
+{
+#if BITS_PER_WORD == 64
+  long data = static_cast<long>(get4Bytes(loc));
+  return (data << 32) | static_cast<long>(get4Bytes(loc));
+#else
+  return get4Bytes(loc);
+#endif
+}
+
+
 //
 // Update the specified location with new data.
 //
@@ -130,6 +147,25 @@ inline void	update4Bytes(CodeLoc loc, word32 data)
   *loc++ = static_cast<word8>((data & 0x0000ff00) >> 8);
   *loc   =  static_cast<word8>(data & 0x000000ff);
 }
+inline void	updatePtrBytes(CodeLoc loc, wordptr data)
+{
+#if BITS_PER_WORD == 64
+  update4Bytes(loc, static_cast<word32>(data >> 32));
+  update4Bytes(loc + 4, static_cast<word32>(data));
+#else
+  update4Bytes(loc, static_cast<word32>(data));
+#endif
+}
+inline void     updateLongBytes(CodeLoc loc, long data)
+{
+#if BITS_PER_WORD == 64
+  update4Bytes(loc, static_cast<word32>(data >> 32));
+  update4Bytes(loc + 4, static_cast<word32>(data));
+#else
+  update4Bytes(loc, static_cast<word32>(data));
+#endif
+}
+
 //
 // Fetch different kinds of data from the code area.  The pointer to
 // the area (the parameter) is incremented past the data after reading.
@@ -138,12 +174,12 @@ inline void	update4Bytes(CodeLoc loc, word32 data)
 inline word8 getInstruction(CodeLoc& loc) { return(get1Byte(loc)); }
 inline Object* getConstant(CodeLoc& loc) 
 {
-  return(reinterpret_cast<Object*>(get4Bytes(loc)));
+  return(reinterpret_cast<Object*>(getPtrBytes(loc)));
 }
 inline word8 getRegister(CodeLoc& loc) { return(get1Byte(loc)); }
 inline word8 getNumber(CodeLoc& loc)  { return(get1Byte(loc)); }
-inline word32 getAddress(CodeLoc& loc)  { return(get4Bytes(loc)); }
-inline int32 getInteger(CodeLoc& loc)  { return((int32)(get4Bytes(loc))); }
+inline wordptr getAddress(CodeLoc& loc)  { return(getPtrBytes(loc)); }
+inline long getInteger(CodeLoc& loc)  { return(getLongBytes(loc)); }
 inline double getDouble(CodeLoc& loc)
 {
   double d;
@@ -152,11 +188,11 @@ inline double getDouble(CodeLoc& loc)
   return d;
 }
 inline CodeLoc getCodeLoc(CodeLoc& loc)  
-{ return(reinterpret_cast<CodeLoc>(get4Bytes(loc))); }
+{ return(reinterpret_cast<CodeLoc>(getPtrBytes(loc))); }
 inline word16 getOffset(CodeLoc& loc)  { return(get2Bytes(loc)); }
 inline Atom* getPredAtom(CodeLoc& loc)  
 { 
-  Object* a = reinterpret_cast<Object*>(get4Bytes(loc));
+  Object* a = reinterpret_cast<Object*>(getPtrBytes(loc));
   assert(a->isAtom());
   return(reinterpret_cast<Atom*>(a));
 }
@@ -168,9 +204,9 @@ inline word16 getTableSize(CodeLoc& loc)  { return(get2Bytes(loc)); }
 inline void	updateInstruction(const CodeLoc loc, const word8 data)
 { update1Byte(loc, data); }
 inline void	updateConstant(const CodeLoc loc, Object* data)
-{ update4Bytes(loc, reinterpret_cast<word32>(data)); }
-inline void	updateInteger(const CodeLoc loc, int32 data)
-{ update4Bytes(loc, (word32)(data)); }
+{ updatePtrBytes(loc, reinterpret_cast<wordptr>(data)); }
+inline void	updateInteger(const CodeLoc loc, long data)
+{ updateLongBytes(loc, data); }
 inline void     updateDouble(const CodeLoc loc, double data)
 {
   memcpy(loc, &data, sizeof(double));
@@ -179,14 +215,14 @@ inline void	updateRegister(const CodeLoc loc, const word8 data)
 { update1Byte(loc, data); }
 inline void	updateNumber(const CodeLoc loc, const word8 data)
 { update1Byte(loc, data); }
-inline void	updateAddress(const CodeLoc loc, const word32 data)
-{ update4Bytes(loc, data); }
+inline void	updateAddress(const CodeLoc loc, const wordptr data)
+{ updatePtrBytes(loc, data); }
 inline void	updateCodeLoc(const CodeLoc loc, const CodeLoc data)
-{ update4Bytes(loc, reinterpret_cast<word32>(data)); }
+{ updatePtrBytes(loc, reinterpret_cast<wordptr>(data)); }
 inline void	updateOffset(const CodeLoc loc, const word16 data)
 { update2Bytes(loc, data); }
 inline void	updatePredAtom(const CodeLoc loc, const Atom* data)
-{ update4Bytes(loc, reinterpret_cast<word32>(data)); }
+{ updatePtrBytes(loc, reinterpret_cast<wordptr>(data)); }
 inline void	updateTableSize(const CodeLoc loc, const word16 data)
 { update2Bytes(loc, data); }
 //
@@ -256,6 +292,10 @@ private:
   void push1Byte(word8 data) { update1Byte(allocateElements(1), data); }
   void push2Bytes(word16 data) { update2Bytes(allocateElements(2), data); }
   void push4Bytes(word32 data) { update4Bytes(allocateElements(4), data); }
+  void pushPtrBytes(wordptr data)
+    {
+      updatePtrBytes(allocateElements(sizeof(wordptr)), data);
+    }
   
   //
   // Resolve the CALL_PREDICATE and EXECUTE_PREDICATE instructions.
@@ -284,14 +324,14 @@ public:
   //
   // Size of different kinds of data in the code area.
   //
-  static const	size_t	SIZE_OF_INSTRUCTION	= 1;
+  static const	size_t	SIZE_OF_INSTRUCTION	= sizeof(word8);
   typedef word8 InstructionSizedType;
 
-  static const	size_t	SIZE_OF_CONSTANT	= 4;
-  typedef word32 ConstantSizedType;
+  static const	size_t	SIZE_OF_CONSTANT	= sizeof(wordptr);
+  typedef wordptr ConstantSizedType;
 
-  static const	size_t	SIZE_OF_INTEGER	        = 4;
-  typedef word32 IntegerSizedType;
+  static const	size_t	SIZE_OF_INTEGER	        = sizeof(long);
+  typedef long IntegerSizedType;
 
   static const	size_t	SIZE_OF_DOUBLE	        = sizeof(double);
   typedef double DoubleSizedType;
@@ -302,14 +342,14 @@ public:
   static const	size_t	SIZE_OF_NUMBER		= 1;
   typedef word8 NumberSizedType;
 
-  static const size_t	SIZE_OF_ADDRESS		= 4;
-  typedef word32 AddressSizedType;
+  static const size_t	SIZE_OF_ADDRESS		= sizeof(wordptr);
+  typedef wordptr AddressSizedType;
 
   static const	size_t	SIZE_OF_OFFSET		= 2;
   typedef word16 OffsetSizedType;
 
-  static const	size_t	SIZE_OF_PRED		= 4;
-  typedef word32 PredSizedType;
+  static const	size_t	SIZE_OF_PRED		= sizeof(wordptr);
+  typedef wordptr PredSizedType;
 
   static const	size_t	SIZE_OF_TABLE_SIZE	= 2;
   typedef word16 TableSizeSizedType;
@@ -336,16 +376,16 @@ public:
   void	pushInstruction(const word8 data) { push1Byte(data); }
   void	pushConstant(const Object* data) 
     { 
-      push4Bytes(reinterpret_cast<word32>(data)); 
+      pushPtrBytes(reinterpret_cast<wordptr>(data)); 
     }
   void	pushRegister(const word8 data) { push1Byte(data); }
   void	pushNumber(const word8 data) { push1Byte(data); }
   void	pushAddress(const word32 data) { push4Bytes(data); }
-  void	pushCodeLoc(const CodeLoc data) { push4Bytes(reinterpret_cast<word32>(data)); }
+  void	pushCodeLoc(const CodeLoc data) { pushPtrBytes(reinterpret_cast<wordptr>(data)); }
   void	pushOffset(const word16 data) { push2Bytes(data); }
   void	pushPredAtom(const Atom* data) 
     { 
-      push4Bytes(reinterpret_cast<word32>(data)); 
+      pushPtrBytes(reinterpret_cast<wordptr>(data)); 
     }
   void	pushTableSize(const word16 data) { push2Bytes(data); }
   

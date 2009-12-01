@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -146,6 +143,13 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
 	      ptr++;
 	      continue;
 	    }
+	  
+          if (var->isVariableOther() && (i == 4))
+	    {
+	      ptr++;
+	      continue;
+	    }
+	  
 	  if (var->isSubstitutionBlock() && (*ptr == 0))
 	    {
 	      ptr++;
@@ -157,17 +161,18 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
               && ((ptrval < atombase) || (ptrval > atomtop)))
             {
  		      
-              cerr << hex << (word32)(ptr - i) << " size = " << size << endl;
+              cerr << hex << (wordptr)(ptr - i) << " size = " << size << endl;
+              cerr << "ptrval = " << (heapobject)ptrval << " heapBase = " << (heapobject)(heap.getBase()) << " heapTop = " << (heapobject)(heap.getTop()) << " atombase = " << (heapobject)atombase << " atomtop = " << (heapobject)atomtop << endl;
               for (int j = 0; j <= i; j++)
                 {
-                  cerr << hex << (word32)(ptr - i + j)  << " : " << (word32)(*(ptr -i + j)) << endl;
+                  cerr << hex << (wordptr)(ptr - i + j)  << " : " << (heapobject)(*(ptr -i + j)) << endl;
                 }
               cerr << dec << endl;
 	      reinterpret_cast<Object*>(ptr - i)->printMe_dispatch(*atoms);
 	      cerr << endl << "PREVIOUS" << endl;
 	      for (int j = 0; j < 20; j++)
 		{
-		  cerr << hex << (word32)(ptr - 20 + j)  << " : " << (word32)(*(ptr -20 + j)) << dec << endl;
+		  cerr << hex << (wordptr)(ptr - 20 + j)  << " : " << (heapobject)(*(ptr -20 + j)) << dec << endl;
 		}
               return false;
             }
@@ -494,7 +499,7 @@ Thread::dump_choices(ChoiceLoc choiceloc)
     {
       HeapAndTrailsChoice htc = choiceStack.getHeapAndTrailsState(choiceloc);
       cerr << "Choice [" << choiceloc << "]" << endl;
-      cerr << "SavedTOS = " << hex << (word32)(htc.getSavedTop()) << dec << endl;
+      cerr << "SavedTOS = " << hex << (wordptr)(htc.getSavedTop()) << dec << endl;
       envStack.printMe(*atoms, choiceStack.currentEnv(choiceloc));
       cerr << "Choice X regs" << endl;
       for (int i = choiceStack.getNumArgs(choiceloc)-1; i >= 0; i--)
@@ -547,16 +552,18 @@ Thread::dump_areas(word32 arity)
   cerr << endl << "=========== The IP table ===========" << endl;
   ipTable.printMe(*atoms);
   cerr << endl << "=========== The heap ===============" << endl;
-  cerr << "savedTOS = " << hex << (word32)(heap.getSavedTop()) << dec << endl;
+  cerr << "savedTOS = " << hex << (wordptr)(heap.getSavedTop()) << dec << endl;
 heap.printMe(*atoms);
 }
 
 
 #endif //DEBUG
 
-void 
+bool 
 Thread::gc(word32 arity)
 {
+  if (isDoingGCThrow()) return true;
+
   status.resetDoGC();
 
   bool print_gc_stats = (getenv("QP_GC") != NULL);
@@ -564,7 +571,7 @@ Thread::gc(word32 arity)
   if (print_gc_stats)
     {
       cerr << "GC START - heap size = " 
-         << (word32)(heap.getTop() - heap.getBase()) << endl;
+         << (heapobject)(heap.getTop() - heap.getBase()) << endl;
     }
 
   assert(check_heap(heap, atoms, gcbits));
@@ -585,13 +592,14 @@ Thread::gc(word32 arity)
   if (print_gc_stats)
     {
       cerr << "GC END   - heap size = " 
-           << (word32)(heap.getTop() - heap.getBase()) << endl;
+           << (heapobject)(heap.getTop() - heap.getBase()) << endl;
     }
 
-  if (heap.doGarbageCollection())
-    {
-      Fatal(__FUNCTION__, "Garbage collection did not recover enough space");
-    }
+  if (heap.doGarbageCollection()) {
+    setDoingGCThrow(true);
+    return false;
+  }
+  return true;
 }
 
 Thread::ReturnValue
@@ -600,6 +608,14 @@ Thread::psi_gc(void)
   status.setDoGC();
   return RV_SUCCESS;
 }
+
+Thread::ReturnValue
+Thread::psi_clear_gc_throw(void)
+{
+  setDoingGCThrow(false);
+  return RV_SUCCESS;
+}
+
 
 
 

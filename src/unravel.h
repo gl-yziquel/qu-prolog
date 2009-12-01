@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -68,26 +65,26 @@ Object* yreg(int);
 
 Object* xreg(int);
 
-word32 callpred(Object*, int);
+wordptr callpred(Object*, int);
 
-word32 getput(Object*, Object*, bool, WordArray&);
+wordptr getput(Object*, Object*, bool, WordArray&);
 
-word32 unifyset(Object*, bool, WordArray&);
+wordptr unifyset(Object*, bool, WordArray&);
 
-word32 getputlist(Object*, bool, WordArray&);
+wordptr getputlist(Object*, bool, WordArray&);
 
-word32 getputstruct(Object*, int, Object*, bool, WordArray&);
+wordptr getputstruct(Object*, int, Object*, bool, WordArray&);
 
-word32 getstructframe(Object*, int, WordArray&);
+wordptr getstructframe(Object*, int, WordArray&);
 
-word32 putquant(Object*, WordArray&);
+wordptr putquant(Object*, WordArray&);
 
-word32 putsub(Object*, int, WordArray&);
+wordptr putsub(Object*, int, WordArray&);
 
-word32 putemptysub(Object*, WordArray&);
+wordptr putemptysub(Object*, WordArray&);
 
 
-word32 putsubterm(Object*, Object*, WordArray&);
+wordptr putsubterm(Object*, Object*, WordArray&);
 
 
 void xputget(Object*, Object*, WordArray&, WordArray&);

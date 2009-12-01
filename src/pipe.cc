@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -84,8 +81,8 @@ Thread::psi_pipe(Object *& input_stream_arg,
   QPStream *outstream = new QPofdstream(fdes[1]);
 
 
-  input_stream_arg =  heap.newInteger(reinterpret_cast<word32>(instream));
-  output_stream_arg = heap.newInteger(reinterpret_cast<word32>(outstream));
+  input_stream_arg =  heap.newInteger(reinterpret_cast<wordptr>(instream));
+  output_stream_arg = heap.newInteger(reinterpret_cast<wordptr>(outstream));
 
   return RV_SUCCESS;
 }

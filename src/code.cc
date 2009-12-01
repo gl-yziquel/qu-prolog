@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -155,7 +152,7 @@ StaticCodeArea::readData(istream& istrm, const word32 readSize)
 void 
 StaticCodeArea::loadArea(istream& istrm)
 {
-  const size_t readSize = IntLoad<size_t>(istrm);
+  const word32 readSize = IntLoad<word32>(istrm);
   if (readSize > allocated_size)
     {
       //
@@ -164,7 +161,7 @@ StaticCodeArea::loadArea(istream& istrm)
       FatalS(__FUNCTION__, "wrong size for", getAreaName());
     }
 
-  readData(istrm, static_cast<word32>(readSize));
+  readData(istrm, readSize);
 }
 
 
@@ -341,7 +338,7 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case GET_CONSTANT:		// get_constant c, i
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, string_map.convert(string_base, c));
 	    pc += SIZE_OF_REGISTER;
 	    break;
@@ -349,7 +346,7 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case GET_STRUCTURE:		// get_structure c, n, i
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, string_map.convert(string_base, c));
 	    pc += SIZE_OF_NUMBER + SIZE_OF_REGISTER;
 	    break;
@@ -358,14 +355,14 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case UNIFY_CONSTANT:		// unify_constant c
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
-	    updateConstant(loc, string_map.convert(string_base, c));
+            wordptr c = getAddress(pc);
+            updateConstant(loc, string_map.convert(string_base, c));
 	    break;
 	  }
 	case CALL_PREDICATE:	// call_predicate predicate, arity, n
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    Atom* pred_atom = string_map.convert(string_base, c);
 
 	    arity = getNumber(pc);
@@ -392,7 +389,7 @@ Code::resolveCode(CodeLoc pc, const CodeLoc end,
 	case EXECUTE_PREDICATE:	// execute_predicate predicate, arity 
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    Atom* pred_atom = string_map.convert(string_base, c);
 
 	    arity = getNumber(pc);
@@ -1009,7 +1006,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case GET_CONSTANT:		// get_constant c, i
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, atoms.getAddress(c));
 	    pc += SIZE_OF_REGISTER;
 	    break;
@@ -1017,7 +1014,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case GET_STRUCTURE:		// get_structure c, n, i
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, atoms.getAddress(c));
 	    pc += SIZE_OF_NUMBER + SIZE_OF_REGISTER;
 	    break;
@@ -1026,14 +1023,14 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case UNIFY_CONSTANT:		// unify_constant c
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, atoms.getAddress(c));
 	    break;
 	  }
 	case CALL_PREDICATE:	// call_predicate predicate, arity, n
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, atoms.getAddress(c));
 	    pc += 2*SIZE_OF_NUMBER;
 	    break;
@@ -1041,7 +1038,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case EXECUTE_PREDICATE:	// execute_predicate predicate, arity 
 	  {
 	    loc = pc;
-	    word32 c = getAddress(pc);
+	    wordptr c = getAddress(pc);
 	    updateConstant(loc, atoms.getAddress(c));
 	  }
 	  pc += SIZE_OF_NUMBER;
@@ -1049,7 +1046,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case CALL_ADDRESS:		// call_address address, n
 	  {
 	    loc = pc;
-	    word32 cloc = getAddress(pc);
+	    wordptr cloc = getAddress(pc);
 	    updateCodeLoc(loc, cloc + getBaseOfStack());
 	  }
 	  pc += SIZE_OF_NUMBER;
@@ -1058,7 +1055,7 @@ Code::offsetsToPointers(CodeLoc pc, const CodeLoc end, AtomTable& atoms)
 	case EXECUTE_ADDRESS:		// execute_address address
 	  {	  
 	    loc = pc;
-	    word32 cloc = getAddress(pc);
+	    wordptr cloc = getAddress(pc);
 	    updateCodeLoc(loc, cloc + getBaseOfStack());
 	  }
 	  break;
@@ -1484,7 +1481,7 @@ void Code::load(istream& istrm, AtomTable& atoms)
        start += Code::SIZE_OF_HEADER + size)
     {
       CodeLoc pc = start;
-      word32 c = getAddress(pc);
+      wordptr c = getAddress(pc);
       updateConstant(start, atoms.getAddress(c));
       sizeLoc = start + Code::SIZE_OF_ADDRESS + Code::SIZE_OF_NUMBER;
       size = getOffset(sizeLoc);

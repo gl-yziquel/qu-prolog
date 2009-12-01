@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -15,9 +15,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -177,8 +174,8 @@ protected:			// contents of structure
 
 public:
   // For masking the top bits
-  static const heapobject TopMask   =    0xffffff00UL;
-  static const heapobject TopSBMask =    0xfffff000UL;
+  static const heapobject TopMask   =    -256L;          // fff..fff00UL
+  static const heapobject TopSBMask =    -4096L;         // fff..ff000UL
 
   // Special tag for unify_x_ref instruction
   static const heapobject RefTag = 0x000000FEUL;
@@ -196,6 +193,7 @@ public:
   
   inline bool isRefTag(void) const;
   inline bool isVariable(void) const;
+  inline bool isVariableOther(void) const;
   inline bool isNormalVariable(void) const;
   inline bool isFrozenVariable(void) const;
   inline bool isThawedVariable(void) const;
@@ -226,7 +224,7 @@ public:
   inline bool isSubstitutionBlock(void) const;
   
   // Returns the value of a Short or Long.
-  inline int getInteger(void);
+  inline long getInteger(void);
   inline double getDouble(void);
 
   inline heapobject* last(void);
@@ -339,7 +337,7 @@ protected:
   char* string_table_ptr;
 
   // Either an Atom * or int, depending on hasAssociatedItem()
-  word32 associatedval;
+  wordptr associatedval;
 
 public:
   // Buckybits 
@@ -376,10 +374,10 @@ public:
   inline bool hasAssociatedAtom(void) const;
   inline bool hasAssociatedInteger(void) const;
 
-  inline void associateInteger(const int val);
+  inline void associateInteger(const long val);
   inline void associateAtom(Atom *atm);
   inline Atom *getAssociatedAtom(void) const;
-  inline int getAssociatedInteger(void) const;
+  inline long getAssociatedInteger(void) const;
 
 
 public:
@@ -448,7 +446,7 @@ class Long : public Constant
 {
 protected:
   // The value of the Long
-  word32 value;
+  wordptr value;
   
 public:
   // Accessor (no mutator)
@@ -927,6 +925,11 @@ inline bool Object::isVariable(void) const
 {
   return (tag & TypeMask) == TypeVar;
 }
+inline bool Object::isVariableOther(void) const
+{
+  return ((tag & TypeTagMask) == VarOtherTag);
+}
+
 
 inline bool Object::isFrozenVariable(void) const
 {
@@ -1139,7 +1142,7 @@ inline void Object::printMe_dispatch(AtomTable& atoms, bool all)
     default:
       // Not all Tags considered!
       std::cerr << "Bogus type" << std::endl;
-      std::cerr << (word32)(this) << " -> " << *((heapobject*)(this)) << std::endl;
+      std::cerr << (wordptr)(this) << " -> " << *((heapobject*)(this)) << std::endl;
       assert(false);
     }
 }
@@ -1193,7 +1196,7 @@ Atom::hasAssociatedInteger(void) const
   return (tag & AssociatedMask) == AssociatedInteger;
 }
 
-inline void Atom::associateInteger(const int val)
+inline void Atom::associateInteger(const long val)
 {
   tag = (tag & ~AssociatedMask) | AssociatedInteger;
   associatedval = val;
@@ -1202,7 +1205,7 @@ inline void Atom::associateInteger(const int val)
 inline void Atom::associateAtom(Atom *atm)
 {
   tag = (tag & ~AssociatedMask) | AssociatedAtom;
-  associatedval = reinterpret_cast<word32>(atm);
+  associatedval = reinterpret_cast<wordptr>(atm);
 }
 
 inline Atom *Atom::getAssociatedAtom(void) const
@@ -1213,7 +1216,7 @@ inline Atom *Atom::getAssociatedAtom(void) const
   return reinterpret_cast<Atom *>(associatedval);
 }
 
-inline int Atom::getAssociatedInteger (void) const
+inline long Atom::getAssociatedInteger (void) const
 {
   assert(sizeof(void *) == sizeof(heapobject));
   assert(hasAssociatedInteger());
@@ -1229,7 +1232,7 @@ inline size_t Atom::size(void)
 #ifdef QP_DEBUG
 inline void Atom::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Atom: \""
+	std::cerr << "[" << std::hex << (wordptr) this << std::dec << "] Atom: \""
        << this->getName() << "\" ";
   
 #ifndef WIN32
@@ -1242,7 +1245,7 @@ inline void Atom::printMe(AtomTable& atoms, bool)
       std::cerr << "int: " << getAssociatedInteger();
       break;
     case AssociatedAtom:
-      std::cerr << "atom: [" << std::hex << (word32) getAssociatedAtom() << std::dec << "]";
+      std::cerr << "atom: [" << std::hex << (wordptr) getAssociatedAtom() << std::dec << "]";
       break;
     }
 #endif
@@ -1256,7 +1259,7 @@ inline long Short::getValue(void) const
 {
   // N.B. The alternative of using >> 8 is apparently not portable
   // in the case of signed quantities.
-  return (long)(tag & TopMask) / 256;
+  return (long)((long)(tag & TopMask) / 256);
 }
 
 inline size_t Short::size(void)
@@ -1267,7 +1270,7 @@ inline size_t Short::size(void)
 #ifdef QP_DEBUG
 inline void Short::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << std::hex << (word32) this 
+	std::cerr << "[" << std::hex << (wordptr) this 
 		  << std::dec << "] Short: \""
 		  << getValue() << "\" ";
 }
@@ -1284,7 +1287,7 @@ inline double Double::getValue(void) const
 #ifdef QP_DEBUG
 inline void Double::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << hex << (word32) this << dec << "] Double: \""
+	std::cerr << "[" << hex << (wordptr) this << dec << "] Double: \""
        << getValue() << "\" ";
 }
 #endif
@@ -1312,7 +1315,7 @@ inline size_t Long::size(void)
 #ifdef QP_DEBUG
 inline void Long::printMe(AtomTable& atoms, bool)
 {
-	std::cerr << "[" << std::hex << (int32) this << std::dec 
+	std::cerr << "[" << std::hex << (wordptr) this << std::dec 
 		  << "] Long: \""
 		  << getValue() << "\" ";
 }
@@ -1385,8 +1388,8 @@ inline size_t Structure::size(size_t arity)
 #ifdef QP_DEBUG
 inline void Structure::printMe(AtomTable& atoms, bool all)
 {
-	std::cerr << "[" << std::hex << (word32) this << std::dec << "] Structure:[" 
-       << (word32)tag << "] arity: " << getArity() << " functor: [ ";
+	std::cerr << "[" << std::hex << (wordptr) this << std::dec << "] Structure:[" 
+       << (wordptr)tag << "] arity: " << getArity() << " functor: [ ";
   getFunctor()->printMe_dispatch(atoms, all);
   std::cerr << " ] ";
   for (size_t i = 1; i <= getArity(); i++)
@@ -1508,7 +1511,7 @@ Cons::getTailAddress(void)
 #ifdef QP_DEBUG
 inline void Cons::printMe(AtomTable& atoms, bool all)
 {
-  std::cerr << "[" << std::hex << (word32) this << std::dec << "] Cons: ";
+  std::cerr << "[" << std::hex << (wordptr) this << std::dec << "] Cons: ";
   if (isSubstitutionBlockList()) 
     {
       std::cerr << "(Sub) ";
@@ -1576,7 +1579,7 @@ inline void QuantifiedTerm::setBody(Object *o)
 #ifdef QP_DEBUG
 inline void QuantifiedTerm::printMe(AtomTable& atoms, bool all)
 {
-  std::cerr << "[" << std::hex << (word32) this << std::dec 
+  std::cerr << "[" << std::hex << (wordptr) this << std::dec 
 	    << "] QuantifiedTerm: quantifier: [ ";
   getQuantifier()->printMe_dispatch(atoms, all);
   std::cerr << " ] boundvars: [ ";
@@ -1629,7 +1632,7 @@ inline void Substitution::setTerm(Object *o)
 #ifdef QP_DEBUG
 inline void Substitution::printMe(AtomTable& atoms, bool all)
 {
-  std::cerr << "[" << std::hex << (word32) this << std::dec 
+  std::cerr << "[" << std::hex << (wordptr) this << std::dec 
 	    << "] Substitution: subst: [ ";
   getSubstitutionBlockList()->printMe_dispatch(atoms, all);
   std::cerr << " ] term: [ ";
@@ -1746,7 +1749,7 @@ inline bool SubstitutionBlock::containsLocal(void) const
 #ifdef QP_DEBUG
 inline void SubstitutionBlock::printMe(AtomTable& atoms, bool all)
 {
-  std::cerr << "[" << std::hex << (word32) this << " : " << tag << std::dec 
+  std::cerr << "[" << std::hex << (wordptr) this << " : " << tag << std::dec 
 	    << "] SubstitutionBlock: ";
   if (isInvertible()) { std::cerr << "(invertible) "; }
   std::cerr << " size = " << getSize() << " " << endl;
@@ -1975,13 +1978,13 @@ inline void Variable::setID(heapobject v)
 #ifdef QP_DEBUG
 inline void Variable::printMe(AtomTable& atoms, bool all)
 {
-  std::cerr << "[" << std::hex << (word32) this << std::dec 
+  std::cerr << "[" << std::hex << (wordptr) this << std::dec 
 	    << "] Variable: ";
   if (isFrozen()) { std::cerr << "(frozen) "; }
   if (isOccursChecked()) { std::cerr << "(occurs checked) "; }
   if (getReference() != (Object *) this)
     {
-      std::cerr << "<" <<std::hex << (word32)(getReference()) << std::dec << ">ref: [ ";
+      std::cerr << "<" <<std::hex << (wordptr)(getReference()) << std::dec << ">ref: [ ";
       getReference()->printMe_dispatch(atoms, all);
       std::cerr << " ] ";
     }
@@ -2077,7 +2080,7 @@ inline void ObjectVariable::makeLocalObjectVariable(void)
 /////////////////////////////////////////////////////////
 // Other methods
 
-inline int Object::getInteger(void)
+inline long Object::getInteger(void)
 {
   assert(isShort() || isLong());
 
@@ -2100,7 +2103,7 @@ inline double Object::getDouble(void)
 #ifdef QP_DEBUG
 inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 {
-  std::cerr << "[" << std::hex << (word32) this << std::dec << "] ObjVar: ";
+  std::cerr << "[" << std::hex << (wordptr) this << std::dec << "] ObjVar: ";
   if (isFrozen()) { std::cerr << "(frozen) "; }
   if (getReference() != OBJECT_CAST(const Object*, this))
     {

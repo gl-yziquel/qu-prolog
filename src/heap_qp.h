@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -15,9 +15,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -98,6 +95,7 @@ enum BoundVarState { MISMATCH, DELAY, MATCH };
 static const u_long MaxArity = 0x008FFFFF; // 2**23 - 1
 static const u_long MaxSubstBlock = 0x00008FFF; // 2**15 - 1
 
+static const long MaxShort = 1L << (BITS_PER_WORD - 10);
 //////////////////////////////////////////////////////////////////////
 // The Heap class specification
 
@@ -192,7 +190,7 @@ public:
   inline Cons *newSubstitutionBlockList(SubstitutionBlock *,
 					Object *);
 
-  inline Short *newShort(int32 val);
+  inline Short *newShort(long val);
   inline Long *newLong(long val);
   inline Object *newInteger(long val);
   inline Double *newDouble(double d);
@@ -533,12 +531,12 @@ Heap::newSubstitutionBlockList(SubstitutionBlock *head,
 // Create a new Short on the heap with value `val'
 //
 inline Short *
-Heap::newShort(int32 val)
+Heap::newShort(long val)
 {
   //
   // Value out of range?  Try Long.
   //
-  assert(-0x400000 <= val && val < 0x400000);
+  assert(-MaxShort <= val && val < MaxShort);
 
   heapobject *x = allocateHeapSpace(Short::size());
   x[0] = (val << 8) | Object::ShortTag;
@@ -583,7 +581,7 @@ Heap::newStringObject(const char* s)
 inline Object *
 Heap::newInteger(long val)
 {
-  if (-0x400000 <= val && val < 0x400000)
+  if (-MaxShort <= val && val < MaxShort)
     {
       return newShort(val);
     }

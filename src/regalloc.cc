@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -127,7 +124,7 @@ Heap::excess_realloc_reg(Object* reg, int& currY,
   Object* result = reg;
   if (reg->isStructure())
     {
-      int r;
+      long r;
       if (OBJECT_CAST(Structure*, reg)->getFunctor() == AtomTable::unify_ref)
         {
           Structure* tstruct = OBJECT_CAST(Structure*, reg);
@@ -192,7 +189,7 @@ Heap::excess_registers(WordArray& instr)
 	  Object* arg = tstruct->getArgument(j)->variableDereference();
 	  tstruct->setArgument(j, excess_realloc_reg(arg, currY, xmap, ymap));
 	}
-      tmpinstr.addEntry(reinterpret_cast<word32>(tstruct));
+      tmpinstr.addEntry(reinterpret_cast<wordptr>(tstruct));
     }
   instr.resetLast(0);
   Object* lastxreg = xreg(NUMBER_X_REGISTERS-1);
@@ -202,7 +199,7 @@ Heap::excess_registers(WordArray& instr)
       Object* targlast = tstruct->getArgument(tstruct->getArity());
       if (!is_yreg(targlast))
 	{
-	  instr.addEntry(reinterpret_cast<word32>(tstruct));
+	  instr.addEntry(reinterpret_cast<wordptr>(tstruct));
 	  continue;
 	}
       if (tstruct->getFunctor() == AtomTable::put)
@@ -222,15 +219,15 @@ Heap::excess_registers(WordArray& instr)
 			{
 			  tstruct->setArgument(4, lastxreg);
 			  nstruct->setArgument(4, lastxreg);
-			  instr.addEntry(reinterpret_cast<word32>(tstruct));
-			  instr.addEntry(reinterpret_cast<word32>(nstruct));
+			  instr.addEntry(reinterpret_cast<wordptr>(tstruct));
+			  instr.addEntry(reinterpret_cast<wordptr>(nstruct));
 			  Structure* getinstr = newStructure(4);
 			  getinstr->setFunctor(AtomTable::get);
 			  getinstr->setArgument(1, AtomTable::meta);
 			  getinstr->setArgument(2, AtomTable::variable);
 			  getinstr->setArgument(3, targlast);
 			  getinstr->setArgument(4, lastxreg);
-			  instr.addEntry(reinterpret_cast<word32>(getinstr));
+			  instr.addEntry(reinterpret_cast<wordptr>(getinstr));
 			  i--;
 			  continue;
 			}
@@ -248,28 +245,28 @@ Heap::excess_registers(WordArray& instr)
 	      putinstr->setArgument(2, AtomTable::value);
 	      putinstr->setArgument(3, targlast);
 	      putinstr->setArgument(4, lastxreg);
-	      instr.addEntry(reinterpret_cast<word32>(putinstr));
+	      instr.addEntry(reinterpret_cast<wordptr>(putinstr));
 	      tstruct->setArgument(4, lastxreg);
-	      instr.addEntry(reinterpret_cast<word32>(tstruct));
+	      instr.addEntry(reinterpret_cast<wordptr>(tstruct));
 	      Structure* getinstr = newStructure(4);
 	      getinstr->setFunctor(AtomTable::get);
 	      getinstr->setArgument(1, AtomTable::meta);
 	      getinstr->setArgument(2, AtomTable::variable);
 	      getinstr->setArgument(3, targlast);
 	      getinstr->setArgument(4, lastxreg);
-	      instr.addEntry(reinterpret_cast<word32>(getinstr));
+	      instr.addEntry(reinterpret_cast<wordptr>(getinstr));
 	    }
 	  else
 	    {
 	      tstruct->setArgument(4, lastxreg);
-	      instr.addEntry(reinterpret_cast<word32>(tstruct));
+	      instr.addEntry(reinterpret_cast<wordptr>(tstruct));
 	      Structure* getinstr = newStructure(4);
 	      getinstr->setFunctor(AtomTable::get);
 	      getinstr->setArgument(1, AtomTable::meta);
 	      getinstr->setArgument(2, AtomTable::variable);
 	      getinstr->setArgument(3, targlast);
 	      getinstr->setArgument(4, lastxreg);
-	      instr.addEntry(reinterpret_cast<word32>(getinstr));
+	      instr.addEntry(reinterpret_cast<wordptr>(getinstr));
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::checkBinder)
@@ -280,9 +277,9 @@ Heap::excess_registers(WordArray& instr)
 	  putinstr->setArgument(2, AtomTable::value);
 	  putinstr->setArgument(3, targlast);
 	  putinstr->setArgument(4, lastxreg);
-	  instr.addEntry(reinterpret_cast<word32>(putinstr));
+	  instr.addEntry(reinterpret_cast<wordptr>(putinstr));
 	  tstruct->setArgument(1, lastxreg);
-	  instr.addEntry(reinterpret_cast<word32>(tstruct));
+	  instr.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::get)
 	{
@@ -292,13 +289,13 @@ Heap::excess_registers(WordArray& instr)
 	  putinstr->setArgument(2, AtomTable::value);
 	  putinstr->setArgument(3, targlast);
 	  putinstr->setArgument(4, lastxreg);
-	  instr.addEntry(reinterpret_cast<word32>(putinstr));
+	  instr.addEntry(reinterpret_cast<wordptr>(putinstr));
 	  tstruct->setArgument(4, lastxreg);
-	  instr.addEntry(reinterpret_cast<word32>(tstruct));
+	  instr.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else
 	{
-	  instr.addEntry(reinterpret_cast<word32>(tstruct));
+	  instr.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
     }
 }
@@ -314,7 +311,7 @@ Heap::envsize(WordArray& instr, int& size)
     {
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(instr.Entries()[i])->variableDereference());
       // overwrite with dereference
-      instr.Entries()[i] = reinterpret_cast<word32>(tstruct);
+      instr.Entries()[i] = reinterpret_cast<wordptr>(tstruct);
 
       if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
@@ -360,7 +357,7 @@ Heap::envsize(WordArray& instr, int& size)
 		  Structure* newinstr = newStructure(1);
 		  newinstr->setFunctor(AtomTable::unify_ref);
 		  newinstr->setArgument(1, reg);
-		  instr.Entries()[i] = reinterpret_cast<word32>(newinstr);
+		  instr.Entries()[i] = reinterpret_cast<wordptr>(newinstr);
 		}
 	      if (is_yreg(arg))
 		{
@@ -421,7 +418,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	  voidstr->setArgument(1, AtomTable::meta);
 	  voidstr->setArgument(2, atoms->add("void"));
 	  voidstr->setArgument(3, newInteger(voids));
-	  newinstr.addEntry(reinterpret_cast<word32>(voidstr));
+	  newinstr.addEntry(reinterpret_cast<wordptr>(voidstr));
 	  i--;
 	  continue;
 	}
@@ -452,7 +449,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	      voidstr->setArgument(1, type);
 	      voidstr->setArgument(2, atoms->add("void"));
 	      voidstr->setArgument(3, newInteger(voids));
-	      newinstr.addEntry(reinterpret_cast<word32>(voidstr));
+	      newinstr.addEntry(reinterpret_cast<wordptr>(voidstr));
 	      i--;
 	      continue;
 	    }
@@ -572,7 +569,7 @@ Heap::voidalloc(WordArray& instr, int size, WordArray& newinstr)
 	       tstruct->setArgument(4, lastreg);
 	     }
 	 }
-      newinstr.addEntry(reinterpret_cast<word32>(tstruct));
+      newinstr.addEntry(reinterpret_cast<wordptr>(tstruct));
     }
 }
 	   
@@ -592,7 +589,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
       if (tstruct->getFunctor() == AtomTable::call_pred)
 	{
 	  init_live(xreg_life);
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::get)
 	{
@@ -603,32 +600,32 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	      assert(arg3->isStructure());
 	      assert(arg4->isStructure());
-	      int regno;
+	      long regno;
 	      if (is_xreg(arg4, regno) && regno != NUMBER_X_REGISTERS-1 &&
 		  is_yreg(arg3))
 		{
 		  make_live(arg4, arg3, xreg_life);
-		  acode.addEntry(reinterpret_cast<word32>(tstruct));
+		  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		}
 	      else if (is_xreg(arg3, regno))
 		{
 		  make_live(arg3, arg4, xreg_life);
 		  if (any_assoc_putset(arg3, i+1, ecode))
 		    {
-		      acode.addEntry(reinterpret_cast<word32>(tstruct));
+		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
 		}
 	      else
 		{
 		  make_dead(arg4, xreg_life);
-		  acode.addEntry(reinterpret_cast<word32>(tstruct));
+		  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		} 
 	    }
 	  else if (tstruct->getArgument(1) == AtomTable::meta)
 	    {
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	      make_dead(arg4, xreg_life);
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	  else if (tstruct->getArgument(1) == AtomTable::object)
 	    {
@@ -636,11 +633,11 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	      make_dead(arg3, xreg_life);
 	      make_dead(arg4, xreg_life);
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	  else
 	    {     
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 
 	}
@@ -650,7 +647,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      tstruct->getArgument(1) == AtomTable::empty_substitution ||
 	      tstruct->getArgument(1) == AtomTable::sub_term)
 	    {
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	  else if (tstruct->getArgument(1) == AtomTable::meta &&
 	      tstruct->getArgument(2) == AtomTable::variable)
@@ -666,20 +663,20 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
                       (fun == AtomTable::put || fun == AtomTable::get) &&
 		      equal_regs(arg3, nstruct->getArgument(4)->variableDereference()))
 		    {
-		      acode.addEntry(reinterpret_cast<word32>(tstruct));
+		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
 		  else
 		    {
 		      make_dead(arg3, xreg_life);
 		      make_dead(arg4, xreg_life);
-		      acode.addEntry(reinterpret_cast<word32>(tstruct));
+		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
 		}
 	      else
 		{
 		  make_dead(arg3, xreg_life);
 		  make_dead(arg4, xreg_life);
-		  acode.addEntry(reinterpret_cast<word32>(tstruct));
+		  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		}
 	    } 
 	  else if (tstruct->getArgument(1) == AtomTable::meta &&
@@ -690,7 +687,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      
 	      assert(arg3->isStructure());
 	      assert(arg4->isStructure());
-	      int reg;
+	      long reg;
 	      if (is_xreg(arg4, reg) && is_yreg(arg3) &&
 		  is_live(arg4, arg3, xreg_life))
 		{
@@ -700,7 +697,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 		{
 		  if (is_live(arg3, AtomTable::failure, xreg_life))
 		    {
-		      acode.addEntry(reinterpret_cast<word32>(tstruct));
+		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
 		  else if (is_live(arg3, arg4, xreg_life))
 		    {
@@ -708,19 +705,19 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 		    }
 		  else if (equal_regs(arg3, arg4))
 		    {
-		      acode.addEntry(reinterpret_cast<word32>(tstruct));
+		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
 		  else
 		    {
 		      make_dead(arg4, xreg_life);
-		      acode.addEntry(reinterpret_cast<word32>(tstruct));
+		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
 		}
 	      else
 		{
 		  make_dead(arg3, xreg_life);
 		  make_dead(arg4, xreg_life);
-		  acode.addEntry(reinterpret_cast<word32>(tstruct));
+		  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		}
 	    }
 	  else
@@ -729,7 +726,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	      make_dead(arg3, xreg_life);
 	      make_dead(arg4, xreg_life);
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::unify)
@@ -738,42 +735,42 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      tstruct->getArgument(2) == AtomTable::variable)
 	    {
 	      Object* arg3 = tstruct->getArgument(3)->variableDereference();
-	      int reg;
+	      long reg;
 	      if (is_xreg(arg3, reg))
 		{
 		  Structure* other = newStructure(1);
 		  other->setFunctor(AtomTable::xreg);
 		  other->setArgument(1, atoms->add("nowhere"));
 		  make_live(arg3, other, xreg_life);
-		  acode.addEntry(reinterpret_cast<word32>(tstruct));
+		  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		}
 	      else
 		{
-		  acode.addEntry(reinterpret_cast<word32>(tstruct));
+		  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		}
 	    }
 	  else
 	    {
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::set)
 	{
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (arg1 == AtomTable::meta &&
 	      arg2 == AtomTable::value &&
 	      is_xreg(tstruct->getArgument(3)->variableDereference(), reg))
 	    {
 	      
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	  else
 	    {
 	      make_dead(tstruct->getArgument(3)->variableDereference(), 
 			xreg_life);
-	      acode.addEntry(reinterpret_cast<word32>(tstruct));
+	      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	    }
 	}
       else if (tstruct->getFunctor() == AtomTable::unify_ref)
@@ -783,7 +780,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	  other->setFunctor(AtomTable::xreg);
 	  other->setArgument(1, atoms->add("nowhere"));
 	  make_live(arg, other, xreg_life);
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr1)
 	{
@@ -795,7 +792,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      make_pseudo_dead(tstruct->getArgument(2)->variableDereference(), 
 			xreg_life);
 	    }
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr2)
 	{
@@ -812,7 +809,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      make_pseudo_dead(tstruct->getArgument(3)->variableDereference(), 
 			xreg_life);
 	    }
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr3)
 	{
@@ -834,7 +831,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      make_pseudo_dead(tstruct->getArgument(4)->variableDereference(), 
 			xreg_life);
 	    }
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr4)
 	{
@@ -861,7 +858,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      make_pseudo_dead(tstruct->getArgument(5)->variableDereference(), 
 			xreg_life);
 	    }
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else if (tstruct->getFunctor() == AtomTable::cpseudo_instr5)
 	{
@@ -893,11 +890,11 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 	      make_pseudo_dead(tstruct->getArgument(6)->variableDereference(), 
 			xreg_life);
 	    }
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
       else
 	{
-	  acode.addEntry(reinterpret_cast<word32>(tstruct));
+	  acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 	}
     }
 }
@@ -927,9 +924,9 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      Structure* deall = newStructure(1);
 	      deall->setFunctor(atoms->add("deallocate"));
 	      deall->setArgument(1, AtomTable::nil);
-	      final.addEntry(reinterpret_cast<word32>(deall));
+	      final.addEntry(reinterpret_cast<wordptr>(deall));
 	    }
-	  final.addEntry(reinterpret_cast<word32>(expred));
+	  final.addEntry(reinterpret_cast<wordptr>(expred));
 	  return;
 	}
       else if (tstruct->getFunctor() == AtomTable::get_level_ancestor)
@@ -939,10 +936,10 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      Structure* a = newStructure(1);
 	      a->setFunctor(AtomTable::allocate);
 	      a->setArgument(1, newInteger(esize));
-	      final.addEntry(reinterpret_cast<word32>(a));
+	      final.addEntry(reinterpret_cast<wordptr>(a));
 	      alloc = true;
 	    }
-	  final.addEntry(reinterpret_cast<word32>(tstruct));
+	  final.addEntry(reinterpret_cast<wordptr>(tstruct));
 	  Structure* nstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(acode.Entries()[i+1]));
 	  if (nstruct->getFunctor() == AtomTable::get_level)
 	    {
@@ -966,7 +963,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      Structure* nc = newStructure(1);
 	      nc->setFunctor(AtomTable::cneck_cut);
 	      nc->setArgument(1,AtomTable::nil);
-	      final.addEntry(reinterpret_cast<word32>(nc));
+	      final.addEntry(reinterpret_cast<wordptr>(nc));
 	      i++;
 	    }
 	  if (tstruct->getArgument(1)->variableDereference()->isStructure())
@@ -990,10 +987,10 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 		  Structure* a = newStructure(1);
 		  a->setFunctor(AtomTable::allocate);
 		  a->setArgument(1, newInteger(esize));
-		  final.addEntry(reinterpret_cast<word32>(a));
+		  final.addEntry(reinterpret_cast<wordptr>(a));
 		  alloc = true;
 		}
-	      final.addEntry(reinterpret_cast<word32>(tstruct));
+	      final.addEntry(reinterpret_cast<wordptr>(tstruct));
 	      continue;
 	    }
 	  else
@@ -1006,12 +1003,12 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	  Structure* a = newStructure(1);
 	  a->setFunctor(AtomTable::allocate);
 	  a->setArgument(1, newInteger(esize));
-	  final.addEntry(reinterpret_cast<word32>(a));
+	  final.addEntry(reinterpret_cast<wordptr>(a));
 	  alloc = true;
 	}
       if (tstruct->getFunctor() == AtomTable::failure)
 	{
-	  final.addEntry(reinterpret_cast<word32>(tstruct));
+	  final.addEntry(reinterpret_cast<wordptr>(tstruct));
 	  return;
         }
       if (tstruct->getFunctor() == AtomTable::put)
@@ -1024,7 +1021,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      equal_regs(reg1, reg2) && i+1 < acode.lastEntry())
 	    {
 	      Structure* gstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(acode.Entries()[i+1]));
-	      int reg;
+	      long reg;
 	      Object* nt1 = gstruct->getArgument(1)->variableDereference();
 	      if (gstruct->getFunctor() == AtomTable::get &&
                   gstruct->getArgument(1)->variableDereference() 
@@ -1056,7 +1053,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 		  lastx->setFunctor(AtomTable::xreg);
 		  lastx->setArgument(1, newInteger(NUMBER_X_REGISTERS-1));
 		  tstruct->setArgument(4, lastx);
-		  final.addEntry(reinterpret_cast<word32>(tstruct));
+		  final.addEntry(reinterpret_cast<wordptr>(tstruct));
 		  continue;
 		}
 	    }
@@ -1080,9 +1077,9 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      lstr->setArgument(2, AtomTable::value);
 	      lstr->setArgument(3, arg);
 	      lstr->setArgument(4, lastx);
-	      final.addEntry(reinterpret_cast<word32>(lstr));
+	      final.addEntry(reinterpret_cast<wordptr>(lstr));
 	      tstruct->setArgument(1, lastx);
-	      final.addEntry(reinterpret_cast<word32>(tstruct));
+	      final.addEntry(reinterpret_cast<wordptr>(tstruct));
 	      continue;
 	    }
 	}
@@ -1092,7 +1089,7 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	  Object* t2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg1 = tstruct->getArgument(3)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(4)->variableDereference();
-	  int reg;
+	  long reg;
 	  if ((t2 == AtomTable::value && equal_regs(arg1, arg2)) ||
 	      (t1 == AtomTable::meta && t2 == AtomTable::variable &&
 	      equal_regs(arg1, arg2) && is_xreg(arg1, reg)))
@@ -1100,19 +1097,19 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      continue;
 	    }
 	}
-      final.addEntry(reinterpret_cast<word32>(tstruct));
+      final.addEntry(reinterpret_cast<wordptr>(tstruct));
     }
   if (alloc)
     {
       Structure* deall = newStructure(1);
       deall->setFunctor(atoms->add("deallocate"));
       deall->setArgument(1, AtomTable::nil);
-      final.addEntry(reinterpret_cast<word32>(deall));
+      final.addEntry(reinterpret_cast<wordptr>(deall));
     }
   Structure* pro = newStructure(1);
   pro->setFunctor(AtomTable::cproceed);
   pro->setArgument(1,AtomTable::nil);
-  final.addEntry(reinterpret_cast<word32>(pro));
+  final.addEntry(reinterpret_cast<wordptr>(pro));
 }
 
 

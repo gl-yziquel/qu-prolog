@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -215,7 +212,7 @@ private:
   //
   // Encode write a number
   //
-  bool writeEncodeNumber(QPStream&, const int32);
+  bool writeEncodeNumber(QPStream&, const long);
   //
   // Encode write a double
   //
@@ -277,7 +274,7 @@ private:
   //
   // Read a number.
   //
-  bool encodeReadNumber(QPStream&, int32&);
+  bool encodeReadNumber(QPStream&, long&);
   //
   // Read a double.
   //

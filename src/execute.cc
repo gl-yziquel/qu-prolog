@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -439,6 +436,7 @@ Thread::Execute(void)
 	    //
 	    // Push a struct object of arity n onto the heap
 	    //
+	    assert(n <= MaxArity);
 	    X[i] = heap.newStructure(n);
 	    StructurePointer = X[i]->storage();
 	  }
@@ -687,7 +685,7 @@ Thread::Execute(void)
 
 	case OPCODE(GET_INTEGER, ARGS(integer, register)):
 	  {
-	    int32 n = getInteger(PC);
+	    long n = getInteger(PC);
 	    const word32 i = getRegister(PC);
 	    // 
 	    // Dereference register Xi.
@@ -832,6 +830,7 @@ Thread::Execute(void)
 	    Object* xval = heap.dereference(X[i]);
 	    if (xval->isRefTag())
 	      {
+		assert(n <= MaxArity);
 		Structure* newstruct = heap.newStructure(n);
 		newstruct->setFunctor(c);
 		*(reinterpret_cast<heapobject*>(xval)) = 
@@ -844,7 +843,8 @@ Thread::Execute(void)
 		switch (UT(xval->getTag()))
 		  {
 		  case UT(Object::UVar):
-		    {
+		    {           
+		      assert(n <= MaxArity);
 		      Structure* newstruct = heap.newStructure(n);
 		      newstruct->setFunctor(c);
 		      assert(!OBJECT_CAST(Reference*, xval)->hasExtraInfo());
@@ -856,6 +856,7 @@ Thread::Execute(void)
 		    }
 		  case UT(Object::UVarOC):
 		    {
+		      assert(n <= MaxArity);
 		      Structure* newstruct = heap.newStructure(n);
 		      newstruct->setFunctor(c);
 		      for (u_int i = 1; i <= n; i++)
@@ -901,6 +902,7 @@ Thread::Execute(void)
 		    }
 		  case UT(Object::UOther):
 		    {
+		      assert(n <= MaxArity);
 		      Structure* newstruct = heap.newStructure(n);
 		      newstruct->setFunctor(c);
 		      for (u_int i = 1; i <= n; i++)
@@ -944,6 +946,7 @@ Thread::Execute(void)
 	    Object* xval = heap.dereference(X[i]);
 	    if (xval->isRefTag())
 	      {
+		      assert(n <= MaxArity);
 		Structure* newstruct = heap.newStructure(n);
 		*(reinterpret_cast<heapobject*>(xval)) = 
 		  reinterpret_cast<heapobject>(newstruct);
@@ -956,6 +959,7 @@ Thread::Execute(void)
 		  {
 		  case UT(Object::UVar):
 		    {
+		      assert(n <= MaxArity);
 		      Structure* newstruct = heap.newStructure(n);
 		      bindAndTrail(xval, newstruct);
 		      ReadMode = false;
@@ -965,6 +969,7 @@ Thread::Execute(void)
 		    }
 		  case UT(Object::UVarOC):
 		    {
+		      assert(n <= MaxArity);
 		      Structure* newstruct = heap.newStructure(n);
 		      Variable* funct = heap.newVariable();
 		      funct->setOccursCheck();
@@ -1002,6 +1007,7 @@ Thread::Execute(void)
 		    }
 		  case UT(Object::UOther):
 		    {
+		      assert(n <= MaxArity);
 		      Structure* newstruct = heap.newStructure(n);
 		      Variable* funct = heap.newVariable();
 		      funct->setOccursCheck();
@@ -1622,37 +1628,44 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
+                bool gc_ok = true;
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
-		    gc(arity);
+		    if (!gc(arity))
+                      {
+                        gc_ok = false;
+                        PC = FailedGC();
+                      }
                   }
-		const PredCode PredAddr = predicates->getCode(start);
-		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
-                  {
-		    DynamicPredicate* dp = PredAddr.getDynamicPred();
-		    if (!initializeDPcall(dp, arity, PC))
-		      {
-			BACKTRACK;
-		      }
-  		  }
-		else if (PredAddr.type() == PredCode::ESCAPE_PRED)
-		  {
-		    code->updateCallInstruction(PC -
-						SIZE_OF_CALL_PREDICATE_INSTR,
-						CALL_ESCAPE, (CodeLoc)start);
-
-		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
-		  }
-                else
-		  {
-	            assert(PredAddr.type() == PredCode::STATIC_PRED);
-		    const CodeLoc loc = PredAddr.getPredicate(code); 
-		    code->updateCallInstruction(PC -
-						SIZE_OF_CALL_PREDICATE_INSTR,
-						CALL_ADDRESS, loc);
-		    PC = loc;
-		  }
+                if (gc_ok) {
+                  const PredCode PredAddr = predicates->getCode(start);
+                  if (PredAddr.type() == PredCode::DYNAMIC_PRED)
+                    {
+                      DynamicPredicate* dp = PredAddr.getDynamicPred();
+                      if (!initializeDPcall(dp, arity, PC))
+                        {
+                          BACKTRACK;
+                        }
+                    }
+                  else if (PredAddr.type() == PredCode::ESCAPE_PRED)
+                    {
+                      code->updateCallInstruction(PC -
+                                                  SIZE_OF_CALL_PREDICATE_INSTR,
+                                                  CALL_ESCAPE, (CodeLoc)start);
+                      
+                      HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
+                    }
+                  else
+                    {
+                      assert(PredAddr.type() == PredCode::STATIC_PRED);
+                      const CodeLoc loc = PredAddr.getPredicate(code); 
+                      code->updateCallInstruction(PC -
+                                                  SIZE_OF_CALL_PREDICATE_INSTR,
+                                                  CALL_ADDRESS, loc);
+                      PC = loc;
+                    }
+                }
 	      }
 	  }
 	  VMBREAK; 
@@ -1724,15 +1737,20 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
+                bool gc_ok = true;
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
 		    CodeLoc loc = address - Code::SIZE_OF_HEADER;
 		    getPredAtom(loc);
 		    const word32 arity = getNumber(loc);
-		    gc(arity);
+		    if (!gc(arity))
+                      {
+                        gc_ok = false;
+                        PC = FailedGC();
+                      }
                   }
-		PC = address;
+		if (gc_ok) PC = address;
 	      }
 	  }
 	  VMBREAK; 
@@ -1860,42 +1878,48 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
+                bool gc_ok = true;
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
-		    gc(arity);
+		    if (!gc(arity))
+                      {
+                        gc_ok = false;
+                        PC = FailedGC();
+                      }
                   }
-
-		const CodeLoc oldpc = PC;
-		const PredCode PredAddr = predicates->getCode(start);
-		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
-                  {
-		    DynamicPredicate* dp = PredAddr.getDynamicPred();
-		    if (!initializeDPcall(dp, arity, PC))
-		      {
-			BACKTRACK;
-		      }
-		  }
-		else if (PredAddr.type() == PredCode::ESCAPE_PRED)
-		  {
-		    PC = continuationInstr;
-
-		    code->updateCallInstruction(oldpc -
-						SIZE_OF_EXECUTE_PREDICATE_INSTR,
-						EXECUTE_ESCAPE, (CodeLoc)start); 
-
-		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
-		  }
-		else
-		  {
-                    assert(PredAddr.type() == PredCode::STATIC_PRED);
-		    const CodeLoc loc = PredAddr.getPredicate(code);
-		    code->updateCallInstruction(PC -
-						SIZE_OF_EXECUTE_PREDICATE_INSTR,
-						EXECUTE_ADDRESS, loc);
-
-		    PC = loc;
-		  }
+                if (gc_ok) {
+                  const CodeLoc oldpc = PC;
+                  const PredCode PredAddr = predicates->getCode(start);
+                  if (PredAddr.type() == PredCode::DYNAMIC_PRED)
+                    {
+                      DynamicPredicate* dp = PredAddr.getDynamicPred();
+                      if (!initializeDPcall(dp, arity, PC))
+                        {
+                          BACKTRACK;
+                        }
+                    }
+                  else if (PredAddr.type() == PredCode::ESCAPE_PRED)
+                    {
+                      PC = continuationInstr;
+                      
+                      code->updateCallInstruction(oldpc -
+                                                  SIZE_OF_EXECUTE_PREDICATE_INSTR,
+                                                  EXECUTE_ESCAPE, (CodeLoc)start); 
+                      
+                      HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
+                    }
+                  else
+                    {
+                      assert(PredAddr.type() == PredCode::STATIC_PRED);
+                      const CodeLoc loc = PredAddr.getPredicate(code);
+                      code->updateCallInstruction(PC -
+                                                  SIZE_OF_EXECUTE_PREDICATE_INSTR,
+                                                  EXECUTE_ADDRESS, loc);
+                      
+                      PC = loc;
+                    }
+                }
 	      }
 	  }
 	  VMBREAK; 
@@ -1953,16 +1977,20 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
+                bool gc_ok = true;
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
 		    CodeLoc loc = address - Code::SIZE_OF_HEADER;
 		    getPredAtom(loc);
 		    const word32 arity = getNumber(loc);
-		    gc(arity);
+		    if (!gc(arity))
+                      {
+                        gc_ok = false;
+                        PC = FailedGC();
+                      }
                   }
-
-		PC = address;
+                if (gc_ok) PC = address;
 	      }
 	  }
 	  VMBREAK;
@@ -2342,7 +2370,7 @@ Thread::Execute(void)
 	    ConstEntry constant; 
             if (val->isAtom())
 	      {
-		constant.assign(reinterpret_cast<word32>(val), 
+		constant.assign(reinterpret_cast<wordptr>(val), 
 				ConstEntry::ATOM_TYPE);
 	      }
 	    else
@@ -2350,7 +2378,7 @@ Thread::Execute(void)
 		assert(val->isNumber());
                 if (val->isInteger())
                   {
-		    constant.assign((word32)(val->getInteger()),
+		    constant.assign((long)(val->getInteger()),
 				    ConstEntry::INTEGER_TYPE);
                   }
                 else
@@ -2430,7 +2458,7 @@ Thread::Execute(void)
 		  }
 	      }
 			    
-	    StructEntry structure(reinterpret_cast<word32>(func), arity);
+	    StructEntry structure(reinterpret_cast<wordptr>(func), arity);
 	    
 	    const word32 label = CodeStructTable.lookUp(structure);
 
@@ -2488,7 +2516,7 @@ Thread::Execute(void)
 		arity = 0;
 	      }
 	    
-	    StructEntry structure(reinterpret_cast<word32>(q), arity);
+	    StructEntry structure(reinterpret_cast<wordptr>(q), arity);
 	    
 	    const word32 label = CodeQuantTable.lookUp(structure);
 	    if (label == Code::FAIL)
@@ -2560,7 +2588,6 @@ Thread::Execute(void)
 
 	    const word32 n = getNumber(PC);
 	    const word32 i = getRegister(PC);
-	    
 	    Object*& arg1 = PSIGetReg(i);
 
 	    if (status.testFastRetry() &&
@@ -3008,43 +3035,50 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
+                bool gc_ok = true;
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
-                  {
-		    gc(arity);
+                  {		    
+                    if (!gc(arity))
+                      {
+                        gc_ok = false;
+                        PC = FailedGC();
+                      }
                   }
-		Choice* currChoice 
-		  = choiceStack.fetchChoice(currentChoicePoint);
-		int time = currChoice->getTimestamp();
-		if (time == -1)
-		  {
-		    currentChoicePoint = choiceStack.pop(currentChoicePoint);
-		    tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
-		    cutPoint = currentChoicePoint;
-		  }
-		const PredCode PredAddr = predicates->getCode(start);
-		if (PredAddr.type() == PredCode::DYNAMIC_PRED)
-                  {
-		    DynamicPredicate* dp = PredAddr.getDynamicPred();
-		    if (!initializeDPcall(dp, arity, PC))
-		      {
-			BACKTRACK;
-		      }
-		  }
-		else if (PredAddr.type() == PredCode::ESCAPE_PRED)
-		  {
-		    PC = continuationInstr;
+                if (gc_ok) {
+                  Choice* currChoice 
+                    = choiceStack.fetchChoice(currentChoicePoint);
+                  int time = currChoice->getTimestamp();
+                  if (time == -1)
+                    {
+                      currentChoicePoint = choiceStack.pop(currentChoicePoint);
+                      tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+                      cutPoint = currentChoicePoint;
+                    }
+                  const PredCode PredAddr = predicates->getCode(start);
+                  if (PredAddr.type() == PredCode::DYNAMIC_PRED)
+                    {
+                      DynamicPredicate* dp = PredAddr.getDynamicPred();
+                      if (!initializeDPcall(dp, arity, PC))
+                        {
+                          BACKTRACK;
+                        }
+                    }
+                  else if (PredAddr.type() == PredCode::ESCAPE_PRED)
+                    {
+                      PC = continuationInstr;
 
-		    HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
-		  }
-		else
-		  {
-                    assert(PredAddr.type() == PredCode::STATIC_PRED);
-		    const CodeLoc loc = PredAddr.getPredicate(code);
-		    code->updateCallInstruction(PC - SIZE_OF_DB_EXECUTE_PREDICATE_INSTR,
-						DB_EXECUTE_ADDRESS, loc);
-		    PC = loc;
-		  }
+                      HANDLE_ESCAPE(PredAddr.getEscape()(getFInter()));
+                    }
+                  else
+                    {
+                      assert(PredAddr.type() == PredCode::STATIC_PRED);
+                      const CodeLoc loc = PredAddr.getPredicate(code);
+                      code->updateCallInstruction(PC - SIZE_OF_DB_EXECUTE_PREDICATE_INSTR,
+                                                  DB_EXECUTE_ADDRESS, loc);
+                      PC = loc;
+                    }
+                }
 	      }
 	  }
 	  VMBREAK; 
@@ -3100,25 +3134,32 @@ Thread::Execute(void)
 	      }
 	    else
 	      {
+                bool gc_ok = true;
                 if ((heap.doGarbageCollection() || status.testDoGC())
 		    && buffers.isEmpty() && !status.testNeckCutRetry())
                   {
 		    CodeLoc loc = address - Code::SIZE_OF_HEADER;
 		    getPredAtom(loc);
 		    const word32 arity = getNumber(loc);
-		    gc(arity);
+                    if (!gc(arity))
+                      {
+                        gc_ok = false;
+                        PC = FailedGC();
+                      }
                   }
-		Choice* currChoice 
-		  = choiceStack.fetchChoice(currentChoicePoint);
-		int time = currChoice->getTimestamp();
-		if (time == -1)
-		  {
-		    currentChoicePoint = choiceStack.pop(currentChoicePoint);
-		    tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
-		    cutPoint = currentChoicePoint;
-		  }
-		PC = address;
-	      }
+                if (gc_ok) {
+                  Choice* currChoice 
+                    = choiceStack.fetchChoice(currentChoicePoint);
+                  int time = currChoice->getTimestamp();
+                  if (time == -1)
+                    {
+                      currentChoicePoint = choiceStack.pop(currentChoicePoint);
+                      tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+                      cutPoint = currentChoicePoint;
+                    }
+                  PC = address;
+                }
+              }
 	  }
 	  VMBREAK;
 

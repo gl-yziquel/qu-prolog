@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -362,7 +359,7 @@ class OtherTrail
   OtherTrail(word32 size)
     {
       word32 sizeK = size*K;
-      stack = new word32[sizeK];
+      stack = new wordptr[sizeK];
       low = stack;
       high = stack + sizeK;
       top = high;
@@ -548,7 +545,7 @@ class BindingTrail
   BindingTrail(word32 size)
     {
       word32 sizeK = size*K;
-      stack = new word32[sizeK];
+      stack = new wordptr[sizeK];
       low = stack;
       high = stack + sizeK;
       top = high;
@@ -580,7 +577,7 @@ class BindingTrail
     top--;
     if (top <= low)
       Fatal(__FUNCTION__, "Overflow trail");
-    *top = (word32)v;
+    *top = (wordptr)v;
     if (top < low_water) low_water = top;
   }
   
@@ -629,10 +626,10 @@ class BindingTrail
 #ifdef QP_DEBUG
 	heapobject* var = (heapobject*)(*current);
 	if (!gcbits.isSet(var - heap.getBase()))
-	  cerr << hex << "var = " << (u_int)var <<
-	    " var* = " << (u_int)(*var) << 
-	    " var+1* = " << (u_int)(*(var+1)) <<
-	    " var+1** = " << (u_int)(*(heapobject*)(*(var+1))) << dec << endl;
+	  cerr << hex << "var = " << (wordptr)var <<
+	    " var* = " << (wordptr)(*var) << 
+	    " var+1* = " << (wordptr)(*(var+1)) <<
+	    " var+1** = " << (wordptr)(*(heapobject*)(*(var+1))) << dec << endl;
 	assert(gcbits.isSet(var - heap.getBase()));
 #endif	
 	threadGC(current);

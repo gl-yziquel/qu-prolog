@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -309,7 +306,7 @@ Thread::psi_global_state_increment(Object *& object1, Object *& object2)
   
   if (name->hasAssociatedInteger())
     {
-      const int32 intval = name->getAssociatedInteger() + 1;
+      const long intval = name->getAssociatedInteger() + 1;
       name->associateInteger(intval);
       
       object2 = heap.newInteger(intval);      
@@ -348,7 +345,7 @@ Thread::psi_global_state_decrement(Object *& object1, Object *& object2)
   Atom* name = OBJECT_CAST(Atom*, val1);
   if (name->hasAssociatedInteger())
     {
-      const int32 intval = name->getAssociatedInteger() - 1;
+      const long intval = name->getAssociatedInteger() - 1;
       
       name->associateInteger(intval);
       object2 = heap.newInteger(intval);

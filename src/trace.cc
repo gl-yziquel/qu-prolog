@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -152,7 +149,7 @@ Trace::Trace5(const char *s, const int32 x, const int32 y, const int32 z,
 void
 Trace::TraceConst0(AtomTable& atoms, Heap& heap, const char *s, Object* c)
 {
-  cerr << s << "(" << hex << reinterpret_cast<word32>(c) << dec << ") ";
+  cerr << s << "(" << hex << reinterpret_cast<wordptr>(c) << dec << ") ";
   heap.displayTerm(cerr, atoms, c, 0);
 }
 
@@ -161,7 +158,7 @@ Trace::TraceConst1(AtomTable& atoms, Heap& heap,
 		   const char *s, Object* c,
 		   const int32 x)
 {
-  cerr << s << "(" << hex << reinterpret_cast<word32>(c) << ", " << x << dec << ") ";
+  cerr << s << "(" << hex << reinterpret_cast<wordptr>(c) << ", " << x << dec << ") ";
   heap.displayTerm(cerr, atoms, c, 0);
 }
 
@@ -170,7 +167,7 @@ Trace::TraceConst2(AtomTable& atoms, Heap& heap,
 		   const char *s, Object* c,
 		   const int32 x, const int32 y)
 {
-  cerr << s << "(" << hex << reinterpret_cast<word32>(c) << ", " << x << ", " << y << dec << ") ";
+  cerr << s << "(" << hex << reinterpret_cast<wordptr>(c) << ", " << x << ", " << y << dec << ") ";
   heap.displayTerm(cerr, atoms, c, 0);
 }
 
@@ -925,7 +922,7 @@ Trace::TraceInstr(Thread& th,
 	    const CodeLoc address = getCodeLoc(pc);
 	    const word32 n = getNumber(pc);
       
-	    Atom* predicate =  predicates.getPredName((word32)address, &atoms);
+	    Atom* predicate =  predicates.getPredName((wordptr)address, &atoms);
 	    const char *s = predicate->getName();
       
 	    TraceString2("call_escape", s, n);
@@ -960,7 +957,7 @@ Trace::TraceInstr(Thread& th,
 	  {
 	    const CodeLoc address = getCodeLoc(pc);
       
-	    Atom* predicate = predicates.getPredName((word32)address, &atoms);
+	    Atom* predicate = predicates.getPredName((wordptr)address, &atoms);
 	    const char *s = predicate->getName();
       
 	    TraceString1("execute_escape", s);
@@ -975,7 +972,7 @@ Trace::TraceInstr(Thread& th,
 	  {
 	    const CodeLoc address = getCodeLoc(pc);
       
-	    Trace1("jump", (word32)address);
+	    Trace1("jump", (wordptr)address);
 	  }
 	break;
 
@@ -1207,7 +1204,7 @@ Trace::TraceInstr(Thread& th,
             (void)getNumber(pc);
             (void)getAddress(pc);
             const CodeLoc jump = getCodeLoc(pc);
-	    Trace1("db jump", (word32)jump);
+	    Trace1("db jump", (wordptr)jump);
           }
           break;
  

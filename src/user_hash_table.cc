@@ -10,16 +10,16 @@ UserHashTable::~UserHashTable(void) {}
 void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
 {
   int index;
-  word32 sh2;
+  wordptr sh2;
   bool isint;
   if (h2->isInteger())
     {
-      sh2 = (word32)(h2->getInteger());
+      sh2 = (wordptr)(h2->getInteger());
       isint = true;
     }
   else
     {
-      sh2 = (word32)h2;
+      sh2 = (wordptr)h2;
       isint = false;
     }
   // Garbage Collect?
@@ -27,7 +27,7 @@ void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
   {
     garbageCollect();
    } 
-  UserHashEntry* new_entry = new UserHashEntry((word32)h1, sh2, isint);
+  UserHashEntry* new_entry = new UserHashEntry((wordptr)h1, sh2, isint);
   heapobject* old_top = userhashheap->getTop();
   Object* copy = heap.copyTerm(term, *userhashheap);
   heapobject* new_top = userhashheap->getTop();
@@ -65,19 +65,19 @@ void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
 
 bool UserHashState::lookupEntry(Object* h1, Object* h2, Object*& ret, Heap& heap)
 {
-  word32 sh2;
+  wordptr sh2;
   bool isint;
   if (h2->isInteger())
     {
-      sh2 = (word32)(h2->getInteger());
+      sh2 = (wordptr)(h2->getInteger());
       isint = true;
     }
   else
     {
-      sh2 = (word32)h2;
+      sh2 = (wordptr)h2;
       isint = false;
     }
-  UserHashEntry entry((word32)h1, sh2, isint);
+  UserHashEntry entry((wordptr)h1, sh2, isint);
   const int index = hash_table.search(entry);
   if (index == -1) return false;
   Object* val = hash_table.getEntry(index).getValue();
@@ -87,19 +87,19 @@ bool UserHashState::lookupEntry(Object* h1, Object* h2, Object*& ret, Heap& heap
 
 bool UserHashState::removeEntry(Object* h1, Object* h2)
 {
-  word32 sh2;
+  wordptr sh2;
   bool isint;
   if (h2->isInteger())
     {
-      sh2 = (word32)(h2->getInteger());
+      sh2 = (wordptr)(h2->getInteger());
       isint = true;
     }
   else
     {
-      sh2 = (word32)h2;
+      sh2 = (wordptr)h2;
       isint = false;
     }
-  UserHashEntry entry((word32)h1, sh2, isint);
+  UserHashEntry entry((wordptr)h1, sh2, isint);
   const int index = hash_table.search(entry);
   if (index == -1) return false;
   hash_table.remove(index);

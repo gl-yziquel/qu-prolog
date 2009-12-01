@@ -533,15 +533,16 @@ $1:
 	put_y_variable(0, 19)
 	put_y_variable(4, 0)
 	call_predicate('$make_cleanup_cp_call', 1, 6)
-	call_predicate('call_cleanup/2$0', 0, 6)
+	put_constant('$cleanup', 0)
+	pseudo_instr3(40, 0, 24, 25)
+	call_predicate('call_cleanup/2$0', 0, 5)
 	put_y_value(3, 0)
-	call_predicate('thread_symbol', 1, 6)
-	put_structure(3, 0)
+	call_predicate('thread_symbol', 1, 5)
+	put_structure(2, 0)
 	set_constant('$cleanup')
 	set_y_value(3)
 	set_y_value(4)
-	set_y_value(5)
-	call_predicate('assert', 1, 3)
+	call_predicate('asserta', 1, 3)
 	pseudo_instr1(7, 0)
 	get_y_value(0, 0)
 	put_y_value(2, 0)
@@ -577,50 +578,173 @@ end('$make_cleanup_cp_call'/1):
 
 
 
-'$do_cleanup/2$0'/1:
+'$do_cleanup'/2:
+
+
+$1:
+	allocate(4)
+	get_y_variable(0, 0)
+	get_y_variable(3, 1)
+	put_y_variable(1, 19)
+	put_y_variable(2, 0)
+	call_predicate('thread_symbol', 1, 4)
+	put_x_variable(1, 0)
+	put_structure(2, 2)
+	set_constant('$cleanup')
+	set_y_value(2)
+	set_x_value(1)
+	put_structure(2, 3)
+	set_constant('=<')
+	set_y_value(3)
+	set_x_value(1)
+	put_structure(2, 1)
+	set_constant(',')
+	set_x_value(2)
+	set_x_value(3)
+	put_y_value(1, 2)
+	call_predicate('findall', 3, 3)
+	put_y_value(1, 0)
+	put_y_value(2, 1)
+	call_predicate('$cleanup_process_levels', 2, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('call_predicate', 1)
+end('$do_cleanup'/2):
+
+
+
+'$cleanup_process_levels/2$0/1$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	execute_predicate('call', 1)
+
+$2:
+	proceed
+end('$cleanup_process_levels/2$0/1$0'/1):
+
+
+
+'$cleanup_process_levels/2$0'/1:
 
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	call_predicate('call', 1, 1)
+	call_predicate('$cleanup_process_levels/2$0/1$0', 1, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$do_cleanup/2$0'/1):
+end('$cleanup_process_levels/2$0'/1):
 
 
 
-'$do_cleanup'/2:
+'$cleanup_process_levels'/2:
 
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
 	try(2, $1)
 	trust($2)
 
 $1:
-	allocate(4)
-	get_y_variable(3, 1)
-	put_y_variable(1, 19)
-	put_y_variable(0, 19)
-	put_y_variable(2, 0)
-	call_predicate('thread_symbol', 1, 4)
-	put_y_value(2, 0)
-	put_y_value(1, 1)
-	put_y_value(0, 2)
-	call_predicate('$cleanup', 3, 4)
-	pseudo_instr2(2, 23, 21)
-	put_structure(3, 0)
+	get_constant('[]', 0)
+	proceed
+
+$2:
+	get_list(0)
+	allocate(3)
+	unify_y_variable(2)
+	unify_y_variable(1)
+	get_y_variable(0, 1)
+	put_structure(2, 0)
 	set_constant('$cleanup')
-	set_y_value(2)
-	set_y_value(1)
 	set_y_value(0)
-	call_predicate('retract', 1, 1)
-	put_y_value(0, 0)
-	call_predicate('$do_cleanup/2$0', 1, 0)
+	set_y_value(2)
+	call_predicate('retract', 1, 3)
+	put_constant('$cleanup', 1)
+	pseudo_instr3(41, 1, 22, 0)
+	call_predicate('$cleanup_process_levels/2$0', 1, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('$cleanup_process_levels', 2)
+end('$cleanup_process_levels'/2):
+
+
+
+'setup_call_cleanup'/3:
+
+
+$1:
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
+	get_y_level(2)
+	call_predicate('call', 1, 3)
+	cut(2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('call_cleanup', 2)
+end('setup_call_cleanup'/3):
+
+
+
+'$throw_cleanup'/0:
+
+
+$1:
+	pseudo_instr1(7, 0)
+	get_x_variable(1, 0)
+	put_constant('fail', 0)
+	execute_predicate('$do_cleanup', 2)
+end('$throw_cleanup'/0):
+
+
+
+'$query_call2009_12_1_13_30_34_754/0$0'/0:
+
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	put_structure(2, 0)
+	set_constant('/')
+	set_constant('$cleanup')
+	set_integer(2)
+	call_predicate('dynamic', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+end('$query_call2009_12_1_13_30_34_754/0$0'/0):
+
+
+
+'$query_call2009_12_1_13_30_34_754'/0:
+
+	try(0, $1)
+	trust($2)
+
+$1:
+	allocate(0)
+	call_predicate('$query_call2009_12_1_13_30_34_754/0$0', 0, 0)
 	fail
 
 $2:
-	execute_predicate('call_predicate', 1)
-end('$do_cleanup'/2):
+	proceed
+end('$query_call2009_12_1_13_30_34_754'/0):
+
+
+
+'$query'/0:
+
+
+$1:
+	execute_predicate('$query_call2009_12_1_13_30_34_754', 0)
+end('$query'/0):
 
 
 

@@ -1033,9 +1033,44 @@ end('$portray_message_choice_block'/3):
 '$portray_ite'/4:
 
 	try(4, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
+	allocate(5)
+	get_y_variable(2, 0)
+	get_y_variable(1, 2)
+	pseudo_instr1(1, 21)
+	neck_cut
+	put_integer(2, 2)
+	pseudo_instr3(2, 3, 2, 0)
+	get_y_variable(0, 0)
+	put_integer(2, 2)
+	pseudo_instr3(3, 3, 2, 0)
+	get_y_variable(4, 0)
+	put_y_variable(3, 19)
+	put_y_value(2, 0)
+	put_y_value(0, 2)
+	put_constant(' ', 3)
+	call_predicate('$portray_clause_body', 4, 5)
+	put_y_value(2, 0)
+	put_y_value(3, 1)
+	call_predicate('$streamnum', 2, 5)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	call_predicate('$tab', 2, 4)
+	put_integer(59, 0)
+	pseudo_instr2(8, 23, 0)
+	put_integer(10, 0)
+	pseudo_instr2(8, 23, 0)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	put_constant(' ', 3)
+	deallocate
+	execute_predicate('$portray_clause_body', 4)
+
+$2:
 	allocate(8)
 	get_y_variable(3, 0)
 	get_structure(';', 2, 2)
@@ -1095,7 +1130,7 @@ $1:
 	deallocate
 	execute_predicate('$portray_ite', 4)
 
-$2:
+$3:
 	allocate(5)
 	get_y_variable(2, 0)
 	get_y_variable(1, 2)

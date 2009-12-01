@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -122,7 +119,7 @@ Heap::xreg(int i)
 // Create a call_predicate data structure.
 // call_predicate(Pred, Arity, Dealloc)
 //
-word32
+wordptr
 Heap::callpred(Object* t1, int arity)
 {
   Structure* s = newStructure(3);
@@ -130,7 +127,7 @@ Heap::callpred(Object* t1, int arity)
   s->setArgument(1, t1);
   s->setArgument(2, newInteger(arity));
   s->setArgument(3, newVariable());
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
@@ -146,7 +143,7 @@ Heap::callpred(Object* t1, int arity)
 // NOTE: all structures have 4 args - some structures do not need 
 // all args and in this case 'noarg' is used as a filler.
 //
-word32 
+wordptr 
 Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 {
   t1 = t1->variableDereference();
@@ -369,14 +366,14 @@ Heap::getput(Object* t1, Object* t2, bool get, WordArray& life)
 	  assert(false);
 	}
     }
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
 // Create a unify or set structure.
 // Similar to put/get.
 //
-word32 
+wordptr 
 Heap::unifyset(Object* t1, bool get, WordArray& life)
 {
   t1 = t1->variableDereference();
@@ -491,14 +488,14 @@ Heap::unifyset(Object* t1, bool get, WordArray& life)
 	  assert(false);
 	}
     }
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
 // Create a get/put list structure.
 // Same as for get/put.
 //
-word32 
+wordptr 
 Heap::getputlist(Object* t1, bool get, WordArray& life)
 {
   Structure* s = newStructure(4);
@@ -520,13 +517,13 @@ Heap::getputlist(Object* t1, bool get, WordArray& life)
     }
   s->setArgument(4, t1);
   updateLife(life, t1);
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
 // Create a get/put structure structure.
 //
-word32 
+wordptr 
 Heap::getputstruct(Object* t1, int arity, Object* t2, bool get, WordArray& life)
 {
   if (get)
@@ -538,7 +535,7 @@ Heap::getputstruct(Object* t1, int arity, Object* t2, bool get, WordArray& life)
       s->setArgument(3, newInteger(arity));
       s->setArgument(4, t2);
       updateLife(life, t2);
-      return(reinterpret_cast<word32>(s));
+      return(reinterpret_cast<wordptr>(s));
     }
   else
     {
@@ -551,14 +548,14 @@ Heap::getputstruct(Object* t1, int arity, Object* t2, bool get, WordArray& life)
       assert(t2->isVariable());
       OBJECT_CAST(Reference*, t2)->setCollectedFlag();
       updateLife(life, t2);
-      return(reinterpret_cast<word32>(s));
+      return(reinterpret_cast<wordptr>(s));
     }
 }
 
 //
 // Create a get structure_frame structure
 //
-word32 
+wordptr 
 Heap::getstructframe(Object* t1, int arity, WordArray& life)
 {
   Structure* s = newStructure(4);
@@ -568,13 +565,13 @@ Heap::getstructframe(Object* t1, int arity, WordArray& life)
   s->setArgument(3, newInteger(arity));
   s->setArgument(4, t1);
   updateLife(life, t1);
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
 // Create a put quant structure.
 //
-word32 
+wordptr 
 Heap::putquant(Object* t1, WordArray& life)
 {
   Structure* s = newStructure(4);
@@ -586,13 +583,13 @@ Heap::putquant(Object* t1, WordArray& life)
   assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
   updateLife(life, t1);
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 // 
 // Create a put sub structure.
 //
-word32 
+wordptr 
 Heap::putsub(Object* t1, int size, WordArray& life)
 {
   Structure* s = newStructure(4);
@@ -604,13 +601,13 @@ Heap::putsub(Object* t1, int size, WordArray& life)
   assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
   updateLife(life, t1);
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
 // Create a put empty sub structure.
 //
-word32
+wordptr
 Heap::putemptysub(Object* t1, WordArray& life)
 {
   Structure* s = newStructure(4);
@@ -622,13 +619,13 @@ Heap::putemptysub(Object* t1, WordArray& life)
   assert(t1->isVariable());
   OBJECT_CAST(Reference*, t1)->setCollectedFlag();
   updateLife(life, t1);
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 //
 // Create a put sub term structure.
 //
-word32
+wordptr
 Heap::putsubterm(Object* t1, Object* t2, WordArray& life)
 {
   Structure* s = newStructure(4);
@@ -643,7 +640,7 @@ Heap::putsubterm(Object* t1, Object* t2, WordArray& life)
   OBJECT_CAST(Reference*, t2)->setCollectedFlag();
   updateLife(life, t2);
   updateLife(life, t1);
-  return(reinterpret_cast<word32>(s));
+  return(reinterpret_cast<wordptr>(s));
 }
 
 // 
@@ -917,7 +914,7 @@ Heap::varunify(Object* a, Object* b, WordArray& unravelArray, WordArray& life)
           Structure* fstr = newStructure(1);
           fstr->setFunctor(AtomTable::failure);
           fstr->setArgument(1, AtomTable::failure);
-	  unravelArray.addEntry(reinterpret_cast<word32>(fstr));
+	  unravelArray.addEntry(reinterpret_cast<wordptr>(fstr));
 	  return;
 	}
       varunify(afun, bfun, unravelArray, life);
@@ -1088,7 +1085,7 @@ Heap::goalStructSpread(Object* oldarg, Object* newarg, WordArray& unravelArray, 
 	    Structure* checkb = newStructure(1);
 	    checkb->setFunctor(AtomTable::checkBinder);
 	    checkb->setArgument(1, newbv);
-	    unravelArray.addEntry(reinterpret_cast<word32>(checkb));
+	    unravelArray.addEntry(reinterpret_cast<wordptr>(checkb));
 	    updateLife(life, newbv);
 	  }
 	    
@@ -1323,7 +1320,7 @@ Heap::unravelHead(Object* head, WordArray& unravelArray, WordArray& life)
       Structure* start = newStructure(1);
       start->setFunctor(AtomTable::start);
       start->setArgument(1, newInteger(0));
-      life.addEntry(reinterpret_cast<word32>(start));
+      life.addEntry(reinterpret_cast<wordptr>(start));
       return;
     }
 
@@ -1335,7 +1332,7 @@ Heap::unravelHead(Object* head, WordArray& unravelArray, WordArray& life)
   Structure* start = newStructure(1);
   start->setFunctor(AtomTable::start);
   start->setArgument(1, newInteger(arity));
-  life.addEntry(reinterpret_cast<word32>(start));
+  life.addEntry(reinterpret_cast<wordptr>(start));
 
   for (int i = 1; i <= arity; i++)
     { 
@@ -1370,7 +1367,7 @@ Heap::goalSpread(Object* goal, WordArray& unravelArray, WordArray& life)
   if (is_piarg(goal, x, y))
     {
       unravelArray.addEntry(getput(x, y, false, life));
-      unravelArray.addEntry(reinterpret_cast<word32>(goal));
+      unravelArray.addEntry(reinterpret_cast<wordptr>(goal));
     }
   else if (is_pieq(goal, x))
     {
@@ -1381,16 +1378,16 @@ Heap::goalSpread(Object* goal, WordArray& unravelArray, WordArray& life)
       Structure* fstr = newStructure(1);
       fstr->setFunctor(AtomTable::failure);
       fstr->setArgument(1, AtomTable::failure);
-      unravelArray.addEntry(reinterpret_cast<word32>(fstr)); 
+      unravelArray.addEntry(reinterpret_cast<wordptr>(fstr)); 
     }
   else if (escape_builtin(goal, life))
     {
-      unravelArray.addEntry(reinterpret_cast<word32>(goal));
+      unravelArray.addEntry(reinterpret_cast<wordptr>(goal));
     }
   else if (goal->isConstant())
     {
       unravelArray.addEntry(callpred(goal, 0));
-      life.addEntry(reinterpret_cast<word32>(newInteger(0)));
+      life.addEntry(reinterpret_cast<wordptr>(newInteger(0)));
     }
   else
     {
@@ -1426,7 +1423,7 @@ Heap::goalSpread(Object* goal, WordArray& unravelArray, WordArray& life)
 	    }
 	}
       unravelArray.addEntry(callpred(goalstr->getFunctor(), arity));
-      life.addEntry(reinterpret_cast<word32>(newInteger(arity)));
+      life.addEntry(reinterpret_cast<wordptr>(newInteger(arity)));
     }
 }
 

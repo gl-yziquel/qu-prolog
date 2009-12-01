@@ -186,6 +186,7 @@ end('debug'/0):
 
 $1:
 	allocate(0)
+	call_predicate('nodebug', 0, 0)
 	call_predicate('start_debug_thread_gui', 0, 0)
 	put_structure(6, 0)
 	set_constant('$debug_state')
@@ -644,6 +645,7 @@ end('trace'/0):
 
 $1:
 	allocate(0)
+	call_predicate('nodebug', 0, 0)
 	call_predicate('start_debug_thread_gui', 0, 0)
 	put_structure(6, 0)
 	set_constant('$debug_state')

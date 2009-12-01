@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -135,7 +132,7 @@ Thread::psi_make_iterator(Object *& reference_cell)
 
   Structure* iterstr = heap.newStructure(1);
   iterstr->setFunctor(AtomTable::dollar);
-  iterstr->setArgument(1, heap.newInteger(reinterpret_cast<unsigned> (iter)));
+  iterstr->setArgument(1, heap.newInteger(reinterpret_cast<wordptr> (iter)));
   reference_cell = iterstr;
 
   return RV_SUCCESS;

@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -134,6 +131,7 @@ Thread::psi_functor(Object *& object1, Object *& object2, Object *& object3)
 	    {
 	      OBJECT_CAST(Variable*, val2)->setOccursCheck();
 	    }
+	  assert(arity <= MaxArity);
 	  Structure* str = heap.newStructure(arity);
 	  str->setFunctor(val2);
 	  //
@@ -368,6 +366,7 @@ Thread::psi_put_structure(Object *& object1, Object *& object2,
 	{
 	  OBJECT_CAST(Variable*, val1)->setOccursCheck();
 	}
+	  assert(arity <= MaxArity);
       Structure* str = heap.newStructure(arity);
       str->setFunctor(val1);
       //

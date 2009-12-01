@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -136,7 +133,7 @@ SaveExecutable(const char *file, Code& code, AtomTable& atoms,
   //
   // Open a file for writing.
   //
-  ofstream ostrm(file, ios::out|ios::trunc);
+  ofstream ostrm(file, ios::out|ios::trunc|ios::binary);
   if (ostrm.fail())
     {
       //
@@ -156,7 +153,7 @@ SaveExecutable(const char *file, Code& code, AtomTable& atoms,
       //
       atoms.saveStringTable(ostrm);
       //save the pointer to the beginning of the sring table
-      IntSave<word32>(ostrm, (word32)(atoms.getStringTableBase()));
+      IntSave<wordptr>(ostrm, (wordptr)(atoms.getStringTableBase()));
       atoms.save(ostrm);
       code.save(ostrm, atoms);
       predicates.save(ostrm);
@@ -208,7 +205,6 @@ LoadExecutable(const char *file, Code& code, AtomTable& atoms,
       while (istrm.peek() != EOF)
 	{
 	  magic = IntLoad<word32>(istrm);
-
 	  if (magic == CODE_MAGIC_NUMBER)
             {
               code.load(istrm, atoms);
@@ -220,7 +216,7 @@ LoadExecutable(const char *file, Code& code, AtomTable& atoms,
 	  else if (magic ==  STRING_TABLE_MAGIC_NUMBER)
 	    {
 	      atoms.loadStringTable(istrm);
-	      old_atom_string_base = (char*)(IntLoad<word32>(istrm));
+	      old_atom_string_base = (char*)(IntLoad<wordptr>(istrm));
 	    }
 	  else if (magic ==  ATOM_TABLE_MAGIC_NUMBER)
 	    {

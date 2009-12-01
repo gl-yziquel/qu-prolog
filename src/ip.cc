@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -195,6 +192,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
   size_t array_size;
   if (current_value == NULL) 
     {
+	  assert(ip_array_size <= MaxArity);
       current_value = heap.newStructure(ip_array_size);
       OBJECT_CAST(Structure*, current_value)->setFunctor(AtomTable::arrayIP);
       
@@ -220,7 +218,7 @@ Thread::psi_ip_setA(Object *& object1, Object *& object2, Object *& object3)
   const long offset = 1 +
     static_cast<long>((hash_val->isNumber() ?
       (hash_val->getInteger() & (array_size-1))
-    : ((reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1))));
+    : ((reinterpret_cast<wordptr>(hash_val) >> 2) & (array_size-1))));
 
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
@@ -375,6 +373,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
   size_t array_size;
   if (current_value == NULL)
     {
+	  assert(ip_array_size <= MaxArity);
       current_value = heap.newStructure(ip_array_size);
       OBJECT_CAST(Structure*, current_value)->setFunctor(AtomTable::arrayIP);
       
@@ -400,7 +399,7 @@ Thread::psi_ip_lookupA(Object *& object1, Object *& object2, Object *& object3)
   const int32 offset = 1 +
     static_cast<int32>((hash_val->isNumber()
      ? hash_val->getInteger() & (array_size-1) 
-     : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
+     : (reinterpret_cast<wordptr>(hash_val) >> 2) & (array_size-1)));
   
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();
@@ -547,6 +546,7 @@ Thread::psi_ip_array_clear(Object *& object1)
     {
       array_size = OBJECT_CAST(Structure*, old)->getArity();
     }
+	  assert(ip_array_size <= MaxArity);
   Structure *ip_array_struct = heap.newStructure(array_size);
   ip_array_struct->setFunctor(AtomTable::arrayIP);
   
@@ -606,6 +606,7 @@ Thread::psi_ip_array_init(Object *& object1, Object *& object2)
     } 
 
   // Create new IP array
+	  assert(ip_array_size <= MaxArity);
   Structure *ip_array_struct = heap.newStructure(array_size);
   ip_array_struct->setFunctor(AtomTable::arrayIP);
   
@@ -701,6 +702,7 @@ Thread::psi_ip_lookupA_default(Object *& object1, Object *& object2,
   size_t array_size;
   if (current_value == NULL)
     {
+	  assert(ip_array_size <= MaxArity);
       current_value = heap.newStructure(ip_array_size);
       OBJECT_CAST(Structure*, current_value)->setFunctor(AtomTable::arrayIP);
       
@@ -726,7 +728,7 @@ Thread::psi_ip_lookupA_default(Object *& object1, Object *& object2,
   const int32 offset = 1 +
     static_cast<int32>((hash_val->isNumber()
      ? hash_val->getInteger() & (array_size-1) 
-     : (reinterpret_cast<word32>(hash_val) >> 2) & (array_size-1)));
+     : (reinterpret_cast<wordptr>(hash_val) >> 2) & (array_size-1)));
   
   Object *array_val_list = 
     OBJECT_CAST(Structure*, current_value)->getArgument(offset)->variableDereference();

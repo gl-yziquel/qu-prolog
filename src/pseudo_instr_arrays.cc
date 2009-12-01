@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -77,7 +74,8 @@ pseudo_instr0_data pseudo_instr0_array[] =
 	{&Thread::psi_pedro_deregister,	0,	"psi_pedro_deregister"}, 
 	{&Thread::psi_pedro_is_connected,	0,	"psi_pedro_is_connected"}, 
 	{&Thread::psi_pedro_is_registered,	0,	"psi_pedro_is_registered"}, 
-	{&Thread::psi_pedro_disconnect,	0,	"psi_pedro_disconnect"}
+	{&Thread::psi_pedro_disconnect,	0,	"psi_pedro_disconnect"}, 
+	{&Thread::psi_clear_gc_throw,	0,	"psi_clear_gc_throw"}
 };
 pseudo_instr1_data pseudo_instr1_array[] =
 {

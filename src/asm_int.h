@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -65,6 +62,7 @@
 
 #include "code_block.h"
 #include "int.h"
+#include "config.h"
 
 template <class IntType>
 class ASMInt: public Int<IntType>
@@ -80,7 +78,6 @@ public:
 #else
     const IntType v = this->value;
 #endif
-    
     switch (sizeof(IntType))
       {
       case 1:
@@ -100,14 +97,20 @@ public:
 	  code_block.Put(static_cast<char>((word32)v & 0xff));
 	}
 	break;
-      case sizeof(double):
-        {
-          char w[sizeof(double)];
-          memcpy(w, &v, sizeof(double));
-	  for (u_int i = 0; i < sizeof(double); i++)
-            code_block.Put(w[i]);
-        }
+#if BITS_PER_WORD == 64
+      case 8:
+	{
+	  code_block.Put(static_cast<char>(((wordptr)v >> 56) & 0xff));
+	  code_block.Put(static_cast<char>(((wordptr)v >> 48) & 0xff));
+	  code_block.Put(static_cast<char>(((wordptr)v >> 40) & 0xff));
+	  code_block.Put(static_cast<char>(((wordptr)v >> 32) & 0xff));
+	  code_block.Put(static_cast<char>(((wordptr)v >> 24) & 0xff));
+	  code_block.Put(static_cast<char>(((wordptr)v >> 16) & 0xff));
+	  code_block.Put(static_cast<char>(((wordptr)v >> 8) & 0xff));
+	  code_block.Put(static_cast<char>((wordptr)v & 0xff));
+	}
 	break;
+#endif
       }
   }
   
@@ -134,17 +137,57 @@ public:
 	  code_block.Put(loc++, v & 0xff);
 	}
 	break;
-      case sizeof(double):
-        {
-          char w[sizeof(double)];
-          memcpy(w, &v, sizeof(double));
-	  for (u_int i = 0; i < sizeof(double); i++)
-            {
-              code_block.Put(loc++, w[i]);
-            }
-        }
+#if BITS_PER_WORD == 64
+      case 8:
+	{
+	  code_block.Put(loc++, (((wordptr)v) >> 56) & 0xff);
+	  code_block.Put(loc++, (((wordptr)v) >> 48) & 0xff);
+	  code_block.Put(loc++, (((wordptr)v) >> 40) & 0xff);
+	  code_block.Put(loc++, (((wordptr)v) >> 32) & 0xff);
+	  code_block.Put(loc++, (((wordptr)v) >> 24) & 0xff);
+	  code_block.Put(loc++, (((wordptr)v) >> 16) & 0xff);
+	  code_block.Put(loc++, (((wordptr)v) >> 8) & 0xff);
+	  code_block.Put(loc++, ((wordptr)v) & 0xff);
+	}
 	break;
+#endif
       }
+  }
+};
+
+// Separate type because double is the same size as wordptr
+// on 64-bit systems.
+template <class IntType>
+class ASMDouble: public Int<IntType>
+{
+public:
+  ASMDouble(const IntType v,
+	    const int m = 0) : Int<IntType>(v, m) { }
+
+  void Put(CodeBlock& code_block) const
+  {
+#ifdef WIN32
+    const IntType v = value;
+#else
+    const IntType v = this->value;
+#endif
+    
+    char w[sizeof(double)];
+    memcpy(w, &v, sizeof(double));
+    for (u_int i = 0; i < sizeof(double); i++)
+      code_block.Put(w[i]);
+  }
+  
+  void Put(CodeBlockLoc loc, CodeBlock& code_block) const
+  {
+    const IntType v = this->value;
+    
+    char w[sizeof(double)];
+    memcpy(w, &v, sizeof(double));
+    for (u_int i = 0; i < sizeof(double); i++)
+    {
+      code_block.Put(loc++, w[i]);
+    }
   }
 };
 

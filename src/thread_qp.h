@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -141,6 +138,7 @@ private:
   BlockStatus block_status;
   RestartStatus restart_status;
   word32 minCleanupCP;
+  bool doing_gc_throw;
 
   void InitThread(void);
 
@@ -239,6 +237,10 @@ public:
   void resetCleanupMinCP() { minCleanupCP = 0xFFFF; }
 
   word32*  getCleanupMinCPAddr() { return &minCleanupCP; }
+
+  void setDoingGCThrow(bool v) { doing_gc_throw = v; }
+
+  bool isDoingGCThrow(void) { return doing_gc_throw; }
 
   ThreadCondition::ThreadConditionValue Condition() const 
   { return thread_condition.Condition(); }

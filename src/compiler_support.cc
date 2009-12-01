@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -97,7 +94,7 @@ build_lifetime(WordArray& life, xreglife& xregisters, WordArray& varregisters)
 	  else if (estruct->getFunctor() == AtomTable::xreg)
 	    {
 	      assert(estruct->getArgument(1)->variableDereference()->isNumber());
-	      int xreg = estruct->getArgument(1)->variableDereference()->getInteger();
+	      long xreg = estruct->getArgument(1)->variableDereference()->getInteger();
 	      xregisters.add(xreg, offset);
 	      continue;
 	    }
@@ -178,14 +175,14 @@ updateLife(WordArray& life, Object* t)
   t = t->variableDereference();
   if (t->isVariable())
     {
-      life.addEntry(reinterpret_cast<word32>(t));
+      life.addEntry(reinterpret_cast<wordptr>(t));
     }
   else if (t->isStructure())
     {
       Structure* st = OBJECT_CAST(Structure*, t);
       if (st->getArity() == 1 && st->getFunctor() == AtomTable::xreg)
 	{
-	  life.addEntry(reinterpret_cast<word32>(t));
+	  life.addEntry(reinterpret_cast<wordptr>(t));
 	}
     }
 }
@@ -194,7 +191,7 @@ updateLife(WordArray& life, Object* t)
 // Test if the supplied term is of the form '$xreg'(A).
 // It is assumed A is an integer and is returned if the test succeeds.
 //
-bool is_xreg(Object* arg, int& reg)
+bool is_xreg(Object* arg, long& reg)
 {
   if (!arg->isStructure())
     {
@@ -229,7 +226,7 @@ bool is_yreg(Object* arg)
 // Assumes input is of the form '$yreg'(A,..)
 // and A is a number.
 //
-int yreg_num(Object* reg)
+long yreg_num(Object* reg)
 {
   assert(reg->isStructure());
   Structure* regstr = OBJECT_CAST(Structure*, reg);
@@ -281,7 +278,7 @@ prefer_registers_aux(WordArray& unravel, xreglife& xregisters,
 	  assert(istruct->getArity() == 4);
 	  Object* arg1 = istruct->getArgument(3)->variableDereference();
 	  Object* arg2 = istruct->getArgument(4)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (arg1->isVariable() && is_xreg(arg2, reg))
 	    {
 	      Variable* var = OBJECT_CAST(Variable*, arg1);
@@ -301,7 +298,7 @@ prefer_registers_aux(WordArray& unravel, xreglife& xregisters,
 	  assert(istruct->getArity() == 4);
 	  Object* arg1 = istruct->getArgument(3)->variableDereference();
 	  Object* arg2 = istruct->getArgument(4)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (arg1->isVariable() && is_xreg(arg2, reg))
 	    {
 	      Variable* var = OBJECT_CAST(Variable*, arg1);
@@ -352,7 +349,7 @@ void make_live(Object* reg, Object* other, Object** xreg_life)
       Object* arg = regstr->getArgument(1)->variableDereference();
       assert(arg->isInteger());
       assert(arg->getInteger() >= 0);
-      assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
+      assert((u_long)(arg->getInteger()) < NUMBER_X_REGISTERS);
       xreg_life[arg->getInteger()] = other;
     }
   else
@@ -375,7 +372,7 @@ void make_dead(Object* reg, Object** xreg_life)
       Object* arg = regstr->getArgument(1)->variableDereference();
       assert(arg->isInteger());
       assert(arg->getInteger() >= 0);
-      assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
+      assert((u_long)(arg->getInteger()) < NUMBER_X_REGISTERS);
       xreg_life[arg->getInteger()] = AtomTable::failure;
     }
 }
@@ -404,7 +401,7 @@ bool is_live(Object* reg, Object* other, Object** xreg_life)
       Object* arg = regstr->getArgument(1)->variableDereference();
       assert(arg->isInteger());
       assert(arg->getInteger() >= 0);
-      assert((u_int)(arg->getInteger()) < NUMBER_X_REGISTERS);
+      assert((u_long)(arg->getInteger()) < NUMBER_X_REGISTERS);
       if (other == AtomTable::failure)
 	{
 	  return (xreg_life[arg->getInteger()] == other);
@@ -568,10 +565,10 @@ alloc_needed(Object* i)
 // Determine the "register number" used for the register arguments
 // of pseudo instructions.
 //
-int psi_reg(Object* arg)
+long psi_reg(Object* arg)
 {
   arg = arg->variableDereference();
-  int reg;
+  long reg;
   if (is_xreg(arg, reg))
     {
       return reg;
@@ -642,7 +639,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	{
 	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  int reg;
+	  long reg;
 	  assert(is_xreg(arg1, reg));
 	  (void)is_xreg(arg1, reg);
 	  *stream << "\tcheck_binder("; 
@@ -683,7 +680,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	{
 	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (is_xreg(arg1, reg))
 	    {
 	      *stream << "\tget_x_level("; 
@@ -797,7 +794,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	{
 	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (is_xreg(arg1, reg))
 	    {
 	      *stream << "\tunify_x_ref("; 
@@ -820,7 +817,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	  Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	  *stream << "\tput_";
-	  int reg1, reg2;
+	  long reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      if (arg3->isInteger())
@@ -982,7 +979,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	  Object* arg4 = tstruct->getArgument(4)->variableDereference();
 	  *stream << "\tget_";
-	  int reg1, reg2;
+	  long reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      if (arg3->isInteger())
@@ -1107,7 +1104,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	  *stream << "\tunify_";
-	  int reg1;
+	  long reg1;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      if (arg3->isInteger())
@@ -1195,7 +1192,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	  *stream << "\tset_";
-	  int reg1;
+	  long reg1;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      if (arg3->isInteger())
@@ -1313,7 +1310,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	  Object* arg4 = tstruct->getArgument(4)->variableDereference();
-	  int reg1, reg2;
+	  long reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      assert(is_xreg(arg4, reg2));
@@ -1522,7 +1519,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
 	  Object* arg4 = tstruct->getArgument(4)->variableDereference();
-	  int reg1, reg2;
+	  long reg1, reg2;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      assert(is_xreg(arg4, reg2));
@@ -1694,7 +1691,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
-	  int reg1;
+	  long reg1;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      if (arg3->isAtom())
@@ -1787,7 +1784,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
 	  Object* arg2 = tstruct->getArgument(2)->variableDereference();
 	  Object* arg3 = tstruct->getArgument(3)->variableDereference();
-	  int reg1;
+	  long reg1;
 	  if (arg1 == AtomTable::constant)
 	    {
 	      if (arg3->isAtom())
@@ -1956,7 +1953,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	{
 	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  int reg;
+	  long reg;
 	  assert(is_xreg(arg1, reg));
 	  (void)is_xreg(arg1, reg);
 	  updateInstruction(pc, CHECK_BINDER);
@@ -2003,7 +2000,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	{
 	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (is_xreg(arg1, reg))
 	    {
 	      updateInstruction(pc, GET_X_LEVEL);
@@ -2126,7 +2123,7 @@ CodeLoc dumpInstructions(WordArray& instrs)
 	{
 	  assert(tstruct->getArity() == 1);
 	  Object* arg1 = tstruct->getArgument(1)->variableDereference();
-	  int reg;
+	  long reg;
 	  if (is_xreg(arg1, reg))
 	    {
 	      updateInstruction(pc, UNIFY_X_REF);

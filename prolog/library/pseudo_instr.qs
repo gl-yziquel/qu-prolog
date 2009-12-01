@@ -1,11 +1,11 @@
 '$psi0_decl'/5:
 
-	switch_on_term(0, $18, 'fail', 'fail', 'fail', 'fail', $17)
-
-$17:
-	switch_on_constant(0, 32, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16])
+	switch_on_term(0, $19, 'fail', 'fail', 'fail', 'fail', $18)
 
 $18:
+	switch_on_constant(0, 64, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17])
+
+$19:
 	try(5, $1)
 	retry($2)
 	retry($3)
@@ -21,7 +21,8 @@ $18:
 	retry($13)
 	retry($14)
 	retry($15)
-	trust($16)
+	retry($16)
+	trust($17)
 
 $1:
 	get_integer(0, 0)
@@ -180,6 +181,16 @@ $16:
 	get_constant('[]', 3)
 	get_list(4)
 	unify_constant('pedro_disconnect')
+	unify_constant('[]')
+	proceed
+
+$17:
+	get_integer(16, 0)
+	get_constant('$clear_gc_throw', 1)
+	get_constant('psi_clear_gc_throw', 2)
+	get_constant('[]', 3)
+	get_list(4)
+	unify_constant('$clear_gc_throw')
 	unify_constant('[]')
 	proceed
 end('$psi0_decl'/5):
@@ -9287,7 +9298,7 @@ end('$psi5_decl'/10):
 
 
 
-'$query_pseudo_instr2009_3_25_13_46_30_199/0$0'/0:
+'$query_pseudo_instr2009_12_1_13_30_40_287/0$0'/0:
 
 
 $1:
@@ -9300,11 +9311,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2009_3_25_13_46_30_199/0$0'/0):
+end('$query_pseudo_instr2009_12_1_13_30_40_287/0$0'/0):
 
 
 
-'$query_pseudo_instr2009_3_25_13_46_30_199/0$1'/0:
+'$query_pseudo_instr2009_12_1_13_30_40_287/0$1'/0:
 
 
 $1:
@@ -9317,11 +9328,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2009_3_25_13_46_30_199/0$1'/0):
+end('$query_pseudo_instr2009_12_1_13_30_40_287/0$1'/0):
 
 
 
-'$query_pseudo_instr2009_3_25_13_46_30_199/0$2'/0:
+'$query_pseudo_instr2009_12_1_13_30_40_287/0$2'/0:
 
 
 $1:
@@ -9334,11 +9345,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2009_3_25_13_46_30_199/0$2'/0):
+end('$query_pseudo_instr2009_12_1_13_30_40_287/0$2'/0):
 
 
 
-'$query_pseudo_instr2009_3_25_13_46_30_199'/0:
+'$query_pseudo_instr2009_12_1_13_30_40_287'/0:
 
 	try(0, $1)
 	retry($2)
@@ -9347,22 +9358,22 @@ end('$query_pseudo_instr2009_3_25_13_46_30_199/0$2'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2009_3_25_13_46_30_199/0$0', 0, 0)
+	call_predicate('$query_pseudo_instr2009_12_1_13_30_40_287/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2009_3_25_13_46_30_199/0$1', 0, 0)
+	call_predicate('$query_pseudo_instr2009_12_1_13_30_40_287/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2009_3_25_13_46_30_199/0$2', 0, 0)
+	call_predicate('$query_pseudo_instr2009_12_1_13_30_40_287/0$2', 0, 0)
 	fail
 
 $4:
 	proceed
-end('$query_pseudo_instr2009_3_25_13_46_30_199'/0):
+end('$query_pseudo_instr2009_12_1_13_30_40_287'/0):
 
 
 
@@ -9370,7 +9381,7 @@ end('$query_pseudo_instr2009_3_25_13_46_30_199'/0):
 
 
 $1:
-	execute_predicate('$query_pseudo_instr2009_3_25_13_46_30_199', 0)
+	execute_predicate('$query_pseudo_instr2009_12_1_13_30_40_287', 0)
 end('$query'/0):
 
 

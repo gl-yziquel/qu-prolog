@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -51,8 +48,6 @@
 // 
 // 
 // For information on commercial use of this software contact ITEE.
-// 
-// ##Copyright##
 // 
 // ##Copyright##
 //
@@ -97,6 +92,7 @@ public:
   // constructur, otherwise you'll probably get a premature end of stream!
   Int(istream& istrm, const int m = 0) : type(m)
   {
+#if BITS_PER_WORD != 64
     if (sizeof(IntType) == sizeof(double))
       {
         u_char w[sizeof(double)];
@@ -114,6 +110,7 @@ public:
          memcpy(&value, w, sizeof(double));
        }
      else
+#endif
        {
          IntType v = 0;
     
@@ -148,6 +145,7 @@ public:
 
   virtual ostream& Save(ostream& ostrm) const
     {
+#if BITS_PER_WORD != 64
       if (sizeof(IntType) == sizeof(double))
           {
             u_char w[sizeof(double)];
@@ -159,12 +157,13 @@ public:
               return ostrm;
            }
          else
+#endif
            {
               IntType v = Value();
       
               for (size_t i = sizeof(IntType); i > 0; i--)
 	        {
-	          const u_char c = (u_char) ((word32)v >> (8 * (i - 1))) & 0xff;
+	          const u_char c = (u_char) ((wordptr)v >> (8 * (i - 1))) & 0xff;
 	          ostrm << c;
 	        }
       
@@ -234,6 +233,11 @@ UnsignedMax(const IntType)
     case 4:
       return (IntType)UINT_MAX;
       break;
+#if BITS_PER_WORD == 64
+    case 8:
+      return (IntType)ULONG_MAX;
+      break;
+#endif
     default:
       return 0;
       break;
@@ -255,6 +259,11 @@ SignedMax(const IntType)
     case 4:
       return INT_MAX;
       break;
+#if BITS_PER_WORD == 64
+    case 8:
+      return (IntType)LONG_MAX;
+      break;
+#endif
     }
 }
 
@@ -273,6 +282,11 @@ SignedMin(const IntType)
     case 4:
       return INT_MIN;
       break;
+#if BITS_PER_WORD == 64
+    case 8:
+      return (IntType)LONG_MIN;
+      break;
+#endif
     }
 }
 

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -174,6 +171,17 @@ Thread::UndefinedPred(Object* goal)
   return(Exception(str));
 }
 
+//
+// Create the call throw(out_of_heap)
+//
+CodeLoc
+Thread::FailedGC(void)
+{
+  X[0] = AtomTable::out_of_heap;
+  return(predicates->getCode(predicates->lookUp(AtomTable::throw_call,
+                                1, atoms, code)).getPredicate(code));
+
+}
 
 //
 // Build a call to fast_retry_delays

@@ -582,7 +582,7 @@ void write_term(Object* term, int prec, ostringstream& strm)
 	  strm << var->getName()->getName();
 	}
 	else {
-	  strm << '_' << (uint)var;
+	  strm << '_' << (wordptr)var;
 	}
 	break;
       }

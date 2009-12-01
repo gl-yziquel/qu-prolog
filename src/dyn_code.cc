@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -92,7 +89,7 @@ CodeLoc getFirstUnretractedClause(CodeLoc code)
 Thread::ReturnValue
 Thread::psi_code_top(Object*& object1)
 {
-  object1 = heap.newInteger(reinterpret_cast<word32>(code->getTop()));
+  object1 = heap.newInteger(reinterpret_cast<wordptr>(code->getTop()));
   
   return(RV_SUCCESS);
 }
@@ -294,7 +291,7 @@ Thread::psi_get_entry(Object*& object1, Object*& object2, Object*& object3)
   LinkedClause* clause = (LinkedClause*)(val2->getInteger());
   CodeLoc pc = clause->getCodeBlock()->getCode();
   
-  object1 = heap.newInteger(reinterpret_cast<word32>(pc));
+  object1 = heap.newInteger(reinterpret_cast<wordptr>(pc));
   object3 = heap.newInteger(0);
   return(RV_SUCCESS);
 }
@@ -603,7 +600,7 @@ Thread::psi_get_dynamic_chain(Object*& object1, Object*& object2)
   start->aquire();
   RefObject r(start, NULL);
   refTrail.trail(r);
-  object2 = heap.newInteger(reinterpret_cast<word32>(start));
+  object2 = heap.newInteger(reinterpret_cast<wordptr>(start));
 #endif
   return RV_SUCCESS;
 }
@@ -676,7 +673,7 @@ Thread::psi_get_first_clause(Object*& object1, Object*& object2,
     {
       return RV_FAIL;
     }
-  object3 = heap.newInteger(reinterpret_cast<word32>(clause));
+  object3 = heap.newInteger(reinterpret_cast<wordptr>(clause));
   otherTrail.push(dp);
   dp->aquire();
   LinkedClause* next_clause = clause->nextNextAlive(time); 
@@ -717,7 +714,7 @@ Thread::psi_get_next_clause(Object*& object1, Object*& object2,
       return RV_FAIL;
     }
 
-  object3 = heap.newInteger(reinterpret_cast<word32>(next));
+  object3 = heap.newInteger(reinterpret_cast<wordptr>(next));
   next = next->nextNextAlive(time);
   if (next == NULL)
     {

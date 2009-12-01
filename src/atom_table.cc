@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -13,9 +13,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -188,6 +185,7 @@ Atom *AtomTable::asin;
 Atom *AtomTable::acos;
 Atom *AtomTable::atan;
 Atom *AtomTable::log;
+Atom *AtomTable::int64;
 
 
 Atom *AtomTable::stream_user;
@@ -212,6 +210,8 @@ Atom *AtomTable::undefined_predicate;
 Atom *AtomTable::recoverable;
 Atom *AtomTable::retry_woken_delays;
 Atom *AtomTable::exception;
+Atom *AtomTable::throw_call;
+Atom *AtomTable::out_of_heap;
 Atom *AtomTable::call_exception;
 Atom *AtomTable::default_atom;
 Atom *AtomTable::signal_exception;
@@ -295,7 +295,8 @@ AtomTable::add(const char *string)
       //
       // Add the new entry.
       //
-      entry.setStringTablePtr(stringTable.add(string));
+      char* ptr = stringTable.add(string);
+      entry.setStringTablePtr(ptr);
     }
 
   //
@@ -325,7 +326,7 @@ AtomTable::atomToBool(Object* c)
 void 
 AtomTable::shiftStringPtrs(char* old_string_base)
 {
-  int offset = stringTable.getString(0) - old_string_base;
+  long offset = stringTable.getString(0) - old_string_base;
 
   for (u_int i = 0; i < size(); i++)
     {

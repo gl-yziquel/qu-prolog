@@ -140,6 +140,8 @@ UPPER [A-Z]
 
 [-/+*<=>#@$\\^&~`:.?!;]+  { *val = atoms->add(yytext); return TERM_TOKEN; }
 
+"{}"  { *val = atoms->add(yytext); return TERM_TOKEN; }
+
 "\n" { return NEWLINE_TOKEN; }
 [ \t]+
 

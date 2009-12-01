@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -260,7 +257,7 @@ template <class StoredType>
 void
 PageTable<StoredType>::loadArea(istream& istrm, const PageLoc start)
 {
-  const size_t ReadSize = IntLoad<size_t>(istrm);
+  const word32 ReadSize = IntLoad<word32>(istrm);
   if (ReadSize > allocatedSize)
     {
       //
@@ -269,7 +266,7 @@ PageTable<StoredType>::loadArea(istream& istrm, const PageLoc start)
       FatalS(__FUNCTION__, "wrong size for ", getAreaName());
     }
 
-  readData(istrm, getAreaName(), static_cast<word32>(ReadSize), start);
+  readData(istrm, getAreaName(), ReadSize, start);
 }
 
 #endif	// PAGE_TABLE_H

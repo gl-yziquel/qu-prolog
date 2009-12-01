@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2004
+// Copyright (C) 2000-2009 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -12,9 +12,6 @@
 // The Qu-Prolog System and Documentation  
 // 
 // COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Copyright 2000-2004 by The University of Queensland, 
-// Queensland 4072 Australia
 // 
 // Permission to use, copy and distribute this software and associated
 // documentation for any non-commercial purpose and without fee is hereby 
@@ -137,7 +134,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
 {
   Object* pterm = term->variableDereference();
   const u_int argTag = pterm->tTag();
-  word32 t, v;
+  wordptr t, v;
   
   switch (argTag)
     {
@@ -150,7 +147,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
     case Object::tObjVar:
       {
 	// cannot discriminate between obvars
-	t = static_cast<word32>(argTag); 
+	t = static_cast<wordptr>(argTag); 
 	v = 0;  
       }
       break;
@@ -168,7 +165,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
 	if (str->getFunctor()->isAtom())
           {
             t = argTag;
- 	    v = reinterpret_cast<word32>(str->getFunctor());
+ 	    v = reinterpret_cast<wordptr>(str->getFunctor());
           }
         else
           {
@@ -184,7 +181,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
 	if (quant->getQuantifier()->isAtom())
           {
             t = argTag;
- 	    v = reinterpret_cast<word32>(quant->getQuantifier());
+ 	    v = reinterpret_cast<wordptr>(quant->getQuantifier());
           }
         else
           {
@@ -213,7 +210,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
     case Object::tAtom:
       {
         t = argTag;
-	v = reinterpret_cast<word32>(pterm);
+	v = reinterpret_cast<wordptr>(pterm);
       }
       break;
     case Object::tString:
@@ -240,7 +237,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
 	      if (str->getFunctor()->isAtom())
 		{
 		  t = sargTag;
-		  v = reinterpret_cast<word32>(str->getFunctor());
+		  v = reinterpret_cast<wordptr>(str->getFunctor());
 		}
 	      else
 		{
@@ -257,7 +254,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
 	      if (quant->getQuantifier()->isAtom())
 		{
 		  t = sargTag;
-		  v = reinterpret_cast<word32>(quant->getQuantifier());
+		  v = reinterpret_cast<wordptr>(quant->getQuantifier());
 		}
 	      else
 		{
@@ -282,7 +279,7 @@ DynamicPredicate::makeEntry(Thread &th, Object* term)
 	  case Object::tAtom:
 	    {
 	      t = argTag;
-	      v = reinterpret_cast<word32>(pterm);
+	      v = reinterpret_cast<wordptr>(pterm);
 	    }
 	    break;
 	  case Object::tString:
