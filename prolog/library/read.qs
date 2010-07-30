@@ -4238,7 +4238,7 @@ $4:
 
 $5:
 	get_integer(5, 0)
-	get_constant('token is too long (255 characters max.)', 1)
+	get_constant('token is too long (511 characters max.)', 1)
 	proceed
 
 $6:

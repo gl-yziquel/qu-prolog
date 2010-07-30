@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -62,19 +62,23 @@
 #ifdef WIN32
 #include <io.h>
 #include <direct.h>
+#include <windows.h>
+#include <unistd.h>
 #else
 #include        <unistd.h>
-#endif
 #if defined(FREEBSD) || defined(MACOSX)
 #include        <pthread.h>
 #include        <signal.h>
 #include <sys/wait.h>
 #endif //defined(FREEBSD) || defined(MACOSX)
+#endif
+
+#include <sys/stat.h>
 
 extern AtomTable *atoms;
 
 extern	"C"	int mkstemp(char *);
-
+#ifndef WIN32
 #if defined(FREEBSD) || defined(MACOSX)
 extern char **environ;
 int bsd_system (char *command) {
@@ -105,6 +109,16 @@ int bsd_system (char *command) {
 }
 
 #endif //defined(FREEBSD) || defined(MACOSX)
+#endif
+
+#ifdef WIN32
+void do_async_command(void* arg)
+{
+  system((char*)arg);
+}
+
+
+#endif
 
 //
 // psi_system(constant, var).
@@ -118,7 +132,23 @@ Thread::psi_system(Object *& object1, Object *& object2)
   Object* val1 = heap.dereference(object1);
 
   assert(val1->isAtom());
-
+#ifdef WIN32
+  char* cmd = OBJECT_CAST(Atom*, val1)->getName();
+  int len = strlen(cmd);
+  if (len == 0) {
+    return (RV_SUCCESS);
+  }
+  bool async;
+  if (cmd[len-1] == '&') {
+    cmd[len-1] = '\0';
+    _beginthread(do_async_command,NULL,(void*)cmd);
+    object2 = heap.newInteger(0);
+  }
+  else {
+    object2 = 
+      heap.newInteger(system(OBJECT_CAST(Atom*, val1)->getName()));
+  }
+#else
 #if defined(FREEBSD) || defined(MACOSX)
   object2 = 
     heap.newInteger(bsd_system(OBJECT_CAST(Atom*, val1)->getName()));
@@ -126,7 +156,7 @@ Thread::psi_system(Object *& object1, Object *& object2)
   object2 = 
     heap.newInteger(system(OBJECT_CAST(Atom*, val1)->getName()));
 #endif //defined(FREEBSD) || defined(MACOSX)
-
+#endif
   return (RV_SUCCESS);
 }
 
@@ -361,16 +391,8 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 {
   Object* time_arg = heap.dereference(time_obj);
   Object* time_struct_arg = heap.dereference(time_struct);
-  if (time_struct_arg->isVariable())
+  if (time_arg->isInteger())
     {
-      if (time_arg->isVariable())
-	{
-	  PSI_ERROR_RETURN(EV_INST, 1);
-	}
-      if (!time_arg->isInteger())
-	{
-	  PSI_ERROR_RETURN(EV_TYPE, 1);
-	}
       time_t etime = (time_t)time_arg->getInteger();
       struct tm *tmtime = localtime(&etime);
       Structure* t_struct = heap.newStructure(7);
@@ -385,12 +407,8 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 
       return BOOL_TO_RV(unify(t_struct, time_struct_arg));
     }
-  else
+  if (time_arg->isVariable())
     {
-      if (!time_arg->isVariable() && !time_arg->isInteger())
-	{
-	  PSI_ERROR_RETURN(EV_TYPE, 1);
-	}
       if (!time_struct_arg->isStructure())
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
@@ -454,6 +472,7 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
       Object* timet = heap.newInteger(static_cast<long>(etime));
       return BOOL_TO_RV(unify(time_arg, timet));
     }
+  PSI_ERROR_RETURN(EV_INST, 1);
 }
 
 // @user
@@ -608,7 +627,31 @@ Thread::psi_strerror(Object *& errno_arg, Object *& string_arg)
   return RV_SUCCESS;
 }
 
+// call stat function
+Thread::ReturnValue
+Thread::psi_stat(Object *& object1, Object *& object2)
+{  
 
+  Object* val1 = heap.dereference(object1);
+  assert(val1->isAtom());
+
+  string filename = OBJECT_CAST(Atom*, val1)->getName();
+  wordexp(filename);
+  char file[1024];
+  strcpy(file, filename.c_str());
+
+  struct stat stat_buff;
+  if (stat(file, &stat_buff) == -1)
+    return RV_FAIL;
+  Structure* stat_struct = heap.newStructure(2);
+  stat_struct->setFunctor(atoms->add("stat"));
+  stat_struct->setArgument(1, heap.newInteger(stat_buff.st_mtime));
+  stat_struct->setArgument(2, heap.newInteger(stat_buff.st_size));
+  object2 = stat_struct;
+
+  return RV_SUCCESS;
+
+}
 
 
 

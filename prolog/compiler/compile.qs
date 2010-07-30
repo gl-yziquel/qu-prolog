@@ -361,8 +361,31 @@ end('$compileall/4$0'/7):
 
 '$compileall'/4:
 
+	try(4, $1)
+	trust($2)
 
 $1:
+	allocate(5)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_x_variable(0, 3)
+	get_y_level(4)
+	put_y_variable(0, 19)
+	call_predicate('$process_directive', 1, 5)
+	cut(4)
+	put_y_value(3, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	call_predicate('$read_one', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
+	deallocate
+	execute_predicate('$compileall', 4)
+
+$2:
 	allocate(7)
 	get_y_variable(6, 0)
 	get_y_variable(5, 1)
@@ -389,6 +412,99 @@ $1:
 	deallocate
 	execute_predicate('$compileall/4$0', 7)
 end('$compileall'/4):
+
+
+
+'$process_directive'/1:
+
+	switch_on_term(0, $5, 'fail', 'fail', $3, 'fail', 'fail')
+
+$3:
+	switch_on_structure(0, 8, ['$default':'fail', '$'/0:$4, '?-'/1:$1, ':-'/1:$2])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$1:
+	get_structure('?-', 1, 0)
+	unify_x_variable(0)
+	execute_predicate('$process_directive1', 1)
+
+$2:
+	get_structure(':-', 1, 0)
+	unify_x_variable(0)
+	execute_predicate('$process_directive1', 1)
+end('$process_directive'/1):
+
+
+
+'$process_directive1/1$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_variable(0, 0)
+	call_predicate('$is_compiler_call', 1, 1)
+	put_y_value(0, 0)
+	deallocate
+	execute_predicate('call', 1)
+
+$2:
+	proceed
+end('$process_directive1/1$0'/1):
+
+
+
+'$process_directive1/1$1'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$for_compiler_only', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	get_x_variable(1, 0)
+	put_structure(1, 0)
+	set_constant('$query')
+	set_x_value(1)
+	execute_predicate('assert', 1)
+end('$process_directive1/1$1'/1):
+
+
+
+'$process_directive1'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_variable(1, 0)
+	get_y_level(0)
+	call_predicate('$process_directive1/1$0', 1, 2)
+	cut(0)
+	put_y_value(1, 0)
+	call_predicate('$process_directive1/1$1', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	proceed
+end('$process_directive1'/1):
 
 
 
@@ -752,180 +868,39 @@ end('$read_one/3$0'/3):
 
 $1:
 	get_constant('encoded', 1)
-	allocate(4)
-	get_y_variable(2, 0)
+	allocate(3)
 	get_y_variable(1, 2)
 	put_y_variable(0, 1)
-	put_y_variable(3, 2)
-	call_predicate('$read_one/3$0', 3, 4)
-	put_y_value(3, 0)
-	put_x_variable(1, 1)
-	call_predicate('$check_singletons', 2, 3)
+	put_y_variable(2, 2)
+	call_predicate('$read_one/3$0', 3, 3)
 	put_y_value(2, 0)
 	put_y_value(0, 1)
-	put_y_value(1, 3)
-	put_constant('encoded', 2)
+	call_predicate('$check_singletons', 2, 2)
+	put_y_value(1, 0)
+	get_y_value(0, 0)
 	deallocate
-	execute_predicate('$read_one_case', 4)
+	proceed
 
 $2:
 	get_constant('normal', 1)
-	allocate(4)
-	get_y_variable(2, 0)
+	allocate(3)
 	get_y_variable(1, 2)
 	put_y_variable(0, 1)
 	put_structure(1, 3)
 	set_constant('singletons')
-	set_y_variable(3)
+	set_y_variable(2)
 	put_list(2)
 	set_x_value(3)
 	set_constant('[]')
-	call_predicate('read_term', 3, 4)
-	put_y_value(3, 0)
-	put_x_variable(1, 1)
-	call_predicate('$check_singletons', 2, 3)
+	call_predicate('read_term', 3, 3)
 	put_y_value(2, 0)
 	put_y_value(0, 1)
-	put_y_value(1, 3)
-	put_constant('normal', 2)
+	call_predicate('$check_singletons', 2, 2)
+	put_y_value(1, 0)
+	get_y_value(0, 0)
 	deallocate
-	execute_predicate('$read_one_case', 4)
+	proceed
 end('$read_one'/3):
-
-
-
-'$read_one_case/4$0'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	allocate(1)
-	get_y_variable(0, 0)
-	call_predicate('$is_compiler_call', 1, 1)
-	put_y_value(0, 0)
-	deallocate
-	execute_predicate('call', 1)
-
-$2:
-	proceed
-end('$read_one_case/4$0'/1):
-
-
-
-'$read_one_case/4$1'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	allocate(1)
-	get_y_level(0)
-	call_predicate('$for_compiler_only', 1, 1)
-	cut(0)
-	deallocate
-	proceed
-
-$2:
-	get_x_variable(1, 0)
-	put_structure(1, 0)
-	set_constant('$query')
-	set_x_value(1)
-	execute_predicate('assert', 1)
-end('$read_one_case/4$1'/1):
-
-
-
-'$read_one_case/4$2'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	allocate(1)
-	get_y_variable(0, 0)
-	call_predicate('$is_compiler_call', 1, 1)
-	put_y_value(0, 0)
-	deallocate
-	execute_predicate('call', 1)
-
-$2:
-	proceed
-end('$read_one_case/4$2'/1):
-
-
-
-'$read_one_case/4$3'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	allocate(1)
-	get_y_level(0)
-	call_predicate('$for_compiler_only', 1, 1)
-	cut(0)
-	deallocate
-	proceed
-
-$2:
-	get_x_variable(1, 0)
-	put_structure(1, 0)
-	set_constant('$query')
-	set_x_value(1)
-	execute_predicate('assert', 1)
-end('$read_one_case/4$3'/1):
-
-
-
-'$read_one_case'/4:
-
-	try(4, $1)
-	retry($2)
-	trust($3)
-
-$1:
-	allocate(5)
-	get_y_variable(2, 0)
-	get_structure(':-', 1, 1)
-	unify_y_variable(3)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
-	get_y_level(4)
-	put_y_value(3, 0)
-	call_predicate('$read_one_case/4$0', 1, 5)
-	cut(4)
-	put_y_value(3, 0)
-	call_predicate('$read_one_case/4$1', 1, 3)
-	put_y_value(2, 0)
-	put_y_value(1, 1)
-	put_y_value(0, 2)
-	deallocate
-	execute_predicate('$read_one', 3)
-
-$2:
-	allocate(5)
-	get_y_variable(2, 0)
-	get_structure('?-', 1, 1)
-	unify_y_variable(3)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
-	get_y_level(4)
-	put_y_value(3, 0)
-	call_predicate('$read_one_case/4$2', 1, 5)
-	cut(4)
-	put_y_value(3, 0)
-	call_predicate('$read_one_case/4$3', 1, 3)
-	put_y_value(2, 0)
-	put_y_value(1, 1)
-	put_y_value(0, 2)
-	deallocate
-	execute_predicate('$read_one', 3)
-
-$3:
-	get_x_value(1, 3)
-	proceed
-end('$read_one_case'/4):
 
 
 

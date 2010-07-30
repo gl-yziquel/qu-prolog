@@ -350,10 +350,33 @@ end('$get_char3'/3):
 
 
 $1:
-	pseudo_instr1(28, 1)
-	pseudo_instr2(6, 1, 0)
-	proceed
+	get_x_variable(1, 0)
+	pseudo_instr1(28, 0)
+	execute_predicate('put_char', 2)
 end('put_char'/1):
+
+
+
+'put_char'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_variable(0, 1)
+	pseudo_instr1(2, 0)
+	neck_cut
+	put_y_variable(1, 1)
+	call_predicate('$streamnum', 2, 2)
+	pseudo_instr2(6, 21, 20)
+	deallocate
+	proceed
+
+$2:
+	pseudo_instr2(6, 0, 1)
+	proceed
+end('put_char'/2):
 
 
 
@@ -482,10 +505,15 @@ $1:
 	proceed
 
 $2:
-	put_constant(' ', 2)
-	pseudo_instr2(6, 0, 2)
-	pseudo_instr2(70, 1, 2)
-	get_x_variable(1, 2)
+	allocate(2)
+	get_y_variable(0, 0)
+	get_y_variable(1, 1)
+	put_constant(' ', 1)
+	call_predicate('put_char', 2, 2)
+	pseudo_instr2(70, 21, 0)
+	get_x_variable(1, 0)
+	put_y_value(0, 0)
+	deallocate
 	execute_predicate('$tab', 2)
 end('$tab'/2):
 
@@ -1065,10 +1093,33 @@ end('$get_code3'/3):
 
 
 $1:
-	pseudo_instr1(28, 1)
-	pseudo_instr2(8, 1, 0)
-	proceed
+	get_x_variable(1, 0)
+	pseudo_instr1(28, 0)
+	execute_predicate('put_code', 2)
 end('put_code'/1):
+
+
+
+'put_code'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_variable(0, 1)
+	pseudo_instr1(2, 0)
+	neck_cut
+	put_y_variable(1, 1)
+	call_predicate('$streamnum', 2, 2)
+	pseudo_instr2(8, 21, 20)
+	deallocate
+	proceed
+
+$2:
+	pseudo_instr2(8, 0, 1)
+	proceed
+end('put_code'/2):
 
 
 
@@ -1078,8 +1129,7 @@ end('put_code'/1):
 $1:
 	pseudo_instr1(28, 0)
 	put_integer(10, 1)
-	pseudo_instr2(8, 0, 1)
-	proceed
+	execute_predicate('put_code', 2)
 end('nl'/0):
 
 
@@ -1089,8 +1139,7 @@ end('nl'/0):
 
 $1:
 	put_integer(10, 1)
-	pseudo_instr2(8, 0, 1)
-	proceed
+	execute_predicate('put_code', 2)
 end('nl'/1):
 
 

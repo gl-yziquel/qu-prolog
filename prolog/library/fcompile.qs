@@ -363,14 +363,14 @@ $1:
 	get_x_variable(2, 0)
 	get_x_variable(3, 1)
 	put_constant('.ql', 0)
-	put_constant('.qge', 1)
+	put_constant('.qg', 1)
 	execute_predicate('$change_suffix', 4)
 
 $2:
 	get_x_variable(2, 0)
 	get_x_variable(3, 1)
 	put_constant('.pl', 0)
-	put_constant('.qge', 1)
+	put_constant('.qg', 1)
 	execute_predicate('$change_suffix', 4)
 end('$fcompile_files3/7$0'/2):
 
@@ -406,7 +406,7 @@ $1:
 	put_y_value(6, 2)
 	put_y_value(4, 3)
 	put_constant('.qi', 0)
-	put_constant('.qge', 1)
+	put_constant('.qg', 1)
 	call_predicate('$change_suffix', 4, 6)
 	put_y_value(5, 0)
 	put_y_value(4, 1)

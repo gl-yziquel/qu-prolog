@@ -43,6 +43,9 @@ qp \- Qu-Prolog interpreter
 [
 \-g initial-goal
 ]
+[
+\-l initialization-file
+]
 .SH DESCRIPTION
 \f4qp\f1 is the Qu-Prolog interpreter.
 It repeatedly prompts for and solves queries.
@@ -125,6 +128,10 @@ appears as the last switch.
 \-g initial-goal
 .I initial-goal
 will be executed at the start of the interpreter
+.TP
+\-l initialialization-file
+.I initialization-file
+will be loaded before the start of the interpreter
 
 .SH ENVIRONMENT
 .TP 10

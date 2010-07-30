@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -112,6 +112,8 @@ inline int Get(QPStream *InStrm);
 // Put back a character or clear EOF.
 //
 inline void Putback(QPStream *InStrm, const int c);
+
+int32 base_num(QPStream *InStrm, long& Integer, int base);
 
 //
 // ReadCharacter(Stream *InStrm, int8 q)

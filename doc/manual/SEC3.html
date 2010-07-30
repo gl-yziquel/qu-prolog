@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.10 Reference Manual - Built-in Predicates
+Qu-Prolog 8.11 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -483,6 +483,12 @@ and <KBD>user_error</KBD>, or an atom declared by the user
 as an alias for a stream.
 
 <P>Predicates:
+<P><KBD><a name="stat"></a>stat(File, Info)</KBD>
+<BLOCKQUOTE>
+<KBD>Info</KBD> is a structure of the form <KBD>stat(LastModified, Size)</KBD>
+and represents the last time of modification and size of <KBD>File</KBD>.
+<BR><KBD>mode stat(@atom, ?structure)</KBD>
+</BLOCKQUOTE>
 
 <P><KBD><a name="access"></a>access(File, Permission, Result)</KBD>
 
@@ -4317,7 +4323,21 @@ List2 is the result of sorting <KBD>List1</KBD> into the standard order with dup
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="sort"></a>sort(List1, List2, Order)</KBD>
 
+<BLOCKQUOTE>
+List2 is the result of sorting <KBD>List1</KBD> into the order defined by the predicate <KBD>Order</KBD> with duplicates removed. So
+<BR>
+<KBD>sort(List1, List2)</KBD>
+is the same as
+<KBD>sort(List1, List2, '@<')</KBD>
+
+<BR><KBD>mode sort(@closed_list(term), -closed_list(term), @goal)</KBD>
+</BLOCKQUOTE>
+<P><KBD><a name="msort"></a>msort(List1, List2, Order), msort(List1, List2, Order)</KBD>
+<BLOCKQUOTE>
+The same as the above sorts but with duplicates not removed.
+</BLOCKQUOTE>
 
 <!-- Section 3.5 -->
 <H2>
@@ -4624,6 +4644,8 @@ The result of evaulating <KBD>Expression</KBD> unifies with <KBD>Value</KBD>. Th
 <LI>
 <KBD>ceiling</KBD>
 <BR>Ceiling
+<KBD>truncate</KBD>
+<BR>Truncate
 </UL>
 
 <P>
@@ -4962,7 +4984,7 @@ The depth limit for subterm expansion is <KBD>Limit</KBD>.  Subterm expansion wi
 <P>qc -G -R expand expand_eg.ql
 </KBD>
 
-<P>The <KBD>-R</KBD> switch tells the compiler to use <KBD>expand.ql</KBD> (or <KBD>expand.qo</KBD> if it is compiled) for the term expansion rules and the <KBD>-G</KBD> switch tells the compiler to stop after term expansion. The result is that a file <KBD>expand_eg.qge</KBD> will be generated that is an encoded and term expanded version of <KBD>expand_eg.ql</KBD>. Envoking <KBD>qecat expand_eg.qge</KBD> from the UNIX shell will produce the following output.
+<P>The <KBD>-R</KBD> switch tells the compiler to use <KBD>expand.ql</KBD> (or <KBD>expand.qo</KBD> if it is compiled) for the term expansion rules and the <KBD>-G</KBD> switch tells the compiler to stop after term expansion. The result is that a file <KBD>expand_eg.qg</KBD> will be generated that is an encoded and term expanded version of <KBD>expand_eg.ql</KBD>. 
 
 <KBD>
 <P>p(Term, Result) :-
@@ -8265,18 +8287,31 @@ Currently, if the conditions are set to <KBD>false</KBD>,
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_wait_on_goal"></a>thread_wait_on_goal(Goal)</KBD>
-<BR><KBD>thread_wait_on_goal(Goal, PredList)</KBD>
+<BR><KBD>thread_wait_on_goal(Goal, Options)</KBD>
 <BLOCKQUOTE>
-<P>Blocks until the dynamic database is modified and then calls 
-<KBD>Goal</KBD>. It reblocks if the goal fails. The overall behaviour is that
-the thread blocks until <KBD>Goal</KBD> succeeds.
+<P> <KBD>Options</KBD> is a list containing:
+<UL type="disc">
+<LI>at most one occurrence of a term 
+of the form <KBD>preds(PredList)</KBD> where <KBD>PredList</KBD> is 
+a list of terms of the form <KBD>P/N</KBD></LI>
+<LI>at most one occurrence of a term of the form <KBD>wait_for(Secs)</KBD></LI>
+<LI>at most one occurrence of a term of the form <KBD>retry_every(Secs)</KBD></LI>
+<LI>at most one of the above two terms
+</UL>
+<KBD>Goal</KBD> is first tried, and if it succeeds, then 
+<KBD>thread_wait_on_goal</KBD> succeeds. Otherwise, <KBD>thread_wait_on_goal</KBD> blocks and waits for the database to change before retrying <KBD>Goal</KBD>.
+If <KBD>preds(PredList)</KBD> is given as an option then it waits until one
+of the listed predicates change. If <KBD>wait_for(Secs)</KBD> is given and
+<KBD>Goal</KBD> is not successfully retried within the given number of seconds
+then <KBD>thread_wait_on_goal</KBD> fails. If <KBD>retry_every(Secs)</KBD> is
+given then <KBD>Goal</KBD> is retried at least every <KBD>Secs</KBD> seconds,
+even if there is no change to the dynamic database.
 <P> Note that if the supplied goal produces a side-effect and then fails, then
 the side-effect will be produced each time the database is modified.
-<P> If <KBD>PredList</KBD> is given (a list of terms of the form <KBD>P/N</KBD>)
-then this call blocks until at least one of the dynamic predicates given in
-<KBD>PredList</KBD> is modified. 
+Also note that, if <KBD>wait_each(Secs)</KBD> is given, one way the goal could succeed without a change to the database is if the Prolog state changed in another way, for example by the use of random or because of a message or socket event.
+
 <BR><KBD>mode thread_wait_on_goal(+term)</KBD>
-<BR><KBD>mode thread_wait_on_goal(+term, +list(terms))</KBD>
+<BR><KBD>mode thread_wait_on_goal(+term, @list(terms))</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_sleep"></a>thread_sleep(Time_Out)</KBD>

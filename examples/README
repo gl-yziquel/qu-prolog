@@ -26,13 +26,3 @@ router_monitor.ql -
 	A simple monitor for Pedro messages
 
 
-Examples of using QT
-../src/xqp -
-	A directory containing the source code for the xqp interface. It uses pipes
-	to connect stdio of a process (typically a Qu-Prolog process) to a QP 
-	widget.
-../src/xqpdebug -
-	A directory containing the source code for the xqpdebug interface.
-	It uses Pedro communication to connect a thread of a Qu-Prolog 
-        process to a QP widget.
-

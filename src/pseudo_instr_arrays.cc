@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -317,7 +317,8 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_atom_to_string,	1,	"psi_atom_to_string"}, 
 	{&Thread::psi_pedro_connect,	0,	"psi_pedro_connect"}, 
 	{&Thread::psi_pedro_subscribe,	1,	"psi_pedro_subscribe"}, 
-	{&Thread::psi_hash_variable,	1,	"psi_hash_variable"}
+	{&Thread::psi_hash_variable,	1,	"psi_hash_variable"}, 
+	{&Thread::psi_stat,	1,	"psi_stat"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {

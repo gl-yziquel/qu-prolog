@@ -484,13 +484,198 @@ end('halt'/1):
 
 
 
+'current_prolog_flag/2$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_x_variable(1, 2)
+	get_structure('**', 2, 2)
+	unify_integer(2)
+	unify_integer(31)
+	put_integer(0, 2)
+	pseudo_instr2(1, 1, 2)
+	neck_cut
+	put_x_variable(2, 3)
+	get_structure('*', 2, 3)
+	unify_integer(2)
+	unify_x_ref(3)
+	get_structure('-', 2, 3)
+	unify_x_ref(3)
+	unify_integer(1)
+	get_structure('**', 2, 3)
+	unify_integer(2)
+	unify_integer(30)
+	pseudo_instr2(69, 2, 1)
+	get_x_value(0, 1)
+	proceed
+
+$2:
+	put_x_variable(2, 3)
+	get_structure('*', 2, 3)
+	unify_integer(2)
+	unify_x_ref(3)
+	get_structure('-', 2, 3)
+	unify_x_ref(3)
+	unify_integer(1)
+	get_structure('**', 2, 3)
+	unify_integer(2)
+	unify_integer(62)
+	pseudo_instr2(69, 2, 1)
+	get_x_value(0, 1)
+	proceed
+end('current_prolog_flag/2$0'/1):
+
+
+
+'current_prolog_flag/2$1'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	put_x_variable(1, 2)
+	get_structure('**', 2, 2)
+	unify_integer(2)
+	unify_integer(31)
+	put_integer(0, 2)
+	pseudo_instr2(1, 1, 2)
+	neck_cut
+	put_x_variable(2, 3)
+	get_structure('-', 1, 3)
+	unify_x_ref(3)
+	get_structure('+', 2, 3)
+	unify_x_ref(3)
+	unify_integer(1)
+	get_structure('*', 2, 3)
+	unify_integer(2)
+	unify_x_ref(3)
+	get_structure('-', 2, 3)
+	unify_x_ref(3)
+	unify_integer(1)
+	get_structure('**', 2, 3)
+	unify_integer(2)
+	unify_integer(30)
+	pseudo_instr2(0, 1, 2)
+	get_x_value(0, 1)
+	proceed
+
+$2:
+	put_x_variable(2, 3)
+	get_structure('-', 1, 3)
+	unify_x_ref(3)
+	get_structure('+', 2, 3)
+	unify_x_ref(3)
+	unify_integer(1)
+	get_structure('*', 2, 3)
+	unify_integer(2)
+	unify_x_ref(3)
+	get_structure('-', 2, 3)
+	unify_x_ref(3)
+	unify_integer(1)
+	get_structure('**', 2, 3)
+	unify_integer(2)
+	unify_integer(62)
+	pseudo_instr2(0, 1, 2)
+	get_x_value(0, 1)
+	proceed
+end('current_prolog_flag/2$1'/1):
+
+
+
 'current_prolog_flag'/2:
 
+	switch_on_term(0, $11, 'fail', 'fail', 'fail', 'fail', $10)
+
+$10:
+	switch_on_constant(0, 32, ['$default':'fail', 'version':$1, 'dialect':$2, 'version_data':$3, 'unknown':$4, 'integer_rounding_function':$5, 'bounded':$6, 'max_int':$7, 'min_int':$8, 'max_arity':$9])
+
+$11:
+	try(2, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	trust($9)
 
 $1:
 	get_constant('version', 0)
 	get_x_variable(0, 1)
 	execute_predicate('$version', 1)
+
+$2:
+	get_constant('dialect', 0)
+	get_constant('qp', 1)
+	proceed
+
+$3:
+	get_constant('version_data', 0)
+	get_structure('qp', 4, 1)
+	allocate(6)
+	unify_y_variable(3)
+	unify_y_variable(1)
+	unify_integer(0)
+	unify_constant('[]')
+	put_y_variable(4, 19)
+	put_y_variable(2, 19)
+	put_y_variable(0, 19)
+	put_y_variable(5, 0)
+	call_predicate('$version', 1, 6)
+	put_y_value(5, 0)
+	put_y_value(4, 1)
+	call_predicate('name', 2, 5)
+	put_y_value(2, 0)
+	put_list(1)
+	set_integer(46)
+	set_y_value(0)
+	put_y_value(4, 2)
+	call_predicate('append', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	call_predicate('name', 2, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('name', 2)
+
+$4:
+	get_constant('unknown', 0)
+	get_constant('error', 1)
+	proceed
+
+$5:
+	get_constant('integer_rounding_function', 0)
+	get_constant('toward_zero', 1)
+	proceed
+
+$6:
+	get_constant('bounded', 0)
+	get_constant('true', 1)
+	proceed
+
+$7:
+	get_constant('max_int', 0)
+	get_x_variable(0, 1)
+	execute_predicate('current_prolog_flag/2$0', 1)
+
+$8:
+	get_constant('min_int', 0)
+	get_x_variable(0, 1)
+	execute_predicate('current_prolog_flag/2$1', 1)
+
+$9:
+	get_constant('max_arity', 0)
+	put_x_variable(2, 3)
+	get_structure('**', 2, 3)
+	unify_integer(2)
+	unify_integer(23)
+	pseudo_instr2(70, 2, 0)
+	get_x_value(1, 0)
+	proceed
 end('current_prolog_flag'/2):
 
 

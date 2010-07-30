@@ -287,7 +287,7 @@ $2:
 	put_y_variable(3, 2)
 	put_integer(0, 1)
 	call_predicate('$atom_codes_and_length', 3, 4)
-	put_integer(257, 0)
+	put_integer(513, 0)
 	pseudo_instr2(1, 23, 0)
 	cut(2)
 	pseudo_instr2(33, 21, 0)
@@ -1327,7 +1327,7 @@ $4:
 	put_y_variable(3, 2)
 	put_integer(0, 1)
 	call_predicate('$atom_codes_and_length', 3, 4)
-	put_integer(257, 0)
+	put_integer(513, 0)
 	pseudo_instr2(1, 23, 0)
 	cut(2)
 	pseudo_instr2(33, 21, 0)
@@ -1513,6 +1513,65 @@ $8:
 	put_integer(2, 1)
 	execute_predicate('type_exception', 4)
 end('name'/2):
+
+
+
+'numbervars'/3:
+
+
+$1:
+	allocate(3)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	pseudo_instr2(67, 0, 1)
+	get_x_variable(0, 1)
+	put_y_variable(0, 1)
+	call_predicate('reverse', 2, 3)
+	put_y_value(0, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	deallocate
+	execute_predicate('$numbervars', 3)
+end('numbervars'/3):
+
+
+
+'$numbervars'/3:
+
+	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
+
+$4:
+	try(3, $2)
+	trust($3)
+
+$5:
+	try(3, $1)
+	retry($2)
+	trust($3)
+
+$1:
+	get_constant('[]', 0)
+	get_x_value(1, 2)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_variable(3)
+	unify_x_variable(0)
+	pseudo_instr1(4, 3)
+	neck_cut
+	execute_predicate('$numbervars', 3)
+
+$3:
+	get_list(0)
+	unify_x_variable(3)
+	unify_x_variable(0)
+	get_structure('$VAR', 1, 3)
+	unify_x_value(1)
+	pseudo_instr2(69, 1, 3)
+	get_x_variable(1, 3)
+	execute_predicate('$numbervars', 3)
+end('$numbervars'/3):
 
 
 

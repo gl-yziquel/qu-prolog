@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -66,9 +66,9 @@
         typedef int socklen_t;
 
         //We also need to initialise the winsock tcp crud
-        WSADATA wsaData;
-        WORD wVersionRequested = MAKEWORD( 2, 2 );
-        int err = WSAStartup( wVersionRequested, &wsaData );
+        //WSADATA wsaData;
+        // WORD wVersionRequested = MAKEWORD( 2, 2 );
+        //int err = WSAStartup( wVersionRequested, &wsaData );
 
 #else
         #include <sys/time.h>
@@ -1122,8 +1122,10 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
       strcpy(hostname, "127.0.0.1");
       getIPfromifconfig(hostname);
       struct in_addr in;
+      #ifndef WIN32
       in.s_addr = inet_addr(hostname);
       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+      #endif
     }
   if (hp == NULL)
     {
@@ -1166,9 +1168,21 @@ Thread::psi_tcp_host_from_ip_address(Object *& host_arg,
     {
       PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
-
-  host_arg = atoms->add(hp->h_name);
-
+  hostent *hp2 = gethostbyname(hp->h_name);
+  if ((hp2 == NULL) or (ip_address != (u_long)(*(int *)hp->h_addr_list[0])))
+    {
+      char ip_name[50];
+      int p1 = ip_address >> 24;
+      int p2 = (ip_address >> 16) & 0xff;
+      int p3 = (ip_address >> 8) & 0xff;
+      int p4 = ip_address & 0xff;
+      sprintf(ip_name, "%d.%d.%d.%d", p4,p3,p2,p1);
+      host_arg = atoms->add(ip_name);
+    }
+  else
+    {
+      host_arg = atoms->add(hp->h_name);
+    }
   return RV_SUCCESS;
 }
 

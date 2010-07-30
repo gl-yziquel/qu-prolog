@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -64,6 +64,23 @@
 
 #include "debug.h"
 
+#ifdef WIN32
+typedef unsigned char u_char;
+typedef unsigned long u_long;
+typedef unsigned short u_short;
+typedef unsigned int u_int;
+typedef char                    int8;
+typedef u_char                  word8;
+typedef short           int16;
+typedef unsigned short  word16;
+typedef int             int32;
+typedef unsigned int    word32;
+typedef unsigned long         	wordlong;
+typedef unsigned long         	wordptr;
+typedef wordptr                 heapobject;
+typedef word8 	*CodeLoc;
+#else
+
 typedef char			int8;
 typedef u_char			word8;
 typedef SHORT_TYPE		int16;
@@ -74,7 +91,7 @@ typedef unsigned long         	wordlong;
 typedef unsigned long         	wordptr;
 typedef wordptr                 heapobject;
 typedef word8 	*CodeLoc;
-
+#endif
 //
 // Define a K.
 //
@@ -96,7 +113,7 @@ const word32 EMPTY_LOC	= WORD32_MAX;
 //
 const word32 THREAD_TABLE_SIZE = 100;
 
-const word32 ATOM_LENGTH = 256;
+const word32 ATOM_LENGTH = 512;
 const word32 IO_BUF_LENGTH = 2048;
 const word32 NUMBER_OF_BUFFERS = 200;
 

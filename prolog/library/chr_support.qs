@@ -4999,16 +4999,18 @@ $2:
 	get_y_variable(0, 0)
 	pseudo_instr1(28, 0)
 	get_y_variable(1, 0)
-	put_integer(10, 0)
-	pseudo_instr2(8, 21, 0)
-	put_integer(10, 0)
-	pseudo_instr2(8, 21, 0)
+	put_integer(10, 1)
+	call_predicate('put_code', 2, 2)
+	put_y_value(1, 0)
+	put_integer(10, 1)
+	call_predicate('put_code', 2, 2)
 	put_y_value(1, 0)
 	put_constant('constraints:', 1)
 	put_constant('write', 2)
 	call_predicate('$write_t', 3, 2)
-	put_integer(10, 0)
-	pseudo_instr2(8, 21, 0)
+	put_y_value(1, 0)
+	put_integer(10, 1)
+	call_predicate('put_code', 2, 1)
 	put_structure(2, 0)
 	set_constant('member')
 	set_x_variable(1)
@@ -5157,7 +5159,7 @@ end('chr_remove_aux'/1):
 
 
 
-'$query_chr_support2009_12_1_13_30_35_505/0$0'/0:
+'$query_chr_support2010_7_30_11_28_32_396/0$0'/0:
 
 
 $1:
@@ -5171,23 +5173,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_chr_support2009_12_1_13_30_35_505/0$0'/0):
+end('$query_chr_support2010_7_30_11_28_32_396/0$0'/0):
 
 
 
-'$query_chr_support2009_12_1_13_30_35_505'/0:
+'$query_chr_support2010_7_30_11_28_32_396'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_chr_support2009_12_1_13_30_35_505/0$0', 0, 0)
+	call_predicate('$query_chr_support2010_7_30_11_28_32_396/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_chr_support2009_12_1_13_30_35_505'/0):
+end('$query_chr_support2010_7_30_11_28_32_396'/0):
 
 
 
@@ -5195,7 +5197,7 @@ end('$query_chr_support2009_12_1_13_30_35_505'/0):
 
 
 $1:
-	execute_predicate('$query_chr_support2009_12_1_13_30_35_505', 0)
+	execute_predicate('$query_chr_support2010_7_30_11_28_32_396', 0)
 end('$query'/0):
 
 

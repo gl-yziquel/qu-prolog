@@ -3,7 +3,7 @@
 <!-- Created by texi2html 1.56k from main.tex on 30 November 1999 -->
 <!-- Edited by Michael Walters on 30 Novemeber 1999 -->
 
-<TITLE>Qu-Prolog 8.10 Reference Manual - Getting Started</TITLE>
+<TITLE>Qu-Prolog 8.11 Reference Manual - Getting Started</TITLE>
 </HEAD>
 
 <BODY>
@@ -213,9 +213,13 @@ Set the name of this process to
 <KBD>process-symbol</KBD>. 
 </BLOCKQUOTE>
 
+<P><KBD>-l initialization-file</KBD>
+<BLOCKQUOTE>
+Consult <KBD>initialization-file</KBD> before the interpreter starts. 
+</BLOCKQUOTE>
 <P><KBD>-g initial-goal</KBD>
 <BLOCKQUOTE>
-Execute <KBD>initial-goal</KBD> before the interpreter starts. 
+Execute <KBD>initial-goal</KBD> before the interpreter starts but after initialization file is loaded (if any). 
 
 </BLOCKQUOTE>
 
@@ -288,7 +292,7 @@ The output is placed in the corresponding file suffixed <KBD>.qi</KBD>.
 <P><KBD>-G</KBD>
 <BLOCKQUOTE>
 Stop after running the term expander.
-The output is placed in the corresponding file suffixed <KBD>.qge</KBD>. 
+The output is placed in the corresponding file suffixed <KBD>.qg</KBD>. 
 </BLOCKQUOTE>
 
 <P><KBD>-R file</KBD>

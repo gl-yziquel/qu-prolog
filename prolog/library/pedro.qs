@@ -2,8 +2,8 @@
 
 
 $1:
-	put_integer(4550, 0)
-	put_constant('localhost', 1)
+	put_constant('localhost', 0)
+	put_integer(4550, 1)
 	execute_predicate('pedro_connect', 2)
 end('pedro_connect'/0):
 
@@ -13,17 +13,50 @@ end('pedro_connect'/0):
 
 
 $1:
-	get_x_variable(1, 0)
-	put_integer(4550, 0)
+	put_integer(4550, 1)
 	execute_predicate('pedro_connect', 2)
 end('pedro_connect'/1):
+
+
+
+'pedro_connect/2$0'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(3, 0)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('pedro_connect/2$0'/1):
+
+
+
+'pedro_connect/2$1'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(2, 0)
+	neck_cut
+	fail
+
+$2:
+	proceed
+end('pedro_connect/2$1'/1):
 
 
 
 'pedro_connect'/2:
 
 	try(2, $1)
-	trust($2)
+	retry($2)
+	retry($3)
+	trust($4)
 
 $1:
 	pseudo_instr0(13)
@@ -34,8 +67,64 @@ $1:
 	fail
 
 $2:
-	pseudo_instr2(124, 0, 1)
+	pseudo_instr1(3, 1)
+	pseudo_instr1(2, 0)
+	neck_cut
+	pseudo_instr2(124, 1, 0)
 	proceed
+
+$3:
+	allocate(2)
+	get_y_variable(1, 0)
+	get_y_variable(0, 1)
+	put_y_value(0, 0)
+	call_predicate('pedro_connect/2$0', 1, 2)
+	put_structure(2, 0)
+	set_constant('pedro_connect')
+	set_y_value(1)
+	set_y_value(0)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('integer')
+	put_structure(2, 3)
+	set_constant('pedro_connect')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(2, 1)
+	deallocate
+	execute_predicate('type_exception', 3)
+
+$4:
+	allocate(2)
+	get_y_variable(1, 0)
+	get_y_variable(0, 1)
+	call_predicate('pedro_connect/2$1', 1, 2)
+	put_structure(2, 0)
+	set_constant('pedro_connect')
+	set_y_value(1)
+	set_y_value(0)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('integer')
+	put_structure(2, 3)
+	set_constant('pedro_connect')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(2)
+	set_x_value(3)
+	set_constant('[]')
+	put_integer(1, 1)
+	deallocate
+	execute_predicate('type_exception', 3)
 end('pedro_connect'/2):
 
 

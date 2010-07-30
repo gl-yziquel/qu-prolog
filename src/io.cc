@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -358,7 +358,11 @@ QPifdstream::get_read(void)
   assert(fd != NO_FD);
   char buff[BUFFSIZE];
   // read from fd
+  #ifdef WIN32
+  int buffsize = recv(fd, buff, BUFFSIZE-1, 0);
+  #else
   int buffsize = read(fd, buff, BUFFSIZE-1);
+  #endif
   buff[buffsize] = '\0';
   //reset strin buffer
   stream.str(buff);
@@ -585,7 +589,8 @@ QPofdstream::send(void)
 {
   if (fd == NO_FD) return;
   u_int size = static_cast<u_int>(stream.str().length());
-  u_int res = write(fd, stream.str().data(), size);
+  // WIN CHANGE u_int res = write(fd, stream.str().data(), size);
+  u_int res = ::send(fd, stream.str().data(), size, 0);
   if (res != size) {
 	cerr << "IO:send: can't write to fd" << endl;
   }
@@ -873,11 +878,9 @@ IOManager::reset_std_stream(int stdstrm)
 bool
 is_ready(const int fd, const IOType type)
 {
-#ifndef WIN32
   fd_set fds;
   FD_ZERO(&fds);
   FD_SET(fd, &fds);
-#endif
 
   // Set up the time value to indicate a poll
   timeval tv = { 0, 0 };
@@ -886,26 +889,12 @@ is_ready(const int fd, const IOType type)
   switch (type)
     {
     case IFDSTREAM:
-#ifdef WIN32
-      result = WaitForSingleObject((HANDLE)_get_osfhandle(fd),0);
-#else
-          result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
-#endif
+      result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
       break;
     case OFDSTREAM:
-#ifdef WIN32
-      result = WaitForSingleObject((HANDLE)_get_osfhandle(fd),0);
-#else
       result = select(fd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, &tv);
-#endif
       break;
     case QPSOCKET:
-#ifdef WIN32
-  // Windows will do a select on a socket, but on nothing else. Bizarre, hey?
-      fd_set fds;
-      FD_ZERO(&fds);
-      FD_SET(fd, &fds);
-#endif
       result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
       break;
     default:
@@ -915,8 +904,7 @@ is_ready(const int fd, const IOType type)
     }
 
 #ifdef DEBUG_IO
-  cerr.form("%s result = %ld FD_ISSET(%ld, ...) = %ld\n",
-	    __FUNCTION__, result, fd, FD_ISSET(fd, &fds));
+  cerr << __FUNCTION__ << "result = " << result << " FD_ISSET(%ld, ...) = " << FD_ISSET(fd, &fds) << '\n';
 #endif
 #ifdef WIN32
   if (result == 0 || result == 128)

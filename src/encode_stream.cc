@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -138,7 +138,6 @@ Thread::psi_encoded_read(Object *& stream_arg, Object *& term_arg,
 		atoms->atomToBool(argRN),
 		names,
 		object_variable_names_arg);
-  
   return BOOL_TO_RV(er.Success());
 }
 

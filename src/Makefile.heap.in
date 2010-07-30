@@ -21,7 +21,8 @@ export SOURCES.heap = \
 	unify.cc \
 	unravel.cc \
 	user_hash_table.cc \
-	yield.cc
+	yield.cc \
+        WinXGetopt.cc
 
 export BASES.heap	= $(basename $(SOURCES.heap))
 export OBJECTS.heap = $(addsuffix .o,$(BASES.heap))

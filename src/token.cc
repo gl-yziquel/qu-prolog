@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -66,7 +66,6 @@
 #ifdef WIN32
 #include <conio.h>
 #include "qem.h"
-extern int* sigint_pipe;
 #endif
 
 extern AtomTable *atoms;
@@ -346,20 +345,7 @@ Thread::Get(QPStream *InStrm)
     {
       InStrm->newline();
     }
-#ifdef WIN32
-  //We read from the pipe here instead of in scheduler.cc
-  //and change the eof (-1 to a newline (10)
-  if (c == -1)
-    {
-      char buff[128];
-      if (!_eof(sigint_pipe[0]))
-        {
-	  read(sigint_pipe[0], buff, 120);
-	  if (buff[0] == 'a')
-	    c = 10;
-	}
-    }		    
-#endif
+
   return(c);
 }
 
@@ -647,6 +633,38 @@ Thread::ReadCharacter(QPStream *InStrm, const signed char q, long& Integer)
     }
 } 
 
+int32 Thread::base_num(QPStream *InStrm, long& Integer, int base)
+{
+  Integer = 0;
+  long BaseMax = MAX_LONG / base;
+  long BaseDigit = MAX_LONG % base;
+  int c = Get(InStrm);
+  int digit = DigVal(c);
+  while (digit < base)
+    {
+      if ((Integer > BaseMax) || 
+          ((Integer == BaseMax) &&
+           digit > BaseDigit))
+        {
+          RecoverNumber(InStrm, base);
+          SyntaxError(Integer, INT_OVERFLOW);
+          return(ERROR_TOKEN);
+        }
+      Integer = base * Integer + digit;
+      c = Get(InStrm);
+      digit = DigVal(c);
+    }
+  if (digit != 99) 
+    {
+      RecoverNumber(InStrm, base);
+      SyntaxError(Integer, INT_OVERFLOW);
+      return(ERROR_TOKEN);
+    }
+  Putback(InStrm, c);
+  return(NUMBER_TOKEN); 
+
+}
+
 //
 // GetToken() reads a single token from the input stream and returns the
 // token type.  The value of the token is stored in one of the
@@ -674,8 +692,41 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
       // 1. positive decimal integers: a string of decimal digits. 
       // 2. positive based integers: base'number.
       //
+      if (DigVal(c) == 0)
+        {
+          c  = Get(InStrm);
+          if (c == 'b')
+            {
+              return base_num(InStrm, Integer, 2);
+            }
+          else if (c == 'o')
+            {
+              return base_num(InStrm, Integer, 8);
+            }
+          else if (c == 'x')
+            {
+              return base_num(InStrm, Integer, 16);
+            }
+          else if (c =='\'')
+	    {
+	      //
+	      // 0'c is a charater code.
+	      //
+	      n = ReadCharacter(InStrm, QUOTE, Integer);
+	      
+	      if (n == -1)
+		{
+		  return(ERROR_TOKEN);
+		}
+	      else
+		{
+		  Integer = ((n == 0) ? QUOTE : (n));
+		  return(NUMBER_TOKEN);
+		}
+	    }
+        } 
       Integer = 0;
-      do 
+      while (InType(c) == DIGIT)
 	{
 	  digit = DigVal(c);
 	  if ((Integer > (long) MAX_LONG_LIMIT) ||
@@ -696,7 +747,7 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
 	    }
 	  Integer = 10 * Integer + digit;
 	  c = Get(InStrm);
-	} while (InType(c) == DIGIT);
+	}
       
       if (c == TERMIN)
         {
@@ -765,24 +816,7 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
 	  //
 	  base = Integer;
 	  
-	  if (base == 0)
-	    {
-	      //
-	      // 0'c is a charater code.
-	      //
-	      n = ReadCharacter(InStrm, QUOTE, Integer);
-	      
-	      if (n == -1)
-		{
-		  return(ERROR_TOKEN);
-		}
-	      else
-		{
-		  Integer = ((n == 0) ? QUOTE : (n));
-		  return(NUMBER_TOKEN);
-		}
-	    }
-	  else if (base > 36)
+          if (base > 36)
 	    {
 	      SyntaxError(Integer, BAD_RADIX);
 	      return(ERROR_TOKEN);
@@ -826,7 +860,7 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
       do 
 	{
 	  //
-	  // The maximum length for a variable name is 256.
+	  // The maximum length for a variable name is ATOM_LENGTH.
 	  //
 	  if (n-- == 0)  
 	    { 
@@ -855,7 +889,7 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
       do 
 	{
 	  //
-	  // The maximum length for an atom is 256.
+	  // The maximum length for an atom is ATOM_LENGTH.
 	  //
 	  if (n-- == 0)  
 	    { 
@@ -876,7 +910,7 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
       do 
 	{
 	  //
-	  // The maximum length for an atom is 256.
+	  // The maximum length for an atom is ATOM_LENGTH.
 	  //
 	  if (n-- == 0)  
 	    { 

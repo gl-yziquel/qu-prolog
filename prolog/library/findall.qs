@@ -471,7 +471,7 @@ $1:
 	get_list(2)
 	unify_x_value(5)
 	unify_x_variable(2)
-	pseudo_instr2(110, 4, 1)
+	get_x_value(4, 1)
 	neck_cut
 	execute_predicate('$split_bag', 4)
 
@@ -643,6 +643,66 @@ end('sort'/2):
 
 
 
+'sort'/3:
+
+
+$1:
+	allocate(2)
+	get_y_variable(1, 1)
+	put_y_variable(0, 1)
+	call_predicate('$merge_sort', 3, 2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	deallocate
+	execute_predicate('$remove_sorted_duplicates', 2)
+end('sort'/3):
+
+
+
+'msort'/2:
+
+
+$1:
+	put_constant('@<', 2)
+	execute_predicate('$merge_sort', 3)
+end('msort'/2):
+
+
+
+'msort'/3:
+
+
+$1:
+	execute_predicate('$merge_sort', 3)
+end('msort'/3):
+
+
+
+'$key_order'/2:
+
+
+$1:
+	get_structure('-', 2, 0)
+	unify_x_variable(0)
+	unify_void(1)
+	get_structure('-', 2, 1)
+	unify_x_variable(1)
+	unify_void(1)
+	execute_predicate('@<', 2)
+end('$key_order'/2):
+
+
+
+'keysort'/2:
+
+
+$1:
+	put_constant('$key_order', 2)
+	execute_predicate('msort', 3)
+end('keysort'/2):
+
+
+
 '$merge_sort'/3:
 
 
@@ -759,27 +819,19 @@ end('$merge_sort'/5):
 
 $1:
 	get_x_variable(4, 0)
+	get_x_variable(5, 1)
 	get_list(2)
 	unify_x_value(4)
 	unify_x_ref(0)
 	get_list(0)
-	unify_x_value(1)
+	unify_x_value(5)
 	unify_constant('[]')
-	allocate(2)
+	get_x_variable(0, 3)
+	allocate(1)
 	get_y_level(0)
-	put_y_variable(1, 0)
-	put_list(2)
-	set_x_value(1)
-	set_constant('[]')
-	put_list(5)
-	set_x_value(4)
-	set_x_value(2)
-	put_list(1)
-	set_x_value(3)
-	set_x_value(5)
-	call_predicate('=..', 2, 2)
-	put_y_value(1, 0)
-	call_predicate('call_predicate', 1, 1)
+	put_x_value(4, 1)
+	put_x_value(5, 2)
+	call_predicate('call_predicate', 3, 1)
 	cut(0)
 	deallocate
 	proceed
@@ -811,7 +863,7 @@ $5:
 
 $1:
 	get_list(0)
-	allocate(7)
+	allocate(6)
 	unify_y_variable(4)
 	unify_y_variable(3)
 	get_list(1)
@@ -822,19 +874,9 @@ $1:
 	unify_y_variable(1)
 	get_y_variable(0, 3)
 	get_y_level(5)
-	put_y_variable(6, 0)
-	put_list(2)
-	set_y_value(4)
-	set_constant('[]')
-	put_list(3)
-	set_x_value(1)
-	set_x_value(2)
-	put_list(1)
-	set_y_value(0)
-	set_x_value(3)
-	call_predicate('=..', 2, 7)
-	put_y_value(6, 0)
-	call_predicate('call_predicate', 1, 6)
+	put_y_value(0, 0)
+	put_y_value(4, 2)
+	call_predicate('call_predicate', 3, 6)
 	cut(5)
 	put_list(0)
 	set_y_value(4)
@@ -915,15 +957,6 @@ $4:
 	unify_x_variable(1)
 	execute_predicate('$remove_sorted_duplicates', 2)
 end('$remove_sorted_duplicates'/2):
-
-
-
-'sort'/3:
-
-
-$1:
-	execute_predicate('$merge_sort', 3)
-end('sort'/3):
 
 
 

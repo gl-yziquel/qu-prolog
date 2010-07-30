@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -74,18 +74,16 @@ extern PredTab *predicates;
 #include <unistd.h>
 #endif
 
-
+#ifndef WIN32
 #if (defined(FREEBSD) || defined(MACOSX))
 #include        <pthread.h>
 #include        <signal.h>
 #include <sys/wait.h>
 #endif //defined(FREEBSD) || defined(MACOSX)
-
+#endif
 
 #ifndef WIN32
 extern	"C"	int mkstemp(char *);
-#endif
-
 #if (defined(FREEBSD) || defined(MACOSX))
 extern char **environ;
 int local_bsd_system (char *command) {
@@ -116,6 +114,7 @@ int local_bsd_system (char *command) {
 }
 
 #endif //defined(FREEBSD) || defined(MACOSX)
+#endif
 
 //
 // Link and load the object files and libraries.
@@ -214,7 +213,7 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   
 #ifdef WIN32
   //Load the library here
-  if ((handle = reinterpret_cast<void*>(LoadLibrary(atoms->getAtomString(file)))) == NULL)
+  if ((handle = reinterpret_cast<void*>(LoadLibrary(OBJECT_CAST(Atom*,file)->getName()))) == NULL)
     {
       Warning(__FUNCTION__, "Error loading DLL. Check that it exists.");
       return(false);
@@ -242,7 +241,7 @@ Thread::FnAddr(const char *fn) const
   void	*loc;
   
 #ifdef WIN32
-  if ((loc = GetProcAddress((HMODULE)ForeignFile->file(), fn)) == NULL)
+  if ((loc = (void *)GetProcAddress((HMODULE)ForeignFile->file(), fn)) == NULL)
     {
       Warning(__FUNCTION__, "Error loading function");
       return((EscFn)(EMPTY_LOC));

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -61,16 +61,18 @@
         #include <signal.h>
         #define _WINSOCKAPI_
         #include <windows.h>
+        #include <process.h>                          
+        #include <winsock2.h>  
 #else
         #include <unistd.h>
         #include <sys/utsname.h>
+        #include <arpa/inet.h> 
 #endif
 
 #include <fcntl.h>
 
 #include <sys/types.h>
 #include <string.h>
-#include <arpa/inet.h>
 
 #include <stdio.h>
 
@@ -97,6 +99,67 @@
 #include "tcp_qp.h"
 
 const char *Program = "qem";
+
+#ifdef WIN32
+static void handle_sigint(int);
+
+typedef int socklen_t;
+SOCKADDR_IN addr;
+SOCKET PipeOutSock;
+SOCKET PipeInSock;
+void Thread( void* pParams )
+{ 
+  setvbuf(stdin, NULL, _IONBF, 0);
+  PipeOutSock=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+
+  if (connect(PipeOutSock, (SOCKADDR*)(&addr),sizeof(addr))==SOCKET_ERROR)
+    {
+      std::cout<<"client pipe connection failed\n";
+      std::cout<<WSAGetLastError();
+    }
+  SOCKET Socket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+
+  if (connect(Socket, (SOCKADDR*)(&addr),sizeof(addr))==SOCKET_ERROR)
+    {
+      std::cout<<"client connection failed\n";
+      std::cout<<WSAGetLastError();
+    }
+  char buffer[100000];
+  char c;
+  int i;
+  c = -1;
+  while (c == -1) c = getchar();
+  for (;;) {
+    i = 0;
+    buffer[i] = c;
+    if ((c == 4) || (c == 8)) {
+      send(Socket, "\0", 1, 0);
+    } else if (c == 3) {
+      handle_sigint(0);
+    }else {
+      while (c != '\n') {
+        i++;
+        c = getchar();
+        if (c == -1) return;
+        buffer[i] = c;
+      }
+      buffer[i+1] = '\0';
+      send(Socket, buffer, strlen(buffer), 0);
+    }
+    c = getchar();
+    if (c == -1) return;
+  }
+  
+}
+int gettimeofday(struct timeval* tp, void* tzp) {
+    DWORD t;
+    t = timeGetTime();
+    tp->tv_sec = t / 1000;
+    tp->tv_usec = t % 1000;
+    /* 0 indicates that the call succeeded. */
+    return 0;
+}
+#endif
 
 //
 // Handler for out of memory via new
@@ -139,9 +202,29 @@ PedroMessageChannel* pedro_channel = NULL;
 // it when a signal arrives. By putting the read end of the pipe in
 // the file descriptor set of the select, the select will unblock
 // when a signal arrives. 
-int *sigint_pipe;
 
 // SIGINT signal handler
+#ifdef WIN32
+static void
+handle_sigint(int)
+{
+  clearerr(stdin);
+  extern Signals *signals;
+  if (signals != NULL) {
+    char buff[128];
+    buff[0] = 'a';
+    int res = send(PipeOutSock, buff, 1, 0);
+    if (res != 1) cerr << "Signals:  can't write to socket" << res << endl;
+    signals->Increment(SIGINT);
+    signals->Status().setSignals();
+  } else {
+    cerr << "Signals are null" << endl;
+  }
+  (void)signal(SIGINT, handle_sigint);
+}
+#else
+int *sigint_pipe;
+
 static void
 handle_sigint(int)
 {
@@ -158,12 +241,8 @@ handle_sigint(int)
     } else {
       cerr << "Signals are null" << endl;
     }
-#ifdef WIN32
-//Otherwise we can only use the handler once - yet another undoc'd windows oddity
-     (void)signal(SIGINT, handle_sigint);
-#endif
-
 }
+#endif
 
 
 // Most of the data structures are dynamically allocated for 2 reasons:
@@ -174,14 +253,12 @@ main(int32 argc, char** argv)
 {
   // set the out-of-memory handler
   std::set_new_handler(noMoreMemory);
-  //http://www.codersource.net/win32_createnamedpipe.html
-  //http://www-106.ibm.com/developerworks/linux/library/l-rt4/?open&t=grl,l=252,p=pipes
-  //Pipes in windows are 1000x more complex and painful than this.
+
+  // Signal communication structure
+  signals = new Signals;
+
+#ifndef WIN32
   sigint_pipe = new int[2];
-#ifdef WIN32
-  _pipe(sigint_pipe, 256, _O_BINARY);
-//  SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_LINE_INPUT|ENABLE_ECHO_INPUT);
-#else
   int ret = pipe(sigint_pipe);
   if (ret == -1) {
    cerr << "Can't create signal pipe" << endl;
@@ -251,7 +328,7 @@ main(int32 argc, char** argv)
 
   // Set standard in to be non-blocking.
 #ifdef WIN32
-  setvbuf(stdin, NULL, _IONBF, 0);
+  //setvbuf(stdin, NULL, _IONBF, 0);
 #else
   setbuf(stdin, NULL);
 #endif
@@ -260,8 +337,60 @@ main(int32 argc, char** argv)
 //  fflush(stderr);
   setvbuf(stderr, NULL, _IONBF, 0);
 
+
 #ifdef WIN32
-  QPifdstream *current_input_stream = new QPifdstream(_fileno(stdin));
+  WSADATA WsaDat;
+  if(WSAStartup(MAKEWORD(2,2),&WsaDat)!=0)
+    {
+      std::cout<<"WSA Initialization failed!\r\n";
+      WSACleanup();
+      return 0;
+    }
+					
+  SOCKET Socket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+  if(Socket==INVALID_SOCKET)
+    {
+      std::cout<<"Socket creation failed.\r\n";
+      WSACleanup();
+      return 0;
+    }
+  //hostent* host = gethostbyname("");
+
+  SOCKADDR_IN serverInf;				
+  serverInf.sin_family=AF_INET;
+  serverInf.sin_addr.s_addr= htonl(INADDR_LOOPBACK); //((struct in_addr *)(host->h_addr))->s_addr;
+  serverInf.sin_port=0;
+					
+  if(bind(Socket,(SOCKADDR*)(&serverInf),sizeof(serverInf))==SOCKET_ERROR)
+    {
+      std::cout<<"Unable to bind socket!\r\n";
+      WSACleanup();
+      return 0;
+    }
+	
+  if (listen(Socket,5)==SOCKET_ERROR)
+    {
+      std::cout<<"Can't listen\n";
+      return 0;
+    }
+  int length = sizeof(addr);
+  if (getsockname(Socket, (SOCKADDR*)(&addr),&length)==SOCKET_ERROR) {
+    std::cout<<" Can't getsockname\n";
+    return 0;
+  }
+  _beginthread( Thread, 0, NULL );
+				
+  PipeInSock=SOCKET_ERROR;
+  while(PipeInSock==SOCKET_ERROR)
+    {
+      PipeInSock=accept(Socket,NULL,NULL);
+    }
+  SOCKET StdInSock=SOCKET_ERROR;
+  while(StdInSock==SOCKET_ERROR)
+    {
+      StdInSock=accept(Socket,NULL,NULL);
+    }
+  QPifdstream *current_input_stream = new QPifdstream(StdInSock);
 #else
   QPifdstream *current_input_stream = new QPifdstream(fileno(stdin));
 #endif
@@ -282,12 +411,30 @@ main(int32 argc, char** argv)
   failblock[2] = 0;
   failblock[3] = FAIL;
   
-  if (qem_options->InitialGoal() != NULL) {
-    initial_goal = new char[strlen(qem_options->InitialGoal()) + 1];
-    strcpy(initial_goal, qem_options->InitialGoal());
+  if (qem_options->InitialFile() != NULL) {
+    if (qem_options->InitialGoal() != NULL) {
+      int sizeif = strlen(qem_options->InitialFile());
+      int size = strlen(qem_options->InitialGoal()) + sizeif + 6;
+      initial_goal = new char[size];
+      strcpy(initial_goal, "['");
+      strcpy(initial_goal+2, qem_options->InitialFile());
+      strcpy(initial_goal+2+sizeif, "'],");
+      strcpy(initial_goal+2+sizeif+3, qem_options->InitialGoal());
+    }
+    else {
+      int sizeif = strlen(qem_options->InitialFile());
+      initial_goal = new char[sizeif+6];
+      strcpy(initial_goal, "['");
+      strcpy(initial_goal+2, qem_options->InitialFile());
+      strcpy(initial_goal+2+sizeif, "'].");
+    }
   }
+  else if (qem_options->InitialGoal() != NULL) {
+      initial_goal = new char[strlen(qem_options->InitialGoal()) + 1];
+      strcpy(initial_goal, qem_options->InitialGoal());
+    }      
 
-  // Thread table.
+  // Thread table. 
   thread_table = new ThreadTable(qem_options->ThreadTableSize());
   // Build the scheduler.
   scheduler 

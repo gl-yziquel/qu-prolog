@@ -2,13 +2,13 @@
 <HEAD>
 <!-- Created by texi2html 1.56k from main.tex on 30 November 1999 -->
 
-<TITLE>Qu-Prolog 8.10 Reference Manual - Syntax</TITLE>
+<TITLE>Qu-Prolog 8.11 Reference Manual - Syntax</TITLE>
 </HEAD>
 <BODY>
 
 <H1><A NAME="Section2" >2 Syntax</A></H1>
 
-<P>This section describes the concrete syntax of Qu-Prolog 8.10
+<P>This section describes the concrete syntax of Qu-Prolog 8.11
 
 <H2><A NAME="Section2.1">2.1 Constants</A></H2>
 
@@ -136,7 +136,8 @@ One of the following.
 <!-- Section 2.1.2 -->
 <H3><A NAME="Section2.1.2">2.1.2 Numbers</A></H3>
 
-<P>The available range of integers is <KBD>-(2^32)-1</KBD> to <KBD>2^32-1</KBD>.  Integers can be represented in any of the following ways.
+<P>The available range of integers is <KBD>-(2^31-1)</KBD> to <KBD>2^31-1</KBD>
+on a 32 bit machine and <KBD>-(2^63-1)</KBD> to <KBD>2^63-1</KBD> on a 64 bit machine.  Integers can be represented in any of the following ways.
 
 <OL>
 <LI>
@@ -151,6 +152,13 @@ Any sequence of numeric characters.  This method denotes the number in decimal, 
 <BR><KBD>16'A</KBD>
 <BR><KBD>16'a</KBD>
 
+<LI> Binary numbers can also be represented in the form <KBD>0b</KBD> followed
+by binary digits. Similarly octal and hexadecimal numbers can be represented
+by <KBD>0o</KBD> or <KBD>0x</KBD> followed by digits.
+<BR> For example
+<BR><KBD>0b1011</KBD>
+<BR><KBD>0o3170</KBD>
+<BR><KBD>0x3afd</KBD>
 <LI>
 0'<KBD>Character</KBD> gives the character code of <KBD>Character</KBD>.
 <BR>For example,

@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (C) 2000-2009 
+# Copyright (C) 2000-2010 
 #
 # qc:	Qu-Prolog compiler (a la cc and nc)
 #
@@ -47,24 +47,24 @@ usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
 #
 # location of Qu-Prolog project
 #
-PATH=/home/pjr/research/qp_dev/rel/qp8.10/bin:$PATH
+PATH=/home/pjr/research/qp_dev/rel/qp8.11/bin:$PATH
 
 #
 # names of Qu-Prolog binaries
 #
-preprocess=/home/pjr/research/qp_dev/rel/qp8.10/bin/qppp
-expand=/home/pjr/research/qp_dev/rel/qp8.10/bin/qg
-compile=/home/pjr/research/qp_dev/rel/qp8.10/bin/qc1
+preprocess=/home/pjr/research/qp_dev/rel/qp8.11/bin/qppp
+expand=/home/pjr/research/qp_dev/rel/qp8.11/bin/qg
+compile=/home/pjr/research/qp_dev/rel/qp8.11/bin/qc1
 compversion=qup
-assemble=/home/pjr/research/qp_dev/rel/qp8.10/bin/qa
-link=/home/pjr/research/qp_dev/rel/qp8.10/bin/ql
-execute=/home/pjr/research/qp_dev/rel/qp8.10/bin/qem
+assemble=/home/pjr/research/qp_dev/rel/qp8.11/bin/qa
+link=/home/pjr/research/qp_dev/rel/qp8.11/bin/ql
+execute=/home/pjr/research/qp_dev/rel/qp8.11/bin/qem
 
 #
 # Use the line below when dynamic search for libraries is implemented.
 #
 # libqofiles=""
-libqofiles="/home/pjr/research/qp_dev/rel/qp8.10/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp8.10/prolog/library/*.qo"
+libqofiles="/home/pjr/research/qp_dev/rel/qp8.11/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp8.11/prolog/library/*.qo"
 
 qlfiles=""
 qlefiles=""
@@ -174,6 +174,7 @@ while [ $# -gt 0 -a "$1" != "--" ]
 do
 	case "$1" in
 	*.ql)	qlfiles="$qlfiles $1" ;;
+	*.pl)	qlfiles="$qlfiles $1" ;;
 	*.qle)	qlefiles="$qlefiles $1" ;;
 	*.qi)	qifiles="$qifiles $1" ;;
 	*.qg)	qgfiles="$qgfiles $1" ;;
@@ -197,6 +198,7 @@ openfilename=""
 #
 trap "[ -z '\$openfilename' ] || rm -f \$openfilename" 1 2
 
+
 #
 # first pass: preprocess (.ql -> .qi)
 #
@@ -205,15 +207,16 @@ verbose "preprocessing ..."
 for arg in $qlfiles
 do
 	verbose "	$arg"
+        stem=`expr $arg : '\(.*\)\.[^./]*$'`
 
-	stem=`expr $arg : '\(.*\).ql'`
 	openfilename=$stem.qi
-	$preprocess $dflag $Poptions < $stem.ql > $stem.qi || exit 1
+	$preprocess $dflag $Poptions < $arg > $stem.qi || exit 1
 	newqifiles="$newqifiles $stem.qi"
 done
 openfilename=""
 
 $eflag && exit 0
+
 
 #
 # first pass for encoded files: expand (.qle -> .qge)
@@ -223,8 +226,8 @@ verbose "expanding encoded ..."
 for arg in $qlefiles 
 do
 	verbose "	$arg"
+        stem=`expr $arg : '\(.*\)\.[^./]*$'`
 
-	stem=`expr $arg : '\(.*\).qle'`
 	openfilename=$stem.qle
 	$expand $Coptions -- $dflag $Goptions $stem.qle || exit 1
 	newqgefiles="$newqgefiles $stem.qge"
@@ -239,8 +242,8 @@ verbose "expanding ..."
 for arg in $qifiles $newqifiles
 do
 	verbose "	$arg"
+        stem=`expr $arg : '\(.*\)\.[^./]*$'`
 
-	stem=`expr $arg : '\(.*\).qi'`
 	openfilename=$stem.qi
 	if [ "$compversion" = "boot" ]
 	then
@@ -264,8 +267,8 @@ verbose "compiling ..."
 for arg in $qgefiles $newqgefiles
 do
 	verbose "	$arg"
+        stem=`expr $arg : '\(.*\)\.[^./]*$'`
 
-	stem=`expr $arg : '\(.*\).qge'`
 	openfilename=$stem.qs
 	$compile.$compversion $dflag $Coptions $stem.qge || exit 1
 	newqsfiles="$newqsfiles $stem.qs"
@@ -280,8 +283,8 @@ verbose "compiling ..."
 for arg in $qgfiles $newqgfiles
 do
 	verbose "	$arg"
+        stem=`expr $arg : '\(.*\)\.[^./]*$'`
 
-	stem=`expr $arg : '\(.*\).qg'`
 	openfilename=$stem.qs
 	$compile.$compversion $dflag $Coptions $stem.qg || exit 1
 	newqsfiles="$newqsfiles $stem.qs"
@@ -299,8 +302,8 @@ verbose "assembling ..."
 for arg in $qsfiles $newqsfiles
 do
 	verbose "	$arg"
+        stem=`expr $arg : '\(.*\)\.[^./]*$'`
 
-	stem=`expr $arg : '\(.*\).qs'`
 	openfilename=$stem.qo
 	if [ "$execfile" != "a.out" ] && $cflag
 	then

@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (C) 2000-2009 
+ * Copyright (C) 2000-2010 
  * Department of Computer Science and Electrical Engineering, 
  * The University of Queensland
  */
@@ -34,7 +34,7 @@ LabelTable *labels = NULL;
 
 %}
 %union {
-  signed long int number_value;
+  long int_value;
   double double_value;
 
   string *label_name;
@@ -45,7 +45,8 @@ LabelTable *labels = NULL;
 
   ASMInt<Code::InstructionSizedType> *instruction;
   ASMInt<Code::ConstantSizedType> *constant;
-  ASMInt<double> *double_num;
+  ASMDouble<double> *double_num;
+  ASMInt<long> *int_num;
   ASMInt<Code::RegisterSizedType> *reg;
   ASMInt<Code::NumberSizedType> *number;
   ASMInt<Code::AddressSizedType> *address;
@@ -184,11 +185,12 @@ LabelTable *labels = NULL;
 %type <address> address
 %type <constant> constant
 %type <double_num> double_num
+%type <int_num> int_num
 %type <number> number
 %type <reg> reg
 %type <table_size> table_size
 
-%token <number_value> NUMBER_TOKEN
+%token <int_value> INTEGER_TOKEN
 %token <double_value> DOUBLE_TOKEN
 %token <string_value> STRING_TOKEN
 %token <atom_name> ATOM_TOKEN
@@ -242,7 +244,7 @@ predicate_start: atom '/' number ':'
 predicate_end: END_TOKEN '(' atom '/' number ')' ':'
 		{
 		  if ($3->Value() != code_block->Atom() ||
-		      $5->Value() != code_block->Arity())
+		      (u_int)($5->Value()) != code_block->Arity())
 		    {
 		      Fatal(__FUNCTION__, 
 			    "atom or arity mismatch in predicate");
@@ -314,7 +316,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $5->Put(*code_block); delete $5;
 		}
 
-	| put_integer '(' constant ','  reg ')'
+	| put_integer '(' int_num ','  reg ')'
  		{
 		  $1->Put(*code_block); delete $1;
 		  $3->Put(*code_block); delete $3;
@@ -453,7 +455,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $5->Put(*code_block); delete $5;
 		}
 
-	| get_integer '(' constant ',' reg ')'
+	| get_integer '(' int_num ',' reg ')'
 		{
 		  $1->Put(*code_block); delete $1;
 		  $3->Put(*code_block); delete $3;
@@ -558,7 +560,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		}
 
-	| unify_integer '(' constant ')'
+	| unify_integer '(' int_num ')'
 		{
 		  $1->Put(*code_block); delete $1;
 		  $3->Put(*code_block); delete $3;
@@ -653,7 +655,7 @@ instr: put_x_variable '(' reg ',' reg ')'
 		  $3->Put(*code_block); delete $3;
 		}
 
-	| set_integer '(' constant ')'
+	| set_integer '(' int_num ')'
 		{
 		  $1->Put(*code_block); delete $1;
 		  $3->Put(*code_block); delete $3;
@@ -1080,8 +1082,9 @@ atom_arity_label: ATOM_TOKEN '/' number ':' switch_label
 		  ASMInt<Code::ConstantSizedType> *atom = 
 		    new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
 
-
-		  $$ = new AtomArityLabel(atom, $3, $5);
+		  long arity = $3->Value();
+		  ASMInt<Code::NumberSizedType> *carity = new ASMInt<Code::NumberSizedType>(arity);
+		  $$ = new AtomArityLabel(atom, carity, $5);
 
 		}
 	;
@@ -1120,7 +1123,9 @@ quantifier_label: ATOM_TOKEN '/' number ':' switch_label
 		  ASMInt<Code::ConstantSizedType> *atom = 
 		    new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
 
-		  $$ = new AtomArityLabel(atom, $3, $5);
+		  long arity = $3->Value();
+		  ASMInt<Code::NumberSizedType> *carity = new ASMInt<Code::NumberSizedType>(arity);
+		  $$ = new AtomArityLabel(atom, carity, $5);
 		}
 	;
 
@@ -1142,54 +1147,72 @@ constant: ATOM_TOKEN
 
 		  $$ = new ASMInt<Code::ConstantSizedType>(loc, ConstEntry::ATOM_TYPE);
 		}
-	| NUMBER_TOKEN
+	| INTEGER_TOKEN
+                {
+                  $$ = new ASMInt<Code::ConstantSizedType>((Code::ConstantSizedType)($1), ConstEntry::INTEGER_TYPE);
+
+                }
+        | '+' INTEGER_TOKEN
+                {
+                  $$ = new ASMInt<Code::ConstantSizedType>((Code::ConstantSizedType)($2), ConstEntry::INTEGER_TYPE);
+
+                }
+        | '-' INTEGER_TOKEN
+                {
+                  $$ = new ASMInt<Code::ConstantSizedType>((Code::ConstantSizedType)(-$2), ConstEntry::INTEGER_TYPE);
+
+                }
+        ;
+
+number: INTEGER_TOKEN
+		{ 
+		  $$ = new ASMInt<Code::NumberSizedType>($1);
+
+                }
+        ;
+
+int_num: INTEGER_TOKEN
 		{
-		  $$ = new ASMInt<Code::ConstantSizedType>((word32)($1), ConstEntry::INTEGER_TYPE);
+		  $$ = new ASMInt<long>((long)($1), ConstEntry::INTEGER_TYPE);
 
 		}
-	| '+' NUMBER_TOKEN
+	| '+' INTEGER_TOKEN
 		{
-		  $$ = new ASMInt<Code::ConstantSizedType>((word32)($2), ConstEntry::INTEGER_TYPE);
+		  $$ = new ASMInt<long>((long)($2), ConstEntry::INTEGER_TYPE);
 
 		}
-	| '-' NUMBER_TOKEN
+	| '-' INTEGER_TOKEN
 		{
-		  $$ = new ASMInt<Code::ConstantSizedType>((word32)(-$2), ConstEntry::INTEGER_TYPE);
+		  $$ = new ASMInt<long>(-(long)($2), ConstEntry::INTEGER_TYPE);
 
 		}
 	;
 
 double_num: DOUBLE_TOKEN
 		{
-		  $$ = new ASMInt<double>((double)($1), ConstEntry::INTEGER_TYPE);
+		  $$ = new ASMDouble<double>((double)($1), ConstEntry::INTEGER_TYPE);
 
 		}
 	| '+' DOUBLE_TOKEN
 		{
-		  $$ = new ASMInt<double>((double)($2), ConstEntry::INTEGER_TYPE);
+		  $$ = new ASMDouble<double>((double)($2), ConstEntry::INTEGER_TYPE);
 
 		}
 	| '-' DOUBLE_TOKEN
 		{
-		  $$ = new ASMInt<double>((double)(-$2), ConstEntry::INTEGER_TYPE);
-
-		}
-	;
-number: NUMBER_TOKEN
-		{
-		  $$ = new ASMInt<Code::NumberSizedType>($1);
+		  $$ = new ASMDouble<double>((double)(-$2), ConstEntry::INTEGER_TYPE);
 
 		}
 	;
 
-reg: NUMBER_TOKEN
+reg: INTEGER_TOKEN
 		{
 		  $$ = new ASMInt<Code::RegisterSizedType>($1);
 		  
 		}
 	;
 
-address: NUMBER_TOKEN
+address: INTEGER_TOKEN
 		{
 		  $$ = new ASMInt<Code::AddressSizedType>($1);
 
@@ -1204,7 +1227,7 @@ atom: ATOM_TOKEN
 		}
 	;
 
-table_size: NUMBER_TOKEN
+table_size: INTEGER_TOKEN
 		{
 		  $$ = new ASMInt<Code::TableSizeSizedType>($1);
 

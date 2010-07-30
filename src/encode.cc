@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -115,6 +115,11 @@ bool
 EncodeWrite::encodeWriteString(QPStream& stream, char* str)
 {
   word32 length = static_cast<word32>(strlen(str));
+  if (length > 255)
+    {
+      cerr << "Cannot encode strings longer then 255 characters" << endl;
+      return(false);
+    }
   bool result = writeEncodeChar(stream, static_cast<word8>(length));
 
   for (word32 i = 0; i < length; i++)
@@ -134,8 +139,12 @@ EncodeWrite::encodeWriteAtom(QPStream& stream,
 {
   const char *stringbuff = loc->getName();
   word32 length = static_cast<word32>(strlen(stringbuff));
+  if (length > 255)
+    {
+      cerr << "Cannot encode names longer then 255 characters" << endl;
+      return(false);
+    }
   bool result = writeEncodeChar(stream, static_cast<word8>(length));
-
   for (word32 i = 0; i < length; i++)
     {
       result &= writeEncodeChar(stream, stringbuff[i]);
@@ -213,10 +222,24 @@ EncodeWrite::encodeWriteSub(Thread& th,
 bool
 EncodeWrite::writeEncodeNumber(QPStream& stream, const long val)
 {
+#if BITS_PER_WORD == 64
+  return(
+         writeEncodeChar(stream, static_cast<word8>((val & 0xff00000000000000) >> 56)) &&
+	 writeEncodeChar(stream, static_cast<word8>((val & 0x00ff000000000000) >> 48)) &&
+	 writeEncodeChar(stream, static_cast<word8>((val & 0x0000ff0000000000) >> 40)) &&
+	 writeEncodeChar(stream, static_cast<word8>((val & 0x000000ff00000000) >> 32)) &
+         writeEncodeChar(stream, static_cast<word8>((val & 0xff000000) >> 24)) &&
+	 writeEncodeChar(stream, static_cast<word8>((val & 0x00ff0000) >> 16)) &&
+	 writeEncodeChar(stream, static_cast<word8>((val & 0x0000ff00) >> 8)) &&
+	 writeEncodeChar(stream, static_cast<word8>((val & 0x000000ff)))
+         );
+
+#else
   return(writeEncodeChar(stream, static_cast<word8>((val & 0xff000000) >> 24)) &&
 	 writeEncodeChar(stream, static_cast<word8>((val & 0x00ff0000) >> 16)) &&
 	 writeEncodeChar(stream, static_cast<word8>((val & 0x0000ff00) >> 8)) &&
 	 writeEncodeChar(stream, static_cast<word8>((val & 0x000000ff))));
+#endif
 }
 //
 // Encode write a double
@@ -470,6 +493,16 @@ EncodeRead::encodeReadNumber(QPStream& stream, long& num)
   num = (num << 8) | c;
   result &= encodeReadChar(stream, c);
   num = (num << 8) | c;
+#if BITS_PER_WORD == 64
+  result &= encodeReadChar(stream, c);
+  num = (num << 8) | c;
+  result &= encodeReadChar(stream, c);
+  num = (num << 8) | c;
+  result &= encodeReadChar(stream, c);
+  num = (num << 8) | c;
+  result &= encodeReadChar(stream, c);
+  num = (num << 8) | c;
+#endif
   return result;
 }
 //

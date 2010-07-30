@@ -1,16 +1,33 @@
+#ifdef WIN32
+        #include <winsock2.h>
+        #define _WINSOCKAPI_
+        #include <windows.h>
+        typedef int socklen_t;
+
+        //We also need to initialise the winsock tcp crud
+        WSADATA wsaData;
+        WORD wVersionRequested = MAKEWORD( 2, 2 );
+        int err = WSAStartup( wVersionRequested, &wsaData );
+
+#else
+        #include <sys/types.h>
+        #include <netdb.h>
+        #include <sys/socket.h>
+        #include <sys/file.h>
+        #include <sys/ioctl.h>
+        #include <sys/un.h>
+        #include <net/if.h>
+        #include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#endif
+
 
 #include <algorithm>
 #include <string>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 using namespace std;
 
@@ -734,7 +751,8 @@ PedroMessageChannel::ShuffleMessages(void)
       int result = select(fd + 1, &fds, (fd_set *) NULL, (fd_set *) NULL, &tv);
       if (!result || !FD_ISSET(fd, &fds)) return new_msg;
       char buff[1101];
-      ssize_t size = read(fd, buff, 1100);
+      // WIN CHANGE ssize_t size = read(fd, buff, 1100);
+      ssize_t size = recv(fd, buff, 1100, 0);
       buff[size] = '\0';
       in.append(buff);
       new_msg = true;
@@ -920,7 +938,8 @@ PedroMessageChannel::send(string s)
 {
   size_t len = s.length();
   
-  size_t num_written = write(fd, s.c_str(), len);
+  // WIN CHANGE size_t num_written = write(fd, s.c_str(), len);
+  size_t num_written = ::send(fd, s.c_str(), len, 0);
   
   while (num_written != len)
     {
@@ -958,63 +977,127 @@ bool
 PedroMessageChannel::connect(int pedro_port, u_long ip_address)
 {
  
-  // get my host name
-  char hostname[1000];
-  gethostname(hostname, 1000);
-  hostent *hp = gethostbyname(hostname);
-  if (hp == NULL)
-    {
-      // if we can't get host by name then try to use ifconfig
-      strcpy(hostname, "127.0.0.1");
-      getIPfromifconfig(hostname);
-      host = atoms->add(hostname);
-    }
-  // if we can get the host then try to see if
-  // we can get host by address from hp
-  else {
-      struct in_addr in;
-      struct in_addr in_copy;
-      in.s_addr = *(int*)(hp->h_addr);
-      in_copy.s_addr = *(int*)(hp->h_addr);
-      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-      if (hp == NULL) 
-        {
-          // we can't look up name given address so just use dotted IP
-          host = atoms->add(inet_ntoa(in_copy));
-        } 
-      else 
-        {
-          host = atoms->add(hp->h_name);
-        }
+  // // get my host name
+  // char hostname[1000];
+  // gethostname(hostname, 1000);
+  // hostent *hp = gethostbyname(hostname);
+  // if (hp == NULL)
+  //   {
+  //     // if we can't get host by name then try to use ifconfig
+  //     strcpy(hostname, "127.0.0.1");
+  //     getIPfromifconfig(hostname);
+  //     host = atoms->add(hostname);
+  //   }
+  // // if we can get the host then try to see if
+  // // we can get host by address from hp
+  // else {
+  //     struct in_addr in;
+  //     struct in_addr in_copy;
+  //     in.s_addr = *(int*)(hp->h_addr);
+  //     in_copy.s_addr = *(int*)(hp->h_addr);
+  //     hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+  //     if (hp == NULL) 
+  //       {
+  //         // we can't look up name given address so just use dotted IP
+  //         host = atoms->add(inet_ntoa(in_copy));
+  //       } 
+  //     else 
+  //       {
+  //         host = atoms->add(hp->h_name);
+  //       }
+  // }
+
+  // Create a socket to get info
+  int info_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
+  u_short port = ntohs(pedro_port);
+  if (!do_connection(info_fd, port, ip_address)) {
+    close(info_fd);
+    return false;
   }
+  // read info
+  char infobuff[1024];
+  int isize;
+  int ioffset = 0;
+  while (1) {
+    isize = recv(info_fd, infobuff + ioffset, 1000 - ioffset, 0);
+    ioffset += isize;
+    if (ioffset > 1000) {
+      fprintf(stderr, "Can't get info\n");
+      close(info_fd);
+      exit(1);
+    }
+    if (infobuff[ioffset-1] == '\n') {
+      infobuff[ioffset] = '\0';
+      break;
+    }
+  }
+  close(info_fd);
+  int ack_port, data_port;
+  char ipstr[20];
+  if (sscanf(infobuff, "%s %d %d", ipstr, &ack_port, &data_port) != 3) {
+    fprintf(stderr, "Can't read ip and ports\n");
+    exit(1);
+  }
+  ack_port = htons((unsigned short)ack_port);
+  data_port = htons((unsigned short)data_port);
+  unsigned long ipaddr = inet_addr(ipstr);
+  //inet_aton(ipstr, &ipaddr);
 
   // Create a socket connection for ack
   ack_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
-  u_short port = ntohs(pedro_port);
-  if (!do_connection(ack_fd, port, ip_address)) {
+  if (!do_connection(ack_fd, ack_port, ipaddr)) {
     close(ack_fd);
     return false;
   }
 
- 
+  // figure out my IP address
+  struct sockaddr_in add;
+  memset(&add, 0, sizeof(add));
+  socklen_t addr_len = sizeof(add);
+  
+  getsockname(ack_fd, (struct sockaddr *)&add, &addr_len);
+  strcpy(ipstr, inet_ntoa(add.sin_addr));
+  struct in_addr in = add.sin_addr;
+  hostent *hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+  if (hp == NULL) 
+    {
+      // we can't look up name given address so just use dotted IP
+      host = atoms->add(ipstr);
+    } 
+  else 
+    {
+      // check if we can look up the same IP from hostname 
+      hostent *hp2 = gethostbyname(hp->h_name);
+      if ((hp2 == NULL) or !streq(hp->h_name, hp2->h_name))
+        {
+          // no - so use IP address
+          host = atoms->add(ipstr);
+        }
+      else
+        {
+          host = atoms->add(hp->h_name);
+        }
+    }
+
   // create data socket
   fd = ::socket(AF_INET, SOCK_STREAM, 0);
   port = ntohs(pedro_port+1);
-  if (!do_connection(fd, port, ip_address)) {
+  if (!do_connection(fd, data_port, ipaddr)) {
     close(ack_fd);
     close(fd);
     return false;
   }
 
   // get the client ID
-  uint id = (uint)get_ack();
+  u_int id = (u_int)get_ack();
 
   // send the client ID on data socket
   ostringstream strm;
   strm << id << "\n";
   string st = strm.str();
   int len = st.length();
-  int num_written = write(fd, st.c_str(), len);
+  // WIN CHANGE int num_written = write(fd, st.c_str(), len);
+  int num_written = ::send(fd, st.c_str(), len, 0);
   if (num_written != len) {
     fprintf(stderr, "Pedro Connect: Can't send ID\n");
     exit(1);

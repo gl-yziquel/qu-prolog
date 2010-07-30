@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -259,6 +259,7 @@ public:
   static Atom *abs;
   static Atom *round;
   static Atom *floor;
+  static Atom *truncate;
   static Atom *ceiling;
   static Atom *sqrt;
   static Atom *sin;
@@ -466,6 +467,7 @@ public:
     abs = add("abs");
     round = add("round");
     floor = add("floor");
+    truncate = add("truncate");
     ceiling = add("ceiling");
     sqrt = add("sqrt");
     sin = add("sin");

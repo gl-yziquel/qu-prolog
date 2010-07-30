@@ -18,8 +18,7 @@ end('error'/1):
 $1:
 	put_constant('stderr', 0)
 	put_integer(10, 1)
-	pseudo_instr2(8, 0, 1)
-	proceed
+	execute_predicate('put_code', 2)
 end('errornl'/0):
 
 

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -58,11 +58,12 @@
 #include <math.h>
 
 #ifdef WIN32
-        #include <time.h>
-        #include <winsock2.h>
-        #include <io.h>
-    extern int gettimeofday(struct timeval* tp, void* tzp);
-
+#include <time.h>
+#include <winsock2.h>
+#include <io.h>
+#include <windows.h>	
+extern int gettimeofday(struct timeval* tp, void* tzp);
+typedef u_int suseconds_t;
 #else
 #include <sys/time.h>
 #include <unistd.h>
@@ -78,13 +79,13 @@ private:
   timeval tv;
 
 public:
-  Timeval(const time_t sec, const time_t usec = 0)
+  Timeval(const time_t sec, const suseconds_t usec = 0)
     {
       assert(sec != (time_t) -1 || usec == 0);// sec == -1 -> usec == 0
       assert(usec < 1000000);		// 1 million
 
-      tv.tv_sec = static_cast<long>(sec); 
-      tv.tv_usec = static_cast<long>(usec);
+      tv.tv_sec = sec; 
+      tv.tv_usec = usec;
     }
   Timeval(void)
     {
@@ -127,16 +128,16 @@ public:
           long secs = tv.tv_sec + s + ms / 1000000;
           long usecs = ms % 1000000;
           tv.tv_sec = (time_t)secs;
-          tv.tv_usec = (time_t)usecs;
+          tv.tv_usec = (suseconds_t)usecs;
         }
     }
 
   time_t Sec(void) const { return tv.tv_sec; }
-  time_t MicroSec(void) const { return tv.tv_usec; }
+  suseconds_t MicroSec(void) const { return tv.tv_usec; }
 
   bool isForever(void) const { return Sec() == (time_t) -1; }
 
-  void setTime(unsigned int s, unsigned int ms)
+  void setTime(time_t s, suseconds_t ms)
   {
     tv.tv_sec = s;
     tv.tv_usec = ms;
@@ -221,8 +222,8 @@ public:
 
 inline std::ostream& operator<<(std::ostream& ostrm, const Timeval& t)
 {
-  ostrm << "sec = " << static_cast<long>(t.Sec()) << " usec = " 
-        << static_cast<long>(t.MicroSec());
+  ostrm << "sec = " << t.Sec() << " usec = " 
+        << t.MicroSec();
 
   return ostrm;
 }

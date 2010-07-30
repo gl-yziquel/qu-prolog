@@ -1421,7 +1421,7 @@ end('close'/1):
 
 
 
-'close/2$0/4$0'/2:
+'close/2$0/3$0'/2:
 
 	switch_on_term(0, $6, $2, $2, $3, $2, $2)
 
@@ -1451,11 +1451,11 @@ $1:
 $2:
 	pseudo_instr1(31, 1)
 	proceed
-end('close/2$0/4$0'/2):
+end('close/2$0/3$0'/2):
 
 
 
-'close/2$0/4$1'/1:
+'close/2$0/3$1'/1:
 
 	try(1, $1)
 	trust($2)
@@ -1472,13 +1472,13 @@ $1:
 
 $2:
 	proceed
-end('close/2$0/4$1'/1):
+end('close/2$0/3$1'/1):
 
 
 
-'close/2$0'/4:
+'close/2$0'/3:
 
-	try(4, $1)
+	try(3, $1)
 	trust($2)
 
 $1:
@@ -1500,21 +1500,20 @@ $1:
 
 $2:
 	allocate(3)
+	get_y_variable(1, 0)
 	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
-	pseudo_instr2(101, 0, 1)
-	get_x_variable(0, 1)
+	get_y_variable(0, 2)
+	pseudo_instr2(101, 21, 0)
 	cut(2)
 	put_y_value(1, 1)
-	call_predicate('close/2$0/4$0', 2, 2)
+	call_predicate('close/2$0/3$0', 2, 2)
 	put_y_value(1, 0)
-	call_predicate('close/2$0/4$1', 1, 2)
+	call_predicate('close/2$0/3$1', 1, 2)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
 	deallocate
 	execute_predicate('$close1', 2)
-end('close/2$0'/4):
+end('close/2$0'/3):
 
 
 
@@ -1612,18 +1611,16 @@ $2:
 	execute_predicate('instantiation_exception', 3)
 
 $3:
-	allocate(4)
-	get_y_variable(3, 0)
+	allocate(3)
 	get_y_variable(2, 1)
 	get_y_level(1)
 	put_y_variable(0, 1)
-	call_predicate('$streamnum', 2, 4)
+	call_predicate('$streamnum', 2, 3)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
-	put_y_value(3, 2)
-	put_y_value(2, 3)
+	put_y_value(2, 2)
 	deallocate
-	execute_predicate('close/2$0', 4)
+	execute_predicate('close/2$0', 3)
 
 $4:
 	get_x_variable(2, 0)

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -60,6 +60,7 @@
         #define _WINSOCKAPI_
         #include <windows.h>
         #include <winsock2.h>
+        #include <ws2tcpip.h>
         typedef int socklen_t;
 #else
         #include <unistd.h>
@@ -72,6 +73,7 @@
         #include <netdb.h>
         #include <sys/ioctl.h>
         #include <net/if.h>
+        #include <ifaddrs.h>
 #endif
 
 //#include <netinet/in.h>
@@ -184,16 +186,23 @@ LookupMachineIPAddress(const char *name)
   // First try to convert the host name as a dotted-decimal number.
   // Only if that fails do we call gethostbyname().
   //
-  struct in_addr inp;
   hostent host_info;
   sockaddr_in remote_addr;
 
+#ifdef WIN32
+  unsigned long res = inet_addr(name);
+  if (res != INADDR_NONE)
+    {
+      return res;
+    }
+#else
+  struct in_addr inp;
   int res = inet_aton(name, &inp);
-
   if (res != 0)
     {
       return inp.s_addr;
     }
+#endif
   else
     {
       char hostname[255];
@@ -236,6 +245,7 @@ LookupMachineIPAddress(const char *name)
 
   return remote_addr.sin_addr.s_addr;
 }
+
 
 //
 // Try to find the IP address of this machine.
@@ -281,7 +291,7 @@ bool do_connection(int sockfd, int port, u_long ip_address)
       fd_set fds;
       
       FD_ZERO(&fds);
-      FD_SET(sockfd, &fds);
+      FD_SET((unsigned int)sockfd, &fds);
       
 #ifndef NDEBUG
       int result = select(sockfd + 1, (fd_set *) NULL, &fds, 
@@ -301,55 +311,73 @@ bool do_connection(int sockfd, int port, u_long ip_address)
 
 
 // No DNS lookup - so use ifcofig to get IP
-
+#ifdef WIN32
 void getIPfromifconfig(char* ip)
 {
-  struct ifreq *ifr, ifr_tmp;
-  struct ifconf ifc;
-  char buf[1024];
-  int s, i;
-  struct sockaddr_in *sin;
+    SOCKET sd = WSASocket(AF_INET, SOCK_DGRAM, 0, 0, 0, 0);
+    if (sd == SOCKET_ERROR) {
+      fprintf(stderr, "Failed to get a socket. Error %d\n",WSAGetLastError()); 
+      return;
+    }
 
-  s = socket(AF_INET, SOCK_DGRAM, 0);
-  if (s == -1) {
-    fprintf(stderr, "Can't open socket for ifconfig\n");
-    exit(1);
-  }
+    INTERFACE_INFO InterfaceList[20];
+    unsigned long nBytesReturned;
+    if (WSAIoctl(sd, SIO_GET_INTERFACE_LIST, 0, 0, &InterfaceList,
+                 sizeof(InterfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
+      fprintf(stderr, "Failed calling WSAIoctl: error %d\n",WSAGetLastError());
+      return;
+    }
 
-  ifc.ifc_len = sizeof(buf);
-  ifc.ifc_buf = buf;
-  ioctl(s, SIOCGIFCONF, &ifc);
+    int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
+    for (int i = 0; i < nNumInterfaces; ++i) {
+        u_long nFlags = InterfaceList[i].iiFlags;
+        if ((nFlags & IFF_UP) && !(nFlags & IFF_LOOPBACK)) {
+          sockaddr_in *pAddress;
+          pAddress = (sockaddr_in *) & (InterfaceList[i].iiAddress);
+          strcpy(ip, inet_ntoa(pAddress->sin_addr));
+          return;
+        }                                              
+    }
 
-  for (i = 0; i < ifc.ifc_len; ) {
-    ifr = (struct ifreq *) &ifc.ifc_buf[i];
-    sin = (struct sockaddr_in *) &ifr->ifr_addr;
-    i += sizeof(struct ifreq);
-    /* skip nulls */
-    if (sin->sin_addr.s_addr == 0)
-      continue;
-    /* skip non AF_INET's */
-    if (ifr->ifr_addr.sa_family != AF_INET)
-      continue;
-
-#ifdef SIOCGIFFLAGS
-    memset(&ifr_tmp, 0, sizeof(ifr_tmp));
-    strncpy(ifr_tmp.ifr_name, ifr->ifr_name, sizeof(ifr_tmp.ifr_name) - 1);
-    if (ioctl(s, SIOCGIFFLAGS, (caddr_t) &ifr_tmp) < 0)
-#endif
-      ifr_tmp = *ifr;
-    
-    /* skip DOWN and loopback interfaces */
-    if (((ifr_tmp.ifr_flags & IFF_UP) == 0) ||
-          (ifr_tmp.ifr_flags & IFF_LOOPBACK))
-      continue;
-
-    close(s);
-    strcpy(ip, inet_ntoa(sin->sin_addr));
     return;
-  }
-  close(s);
-  return;
 }
 
+
+
+#else
+void getIPfromifconfig(char* ip)
+{
+  struct ifaddrs *ifaddr, *ifa;
+  int family, s;
+  char host[NI_MAXHOST];
+  
+  if (getifaddrs(&ifaddr) == -1) {
+    perror("getifaddrs");
+    exit(EXIT_FAILURE);
+  }
+  
+  for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+    family = ifa->ifa_addr->sa_family;
+    
+    if ((family == AF_INET) 
+        && (ifa->ifa_flags & IFF_UP) 
+        && !(ifa->ifa_flags & IFF_LOOPBACK )) {
+      printf("%s", ifa->ifa_name);
+      s = getnameinfo(ifa->ifa_addr,
+                      (family == AF_INET) ? sizeof(struct sockaddr_in) :
+                      sizeof(struct sockaddr_in6),
+                      host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+      if (s != 0) {
+        printf("getnameinfo() failed: %s\n", gai_strerror(s));
+        exit(EXIT_FAILURE);
+      }
+      strcpy(ip, host);
+      freeifaddrs(ifaddr);
+      return;
+    }
+  }
+
+}
+#endif
 
 

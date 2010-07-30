@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -87,6 +87,7 @@ private:
   Option<u_short> pedro_port;	// Host byte order.
   Option<char *> process_symbol;
   Option<char *> initial_goal;
+  Option<char *> initial_file;
   Option<bool> debugging;
 
   int prolog_argc;
@@ -120,6 +121,8 @@ public:
   char *ProcessSymbol(void) const { return process_symbol.Value(); }
 
   char *InitialGoal(void) const { return initial_goal.Value(); }
+
+  char *InitialFile(void) const { return initial_file.Value(); }
 
   bool Debugging(void) const { return debugging.Value(); }
 

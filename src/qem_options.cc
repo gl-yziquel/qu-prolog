@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -60,7 +60,7 @@
 #include <stdlib.h>
 
 #ifdef WIN32
-#include "../win32/src/XGetopt.h"
+#include "WinXGetopt.h" //#include "../win32/src/XGetopt.h"
 #endif
 #include "qem_options.h"
 #include "tcp_qp.h"
@@ -87,6 +87,7 @@ QemOptions::QemOptions(int argc, char **argv)
 	    "\t[-P pedro-server-port]\n"
 	    "\t[-A process-symbol]\n"
             "\t[-g initial-goal]\n"
+            "\t[-l initial-file]\n"
 	    "\t[-L]\n"	// Standalone
 	    "\t[-X]\n"	// QuAM level debugging turned on.
 	    "\t-Q qx-file\n"),
@@ -110,11 +111,12 @@ QemOptions::QemOptions(int argc, char **argv)
     pedro_port(PEDRO_PORT),
     process_symbol(PROCESS_SYMBOL),
     initial_goal(INITIAL_GOAL),
+    initial_file(INITIAL_FILE),
     debugging(DEBUGGING)
 {
   int32 c;
 
-  static const char *opts =  "d:p:s:m:a:B:O:i:n:C:e:h:H:Q:z:N:P:A:g:LX";
+  static const char *opts =  "d:p:s:m:a:B:O:i:n:C:e:h:H:Q:z:N:P:A:g:l:LX";
 
   char* lh = new char[10];
   strcpy(lh, "localhost");
@@ -194,6 +196,9 @@ QemOptions::QemOptions(int argc, char **argv)
 	  break;
 	case 'g':
 	  initial_goal.Value(optarg);
+	  break;
+	case 'l':
+	  initial_file.Value(optarg);
 	  break;
 	case 'L':
 	  // Will override earlier setting of name server name

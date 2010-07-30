@@ -705,7 +705,7 @@ end('$throw_cleanup'/0):
 
 
 
-'$query_call2009_12_1_13_30_34_754/0$0'/0:
+'$query_call2010_7_30_11_28_31_785/0$0'/0:
 
 
 $1:
@@ -719,23 +719,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_call2009_12_1_13_30_34_754/0$0'/0):
+end('$query_call2010_7_30_11_28_31_785/0$0'/0):
 
 
 
-'$query_call2009_12_1_13_30_34_754'/0:
+'$query_call2010_7_30_11_28_31_785'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_call2009_12_1_13_30_34_754/0$0', 0, 0)
+	call_predicate('$query_call2010_7_30_11_28_31_785/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_call2009_12_1_13_30_34_754'/0):
+end('$query_call2010_7_30_11_28_31_785'/0):
 
 
 
@@ -743,7 +743,7 @@ end('$query_call2009_12_1_13_30_34_754'/0):
 
 
 $1:
-	execute_predicate('$query_call2009_12_1_13_30_34_754', 0)
+	execute_predicate('$query_call2010_7_30_11_28_31_785', 0)
 end('$query'/0):
 
 

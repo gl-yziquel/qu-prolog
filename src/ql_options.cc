@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -60,7 +60,7 @@
 #include <stdlib.h>
 
 #ifdef WIN32
-#include "../win32/src/XGetopt.h"
+#include "WinXGetopt.h" //#include "../win32/src/XGetopt.h"
 #endif
 #include "ql_options.h"
 

@@ -1356,13 +1356,13 @@ end('$get_char'/2):
 
 
 
-'put_char'/2:
+'$put_char'/2:
 
 
 $1:
 	pseudo_instr2(6, 0, 1)
 	proceed
-end('put_char'/2):
+end('$put_char'/2):
 
 
 
@@ -1377,13 +1377,13 @@ end('$get_code'/2):
 
 
 
-'put_code'/2:
+'$put_code'/2:
 
 
 $1:
 	pseudo_instr2(8, 0, 1)
 	proceed
-end('put_code'/2):
+end('$put_code'/2):
 
 
 
@@ -2639,6 +2639,17 @@ $1:
 	get_x_value(1, 2)
 	proceed
 end('hash_variable'/2):
+
+
+
+'stat'/2:
+
+
+$1:
+	pseudo_instr2(127, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('stat'/2):
 
 
 

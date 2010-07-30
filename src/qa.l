@@ -1,13 +1,14 @@
 %option noyywrap
 %{
 /*
- * Copyright (C) 2000-2009 
+ * Copyright (C) 2000-2010 
  *
  * Department of Computer Science,
  * University of Queensland
  */
 
 #include <iostream>
+#include <stdio.h>
 
 #include "asm_objects.h"
 #include "errors.h"
@@ -173,8 +174,8 @@ end			{
 				return DOUBLE_TOKEN;
 			}
 [[:digit:]]+		{
-				yylval.number_value = atol(yytext);
-				return NUMBER_TOKEN;
+				yylval.int_value = atol(yytext);
+				return INTEGER_TOKEN;
 			}
 
 "$"([_[:alnum:]])+	{

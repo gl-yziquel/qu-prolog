@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -121,18 +121,25 @@ Scheduler::Scheduler(ThreadOptions& to, ThreadTable& tt,
 
 Scheduler::~Scheduler(void) { }
 
+#ifdef WIN32
+extern SOCKET PipeInSock;
+#else
 extern int* sigint_pipe;
+#endif
 extern bool in_sigint;
 
 bool Scheduler::poll_fds(Timeval& poll_timeout)
 {
-#ifndef WIN32
   fd_set rfds, wfds;
   FD_ZERO(&rfds);
   FD_ZERO(&wfds);
-
+#ifdef WIN32
+  int max_fd = PipeInSock;
+  FD_SET((unsigned int)PipeInSock, &rfds);
+#else
   int max_fd = sigint_pipe[0];
-  FD_SET(sigint_pipe[0], &rfds);
+  FD_SET((unsigned int)sigint_pipe[0], &rfds);
+#endif
   for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
 	   iter != blocked_queue.end();
 	   iter++)
@@ -147,65 +154,27 @@ bool Scheduler::poll_fds(Timeval& poll_timeout)
       (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
       (*iter)->processTimeouts(poll_timeout);
     }
-#endif
-
-#ifdef WIN32
-       // We need to turn these fd sets into Handle arrays. So...
-        HANDLE* handles;
-
-        int hcount=1;
-        handles = new HANDLE[blocked_queue.size()+1];
-        handles[0] = (HANDLE)_get_osfhandle(sigint_pipe[0]);
-
-        for(list<BlockingObject *>::iterator iter = blocked_queue.begin();
-                        iter != blocked_queue.end();
-                        iter++)
-        {
-                handles[hcount] = (HANDLE)_get_osfhandle((*iter)->getFD());
-                hcount++;
-        }
-
-#endif
-
 
   int result;
   if (poll_timeout.isForever())
     {
-      // Remember, select only works on sockets in windows
-#ifdef WIN32
-      result = WaitForMultipleObjects(hcount + 1, handles, true, NULL);
-#else
       result = select(max_fd + 1, &rfds, &wfds, NULL, NULL);
-#endif
     }
   else
     {
       struct timeval timeout = {poll_timeout.Sec(), poll_timeout.MicroSec()};
-#ifdef WIN32
-      result = WaitForMultipleObjects(hcount + 1, handles, true,
-                   timeout.tv_usec / 1000 + timeout.tv_sec*1000 );
-#else
       result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout);
-#endif
     }
-
-#ifdef WIN32
-    //Free up stuff
-    delete [] handles;
-    handles = NULL;
-
-    if (result == WAIT_FAILED) { cerr << GetLastError() << endl; }
-#endif
-
   return result > 0;
 
 }
+
 
 Thread::ReturnValue
 Scheduler::Sleep()
 {
 #ifdef DEBUG_BLOCK
-  cerr << __FUNCTION__ << " Sleeping" << endl;
+  cerr << __FUNCTION__ << " Sleeping" << "\n";
 #endif
   while (! InterQuantum())
     {
@@ -213,11 +182,11 @@ Scheduler::Sleep()
       if (signals.Status().testSignals() && !in_sigint)
 	{
 #ifdef DEBUG_SCHED
-	  cerr << __FUNCTION__ << " Start signal handler" << endl;
+	  cerr << __FUNCTION__ << " Start signal handler" << "\n";
 #endif
 	  const Thread::ReturnValue result = HandleSignal();
 #ifdef DEBUG_SCHED
-	  cerr << __FUNCTION__ << " Stop signal handler" << endl;
+	  cerr << __FUNCTION__ << " Stop signal handler" << "\n";
 #endif
 	  return result;
 	}
@@ -226,11 +195,11 @@ Scheduler::Sleep()
 	  break;
 	}
 #ifdef DEBUG_SCHED
-      cerr << "End poll" << endl;
+      cerr << "End poll" << "\n";
 #endif
     }
 #ifdef DEBUG_BLOCK
-  cerr << __FUNCTION__ << " Finished sleeping" << endl;
+  cerr << __FUNCTION__ << " Finished sleeping" << "\n";
 #endif
   return Thread::RV_SUCCESS;
 }
@@ -247,7 +216,7 @@ bool
 Scheduler::InterQuantum(void)
 {
 #ifdef DEBUG_SCHED
-  cerr << "InterQuantum" << endl;
+  cerr << "InterQuantum" << "\n";
 #endif
   // First shuffle any new messages
   (void)ShuffleAllMessages();
@@ -337,7 +306,7 @@ Scheduler::Schedule(void)
 	{
 	  cerr << (*iter)->TInfo().ID() << " ";
 	}
-      cerr << ']' << endl;
+      cerr << ']' << "\n";
 #endif
 
       size_t blocked = 0;	// Number of threads that have blocked so far
@@ -394,7 +363,7 @@ Scheduler::Schedule(void)
 
 #ifdef DEBUG_SCHED
 	  cerr << __FUNCTION__ << " Trying thread: " 
-	       << thread.TInfo().ID() << endl;
+	       << thread.TInfo().ID() << "\n";
 #endif	// DEBUG_SCHED
 
 	  // Can we run the thread?
@@ -409,7 +378,7 @@ Scheduler::Schedule(void)
               if (scheduler_status.testEnableTimeslice())
 		{
 #ifdef DEBUG_BLOCK
-		  cerr << endl;
+		  cerr << "\n";
 #endif
 
 	          blocked++;
@@ -418,7 +387,7 @@ Scheduler::Schedule(void)
 	      else
 		{
 #ifdef DEBUG_BLOCK
-		  cerr << " in forbid/permit section" << endl;
+		  cerr << " in forbid/permit section" << "\n";
 #endif
 
 		  const Thread::ReturnValue result = Sleep();
@@ -462,7 +431,7 @@ Scheduler::Schedule(void)
 		   << TIME_SLICE_SECS
 		   << " secs, "
 		   << TIME_SLICE_USECS
-		   << " usecs)" << endl;
+		   << " usecs)" << "\n";
 #endif
 #ifdef WIN32 //Alright, let's create AND set the timer CHEESE
              timerptr = SetTimer(0, timerptr, TIME_SLICE_USECS, 
@@ -485,14 +454,14 @@ Scheduler::Schedule(void)
 #ifdef DEBUG_SCHED
 	  cerr << __FUNCTION__
 	       << " Start execution of thread " 
-	       << thread.TInfo().ID() << endl;
+	       << thread.TInfo().ID() << "\n";
 #endif // DEBUG_SCHED
 	  const Thread::ReturnValue result = thread.Execute();
 #ifdef DEBUG_SCHED 
 
 	  cerr << __FUNCTION__
 	       << " Exit execution of thread "
-	       << thread.TInfo().ID() << endl;
+	       << thread.TInfo().ID() << "\n";
 #endif // DEBUG_SCHED
 
 	  {
@@ -534,7 +503,7 @@ Scheduler::Schedule(void)
 	      // This is the normal case ... simply go to the next thread.
 	      //
 #ifdef DEBUG_SCHED
-	      cerr << "RV_TIMESLICE" << endl;
+	      cerr << "RV_TIMESLICE" << "\n";
 #endif
 	      break;
 	    case Thread::RV_EXIT:
@@ -542,7 +511,7 @@ Scheduler::Schedule(void)
 	      // The thread exited via a call to thread_exit.
 	      //
 #ifdef DEBUG_SCHED
-	      cerr << "RV_EXIT" << endl;
+	      cerr << "RV_EXIT" << "\n";
 #endif
 	      {
 		// Clobber the thread.
@@ -553,7 +522,7 @@ Scheduler::Schedule(void)
 	      }
 	    case Thread::RV_HALT:
 #ifdef DEBUG_SCHED
-	      cerr << "RV_HALT" << endl;
+	      cerr << "RV_HALT" << "\n";
 #endif
 	      // TO DO: Extract exit status from thread's X registers.
 	      // TO DO: Mustn't just exit here! (Remember the ICM CS.)
@@ -561,7 +530,7 @@ Scheduler::Schedule(void)
 	      break;
 	    case Thread::RV_BLOCK:
 #ifdef DEBUG_SCHED
-	      cerr << "RV_BLOCK" << endl;
+	      cerr << "RV_BLOCK" << "\n";
 #endif
 	      //
 	      // The thread attempted an operation that would have blocked.
@@ -576,7 +545,7 @@ Scheduler::Schedule(void)
 	    case Thread::RV_SIGNAL:
 	      {
 #ifdef DEBUG_SCHED
-		cerr << "RV_SIGNAL" << endl;
+		cerr << "RV_SIGNAL" << "\n";
 #endif
 		//
 		// Set up and execute a thread that executes the appropriate
@@ -592,13 +561,13 @@ Scheduler::Schedule(void)
 	      break;
 	    case Thread::RV_YIELD:
 #ifdef DEBUG_SCHED
-	      cerr << "RV_YIELD" << endl;
+	      cerr << "RV_YIELD" << "\n";
 #endif
 	      // Nothing really needs to happen here.
 	      break;
 	    default:
 #ifdef DEBUG_SCHED
-	      cerr << __FUNCTION__ << " Exit with result " << result << endl;
+	      cerr << __FUNCTION__ << " Exit with result " << result << "\n";
 #endif	// DEBUG_SCHED
 	      
 	      return(result);
@@ -636,7 +605,7 @@ Scheduler::Schedule(void)
 #ifdef DEBUG_BLOCK
 	      cerr << __FUNCTION__ 
 		   << " Thread " << thread.TInfo().ID()
-		   << " blocked in forbid/permit section" << endl;
+		   << " blocked in forbid/permit section" << "\n";
 #endif
 
 	      // Sleep until something useful happens (maybe).
@@ -660,7 +629,7 @@ Scheduler::Schedule(void)
 
 #ifdef DEBUG_SCHED
       cerr << __FUNCTION__ << "  blocked = " << blocked
-	   << "(" << run_queue.size() << " in run_queue)" << endl;
+	   << "(" << run_queue.size() << " in run_queue)" << "\n";
 #endif
 
       // If none of the threads was runnable...
@@ -735,17 +704,17 @@ Scheduler::HandleSignal(void)
   char buff[128];
   int ret = read(sigint_pipe[0], buff, 120);
   if (ret == 120) {
-	cerr << "HandleSignal: read too much" << endl;
+	cerr << "HandleSignal: read too much" << "\n";
   }
 #else
-  // This may have been removed by the tokeniser,
-  // should we be in the position of fake EOF.
-  if (!_eof(sigint_pipe[0]))
-    {
-      char buff[128];
-      read(sigint_pipe[0], buff, 120);
-    }
+  cerr << "in handlesig\n";
+  char buff[128];
+  int ret = recv(PipeInSock, buff, 120, 0);
+  if (ret == 120) {
+	cerr << "HandleSignal: read too much" << "\n";
+  }
 #endif
+  
   
   Thread *thread = new Thread(NULL, thread_options);
   
@@ -767,7 +736,7 @@ Scheduler::HandleSignal(void)
   thread->Condition(ThreadCondition::RUNNABLE);
   
 #ifdef DEBUG_SCHED
-  cerr << __FUNCTION__ << "  Start execution of signal handler" << endl;
+  cerr << __FUNCTION__ << "  Start execution of signal handler" << "\n";
 #endif
   
   Thread::ReturnValue result;
@@ -786,7 +755,7 @@ Scheduler::HandleSignal(void)
     }
   
 #ifdef DEBUG_SCHED
-  cerr << __FUNCTION__ << "  Stop execution of signal handler" << endl;
+  cerr << __FUNCTION__ << "  Stop execution of signal handler" << "\n";
 #endif
   
   thread_table.RemoveID(thread->TInfo().ID());
@@ -842,10 +811,10 @@ void Scheduler::resetThread(Thread* th)
 }
 
 #ifdef WIN32
-static VOID CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
-                UINT_PTR nIDEvent, DWORD dwTime)
+VOID CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
+                                         UINT_PTR nIDEvent, DWORD dwTime)
 {
-        //cerr << "Handling a timeslice..." << endl;
+        //cerr << "Handling a timeslice..." << "\n";
         handle_timeslice(0);
 }
 #endif
@@ -854,7 +823,7 @@ static void
 handle_timeslice(int)
 {
 #ifdef DEBUG_SCHED
-  cerr << __FUNCTION__ << endl;
+  cerr << __FUNCTION__ << "\n";
 #endif
 
   extern Scheduler *scheduler;

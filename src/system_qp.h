@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -146,6 +146,10 @@ ReturnValue psi_nsig(Object *&);
 // @end pred
 // @end doc
 ReturnValue psi_strerror(Object *&, Object *&);
+
+
+
+ReturnValue psi_stat(Object *&, Object *&);
 
 #endif // SYSTEM_QP_H
 

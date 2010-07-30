@@ -53,8 +53,9 @@ $1:
 	put_y_value(1, 1)
 	put_constant('write', 2)
 	call_predicate('$write_t', 3, 1)
-	put_integer(10, 0)
-	pseudo_instr2(8, 20, 0)
+	put_y_value(0, 0)
+	put_integer(10, 1)
+	call_predicate('put_code', 2, 0)
 	deallocate
 	execute_predicate('interpreter', 0)
 end('main'/1):

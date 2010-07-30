@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -336,7 +336,31 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 	      return res;
             }
         }
-      else if (op == AtomTable::ceiling)
+      else if (op == AtomTable::truncate)
+        {
+	  if (arity != 1)
+	    {
+	      error_value = EV_TYPE;
+	      return zero;
+	    }
+          if IS_INT(res1)
+            {
+	      return res1;
+            }
+           else
+            {
+	      number res;
+              double num = GET_DOUBLE_VAL(res1);
+              if (num > 0) {
+                MAKE_INT(res, (long)floor(num));
+              }
+              else {
+                MAKE_INT(res, (long)ceil(num));
+              }
+	      return res;
+            }
+        }
+       else if (op == AtomTable::ceiling)
         {
 	  if (arity != 1)
 	    {

@@ -4,7 +4,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -210,11 +210,6 @@ Thread::psi_codes_atom(Object *& object1, Object *& object2)
 {
   Object* list = object1->variableDereference();
   string atomname;
-  if (list->isString())
-    {
-      object2 = atoms->add(OBJECT_CAST(StringObject*, list)->getChars());
-      return(RV_SUCCESS);
-    }
   while (list->isCons())
     {
       Cons* clist = OBJECT_CAST(Cons*, list);
@@ -223,6 +218,10 @@ Thread::psi_codes_atom(Object *& object1, Object *& object2)
       assert(head->isShort());
       atomname.push_back(head->getInteger());
     }
+  if (list->isString()) {
+    atomname.append(OBJECT_CAST(StringObject*, list)->getChars());
+  }
+    
   object2 = atoms->add(atomname.c_str());
   return(RV_SUCCESS);
 }
@@ -327,22 +326,20 @@ Thread::psi_codes_number(Object *& object1, Object *& object2)
   Object* arg = heap.dereference(object1);
 
   ostringstream str;
-  if (arg->isString())
-    {
-      str << OBJECT_CAST(StringObject*, arg)->getChars();
-    }
-  else {
-    while (arg->isCons())
-      {
-	Cons* list = OBJECT_CAST(Cons*, arg);
-	if (!(list->getHead()->variableDereference()->isInteger()))
-          return(RV_FAIL);
-	str << (char)(list->getHead()->variableDereference()->getInteger());
-	arg = list->getTail()->variableDereference();
-      }
-    if (!arg->isNil())  return(RV_FAIL);
-  }
 
+  while (arg->isCons())
+    {
+      Cons* list = OBJECT_CAST(Cons*, arg);
+      if (!(list->getHead()->variableDereference()->isInteger()))
+	return(RV_FAIL);
+      str << (char)(list->getHead()->variableDereference()->getInteger());
+      arg = list->getTail()->variableDereference();
+    }
+  if (arg->isString()) {
+    str << OBJECT_CAST(StringObject*, arg)->getChars();
+  } 
+  else if (!arg->isNil())  
+    return(RV_FAIL);
   bool has_dot = false;
   bool has_e = false;
   bool has_sign = false;

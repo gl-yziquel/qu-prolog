@@ -169,7 +169,7 @@ end('throw'/1):
 
 
 
-'$query_catch2009_12_1_13_30_34_809/0$0'/0:
+'$query_catch2010_7_30_11_28_31_838/0$0'/0:
 
 
 $1:
@@ -183,23 +183,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_catch2009_12_1_13_30_34_809/0$0'/0):
+end('$query_catch2010_7_30_11_28_31_838/0$0'/0):
 
 
 
-'$query_catch2009_12_1_13_30_34_809'/0:
+'$query_catch2010_7_30_11_28_31_838'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_catch2009_12_1_13_30_34_809/0$0', 0, 0)
+	call_predicate('$query_catch2010_7_30_11_28_31_838/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_catch2009_12_1_13_30_34_809'/0):
+end('$query_catch2010_7_30_11_28_31_838'/0):
 
 
 
@@ -207,7 +207,7 @@ end('$query_catch2009_12_1_13_30_34_809'/0):
 
 
 $1:
-	execute_predicate('$query_catch2009_12_1_13_30_34_809', 0)
+	execute_predicate('$query_catch2010_7_30_11_28_31_838', 0)
 end('$query'/0):
 
 

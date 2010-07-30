@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -73,11 +73,7 @@ public:
 
   void Put(CodeBlock& code_block) const
   {
-#ifdef WIN32
-    const IntType v = value;
-#else
     const IntType v = this->value;
-#endif
     switch (sizeof(IntType))
       {
       case 1:
@@ -166,11 +162,7 @@ public:
 
   void Put(CodeBlock& code_block) const
   {
-#ifdef WIN32
-    const IntType v = value;
-#else
     const IntType v = this->value;
-#endif
     
     char w[sizeof(double)];
     memcpy(w, &v, sizeof(double));

@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -176,6 +176,7 @@ Atom *AtomTable::e;
 Atom *AtomTable::abs;
 Atom *AtomTable::round;
 Atom *AtomTable::floor;
+Atom *AtomTable::truncate;
 Atom *AtomTable::ceiling;
 Atom *AtomTable::sqrt;
 Atom *AtomTable::sin;

@@ -10,7 +10,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -130,6 +130,11 @@ char *PROCESS_SYMBOL = NULL;
 // Default initial goal
 //
 char* INITIAL_GOAL = NULL;
+
+//
+// Default initial file
+//
+char* INITIAL_FILE = NULL;
 
 //
 // Default debugging value.

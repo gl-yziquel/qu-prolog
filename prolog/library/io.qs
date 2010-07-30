@@ -396,9 +396,9 @@ end('get'/2):
 
 
 $1:
-	pseudo_instr1(28, 1)
-	pseudo_instr2(8, 1, 0)
-	proceed
+	get_x_variable(1, 0)
+	pseudo_instr1(28, 0)
+	execute_predicate('put_code', 2)
 end('put'/1):
 
 
@@ -407,8 +407,7 @@ end('put'/1):
 
 
 $1:
-	pseudo_instr2(8, 0, 1)
-	proceed
+	execute_predicate('put_code', 2)
 end('put'/2):
 
 

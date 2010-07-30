@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -419,11 +419,9 @@ class Double : public Constant
 {
 public:
   static const size_t DOUBLE_SIZE
-    = (sizeof(double) + sizeof(u_int) - 1)/sizeof(u_int);
+    = sizeof(double)/BYTES_PER_WORD;
 
 protected:
-  // The value of the Double, stored as a pointer to a double in C
-  // memory
   heapobject x[DOUBLE_SIZE];
   
 public:
@@ -2159,7 +2157,7 @@ Object::variableDereference()
 	    return o; // An unbound (ob)variable
 	  }
       o = n;
-    }
+   }
   return o;
 }
 
@@ -2232,7 +2230,9 @@ inline void threadGC(heapobject* p)
   *tmp = (heapobject)p;
 }
 
-
+#ifdef __MINGW32__     
+#define bzero(ptr,size) memset (ptr, 0, size);
+#endif 
 
 static const int bitsPerWord = 8*sizeof(u_int);
 

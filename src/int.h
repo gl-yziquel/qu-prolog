@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2009 
+// Copyright (C) 2000-2010 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -67,7 +67,7 @@
 
 #include "errors.h"
 #ifdef WIN32
-#define __PRETTY_FUNCTION__ __FUNCDNAME__
+//#define __PRETTY_FUNCTION__ __FUNCDNAME__
 #endif
 
 using namespace std;
