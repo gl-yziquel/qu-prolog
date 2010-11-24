@@ -67,7 +67,6 @@
 
 #include "defaults.h"
 
-
 QemOptions::QemOptions(int argc, char **argv)
   : Options("[-d code-size]\n"
 	    "\t[-p predicate-table-size]\n"

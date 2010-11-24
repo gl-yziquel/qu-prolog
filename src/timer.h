@@ -1,4 +1,4 @@
-// gc_escapes.h - Garbage collector for threads.
+// timer.h - Managment of timers
 //
 // ##Copyright##
 // 
@@ -50,86 +50,82 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.h,v 1.5 2005/03/08 00:35:06 qp Exp $
 
-#ifndef	GC_ESCAPES_H
-#define	GC_ESCAPES_H
+#ifndef	TIMER_H
+#define	TIMER_H
 
-public: 
+#include "heap_qp.h"
+#include "objects.h"
+#include "timeval.h"
 
-#ifdef QP_DEBUG
-bool check_env(EnvLoc env);
+#define TIMER_HEAP_SIZE 5000
+#define TIMER_NUM 100
 
-bool check_choice(ChoiceLoc choiceloc);
+class Timer
+{
+ public:
+  Thread* thread;
+  Object* goal;
+  heapobject* next;
+  Timeval time;
+  u_int id;
+  double delta;
+  bool one_time;
+  
+ Timer(Thread* th, Object* g, heapobject* n, double t, u_int i, bool ot) 
+   : thread(th), goal(g), next(n), time(t), id(i), delta(t), one_time(ot) 
+  {}
+  
+  void resetTimer(void)
+  {
+    time = Timeval(delta);
+  }
 
-bool check_trail();
+};
 
-bool check_ips();
+class TimerStack
+{
+ private:
+  Timer* timers[TIMER_NUM];
+  u_int next_id;
+  Heap* current_heap;
+  Heap* other_heap;
+  int tos;
 
-bool check_name();
+ public:
+  TimerStack(void)
+    {
+      next_id = 0;
+      tos = 0;
+      current_heap = new Heap("Timer Heap", TIMER_HEAP_SIZE, false);
+      other_heap = new Heap("Timer Heap", TIMER_HEAP_SIZE, false);
+    }
 
-bool check_heap2(Heap& heap);
+  ~TimerStack(void)
+    {
+      for (int i = 0; i < tos; i++) delete timers[i];
+      delete current_heap;
+      delete other_heap;
+    }
+       
+  Heap* getHeap(void) { return current_heap; }
 
-//
-// Check heap for correct pointers
-//
-bool check_heap(Heap&, AtomTable*, GCBits&);
-#endif // DEBUG
+  u_int create_timer(Thread* th, Object* goal, double time, 
+		     bool one_time);
 
-// Mark the registers
+  bool insert_timer(Timer* t);
 
-void gc_mark_registers(word32);
+  bool delete_timer(Thread* th, u_int id);
+  
+  void delete_all_timers(Thread* th);
 
-// Mark the environmants
-void gc_mark_environments(EnvLoc);
+  bool make_timer_goal(Object*&, Heap&);
 
-// Mark the choicepoints
-void gc_mark_choicepoints(ChoiceLoc);
+  void copy_compress_heap(void);
 
-// Mark the trail
-void gc_mark_trail();
-
-// Mark the implicit parameters
-void gc_mark_ips();
-
-// Mark the variable names
-void gc_mark_names();
-
-// Mark the heap
-
-void gc_marking_phase(word32);
-
-void gc_sweep_registers(word32);
-
-void gc_sweep_trail(void);
-
-void gc_sweep_names(void);
-
-void gc_sweep_ips(void);
-
-void gc_sweep_environments(EnvLoc);
-
-void gc_sweep_choicepoints(ChoiceLoc);
-
-void gc_compaction_phase(word32);
-
-
-// Do garbage collection
-
-bool gc(word32);
-
-// Trigger garbage collection
-
-ReturnValue psi_gc(void);
-
-ReturnValue psi_suspend_gc(void);
-ReturnValue psi_unsuspend_gc(void);
-
-#ifdef QP_DEBUG
-void dump_choices(ChoiceLoc);
-
-void dump_areas(word32);
-
-#endif // QP_DEBUG
-
-#endif	// GC_ESCAPES_H
+  bool timer_ready(void);
+  
+  void update_timeout(Timeval& timeout);
+};
+  
+#endif	// TIMER_H

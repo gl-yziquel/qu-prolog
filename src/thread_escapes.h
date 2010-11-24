@@ -57,12 +57,14 @@
 
 public:
 // @internaldoc
-// @pred '$thread_fork'(Name, Goal, ThreadSizes)
-// @mode '$thread_fork'(?, +, +) is semidet
-// @type '$thread_fork'(atom, goal, ThreadSizes)
+// @pred '$thread_fork'(Name, Goal, RootName, ThreadSizes)
+// @mode '$thread_fork'(?, +, +, +) is semidet
+// @type '$thread_fork'(atom, goal, atom, ThreadSizes)
 // @description
 // Create a new thread, with the given goal and whose data areas are the 
 // specified sizes.
+// If Rootname is not fail then the name generated for the thread
+// is based on this name (with an integer extension).
 //
 // ThreadSizes is a structure:
 //   '$thread_sizes'(HeapSize, ScratchpadSize, BindingTrailSize, 
@@ -73,7 +75,7 @@ public:
 //
 // The call will fail if a thread cannot be created.
 // @end pred
-ReturnValue psi_thread_fork(Object *&, Object *&, Object *&);
+ReturnValue psi_thread_fork(Object *&, Object *&, Object *&, Object *&);
 
 // @doc
 // @pred thread_symbol(Thread, Name)
@@ -191,7 +193,7 @@ ReturnValue psi_thread_suspend(Object *&);
 // @end doc
 ReturnValue psi_thread_resume(Object *&);
 
-ReturnValue psi_thread_wait(Object *&);
+ReturnValue psi_thread_wait_timeout(Object *&);
 
 // @internaldoc
 // @pred '$thread_defaults'(ThreadSizes)
@@ -205,6 +207,14 @@ ReturnValue psi_thread_wait(Object *&);
 // Implemented directly by pseudo-instruction.
 // @end pred
 // @end doc
+
+
+ReturnValue psi_thread_setup_wait(Object *&, Object *&, Object *&, Object *&);
+ReturnValue psi_thread_wait_free_ptr(Object *&);
+ReturnValue psi_thread_wait_ptr(Object *&);
+ReturnValue psi_thread_wait_update(Object *&);
+ReturnValue psi_thread_wait_extract_preds(Object *&, Object *&);
+
 ReturnValue psi_thread_defaults(Object *&);
 
 // @internaldoc
@@ -289,5 +299,7 @@ ReturnValue psi_thread_throw(Object *&, Object *&);
 // @end pred
 // @end doc
 ReturnValue psi_thread_push_goal(Object *&, Object *&);
+
+ReturnValue psi_gettimeofday(Object *&);
 
 #endif	// THREAD_ESCAPES_H

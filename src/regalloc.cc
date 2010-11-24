@@ -1026,6 +1026,8 @@ Heap::peephole(WordArray& acode, WordArray& final, int esize, bool isCompiled)
 	      if (gstruct->getFunctor() == AtomTable::get &&
                   gstruct->getArgument(1)->variableDereference() 
                      != AtomTable::structure &&
+                  gstruct->getArgument(1)->variableDereference() 
+                     != AtomTable::list &&
 		  equal_regs(gstruct->getArgument(4)->variableDereference(),
 			     reg1) &&
 		  is_xreg(reg1, reg) &&

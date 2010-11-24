@@ -110,6 +110,7 @@ decode_thread(Heap& heap,
     }
 }
 
+/*
 ErrorValue
 decode_thread_conditions(Heap& heap, AtomTable& atoms,
 			 Object * arg,
@@ -148,6 +149,8 @@ decode_thread_conditions(Heap& heap, AtomTable& atoms,
       return EV_TYPE;
     }
 }
+
+*/
 
 bool
 decode_defaults(Heap& heap, Object * sizes,

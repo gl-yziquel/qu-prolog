@@ -122,16 +122,19 @@ $1:
 	unify_x_variable(0)
 	unify_x_variable(4)
 	get_x_variable(3, 1)
+	pseudo_instr0(16)
 	allocate(1)
 	get_y_level(0)
 	put_x_value(4, 1)
 	call_predicate('$compile_pred/3$0', 4, 1)
+	pseudo_instr0(17)
 	cut(0)
 	deallocate
 	proceed
 
 $2:
 	get_x_variable(3, 0)
+	pseudo_instr0(17)
 	put_structure(2, 0)
 	set_constant(':')
 	set_constant('fail to compile predicate')

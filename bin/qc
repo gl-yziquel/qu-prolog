@@ -1,361 +1,345 @@
-#! /bin/sh
-#
-# Copyright (C) 2000-2010 
-#
-# qc:	Qu-Prolog compiler (a la cc and nc)
-#
+#!/usr/bin/env python
 
-compileroptions='Z'
-compileoptions='GD:ER:Sco:vX'
-sizeoptions='d:p:s:u:a:B:O:I:n:i:C:e:h:T:H:'
-ipc_options='L'
-options=$compileoptions$sizeoptions$ipc_options
-file="file.q[ligso]"
-usage="usage: $0 [ $options ] $file ... [-- options for Qu-Prolog programs]"
+## qc - a compiler for Qu-Prolog
+## Copyright (C) 2000-2010 
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+## 02110-1301, USA.
 
-# Compiler Control Options:
-#	-Z	run the boot version of the compiler (unavailable in release)
-#	-D	define macros
-#	-E	only run preprocessor
-#	-G	only run term expander
-#	-R F	supply term expansion rules
-#	-S	stop after compilation
-#	-c	do not link objects
-#	-o F	generate an executable or object file called F (default a.out)
-#	-v	verbose
-# Set Data Area Size in qc1:
-#	-B N	set binding trail 
-#	-O N	set other trail 
-#	-C N	set choice stack
-#	-e N	set environment stack
-#	-H N	set scratchpad
-#	-h N	set heap
-#	-H N	set scratchpad
-#	-n N	set name table
-#	-i N	set IP table
-# Set Data Area Size in qc1 and in the executable being generated:
-#	-s N	set string table
-# Set Data Area Size in the executable being generated:
-#	-d N	set code area
-#	-p N	set predicate table
-#	-a N	set atom table
-#
-# BUGS: If -o is specified with -c, then if there is more than one
-#	.ql file, then the object code for all .ql files will be
-#	written to the same output file.
+import sys
+import getopt
+import subprocess
+import shutil
+import os
+import stat
 
-#
-# location of Qu-Prolog project
-#
-PATH=/home/pjr/research/qp_dev/rel/qp8.11/bin:$PATH
+##############################
 
-#
-# names of Qu-Prolog binaries
-#
-preprocess=/home/pjr/research/qp_dev/rel/qp8.11/bin/qppp
-expand=/home/pjr/research/qp_dev/rel/qp8.11/bin/qg
-compile=/home/pjr/research/qp_dev/rel/qp8.11/bin/qc1
-compversion=qup
-assemble=/home/pjr/research/qp_dev/rel/qp8.11/bin/qa
-link=/home/pjr/research/qp_dev/rel/qp8.11/bin/ql
-execute=/home/pjr/research/qp_dev/rel/qp8.11/bin/qem
+preprocess='/home/pjr/research/qp_dev/rel/qp8.12/bin/qppp'
+expand='/home/pjr/research/qp_dev/rel/qp8.12/bin/qg'
+qpcompile='/home/pjr/research/qp_dev/rel/qp8.12/bin/qc1'
+compversion='qup'
+assemble='/home/pjr/research/qp_dev/rel/qp8.12/bin/qa'
+link='/home/pjr/research/qp_dev/rel/qp8.12/bin/ql'
+execute='/home/pjr/research/qp_dev/rel/qp8.12/bin/qem'
+libqofiles="/home/pjr/research/qp_dev/rel/qp8.12/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp8.12/prolog/library/*.qo"
 
-#
-# Use the line below when dynamic search for libraries is implemented.
-#
-# libqofiles=""
-libqofiles="/home/pjr/research/qp_dev/rel/qp8.11/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp8.11/prolog/library/*.qo"
-
-qlfiles=""
-qlefiles=""
-qifiles=""
-qgfiles=""
-qgefiles=""
-qsfiles=""
-qofiles=""
-
-newqifiles=""
-newqgfiles=""
-newqgefiles=""
-newqsfiles=""
-newqofiles=""
-
-eflag=false		# flag to stop after making .qi files
-gflag=false		# flag to stop after making .qge files
-sflag=false		# flag to stop after making .qs files
-cflag=false		# flag to stop after making .qo files
-vflag=false		# flag to verbose
-lflag=			# flag for no IPC services
-
-dflag=			# flag for debugging
-
-Goptions=""		# grammars translator options
-Poptions=""		# preprocessor options
-Coptions=""		# compiler options
-Aoptions=""		# assembler options
-Loptions=""		# linker options
-Eoptions=""		# emulator options
-
-execfile=a.out		# default executable file name
-
-#
-# echo messages
-#
-verbose()
-{
-	if [ $vflag = true ]
-	then
-		echo $*
-	fi
-}
-
-#
-# scan args, looking for options
-#
-verbose "process command's arguments"
-
-while getopts $compileroptions$options arg
-do
-	case "$arg" in
-	Z)	compversion=boot ;;
-	E)	eflag=true ;;
-	G)	gflag=true ;;
-	S)	sflag=true ;;
-	c)	cflag=true ;;
-	v)	vflag=true ;;
-	o)	execfile="$OPTARG"
-		case "$execfile" in
-		"")	echo "$0: null output file name" >&2
-			exit 1
-			;;
-		*.q[gls])
-			echo "$0: dangerous output file name: $execfile" >&2
-			exit 1
-			;;
-		*.q[gl]e)
-			echo "$0: dangerous output file name: $execfile" >&2
-			exit 1
-			;;
-		esac
-		;;
-	D)
-		Poptions="$Poptions -$arg$OPTARG"
-		;;
-	R)
-		Goptions="$Goptions -$arg $OPTARG"
-		;;
-	[dpa])
-		Loptions="$Loptions -$arg $OPTARG"
-		Eoptions="$Eoptions -$arg $OPTARG"
-		;;
-	[su])
-		Coptions="$Coptions -$arg $OPTARG"
-		Loptions="$Loptions -$arg $OPTARG"
-		Eoptions="$Eoptions -$arg $OPTARG"
-		;;
-	[BOICehTHni])
-		Coptions="$Coptions -$arg $OPTARG"
-		;;
-	X)
-		Eoptions="$Eoptions -$arg $OPTARG"
-		;;
-        L)	lflag='-L'
-		;;
-	\?)	echo $usage >&2; exit 1
-		;;
-	esac
-done
-shift `expr $OPTIND - 1`
-
-#
-# setting file lists
-#
-while [ $# -gt 0 -a "$1" != "--" ]
-do
-	case "$1" in
-	*.ql)	qlfiles="$qlfiles $1" ;;
-	*.pl)	qlfiles="$qlfiles $1" ;;
-	*.qle)	qlefiles="$qlefiles $1" ;;
-	*.qi)	qifiles="$qifiles $1" ;;
-	*.qg)	qgfiles="$qgfiles $1" ;;
-	*.qge)	qgefiles="$qgefiles $1" ;;
-	*.qs)	qsfiles="$qsfiles $1" ;;
-	*.qo)	qofiles="$qofiles $1" ;;
-	*)	echo $usage >&2; exit 1 ;;
-	esac
-	shift 1
-done
-
-if [ "$qlfiles$qlefiles$qifiles$qgfiles$qgefiles$qsfiles$qofiles" = "" ]
-then
-	echo $usage >&2
-	exit 1
-fi
-
-openfilename=""
-#
-# trap hangup and interrupt
-#
-trap "[ -z '\$openfilename' ] || rm -f \$openfilename" 1 2
+##############################
 
 
-#
-# first pass: preprocess (.ql -> .qi)
-#
-verbose "preprocessing ..."
+options = 'Zd:p:rs:u:a:B:O:I:n:i:C:e:h:T:H:GD:ER:Sco:vX'
 
-for arg in $qlfiles
-do
-	verbose "	$arg"
-        stem=`expr $arg : '\(.*\)\.[^./]*$'`
+version3 = sys.version.startswith('3')
 
-	openfilename=$stem.qi
-	$preprocess $dflag $Poptions < $arg > $stem.qi || exit 1
-	newqifiles="$newqifiles $stem.qi"
-done
-openfilename=""
+version3_print = """
+def printit(text):
+    print(text)
+"""
+version2_print = """
+def printit(text):
+    print text
+"""
+if version3:
+    exec(version3_print)
+else:
+    exec(version2_print)
 
-$eflag && exit 0
+def usage():
+    printit("Usage: qc [%s] file.q[ligso] ... [-- options for Qu-Prolog programs]" % options)
+ 
+def verbose(flag, text):
+    if flag:
+        printit(text)
+
+def shcall(call):
+    retcode = subprocess.call(call, shell=True)
+    if retcode != 0:
+        printit("Error in %s" % ' '.join(call))
+        sys.exit()  
+
+def wrapq(filename):
+    return '"'+filename+'"'
+
+def main():
+    args = sys.argv[1:]
+    qlfiles = []
+    qlefiles=[]
+    qifiles=[]
+    qgfiles=[]
+    qgefiles=[]
+    qsfiles=[]
+    qofiles=[]
+    
+    newqifiles=[]
+    newqgfiles=[]
+    newqgefiles=[]
+    newqsfiles=[]
+    newqofiles=[]
+
+    eflag = False
+    gflag = False
+    sflag = False
+    cflag = False
+    vflag = False
+    rlflag = False
+
+    Goptions = []
+    Poptions = []
+    Coptions = []
+    Aoptions = []
+    Loptions = []
+    Eoptions = []
+    exfile = 'a.out'
+    compversion = 'qup'
+
+    try:
+        optlist, args = getopt.getopt(args, options)
+    except:
+        usage()
+        sys.exit()
+    
+    for (option, arg) in optlist:
+        option = option[1:]
+        if option == 'Z':
+            compversion = 'boot'
+        elif option == 'E':
+            eflag = True
+        elif option == 'G':
+            gflag = True
+        elif option == 'S':
+            sflag = True
+        elif option == 'c':
+            cflag = True
+        elif option == 'v':
+            vflag = True
+        elif option == 'r':
+            rlflag = True
+        elif option == 'o':
+            exfile = arg
+            if arg == '':
+                printit('qc: null output file name')
+                sys.exit()
+            elif arg.endswith('.qg') or  arg.endswith('.ql') or  arg.endswith('.qs'):
+                printit('qc: dangerous output file name: %s' % arg)
+                sys.exit()
+            elif arg.endswith('.qge') or  arg.endswith('.qle') or  arg.endswith('.qse'):
+                printit('qc: dangerous output file name: %s' % arg)
+                sys.exit()
+        elif option == 'D':
+            if arg.startswith('-'):
+                usage()
+                sys.exit()
+            Poptions.append("-%s%s" % (option, arg))
+        elif option == 'R':
+            if arg.startswith('-'):
+                usage()
+                sys.exit()
+            Goptions.append("-%s %s" % (option, arg))
+        elif option in list('dpa'):
+            Loptions.append("-%s %s" % (option, arg))
+            Eoptions.append("-%s %s" % (option, arg))
+        elif option in list('su'):
+            Coptions.append("-%s %s" % (option, arg))
+            Loptions.append("-%s %s" % (option, arg))
+            Eoptions.append("-%s %s" % (option, arg))            
+        elif option in list('BOICehTHni'):
+            Coptions.append("-%s %s" % (option, arg))
+        elif option == 'X':
+            Eoptions.append("-%s %s" % (option, arg)) 
+        else:
+            usage()
+            sys.exit()
+
+    otherargs = []
+    for i, arg in enumerate(args):
+        if arg.endswith('.ql'):
+            qlfiles.append(arg)
+        elif arg.endswith('.pl'):
+            qlfiles.append(arg)
+        elif arg.endswith('.qle'):
+            qlefiles.append(arg)
+        elif arg.endswith('.qi'):
+            qifiles.append(arg)
+        elif arg.endswith('.qg'):
+            qgfiles.append(arg)
+        elif arg.endswith('.qge'):
+            qgefiles.append(arg)
+        elif arg.endswith('.qs'):
+            qsfiles.append(arg)
+        elif arg.endswith('.qo'):
+            qofiles.append(arg)
+        else:
+            if arg == '--': continue
+            otherargs.append(arg)
 
 
-#
-# first pass for encoded files: expand (.qle -> .qge)
-#
-verbose "expanding encoded ..."
+    allfiles = qlfiles + qlefiles + qifiles + qgfiles + qgefiles + qsfiles + qofiles
+    if allfiles == []:
+        usage()
+        sys.exit()
 
-for arg in $qlefiles 
-do
-	verbose "	$arg"
-        stem=`expr $arg : '\(.*\)\.[^./]*$'`
+    verbose(vflag, "preprocessing ...")
 
-	openfilename=$stem.qle
-	$expand $Coptions -- $dflag $Goptions $stem.qle || exit 1
-	newqgefiles="$newqgefiles $stem.qge"
-done
-openfilename=""
+    for arg in qlfiles:
+        verbose(vflag, "      %s" % arg)
+        stem = arg.rsplit('.', 1)[0]
+        newfile = stem+'.qi'
+        try:
+            fp = open(arg, 'U')
+        except:
+            printit("Can't open %s" % arg)
+            sys.exit()
+        p = subprocess.Popen([preprocess]+Poptions, stdin=fp, stdout=subprocess.PIPE)
+        try:
+            ofp = open(newfile, 'w')
+        except:
+            printit("Can't open %s" % newfile)
+            sys.exit()
+        text = p.communicate()[0]
+        ofp.write(text.decode())
+        fp.close()
+        ofp.close()
+        newqifiles.append(newfile)
 
-#
-# second pass: expand (.qi -> .qge)
-#
-verbose "expanding ..."
+    if eflag: return
+ 
+    #
+    # first pass for encoded files: expand (.qle -> .qge)
+    #
 
-for arg in $qifiles $newqifiles
-do
-	verbose "	$arg"
-        stem=`expr $arg : '\(.*\)\.[^./]*$'`
+    verbose(vflag, "expanding encoded ...")
+    
+    for arg in qlefiles:
+        verbose(vflag, "      %s" % arg)
+        stem = arg.rsplit('.', 1)[0]
+        call = [expand]+Coptions+['--']+Goptions+[stem+'.qle']
+        shcall(call)
+        newqgefiles.append(stem+'.qge')
 
-	openfilename=$stem.qi
-	if [ "$compversion" = "boot" ]
-	then
-		cp $stem.qi $stem.qg
-		newqgfiles="$newqgfiles $stem.qg"
-	else
-		$expand $Coptions -- $dflag $Goptions $stem.qi || exit 1
-		newqgefiles="$newqgefiles $stem.qge"
-	fi
-done
-openfilename=""
-[ -z "$newqifiles" ] || rm -f $newqifiles
+    #
+    # second pass: expand (.qi -> .qg)
+    #
+    verbose(vflag, "expanding ...")
+    for arg in qifiles+newqifiles:
+        verbose(vflag, "      %s" % arg)
+        stem = arg.rsplit('.', 1)[0]
+        if compversion == 'boot':
+            shutil.copy(arg, stem+'.qg')
+        else:
+            call = [expand]+Coptions+['--']+Goptions+[wrapq(arg)]
+            shcall([' '.join(call)])
+        newqgfiles.append(stem+'.qg')
+       
+    for f in newqifiles:
+        os.remove(f)
 
-$gflag && exit 0
+    if gflag: return
 
-#
-# third pass: compile (.qge -> .qs)
-#
-verbose "compiling ..."
+    #
+    # third pass: compile (.qge -> .qs)
+    #
+    verbose(vflag, "compiling ...")
+    for arg in qgefiles+newqgefiles:
+        verbose(vflag, "      %s" % arg)
+        stem = arg.rsplit('.', 1)[0]
+        call = [qpcompile+'.'+compversion]+Coptions+[wrapq(arg)]
+        shcall([' '.join(call)])
+        newqsfiles=stem+'.qs'
+    #
+    # third pass (unencoded): compile (.qg -> .qs)
+    #
+    for arg in qgfiles+newqgfiles:
+        verbose(vflag, "      %s" % arg)
+        stem = arg.rsplit('.', 1)[0]
+        call = [qpcompile+'.'+compversion]+Coptions+[wrapq(arg)]
+        shcall([' '.join(call)])
+        newqsfiles.append(stem+'.qs')
 
-for arg in $qgefiles $newqgefiles
-do
-	verbose "	$arg"
-        stem=`expr $arg : '\(.*\)\.[^./]*$'`
+    for f in newqgfiles:
+        os.remove(f)
 
-	openfilename=$stem.qs
-	$compile.$compversion $dflag $Coptions $stem.qge || exit 1
-	newqsfiles="$newqsfiles $stem.qs"
-done
-openfilename=""
-[ -z "$newqgefiles" ] || rm -f $newqgefiles
-#
-# third pass (unencoded): compile (.qg -> .qs)
-#
-verbose "compiling ..."
+    if sflag: return
 
-for arg in $qgfiles $newqgfiles
-do
-	verbose "	$arg"
-        stem=`expr $arg : '\(.*\)\.[^./]*$'`
+    #
+    # fourth pass: assemble (.qs -> .qo)
+    #
+    verbose(vflag, "assembling ...")
+    for arg in qsfiles+newqsfiles:
+        verbose(vflag, "      %s" % arg)
+        stem = arg.rsplit('.', 1)[0]
+        outfile = stem+'.qo'
+        if exfile != "a.out" and cflag:
+            call = [assemble]+Aoptions+['-i', wrapq(arg), '-o', 
+                                        wrapq(exfile)]
+        else:
+            call = [assemble]+Aoptions+['-i', wrapq(arg), '-o', 
+                                        wrapq(outfile)]
+        shcall([' '.join(call)])
+        newqofiles.append(stem+'.qo')
 
-	openfilename=$stem.qs
-	$compile.$compversion $dflag $Coptions $stem.qg || exit 1
-	newqsfiles="$newqsfiles $stem.qs"
-done
-openfilename=""
-[ -z "$newqgfiles" ] || rm -f $newqgfiles
+    for f in newqsfiles:
+        os.remove(f)
 
-$sflag && exit 0
+    if cflag: return
+        
 
-#
-# fourth pass: assemble (.qs -> .qo)
-#
-verbose "assembling ..."
+    verbose(vflag, "compiling ...")
+    # make an absolute version of exfile
+    exfile = os.path.expandvars(exfile)
+    exfile = os.path.abspath(exfile)
+    savefile = exfile+'.qx'
+    call = [link, '-o', wrapq(savefile)] + Loptions + [libqofiles] + \
+        [wrapq(f) for f in qofiles + newqofiles]
+    shcall([' '.join(call)])
+    parts = os.path.split(exfile)
+    base = parts[0]
+    exname = parts[1]
+    rl_commands_file = os.path.join(base, 'rl_commands')
 
-for arg in $qsfiles $newqsfiles
-do
-	verbose "	$arg"
-        stem=`expr $arg : '\(.*\)\.[^./]*$'`
+    for f in newqofiles:
+        os.remove(f)
 
-	openfilename=$stem.qo
-	if [ "$execfile" != "a.out" ] && $cflag
-	then
-		$assemble $dflag $Aoptions -i $stem.qs -o $execfile || exit 1
-	else
-		$assemble $dflag $Aoptions -i $stem.qs -o $stem.qo || exit 1
-	fi
-	newqofiles="$newqofiles $stem.qo"
-done
-openfilename=""
-[ -z "$newqsfiles" ] || rm -f $newqsfiles
+    fp = open(exfile, 'w')
+    if rlflag:
+        fp.write('if [ "`which rlwrap`" != "" ]; then\n')
+        fp.write("exec rlwrap -b ' ' -C %s -f %s " % (exname, rl_commands_file))
+        fp.write(execute)
+        fp.write(' ')
+        fp.write(' '.join(Eoptions))
+        fp.write(" -Q '"+savefile+"'"+' "$@" -- %s\n' % ' '.join(otherargs))
+        fp.write('else\n')
+        fp.write('exec ')
+        fp.write(execute)
+        fp.write(' ')
+        fp.write(' '.join(Eoptions))
+        fp.write(" -Q '"+savefile+"'"+' "$@" -- %s\n' % ' '.join(otherargs))
+        fp.write('fi\n')
+    else:
+        fp.write('exec ')
+        fp.write(execute)
+        fp.write(' ')
+        fp.write(' '.join(Eoptions))
+        fp.write(" -Q '"+savefile+"'"+' "$@" -- %s\n' % ' '.join(otherargs))
+    fp.close()
+    os.chmod(exfile, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | \
+                 stat.S_IRGRP | stat.S_IXGRP | \
+                 stat.S_IROTH |stat.S_IXOTH) 
+    
+  
+    
+  
 
-$cflag && exit 0
-
-#
-# fifth pass: make save file and executable shell command file
-#
-verbose "linking"
-
-# make an absolute version of the save file name for use in the command file
-
-case $execfile in
-/*)
-	absexecfile=$execfile
-	;;
-*)
-	currdir=`pwd`
-	case $currdir in
-	/u*)
-		abspath=`echo $currdir | sed "s,/u./$HOSTNAME/,/homes/,"`
-		;;
-	/tmp_mnt/*)
-		abspath=`echo $currdir | sed 's,/tmp_mnt/homes/[^/]*/,/homes/,'`
-		;;
-	*)
-		abspath=$currdir
-		;;
-	esac
-	absexecfile=$abspath/$execfile
-	;;
-esac
-
-savefile=$absexecfile.qx
-
-# generate save file
-
-openfilename=$savefile
-$link -o "$savefile" $dflag $Loptions $libqofiles $qofiles $newqofiles || exit 1
-openfilename=""
-[ -z "$newqofiles" ] || rm -f $newqofiles
-
-# make executable file
-
-echo "exec $execute $Eoptions $lflag -Q '$savefile' \$* $*" >$execfile
-chmod a+x $execfile
+if __name__ == '__main__': 
+    main()

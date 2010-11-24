@@ -106,6 +106,9 @@ private:
 
   Timeval theTimeouts;           // Calculated in IterQuantum to determine of 
 	                         // Sleep is a block or a timeout
+
+  Thread::ReturnValue run_timer_goal(Thread* thread);
+
   //
   // Perform actions between thread executions.
   // Return true if any threads were woken.
@@ -148,7 +151,7 @@ public:
   Thread::ReturnValue Sleep();
 
   void insertThread(Thread*, Thread*);
-
+  void deleteThread(Thread*);
   void resetThread(Thread*);
 };
 

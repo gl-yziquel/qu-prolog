@@ -14,7 +14,7 @@ ASMS =        $(addsuffix .qs,$(BASES))
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJECTS)
-	$(COMPILE.qc) -L -o $(PROGRAM) $(OBJECTS)
+	$(COMPILE.qc)  -o $(PROGRAM) $(OBJECTS)
 
 .PHONY:	clean
 clean:

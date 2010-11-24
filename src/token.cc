@@ -665,66 +665,13 @@ int32 Thread::base_num(QPStream *InStrm, long& Integer, int base)
 
 }
 
-//
-// GetToken() reads a single token from the input stream and returns the
-// token type.  The value of the token is stored in one of the
-// variables: Integer, Simple, String.
-//
-int32
-Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, Object*& String)
+int32 Thread::get_number_token(QPStream *InStrm, char c, long& Integer, double& Double)
 {
-  int32		digit, base, n, i;
+  int32		digit, base; 
   long BaseMax, BaseDigit;
-  int d, e;
-  char		*s = Simple;
   char          number[128];
   char*          numptr;
-  bool		flag; 
-  
-  int c = Get(InStrm);
 
- START:
-  switch (InType(c)) 
-    {
-    case DIGIT: 
-      //
-      // The only cases considered are listed as follows.
-      // 1. positive decimal integers: a string of decimal digits. 
-      // 2. positive based integers: base'number.
-      //
-      if (DigVal(c) == 0)
-        {
-          c  = Get(InStrm);
-          if (c == 'b')
-            {
-              return base_num(InStrm, Integer, 2);
-            }
-          else if (c == 'o')
-            {
-              return base_num(InStrm, Integer, 8);
-            }
-          else if (c == 'x')
-            {
-              return base_num(InStrm, Integer, 16);
-            }
-          else if (c =='\'')
-	    {
-	      //
-	      // 0'c is a charater code.
-	      //
-	      n = ReadCharacter(InStrm, QUOTE, Integer);
-	      
-	      if (n == -1)
-		{
-		  return(ERROR_TOKEN);
-		}
-	      else
-		{
-		  Integer = ((n == 0) ? QUOTE : (n));
-		  return(NUMBER_TOKEN);
-		}
-	    }
-        } 
       Integer = 0;
       while (InType(c) == DIGIT)
 	{
@@ -853,6 +800,69 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
 	}
       Putback(InStrm, c);
       return(NUMBER_TOKEN); 
+}
+
+//
+// GetToken() reads a single token from the input stream and returns the
+// token type.  The value of the token is stored in one of the
+// variables: Integer, Simple, String.
+//
+int32
+Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, Object*& String)
+{
+  int32		digit, base, n, i;
+  long BaseMax, BaseDigit;
+  int d, e;
+  char		*s = Simple;
+  char          number[128];
+  char*          numptr;
+  bool		flag; 
+  
+  int c = Get(InStrm);
+
+ START:
+  switch (InType(c)) 
+    {
+    case DIGIT: 
+      //
+      // The only cases considered are listed as follows.
+      // 1. positive decimal integers: a string of decimal digits. 
+      // 2. positive based integers: base'number.
+      //
+      if (DigVal(c) == 0)
+        {
+          c  = Get(InStrm);
+          if (c == 'b')
+            {
+              return base_num(InStrm, Integer, 2);
+            }
+          else if (c == 'o')
+            {
+              return base_num(InStrm, Integer, 8);
+            }
+          else if (c == 'x')
+            {
+              return base_num(InStrm, Integer, 16);
+            }
+          else if (c =='\'')
+	    {
+	      //
+	      // 0'c is a charater code.
+	      //
+	      n = ReadCharacter(InStrm, QUOTE, Integer);
+	      
+	      if (n == -1)
+		{
+		  return(ERROR_TOKEN);
+		}
+	      else
+		{
+		  Integer = ((n == 0) ? QUOTE : (n));
+		  return(NUMBER_TOKEN);
+		}
+	    }
+        } 
+      return get_number_token(InStrm, c, Integer, Double); 
       break;
       
     case UPPER:
@@ -930,7 +940,24 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
       *s = c;
       n = ATOM_LENGTH - 2;
       d = Get(InStrm);
-      
+      // if ((c == '-') && (InType(d) == DIGIT))
+      //   {
+      //     int32 retval = get_number_token(InStrm, d, Integer, Double);
+      //     if (retval == NUMBER_TOKEN)
+      //       { 
+      //         Integer = -Integer;
+      //       }
+      //     else if (retval == DOUBLE_TOKEN)
+      //       {
+      //         Double = -Double;
+      //       }
+      //     return retval;
+      //   }
+      // if ((c == '+') && (InType(d) == DIGIT))
+      //   {
+      //     return get_number_token(InStrm, d, Integer, Double);
+      //   }
+
       if (c == BEGCOM && d == ASTCOM) 
 	{
 	  //

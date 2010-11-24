@@ -403,6 +403,218 @@ end('$call_or'/3):
 
 
 
+'call'/2:
+
+
+$1:
+	get_x_variable(2, 0)
+	put_x_variable(0, 0)
+	put_integer(1, 3)
+	pseudo_instr3(0, 0, 2, 3)
+	put_integer(1, 3)
+	pseudo_instr3(1, 3, 0, 2)
+	get_x_value(1, 2)
+	execute_predicate('call', 1)
+end('call'/2):
+
+
+
+'call'/3:
+
+
+$1:
+	get_x_variable(3, 0)
+	put_x_variable(0, 0)
+	put_integer(2, 4)
+	pseudo_instr3(0, 0, 3, 4)
+	put_integer(1, 4)
+	pseudo_instr3(1, 4, 0, 3)
+	get_x_value(1, 3)
+	put_integer(2, 3)
+	pseudo_instr3(1, 3, 0, 1)
+	get_x_value(2, 1)
+	execute_predicate('call', 1)
+end('call'/3):
+
+
+
+'call'/4:
+
+
+$1:
+	get_x_variable(4, 0)
+	put_x_variable(0, 0)
+	put_integer(3, 5)
+	pseudo_instr3(0, 0, 4, 5)
+	put_integer(1, 5)
+	pseudo_instr3(1, 5, 0, 4)
+	get_x_value(1, 4)
+	put_integer(2, 4)
+	pseudo_instr3(1, 4, 0, 1)
+	get_x_value(2, 1)
+	put_integer(3, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(3, 1)
+	execute_predicate('call', 1)
+end('call'/4):
+
+
+
+'call'/5:
+
+
+$1:
+	get_x_variable(5, 0)
+	put_x_variable(0, 0)
+	put_integer(4, 6)
+	pseudo_instr3(0, 0, 5, 6)
+	put_integer(1, 6)
+	pseudo_instr3(1, 6, 0, 5)
+	get_x_value(1, 5)
+	put_integer(2, 5)
+	pseudo_instr3(1, 5, 0, 1)
+	get_x_value(2, 1)
+	put_integer(3, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(3, 1)
+	put_integer(4, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(4, 1)
+	execute_predicate('call', 1)
+end('call'/5):
+
+
+
+'call'/6:
+
+
+$1:
+	get_x_variable(6, 0)
+	put_x_variable(0, 0)
+	put_integer(5, 7)
+	pseudo_instr3(0, 0, 6, 7)
+	put_integer(1, 7)
+	pseudo_instr3(1, 7, 0, 6)
+	get_x_value(1, 6)
+	put_integer(2, 6)
+	pseudo_instr3(1, 6, 0, 1)
+	get_x_value(2, 1)
+	put_integer(3, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(3, 1)
+	put_integer(4, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(4, 1)
+	put_integer(5, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(5, 1)
+	execute_predicate('call', 1)
+end('call'/6):
+
+
+
+'call'/7:
+
+
+$1:
+	get_x_variable(7, 0)
+	put_x_variable(0, 0)
+	put_integer(6, 8)
+	pseudo_instr3(0, 0, 7, 8)
+	put_integer(1, 8)
+	pseudo_instr3(1, 8, 0, 7)
+	get_x_value(1, 7)
+	put_integer(2, 7)
+	pseudo_instr3(1, 7, 0, 1)
+	get_x_value(2, 1)
+	put_integer(3, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(3, 1)
+	put_integer(4, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(4, 1)
+	put_integer(5, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(5, 1)
+	put_integer(6, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(6, 1)
+	execute_predicate('call', 1)
+end('call'/7):
+
+
+
+'call'/8:
+
+
+$1:
+	get_x_variable(8, 0)
+	put_x_variable(0, 0)
+	put_integer(7, 9)
+	pseudo_instr3(0, 0, 8, 9)
+	put_integer(1, 9)
+	pseudo_instr3(1, 9, 0, 8)
+	get_x_value(1, 8)
+	put_integer(2, 8)
+	pseudo_instr3(1, 8, 0, 1)
+	get_x_value(2, 1)
+	put_integer(3, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(3, 1)
+	put_integer(4, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(4, 1)
+	put_integer(5, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(5, 1)
+	put_integer(6, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(6, 1)
+	put_integer(7, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(7, 1)
+	execute_predicate('call', 1)
+end('call'/8):
+
+
+
+'call'/9:
+
+
+$1:
+	get_x_variable(9, 0)
+	put_x_variable(0, 0)
+	put_integer(8, 10)
+	pseudo_instr3(0, 0, 9, 10)
+	put_integer(1, 10)
+	pseudo_instr3(1, 10, 0, 9)
+	get_x_value(1, 9)
+	put_integer(2, 9)
+	pseudo_instr3(1, 9, 0, 1)
+	get_x_value(2, 1)
+	put_integer(3, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(3, 1)
+	put_integer(4, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(4, 1)
+	put_integer(5, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(5, 1)
+	put_integer(6, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(6, 1)
+	put_integer(7, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(7, 1)
+	put_integer(8, 2)
+	pseudo_instr3(1, 2, 0, 1)
+	get_x_value(8, 1)
+	execute_predicate('call', 1)
+end('call'/9):
+
+
+
 'call_with_inlining'/1:
 
 	try(1, $1)
@@ -705,7 +917,7 @@ end('$throw_cleanup'/0):
 
 
 
-'$query_call2010_7_30_11_28_31_785/0$0'/0:
+'$query_call1290479613_665/0$0'/0:
 
 
 $1:
@@ -719,23 +931,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_call2010_7_30_11_28_31_785/0$0'/0):
+end('$query_call1290479613_665/0$0'/0):
 
 
 
-'$query_call2010_7_30_11_28_31_785'/0:
+'$query_call1290479613_665'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_call2010_7_30_11_28_31_785/0$0', 0, 0)
+	call_predicate('$query_call1290479613_665/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_call2010_7_30_11_28_31_785'/0):
+end('$query_call1290479613_665'/0):
 
 
 
@@ -743,7 +955,7 @@ end('$query_call2010_7_30_11_28_31_785'/0):
 
 
 $1:
-	execute_predicate('$query_call2010_7_30_11_28_31_785', 0)
+	execute_predicate('$query_call1290479613_665', 0)
 end('$query'/0):
 
 

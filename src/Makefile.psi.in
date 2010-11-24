@@ -46,6 +46,7 @@ export SOURCES.psi = \
 	temperature.cc \
 	thread_decode.cc \
 	thread_escapes.cc \
+	timer_escapes.cc \
 	token.cc \
 	trace_escapes.cc \
 	user_hash_table_escapes.cc \

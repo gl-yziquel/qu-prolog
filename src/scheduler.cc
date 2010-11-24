@@ -74,6 +74,7 @@
 #include "thread_qp.h"
 #include "thread_condition.h"
 #include "thread_table.h"
+#include "timer.h"
 
 #ifdef WIN32
         #define _WINSOCKAPI_
@@ -108,6 +109,8 @@ static const int32 SLEEP_USECS = TIME_SLICE_USECS;
 
 static void handle_timeslice(int);
 
+extern TimerStack timerStack;
+
 Scheduler::Scheduler(ThreadOptions& to, ThreadTable& tt, 
 		     Signals& s, PredTab& p)
   : thread_options(to), thread_table(tt), signals(s), 
@@ -127,6 +130,45 @@ extern SOCKET PipeInSock;
 extern int* sigint_pipe;
 #endif
 extern bool in_sigint;
+
+Thread::ReturnValue
+Scheduler::run_timer_goal(Thread* thread)
+{
+  Object* SavedX[NUMBER_X_REGISTERS];
+  word32 i;
+  for (i = 0; i < NUMBER_X_REGISTERS; i++)
+    {
+      SavedX[i] = thread->X[i];
+    }
+  heapobject* saved_heap_top = thread->heap.getTop();
+  CodeLoc savedPC = thread->programCounter;
+  EnvLoc saved_current_env = thread->currentEnvironment;
+  ChoiceLoc saved_current_cp = thread->currentChoicePoint;
+  CodeLoc saved_continuation_instr = thread->continuationInstr;
+  ChoiceLoc saved_cutpoint = thread->cutPoint;
+  BlockStatus bs = thread->getBlockStatus();
+  Object* goal;
+  timerStack.make_timer_goal(goal, thread->heap);
+  thread->programCounter =
+    predicates.getCode(predicates.lookUp(atoms->add("$call_timer_goals"), 1, atoms, code)).getPredicate(code);
+  thread->XRegs()[0] = goal;
+  thread->setSuspendGC(true);
+  const Thread::ReturnValue result = thread->Execute();
+  thread->setSuspendGC(false);
+  for (i = 0; i < NUMBER_X_REGISTERS; i++)
+    {
+      thread->X[i] = SavedX[i];
+    }
+  thread->heap.setTop(saved_heap_top);
+  thread->programCounter = savedPC;
+  thread->currentEnvironment = saved_current_env;
+  thread->currentChoicePoint = saved_current_cp;
+  thread->continuationInstr = saved_continuation_instr;
+  thread->cutPoint = saved_cutpoint;
+  thread->getBlockStatus() = bs;
+  return result;
+} 
+
 
 bool Scheduler::poll_fds(Timeval& poll_timeout)
 {
@@ -154,7 +196,7 @@ bool Scheduler::poll_fds(Timeval& poll_timeout)
       (*iter)->updateFDSETS(&rfds, &wfds, max_fd);
       (*iter)->processTimeouts(poll_timeout);
     }
-
+  timerStack.update_timeout(poll_timeout);
   int result;
   if (poll_timeout.isForever())
     {
@@ -165,7 +207,7 @@ bool Scheduler::poll_fds(Timeval& poll_timeout)
       struct timeval timeout = {poll_timeout.Sec(), poll_timeout.MicroSec()};
       result = select(max_fd + 1, &rfds, &wfds, NULL, &timeout);
     }
-  return result > 0;
+  return (result > 0) || ((result == 0) && timerStack.timer_ready());
 
 }
 
@@ -311,6 +353,14 @@ Scheduler::Schedule(void)
 
       size_t blocked = 0;	// Number of threads that have blocked so far
 
+      if (timerStack.timer_ready())
+        {
+          if (run_timer_goal(thread_table.LookupID(0)) == Thread::RV_HALT)
+            {
+              return 0;
+            }
+        }
+
       //
       // Walk down the run queue, attempting to execute threads as we go...
       //
@@ -320,7 +370,6 @@ Scheduler::Schedule(void)
 	   )
 	{
 	  Thread& thread = **iter;
-	  
 	  if (thread.Condition() == ThreadCondition::EXITED)
 	    {
 	      // remove from blocked queue
@@ -574,6 +623,15 @@ Scheduler::Schedule(void)
 	      break;
 	    }
 
+          // run the timer goals after execution of thread
+          if (timerStack.timer_ready())
+            {
+              if (run_timer_goal(thread_table.LookupID(0)) == Thread::RV_HALT)
+                {
+                  return 0;
+                }
+            }
+
 	  // Advance the iterator if appropriate.
 
 	  // Did the thread exit?
@@ -635,13 +693,12 @@ Scheduler::Schedule(void)
       // If none of the threads was runnable...
       if (! run_queue.empty() && blocked == run_queue.size())
 	{
-	  const Thread::ReturnValue result = Sleep();
-	  if (result == Thread::RV_HALT)
-	    {
-	      return 0;
-	    }
+          const Thread::ReturnValue result = Sleep();
+          if (result == Thread::RV_HALT)
+            {
+              return 0;
+            }
 	}
-
       //
       // Set up for next traversal of the run time queue
       //
@@ -665,7 +722,10 @@ Scheduler::processBlockedThreads(void)
       if ((*iter)->unblock(theTimeouts))
 	{
 	  woken++;
-	  delete *iter;
+	  if (!(*iter)->isWaitObject())
+	    {
+	      delete *iter;
+	    }
 	  iter = blocked_queue.erase(iter);
 	}
       else
@@ -786,6 +846,45 @@ void Scheduler::insertThread(Thread* th, Thread* newth)
   assert(false);
 }
 
+void Scheduler::deleteThread(Thread *th)
+{
+  for (list<Thread *>::iterator iter = run_queue.begin();
+       iter != run_queue.end();
+       // iterator is incremented at the end of the loop
+       )
+    {
+      if (**iter == *th)
+	{	  
+	  assert(th->Condition() == ThreadCondition::EXITED);
+	  // remove from blocked queue
+	  for (list<BlockingObject *>::iterator biter 
+		 = blocked_queue.begin();
+	       biter != blocked_queue.end();
+	       // iterator is advanced in loop
+	       )
+	    {
+	      if ((*biter)->getThread() == th)
+		{
+		  delete *biter;
+		  biter = blocked_queue.erase(biter);
+		}
+	      else
+		{
+		  biter++;
+		}
+	    }
+
+	  thread_table.RemoveID(th->TInfo().ID());
+	  thread_table.DecLive();
+	  delete th;
+	      
+	  iter = run_queue.erase(iter);
+	  break;
+	}
+      iter++;
+    }
+}
+
 //
 // Reset the thread by removing the thread from the
 // blocked queue and clear block status.
@@ -796,16 +895,22 @@ void Scheduler::resetThread(Thread* th)
   //
   for (list<BlockingObject *>::iterator iter = blocked_queue.begin();
        iter != blocked_queue.end();
-       iter++
        )
     {
       BlockingObject& blockingObj = **iter;
       if (blockingObj.getThread() == th)
-	{
-	  delete *iter;
-	  (void) blocked_queue.erase(iter);
+	{	  
+          if (!(*iter)->isWaitObject())
+	    {
+	      delete *iter;
+	    }
+	  iter = blocked_queue.erase(iter);
 	  break;
 	}
+      else
+        {
+          iter++;
+        }
     }
   th->getBlockStatus().setRunnable();
 }

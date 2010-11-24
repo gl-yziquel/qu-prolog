@@ -133,7 +133,7 @@ Thread::psi_env_putenv(
 	 
   const int result = putenv(env_entry_string);
 
-  return result == 0 ? RV_FAIL : RV_SUCCESS;
+  return result == 0 ? RV_SUCCESS : RV_FAIL;
 }
 
 

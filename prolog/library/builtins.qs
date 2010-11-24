@@ -1,391 +1,396 @@
 '$builtin'/2:
 
-	switch_on_term(0, $670, 'fail', 'fail', 'fail', 'fail', $576)
+	switch_on_term(0, $682, 'fail', 'fail', 'fail', 'fail', $587)
 
-$576:
-	switch_on_constant(0, 1024, ['$default':'fail', 'chr_collect_constraints':$1, 'asserta':$2, 'open_list':$3, 'del_subterm_expansion':$4, 'char_code':$5, 'thread_push_goal':$6, 'read_term':$577, 'true':$9, 'build_structure':$10, 'skip':$578, 'put':$579, 'phrase':$580, 'dynamic':$581, 'functor':$18, 'thread_sleep_until':$21, 'sub':$22, 'del_linking_clause':$23, 'debug_gui_handle':$24, 'abolish':$25, 'obvar_name_to_prefix':$26, 'writeTq':$582, 'exception_severity':$29, 'load':$30, 'remove_duplicates':$31, 'thread_resume':$32, 'broadcast':$33, 'op':$583, 'current_obvar_prefix':$584, 'expand_term':$585, 'nsig':$40, 'os':$41, 'default_exception_error':$42, 'get_line':$586, 'current_prolog_flag':$45, 'ip_lookup_default':$587, 'break':$48, 'stderr':$49, 'fold_right':$50, 'is_distinct':$51, 'numbervars':$52, 'see':$53, 'main':$54, 'global_state_increment':$55, 'assertz':$56, 'append':$57, 'thread_wait':$588, 'false':$60, 'irandom':$61, 'member_eq':$62, 'global_state_set':$63, 'front_with':$64, 'hash_table_remove':$65, 'any_variable':$66, 'inline':$589, 'get_signals_flag':$69, '==':$70, 'get_unify_delays_avoid':$71, '=<':$72, 'get_char':$590, 'add_linking_clause':$75, 'simple':$76, 'get_var_delays':$77, 'pedro_is_connected':$78, 'tcp_getservbyport':$79, 'consult':$80, 'get_code':$591, 'chr_add_delays':$83, 'thread_wait_on_goal':$592, 'add_global_exception_handler':$86, 'error':$87, 'seen':$88, 'process_pid':$89, 'name_vars':$593, 'set_autoflush':$92, 'concat_atom':$594, 'retract':$95, 'read_debug_msg_codes':$96, 'remove_global_exception_handler':$97, 'stream_to_chars':$98, 'ipc_send':$595, 'listing':$596, 'uncurry':$103, 'pedro_port':$104, 'xdebug':$105, '@>=':$106, 'tcp_is_socket':$107, 'add_expansion':$108, 'subterm_expand_depth_limit':$109, 'fast_retry_delays':$110, 'set_obvar_name':$111, 'start_debug_thread_gui':$112, 'arg':$113, '=..':$114, ',':$115, 'open_string':$597, 'chr_lookup_hash':$118, 'substitution':$119, 'sub_atom':$120, 'del_expansion':$121, 'call':$122, 'tcp_host_to_ip_address':$123, 'stat':$124, 'tcp_open':$125, 'open_msgstream':$126, '=\\=':$127, 'atom_concat2':$128, 'pedro_notify':$129, 'current_input':$130, 'keysort':$131, 'number_codes':$132, 'read_debug_msg_term':$133, 'add_multi_expansion':$134, 'once':$135, 'number_chars':$136, 'tell':$137, 'name':$138, 'trace':$139, 'leash':$140, 'at_end_of_stream':$598, 'sub_string':$143, 'writeq_atom':$599, 'assert':$600, 'op_table_inherit':$148, 'setup_call_cleanup':$149, 'simplify_term':$601, 'del_expansion_vars':$152, 'search_insert':$153, 'stream_to_string':$154, 'throw':$155, 'get_distinct':$156, 'stream_to_atom':$157, 'stdin':$158, 'collect_simple_terms':$159, 'get_name':$160, 'readR':$602, ';':$163, 'fcompile':$603, 'reconsult':$166, 'telling':$167, 'generate_foreign_interface':$604, '<':$170, 'get0':$605, '=':$173, '>':$174, '=:=':$175, 'pedro_address':$176, 'call_cleanup':$177, 'exception_exception':$178, 'write_atom':$606, 'freeze_var':$181, 'retry_woken_delays':$607, 'exception':$184, 'gmtime':$185, 'open':$608, 'same_handle':$188, 'with_debugging_off':$189, 'user_exception_message':$190, 'nospy':$191, 'thread_is_initial_thread':$192, 'debug':$193, '\\==':$194, 'dump_builtins':$195, 'C':$196, 'call_with_inlining':$197, 'pedro_connect':$609, '->':$201, 'thawed_var':$202, 'get_args':$203, 'pedro_is_registered':$204, 'write_string':$205, 'chr_remove_aux':$206, 'delay_until':$207, 'body':$208, 'erase':$209, 'current_output':$210, 'freeze_list':$211, 'with_local_exception_handler':$212, 'xtrace':$213, 'thread_sleep':$214, 'write_debug_msg_term':$215, 'atom_codes':$216, 'exit_debug_thread_gui':$217, 'open_length':$218, 'chr_add_constraint':$610, 'retractall':$220, 'parallel_sub':$222, 'msort':$611, 'std_var':$225, 'set_var_name':$226, 'string_concat':$227, 'atom_chars':$228, 'open_socket_stream':$229, 'quantify':$230, 'del_multi_expansion':$231, 'union_list':$232, 'is_dynamic_call':$233, 'open_to_closed':$234, 'set_output':$235, 'float':$236, 'save':$237, 'test_trace_flag':$238, 'global_state_lookup':$239, 'freeze_vars':$240, 'term_expansion':$612, 'collect_constraints':$243, 'readR_1_term':$613, 'thread_errno':$246, 'repeat':$247, 'sub_term':$248, 'delete':$249, 'thread_is_suspended':$250, 'hash_table_insert':$251, 'current_atom':$252, 'chr_hash_arg':$253, 'expand_subterms':$614, 'write_float':$256, 'var':$257, 'restore':$258, 'integer':$259, 'pedro_deregister':$260, 'tcp_getsockopt':$261, 'thaw_list':$262, 'close':$615, 'debugging':$265, 'tcp_setsockopt':$266, 'bagof':$267, 'tcp_getpeername':$268, 'check_binder':$616, 'index':$271, 'atomic':$272, 'write_term':$617, 'access':$275, 'open_tail':$276, 'string_to_atom':$277, 'multi_expand_term':$618, '^':$280, 'writeR':$619, 'default_signal_handler':$283, 'atom':$284, 'collect_vars':$285, 'add_subterm_expansion':$286, 'write_integer':$287, 'distribute_left':$288, 'stream_property':$289, 'std_compound':$290, 'unify_with_occurs_check':$291, 'call_predicate':$620, 'thread_goal':$297, 'filter':$298, 'setarg':$299, 'notrace':$300, 'writeT':$621, 'interpreter':$303, 'select':$304, 'retry_var_delays':$305, 'collect_variables':$306, 'hash_variable':$307, 'fail':$308, 'nl':$622, '\\+':$311, 'type_exception':$623, 'fold':$314, 'length':$315, 'recorda':$316, 'chr_extract_active_constraints':$317, 'srandom':$318, 'tcp_host_from_ip_address':$319, 'write':$624, 'clean_constraints':$322, 'sort':$625, '->>':$325, 'multi_expand_depth_limit':$326, 'string_to_list':$327, 'tcp_socket':$328, 'get':$626, 'atom_concat':$331, 'seeing':$332, 'clause':$333, 'structural_unify':$334, 'chdir':$335, 'bound_var':$336, 'quantifier':$337, 'chr_not_in':$338, 'chr_add_constraint__2':$339, 'delay':$340, 'freeze_term':$627, 'told':$343, 'tcp_bind':$628, '\\=':$346, 'flush_output':$629, 'read_1_term':$630, 'recordz':$351, 'spy':$352, 'tcp_client':$353, 'current_predicate':$354, 'realtime':$355, 'set_stream_position':$356, 'instance':$357, 'pedro_register':$358, '>=':$359, 'put_line':$631, 'closed_to_open':$362, 'random':$632, 'write_canonical':$633, 'signal_to_atom':$366, 'writeRT':$634, 'list':$370, 'env_putenv':$371, 'chr_init':$372, 'thread_handle':$373, 'tcp_server':$635, 'default_exception_handler':$376, 'list_expansions':$377, 'quant':$378, 'catch':$379, 'not_free_in':$380, 'thread_set_symbol':$381, 'errornl':$636, 'is_free_in':$384, 'recorded':$385, 'atom_search':$386, 'thread_yield':$387, 'writeq':$637, 'atom_length':$390, 'nodebug':$391, 'delete_all':$392, 'substitute':$393, 'abort':$394, 'working_directory':$638, 'tcp_getservbyname':$397, 'thread_suspend':$639, 'get_exception_message':$400, 'ipc_peek':$640, 'load_foreign':$641, 'closed_list':$406, 'current_op':$642, 'pedro_unsubscribe':$409, 'write_term_list':$643, '?=':$412, 'open_member_eq':$413, 'tcp_close':$414, '<<-':$415, 'clear_signal':$416, 'write_debug_msg_term_list':$417, 'stdout':$418, 'set_input':$419, 'getcwd':$420, '??':$421, 'ip_array_init':$422, 'get_unify_delays':$423, 'hash_table_search':$424, 'statistics':$644, 'encoded_write_term':$645, 'make_builtins':$430, 'op_table':$431, 'strerror':$432, 'portray_clause':$646, 'past_end_of_stream':$647, 'thaw_vars':$648, 'copy_term':$439, 'transform_simple_terms':$440, 'define_dynamic_lib':$441, 'findall':$442, 'tcp_listen':$443, 'pipe':$444, 'std_nonvar':$445, 'transform_subterms':$446, 'retry_delays':$447, 'get_linking_clause':$448, 'string_length':$449, 'remove_obvar_prefix':$649, '@=<':$452, 'halt':$650, 'multifile':$455, '<<=':$456, 'retry_nfi':$457, 'prompt':$458, 'spy_cond':$459, 'obvar_prefix':$651, 'ip_array_clear':$462, 'bound':$463, 'dcg':$464, '@<':$465, 'fold_left':$466, 'writeRq':$652, 'is':$469, 'nospyall':$470, '@=':$471, 'initialization':$472, 'thread_symbol':$473, '@>':$474, 'thaw_var':$475, 'hash_table_lookup':$476, 'env_getenv':$477, 'current_threads':$478, 'set_std_stream':$479, 'put_char':$653, 'compound':$482, 'thread_exit':$654, 'tcp_accept':$655, 'thaw_term':$656, 'pedro_subscribe':$489, 'global_state_decrement':$490, 'predicate_property':$491, 'forall':$492, 'writeRTq':$657, 'chr_not_eq':$495, 'gc':$496, 'distribute':$497, 'tab':$658, 'open_member':$500, 'same_args':$659, 'add_expansion_vars':$503, 'add_multi_expansion_vars':$504, 'chr_collect_constraints_2':$505, 'reverse':$506, 'thread_set_defaults':$507, 'thread_defaults':$508, 'diff_list':$509, 'compare':$510, 'thread_is_runnable':$511, 'clear_trace_flag':$512, 'get_unnamed_vars':$513, 'tcp_checkconn':$514, 'instantiation_exception':$660, 'string':$517, 'reset_std_stream':$518, 'thread_atomic_goal':$519, 'localtime':$520, 'compile_time_only':$521, 'ipc_recv':$661, 'display_thread_info':$525, 'thread_fork':$662, 'nonvar':$528, 'get_open_streams':$529, 'del_subterm_expansion_vars':$530, 'callable':$531, 'check_and_update_applied':$532, 'open_append':$533, 'encoded_read_term':$663, 'tcp_connect':$536, 'same_length':$537, 'setof':$538, 'get_delays':$539, 'map':$664, 'is_not_free_in':$542, 'after_with':$543, 'identical_or_apart':$544, 'ground':$545, 'ip_array_get_entries':$546, 'get_var_name':$547, 'member':$548, 'add_subterm_expansion_vars':$549, 'frozen_var':$550, 'between':$551, 'pedro_disconnect':$552, 'distribute_right':$553, 'process_symbol':$554, 'del_multi_expansion_vars':$555, 'ip_lookup':$665, 'unwind_protect':$558, 'intersect_list':$559, 'obvar':$560, 'number':$561, 'tcp_getsockname':$562, 'load_foreign_files':$666, 'thread_is_thread':$565, 'application':$566, 'obvar_prefix_table':$567, 'ip_set':$667, 'put_code':$668, 'read':$669, 'set_trace_flag':$574, 'message_choice':$575])
+$587:
+	switch_on_constant(0, 1024, ['$default':'fail', 'chr_collect_constraints':$1, 'asserta':$2, 'open_list':$3, 'del_subterm_expansion':$4, 'char_code':$5, 'thread_push_goal':$6, 'read_term':$588, 'true':$9, 'build_structure':$10, 'skip':$589, 'put':$590, 'phrase':$591, 'dynamic':$592, 'functor':$18, 'thread_sleep_until':$21, 'sub':$22, 'del_linking_clause':$23, 'debug_gui_handle':$24, 'abolish':$25, 'obvar_name_to_prefix':$26, 'writeTq':$593, 'exception_severity':$29, 'load':$30, 'remove_duplicates':$31, 'thread_resume':$32, 'broadcast':$33, 'op':$594, 'wrap_quotes':$36, 'current_obvar_prefix':$595, 'expand_term':$596, 'nsig':$41, 'os':$42, 'default_exception_error':$43, 'get_line':$597, 'current_prolog_flag':$46, 'ip_lookup_default':$598, 'break':$49, 'stderr':$50, 'fold_right':$51, 'is_distinct':$52, 'numbervars':$53, 'see':$54, 'main':$55, 'global_state_increment':$56, 'assertz':$57, 'append':$58, 'thread_wait':$599, 'false':$61, 'irandom':$62, 'member_eq':$63, 'global_state_set':$64, 'front_with':$65, 'hash_table_remove':$66, 'any_variable':$67, 'inline':$600, 'get_signals_flag':$70, '==':$71, 'get_unify_delays_avoid':$72, '=<':$73, 'get_char':$601, 'add_linking_clause':$76, 'simple':$77, 'get_var_delays':$78, 'pedro_is_connected':$79, 'tcp_getservbyport':$80, 'consult':$81, 'get_code':$602, 'chr_add_delays':$84, 'thread_wait_on_goal':$603, 'add_global_exception_handler':$87, 'error':$88, 'seen':$89, 'process_pid':$90, 'name_vars':$604, 'set_autoflush':$93, 'concat_atom':$605, 'get_predicate_timestamps':$96, 'retract':$97, 'read_debug_msg_codes':$98, 'remove_global_exception_handler':$99, 'stream_to_chars':$100, 'ipc_send':$606, 'listing':$607, 'absolute_file_name':$105, 'uncurry':$106, 'pedro_port':$107, 'xdebug':$108, '@>=':$109, 'tcp_is_socket':$110, 'add_expansion':$111, 'subterm_expand_depth_limit':$112, 'fast_retry_delays':$113, 'set_obvar_name':$114, 'start_debug_thread_gui':$115, 'arg':$116, '=..':$117, ',':$118, 'open_string':$608, 'chr_lookup_hash':$121, 'substitution':$122, 'sub_atom':$123, 'del_expansion':$124, 'call':$125, 'tcp_host_to_ip_address':$126, 'stat':$127, 'tcp_open':$128, 'open_msgstream':$129, '=\\=':$130, 'atom_concat2':$131, 'pedro_notify':$132, 'current_input':$133, 'keysort':$134, 'number_codes':$135, 'read_debug_msg_term':$136, 'add_multi_expansion':$137, 'once':$138, 'number_chars':$139, 'tell':$140, 'name':$141, 'trace':$142, 'leash':$143, 'at_end_of_stream':$609, 'sub_string':$146, 'writeq_atom':$610, 'assert':$611, 'op_table_inherit':$151, 'setup_call_cleanup':$152, 'simplify_term':$612, 'del_expansion_vars':$155, 'search_insert':$156, 'stream_to_string':$157, 'throw':$158, 'get_distinct':$159, 'stream_to_atom':$160, 'stdin':$161, 'collect_simple_terms':$162, 'get_name':$163, 'readR':$613, ';':$166, 'fcompile':$614, 'reconsult':$169, 'telling':$170, 'generate_foreign_interface':$615, '<':$173, 'get0':$616, '=':$176, '>':$177, '=:=':$178, 'pedro_address':$179, 'call_cleanup':$180, 'exception_exception':$181, 'write_atom':$617, 'freeze_var':$184, 'retry_woken_delays':$618, 'exception':$187, 'gmtime':$188, 'open':$619, 'same_handle':$191, 'with_debugging_off':$192, 'user_exception_message':$193, 'nospy':$194, 'thread_is_initial_thread':$195, 'debug':$196, '\\==':$197, 'dump_builtins':$198, 'C':$199, 'call_with_inlining':$200, 'pedro_connect':$620, '->':$204, 'thawed_var':$205, 'get_args':$206, 'pedro_is_registered':$207, 'write_string':$208, 'chr_remove_aux':$209, 'delay_until':$210, 'delete_timer':$211, 'portray':$212, 'body':$213, 'erase':$214, 'current_output':$215, 'freeze_list':$216, 'with_local_exception_handler':$217, 'xtrace':$218, 'thread_sleep':$219, 'write_debug_msg_term':$220, 'atom_codes':$221, 'exit_debug_thread_gui':$222, 'open_length':$223, 'chr_add_constraint':$621, 'retractall':$225, 'parallel_sub':$227, 'msort':$622, 'std_var':$230, 'set_var_name':$231, 'string_concat':$232, 'atom_chars':$233, 'open_socket_stream':$234, 'quantify':$235, 'del_multi_expansion':$236, 'union_list':$237, 'is_dynamic_call':$238, 'open_to_closed':$239, 'set_output':$240, 'float':$241, 'save':$242, 'test_trace_flag':$243, 'global_state_lookup':$244, 'freeze_vars':$245, 'term_expansion':$623, 'collect_constraints':$248, 'readR_1_term':$624, 'thread_errno':$251, 'repeat':$252, 'sub_term':$253, 'delete':$254, 'thread_is_suspended':$255, 'hash_table_insert':$256, 'current_atom':$257, 'chr_hash_arg':$258, 'expand_subterms':$625, 'write_float':$261, 'var':$262, 'restore':$263, 'integer':$264, 'pedro_deregister':$265, 'tcp_getsockopt':$266, 'thaw_list':$267, 'close':$626, 'debugging':$270, 'tcp_setsockopt':$271, 'bagof':$272, 'tcp_getpeername':$273, 'check_binder':$627, 'index':$276, 'atomic':$277, 'write_term':$628, 'access':$280, 'open_tail':$281, 'string_to_atom':$282, 'multi_expand_term':$629, '^':$285, 'writeR':$630, 'default_signal_handler':$288, 'atom':$289, 'collect_vars':$290, 'add_subterm_expansion':$291, 'write_integer':$292, 'distribute_left':$293, 'stream_property':$294, 'std_compound':$295, 'unify_with_occurs_check':$296, 'call_predicate':$631, 'thread_goal':$302, 'filter':$303, 'setarg':$304, 'notrace':$305, 'writeT':$632, 'interpreter':$308, 'select':$309, 'retry_var_delays':$310, 'collect_variables':$311, 'hash_variable':$312, 'fail':$313, 'nl':$633, '\\+':$316, 'type_exception':$634, 'fold':$319, 'length':$320, 'recorda':$321, 'chr_extract_active_constraints':$322, 'srandom':$323, 'tcp_host_from_ip_address':$324, 'write':$635, 'clean_constraints':$327, 'sort':$636, '->>':$330, 'multi_expand_depth_limit':$331, 'string_to_list':$332, 'tcp_socket':$333, 'get':$637, 'atom_concat':$336, 'seeing':$337, 'clause':$338, 'structural_unify':$339, 'chdir':$340, 'bound_var':$341, 'quantifier':$342, 'chr_not_in':$343, 'chr_add_constraint__2':$344, 'delay':$345, 'freeze_term':$638, 'told':$348, 'tcp_bind':$639, '\\=':$351, 'flush_output':$640, 'read_1_term':$641, 'recordz':$356, 'spy':$357, 'tcp_client':$358, 'current_predicate':$359, 'realtime':$360, 'set_stream_position':$361, 'instance':$362, 'pedro_register':$363, '>=':$364, 'put_line':$642, 'closed_to_open':$367, 'random':$643, 'write_canonical':$644, 'signal_to_atom':$371, 'writeRT':$645, 'list':$375, 'chr_init':$376, 'thread_handle':$377, 'tcp_server':$646, 'default_exception_handler':$380, 'list_expansions':$381, 'quant':$382, 'catch':$383, 'not_free_in':$384, 'thread_set_symbol':$385, 'errornl':$647, 'is_free_in':$388, 'recorded':$389, 'atom_search':$390, 'thread_yield':$391, 'putenv':$392, 'writeq':$648, 'atom_length':$395, 'nodebug':$396, 'delete_all':$397, 'substitute':$398, 'abort':$399, 'working_directory':$649, 'tcp_getservbyname':$402, 'thread_suspend':$650, 'get_exception_message':$405, 'ipc_peek':$651, 'changed_predicates':$409, 'load_foreign':$652, 'closed_list':$412, 'current_op':$653, 'pedro_unsubscribe':$415, 'getenv':$416, 'write_term_list':$654, '?=':$419, 'open_member_eq':$420, 'tcp_close':$421, '<<-':$422, 'clear_signal':$423, 'write_debug_msg_term_list':$424, 'stdout':$425, 'set_input':$426, 'getcwd':$427, '??':$428, 'ip_array_init':$429, 'get_unify_delays':$430, 'hash_table_search':$431, 'statistics':$655, 'encoded_write_term':$656, 'make_builtins':$437, 'op_table':$438, 'strerror':$439, 'portray_clause':$657, 'past_end_of_stream':$658, 'thaw_vars':$659, 'copy_term':$446, 'transform_simple_terms':$447, 'define_dynamic_lib':$448, 'findall':$449, 'tcp_listen':$450, 'pipe':$451, 'std_nonvar':$452, 'transform_subterms':$453, 'retry_delays':$454, 'get_linking_clause':$455, 'string_length':$456, 'remove_obvar_prefix':$660, '@=<':$459, 'halt':$661, 'multifile':$462, '<<=':$463, 'retry_nfi':$464, 'prompt':$465, 'spy_cond':$466, 'obvar_prefix':$662, 'ip_array_clear':$469, 'bound':$470, 'dcg':$471, '@<':$472, 'fold_left':$473, 'writeRq':$663, 'is':$476, 'nospyall':$477, '@=':$478, 'initialization':$479, 'thread_symbol':$480, '@>':$481, 'thaw_var':$482, 'hash_table_lookup':$483, 'current_threads':$484, 'set_std_stream':$485, 'put_char':$664, 'compound':$488, 'thread_exit':$665, 'tcp_accept':$666, 'thaw_term':$667, 'pedro_subscribe':$495, 'global_state_decrement':$496, 'predicate_property':$497, 'forall':$498, 'writeRTq':$668, 'chr_not_eq':$501, 'gc':$502, 'distribute':$503, 'tab':$669, 'open_member':$506, 'same_args':$670, 'add_expansion_vars':$509, 'add_multi_expansion_vars':$510, 'chr_collect_constraints_2':$511, 'reverse':$512, 'thread_set_defaults':$513, 'thread_defaults':$514, 'diff_list':$515, 'compare':$516, 'thread_is_runnable':$517, 'clear_trace_flag':$518, 'get_unnamed_vars':$519, 'tcp_checkconn':$520, 'instantiation_exception':$671, 'string':$523, 'gettimeofday':$524, 'reset_std_stream':$525, 'thread_atomic_goal':$526, 'localtime':$527, 'compile_time_only':$528, 'ipc_recv':$672, 'display_thread_info':$532, 'thread_fork':$673, 'nonvar':$536, 'get_open_streams':$537, 'del_subterm_expansion_vars':$538, 'callable':$539, 'check_and_update_applied':$540, 'open_append':$541, 'encoded_read_term':$674, 'tcp_connect':$544, 'same_length':$545, 'setof':$546, 'get_delays':$547, 'map':$675, 'is_not_free_in':$550, 'after_with':$551, 'identical_or_apart':$552, 'ground':$553, 'ip_array_get_entries':$554, 'print':$676, 'get_var_name':$557, 'member':$558, 'add_subterm_expansion_vars':$559, 'frozen_var':$560, 'between':$561, 'pedro_disconnect':$562, 'distribute_right':$563, 'process_symbol':$564, 'del_multi_expansion_vars':$565, 'ip_lookup':$677, 'unwind_protect':$568, 'intersect_list':$569, 'obvar':$570, 'number':$571, 'create_timer':$572, 'tcp_getsockname':$573, 'load_foreign_files':$678, 'thread_is_thread':$576, 'application':$577, 'obvar_prefix_table':$578, 'ip_set':$679, 'put_code':$680, 'read':$681, 'set_trace_flag':$585, 'message_choice':$586])
 
-$577:
+$588:
 	try(2, $7)
 	trust($8)
 
-$578:
+$589:
 	try(2, $11)
 	trust($12)
 
-$579:
+$590:
 	try(2, $13)
 	trust($14)
 
-$580:
+$591:
 	try(2, $15)
 	trust($16)
 
-$581:
+$592:
 	try(2, $17)
 	retry($19)
 	trust($20)
 
-$582:
+$593:
 	try(2, $27)
 	trust($28)
 
-$583:
+$594:
 	try(2, $34)
 	trust($35)
 
-$584:
-	try(2, $36)
-	trust($37)
-
-$585:
-	try(2, $38)
-	trust($39)
-
-$586:
-	try(2, $43)
-	trust($44)
-
-$587:
-	try(2, $46)
-	trust($47)
-
-$588:
-	try(2, $58)
-	trust($59)
-
-$589:
-	try(2, $67)
-	trust($68)
-
-$590:
-	try(2, $73)
-	trust($74)
-
-$591:
-	try(2, $81)
-	trust($82)
-
-$592:
-	try(2, $84)
-	trust($85)
-
-$593:
-	try(2, $90)
-	trust($91)
-
-$594:
-	try(2, $93)
-	trust($94)
-
 $595:
-	try(2, $99)
-	trust($100)
+	try(2, $37)
+	trust($38)
 
 $596:
+	try(2, $39)
+	trust($40)
+
+$597:
+	try(2, $44)
+	trust($45)
+
+$598:
+	try(2, $47)
+	trust($48)
+
+$599:
+	try(2, $59)
+	trust($60)
+
+$600:
+	try(2, $68)
+	trust($69)
+
+$601:
+	try(2, $74)
+	trust($75)
+
+$602:
+	try(2, $82)
+	trust($83)
+
+$603:
+	try(2, $85)
+	trust($86)
+
+$604:
+	try(2, $91)
+	trust($92)
+
+$605:
+	try(2, $94)
+	trust($95)
+
+$606:
 	try(2, $101)
 	trust($102)
 
-$597:
-	try(2, $116)
-	trust($117)
+$607:
+	try(2, $103)
+	trust($104)
 
-$598:
-	try(2, $141)
-	trust($142)
+$608:
+	try(2, $119)
+	trust($120)
 
-$599:
+$609:
 	try(2, $144)
 	trust($145)
 
-$600:
-	try(2, $146)
-	trust($147)
+$610:
+	try(2, $147)
+	trust($148)
 
-$601:
-	try(2, $150)
-	trust($151)
+$611:
+	try(2, $149)
+	trust($150)
 
-$602:
-	try(2, $161)
-	trust($162)
+$612:
+	try(2, $153)
+	trust($154)
 
-$603:
+$613:
 	try(2, $164)
 	trust($165)
 
-$604:
-	try(2, $168)
-	trust($169)
+$614:
+	try(2, $167)
+	trust($168)
 
-$605:
+$615:
 	try(2, $171)
 	trust($172)
 
-$606:
-	try(2, $179)
-	trust($180)
+$616:
+	try(2, $174)
+	trust($175)
 
-$607:
+$617:
 	try(2, $182)
 	trust($183)
 
-$608:
-	try(2, $186)
-	trust($187)
-
-$609:
-	try(2, $198)
-	retry($199)
-	trust($200)
-
-$610:
-	try(2, $219)
-	trust($221)
-
-$611:
-	try(2, $223)
-	trust($224)
-
-$612:
-	try(2, $241)
-	trust($242)
-
-$613:
-	try(2, $244)
-	trust($245)
-
-$614:
-	try(2, $254)
-	trust($255)
-
-$615:
-	try(2, $263)
-	trust($264)
-
-$616:
-	try(2, $269)
-	trust($270)
-
-$617:
-	try(2, $273)
-	trust($274)
-
 $618:
+	try(2, $185)
+	trust($186)
+
+$619:
+	try(2, $189)
+	trust($190)
+
+$620:
+	try(2, $201)
+	retry($202)
+	trust($203)
+
+$621:
+	try(2, $224)
+	trust($226)
+
+$622:
+	try(2, $228)
+	trust($229)
+
+$623:
+	try(2, $246)
+	trust($247)
+
+$624:
+	try(2, $249)
+	trust($250)
+
+$625:
+	try(2, $259)
+	trust($260)
+
+$626:
+	try(2, $268)
+	trust($269)
+
+$627:
+	try(2, $274)
+	trust($275)
+
+$628:
 	try(2, $278)
 	trust($279)
 
-$619:
-	try(2, $281)
-	trust($282)
-
-$620:
-	try(2, $292)
-	retry($293)
-	retry($294)
-	retry($295)
-	trust($296)
-
-$621:
-	try(2, $301)
-	trust($302)
-
-$622:
-	try(2, $309)
-	trust($310)
-
-$623:
-	try(2, $312)
-	trust($313)
-
-$624:
-	try(2, $320)
-	trust($321)
-
-$625:
-	try(2, $323)
-	trust($324)
-
-$626:
-	try(2, $329)
-	trust($330)
-
-$627:
-	try(2, $341)
-	trust($342)
-
-$628:
-	try(2, $344)
-	trust($345)
-
 $629:
-	try(2, $347)
-	trust($348)
+	try(2, $283)
+	trust($284)
 
 $630:
+	try(2, $286)
+	trust($287)
+
+$631:
+	try(2, $297)
+	retry($298)
+	retry($299)
+	retry($300)
+	trust($301)
+
+$632:
+	try(2, $306)
+	trust($307)
+
+$633:
+	try(2, $314)
+	trust($315)
+
+$634:
+	try(2, $317)
+	trust($318)
+
+$635:
+	try(2, $325)
+	trust($326)
+
+$636:
+	try(2, $328)
+	trust($329)
+
+$637:
+	try(2, $334)
+	trust($335)
+
+$638:
+	try(2, $346)
+	trust($347)
+
+$639:
 	try(2, $349)
 	trust($350)
 
-$631:
-	try(2, $360)
-	trust($361)
+$640:
+	try(2, $352)
+	trust($353)
 
-$632:
-	try(2, $363)
-	trust($364)
+$641:
+	try(2, $354)
+	trust($355)
 
-$633:
+$642:
 	try(2, $365)
-	trust($367)
+	trust($366)
 
-$634:
+$643:
 	try(2, $368)
 	trust($369)
 
-$635:
-	try(2, $374)
-	trust($375)
+$644:
+	try(2, $370)
+	trust($372)
 
-$636:
-	try(2, $382)
-	trust($383)
+$645:
+	try(2, $373)
+	trust($374)
 
-$637:
-	try(2, $388)
-	trust($389)
+$646:
+	try(2, $378)
+	trust($379)
 
-$638:
-	try(2, $395)
-	trust($396)
+$647:
+	try(2, $386)
+	trust($387)
 
-$639:
-	try(2, $398)
-	trust($399)
+$648:
+	try(2, $393)
+	trust($394)
 
-$640:
-	try(2, $401)
-	retry($402)
-	trust($403)
+$649:
+	try(2, $400)
+	trust($401)
 
-$641:
-	try(2, $404)
-	trust($405)
+$650:
+	try(2, $403)
+	trust($404)
 
-$642:
-	try(2, $407)
+$651:
+	try(2, $406)
+	retry($407)
 	trust($408)
 
-$643:
+$652:
 	try(2, $410)
 	trust($411)
 
-$644:
-	try(2, $425)
-	retry($426)
-	trust($427)
+$653:
+	try(2, $413)
+	trust($414)
 
-$645:
-	try(2, $428)
-	trust($429)
+$654:
+	try(2, $417)
+	trust($418)
 
-$646:
-	try(2, $433)
+$655:
+	try(2, $432)
+	retry($433)
 	trust($434)
 
-$647:
+$656:
 	try(2, $435)
 	trust($436)
 
-$648:
-	try(2, $437)
-	trust($438)
+$657:
+	try(2, $440)
+	trust($441)
 
-$649:
-	try(2, $450)
-	trust($451)
+$658:
+	try(2, $442)
+	trust($443)
 
-$650:
-	try(2, $453)
-	trust($454)
+$659:
+	try(2, $444)
+	trust($445)
 
-$651:
+$660:
+	try(2, $457)
+	trust($458)
+
+$661:
 	try(2, $460)
 	trust($461)
 
-$652:
+$662:
 	try(2, $467)
 	trust($468)
 
-$653:
-	try(2, $480)
-	trust($481)
+$663:
+	try(2, $474)
+	trust($475)
 
-$654:
-	try(2, $483)
-	trust($484)
+$664:
+	try(2, $486)
+	trust($487)
 
-$655:
-	try(2, $485)
-	trust($486)
+$665:
+	try(2, $489)
+	trust($490)
 
-$656:
-	try(2, $487)
-	trust($488)
+$666:
+	try(2, $491)
+	trust($492)
 
-$657:
+$667:
 	try(2, $493)
 	trust($494)
 
-$658:
-	try(2, $498)
-	trust($499)
-
-$659:
-	try(2, $501)
-	trust($502)
-
-$660:
-	try(2, $515)
-	trust($516)
-
-$661:
-	try(2, $522)
-	retry($523)
-	trust($524)
-
-$662:
-	try(2, $526)
-	trust($527)
-
-$663:
-	try(2, $534)
-	trust($535)
-
-$664:
-	try(2, $540)
-	trust($541)
-
-$665:
-	try(2, $556)
-	trust($557)
-
-$666:
-	try(2, $563)
-	trust($564)
-
-$667:
-	try(2, $568)
-	trust($569)
-
 $668:
-	try(2, $570)
-	trust($571)
+	try(2, $499)
+	trust($500)
 
 $669:
-	try(2, $572)
-	trust($573)
+	try(2, $504)
+	trust($505)
 
 $670:
+	try(2, $507)
+	trust($508)
+
+$671:
+	try(2, $521)
+	trust($522)
+
+$672:
+	try(2, $529)
+	retry($530)
+	trust($531)
+
+$673:
+	try(2, $533)
+	retry($534)
+	trust($535)
+
+$674:
+	try(2, $542)
+	trust($543)
+
+$675:
+	try(2, $548)
+	trust($549)
+
+$676:
+	try(2, $555)
+	trust($556)
+
+$677:
+	try(2, $566)
+	trust($567)
+
+$678:
+	try(2, $574)
+	trust($575)
+
+$679:
+	try(2, $579)
+	trust($580)
+
+$680:
+	try(2, $581)
+	trust($582)
+
+$681:
+	try(2, $583)
+	trust($584)
+
+$682:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -960,7 +965,18 @@ $670:
 	retry($572)
 	retry($573)
 	retry($574)
-	trust($575)
+	retry($575)
+	retry($576)
+	retry($577)
+	retry($578)
+	retry($579)
+	retry($580)
+	retry($581)
+	retry($582)
+	retry($583)
+	retry($584)
+	retry($585)
+	trust($586)
 
 $1:
 	get_constant('chr_collect_constraints', 0)
@@ -1138,2701 +1154,2756 @@ $35:
 	proceed
 
 $36:
-	get_constant('current_obvar_prefix', 0)
-	get_integer(1, 1)
+	get_constant('wrap_quotes', 0)
+	get_integer(2, 1)
 	proceed
 
 $37:
 	get_constant('current_obvar_prefix', 0)
-	get_integer(2, 1)
+	get_integer(1, 1)
 	proceed
 
 $38:
-	get_constant('expand_term', 0)
-	get_integer(3, 1)
+	get_constant('current_obvar_prefix', 0)
+	get_integer(2, 1)
 	proceed
 
 $39:
 	get_constant('expand_term', 0)
-	get_integer(2, 1)
+	get_integer(3, 1)
 	proceed
 
 $40:
+	get_constant('expand_term', 0)
+	get_integer(2, 1)
+	proceed
+
+$41:
 	get_constant('nsig', 0)
 	get_integer(1, 1)
 	proceed
 
-$41:
+$42:
 	get_constant('os', 0)
 	get_integer(1, 1)
 	proceed
 
-$42:
+$43:
 	get_constant('default_exception_error', 0)
 	get_integer(1, 1)
 	proceed
 
-$43:
+$44:
 	get_constant('get_line', 0)
 	get_integer(2, 1)
 	proceed
 
-$44:
+$45:
 	get_constant('get_line', 0)
 	get_integer(1, 1)
 	proceed
 
-$45:
+$46:
 	get_constant('current_prolog_flag', 0)
 	get_integer(2, 1)
 	proceed
 
-$46:
+$47:
 	get_constant('ip_lookup_default', 0)
 	get_integer(4, 1)
 	proceed
 
-$47:
+$48:
 	get_constant('ip_lookup_default', 0)
 	get_integer(3, 1)
 	proceed
 
-$48:
+$49:
 	get_constant('break', 0)
 	get_integer(0, 1)
 	proceed
 
-$49:
+$50:
 	get_constant('stderr', 0)
 	get_integer(1, 1)
 	proceed
 
-$50:
+$51:
 	get_constant('fold_right', 0)
 	get_integer(4, 1)
 	proceed
 
-$51:
+$52:
 	get_constant('is_distinct', 0)
 	get_integer(2, 1)
 	proceed
 
-$52:
+$53:
 	get_constant('numbervars', 0)
 	get_integer(3, 1)
 	proceed
 
-$53:
+$54:
 	get_constant('see', 0)
 	get_integer(1, 1)
 	proceed
 
-$54:
+$55:
 	get_constant('main', 0)
 	get_integer(1, 1)
 	proceed
 
-$55:
+$56:
 	get_constant('global_state_increment', 0)
 	get_integer(2, 1)
 	proceed
 
-$56:
+$57:
 	get_constant('assertz', 0)
 	get_integer(1, 1)
 	proceed
 
-$57:
+$58:
 	get_constant('append', 0)
 	get_integer(3, 1)
 	proceed
 
-$58:
+$59:
 	get_constant('thread_wait', 0)
 	get_integer(0, 1)
 	proceed
 
-$59:
+$60:
 	get_constant('thread_wait', 0)
 	get_integer(1, 1)
 	proceed
 
-$60:
+$61:
 	get_constant('false', 0)
 	get_integer(0, 1)
 	proceed
 
-$61:
+$62:
 	get_constant('irandom', 0)
 	get_integer(1, 1)
 	proceed
 
-$62:
+$63:
 	get_constant('member_eq', 0)
 	get_integer(2, 1)
 	proceed
 
-$63:
+$64:
 	get_constant('global_state_set', 0)
 	get_integer(2, 1)
 	proceed
 
-$64:
+$65:
 	get_constant('front_with', 0)
 	get_integer(3, 1)
 	proceed
 
-$65:
+$66:
 	get_constant('hash_table_remove', 0)
 	get_integer(2, 1)
 	proceed
 
-$66:
+$67:
 	get_constant('any_variable', 0)
 	get_integer(1, 1)
 	proceed
 
-$67:
+$68:
 	get_constant('inline', 0)
 	get_integer(3, 1)
 	proceed
 
-$68:
+$69:
 	get_constant('inline', 0)
 	get_integer(2, 1)
 	proceed
 
-$69:
+$70:
 	get_constant('get_signals_flag', 0)
 	get_integer(1, 1)
 	proceed
 
-$70:
+$71:
 	get_constant('==', 0)
 	get_integer(2, 1)
 	proceed
 
-$71:
+$72:
 	get_constant('get_unify_delays_avoid', 0)
 	get_integer(2, 1)
 	proceed
 
-$72:
+$73:
 	get_constant('=<', 0)
 	get_integer(2, 1)
 	proceed
 
-$73:
+$74:
 	get_constant('get_char', 0)
 	get_integer(1, 1)
 	proceed
 
-$74:
+$75:
 	get_constant('get_char', 0)
 	get_integer(2, 1)
 	proceed
 
-$75:
+$76:
 	get_constant('add_linking_clause', 0)
 	get_integer(3, 1)
 	proceed
 
-$76:
+$77:
 	get_constant('simple', 0)
 	get_integer(1, 1)
 	proceed
 
-$77:
+$78:
 	get_constant('get_var_delays', 0)
 	get_integer(2, 1)
 	proceed
 
-$78:
+$79:
 	get_constant('pedro_is_connected', 0)
 	get_integer(0, 1)
 	proceed
 
-$79:
+$80:
 	get_constant('tcp_getservbyport', 0)
 	get_integer(3, 1)
 	proceed
 
-$80:
-	get_constant('consult', 0)
-	get_integer(1, 1)
-	proceed
-
 $81:
-	get_constant('get_code', 0)
+	get_constant('consult', 0)
 	get_integer(1, 1)
 	proceed
 
 $82:
 	get_constant('get_code', 0)
-	get_integer(2, 1)
+	get_integer(1, 1)
 	proceed
 
 $83:
+	get_constant('get_code', 0)
+	get_integer(2, 1)
+	proceed
+
+$84:
 	get_constant('chr_add_delays', 0)
 	get_integer(1, 1)
 	proceed
 
-$84:
+$85:
 	get_constant('thread_wait_on_goal', 0)
 	get_integer(2, 1)
 	proceed
 
-$85:
+$86:
 	get_constant('thread_wait_on_goal', 0)
 	get_integer(1, 1)
 	proceed
 
-$86:
+$87:
 	get_constant('add_global_exception_handler', 0)
 	get_integer(2, 1)
 	proceed
 
-$87:
+$88:
 	get_constant('error', 0)
 	get_integer(1, 1)
 	proceed
 
-$88:
+$89:
 	get_constant('seen', 0)
 	get_integer(0, 1)
 	proceed
 
-$89:
+$90:
 	get_constant('process_pid', 0)
 	get_integer(1, 1)
 	proceed
 
-$90:
+$91:
 	get_constant('name_vars', 0)
 	get_integer(2, 1)
 	proceed
 
-$91:
-	get_constant('name_vars', 0)
-	get_integer(1, 1)
-	proceed
-
 $92:
-	get_constant('set_autoflush', 0)
+	get_constant('name_vars', 0)
 	get_integer(1, 1)
 	proceed
 
 $93:
-	get_constant('concat_atom', 0)
-	get_integer(2, 1)
+	get_constant('set_autoflush', 0)
+	get_integer(1, 1)
 	proceed
 
 $94:
 	get_constant('concat_atom', 0)
-	get_integer(3, 1)
+	get_integer(2, 1)
 	proceed
 
 $95:
+	get_constant('concat_atom', 0)
+	get_integer(3, 1)
+	proceed
+
+$96:
+	get_constant('get_predicate_timestamps', 0)
+	get_integer(2, 1)
+	proceed
+
+$97:
 	get_constant('retract', 0)
 	get_integer(1, 1)
 	proceed
 
-$96:
+$98:
 	get_constant('read_debug_msg_codes', 0)
 	get_integer(1, 1)
 	proceed
 
-$97:
+$99:
 	get_constant('remove_global_exception_handler', 0)
 	get_integer(2, 1)
 	proceed
 
-$98:
+$100:
 	get_constant('stream_to_chars', 0)
 	get_integer(2, 1)
 	proceed
 
-$99:
+$101:
 	get_constant('ipc_send', 0)
 	get_integer(3, 1)
 	proceed
 
-$100:
+$102:
 	get_constant('ipc_send', 0)
 	get_integer(2, 1)
 	proceed
 
-$101:
+$103:
 	get_constant('listing', 0)
 	get_integer(0, 1)
 	proceed
 
-$102:
-	get_constant('listing', 0)
-	get_integer(1, 1)
-	proceed
-
-$103:
-	get_constant('uncurry', 0)
-	get_integer(2, 1)
-	proceed
-
 $104:
-	get_constant('pedro_port', 0)
+	get_constant('listing', 0)
 	get_integer(1, 1)
 	proceed
 
 $105:
-	get_constant('xdebug', 0)
-	get_integer(0, 1)
+	get_constant('absolute_file_name', 0)
+	get_integer(2, 1)
 	proceed
 
 $106:
-	get_constant('@>=', 0)
+	get_constant('uncurry', 0)
 	get_integer(2, 1)
 	proceed
 
 $107:
-	get_constant('tcp_is_socket', 0)
+	get_constant('pedro_port', 0)
 	get_integer(1, 1)
 	proceed
 
 $108:
+	get_constant('xdebug', 0)
+	get_integer(0, 1)
+	proceed
+
+$109:
+	get_constant('@>=', 0)
+	get_integer(2, 1)
+	proceed
+
+$110:
+	get_constant('tcp_is_socket', 0)
+	get_integer(1, 1)
+	proceed
+
+$111:
 	get_constant('add_expansion', 0)
 	get_integer(1, 1)
 	proceed
 
-$109:
+$112:
 	get_constant('subterm_expand_depth_limit', 0)
 	get_integer(1, 1)
 	proceed
 
-$110:
+$113:
 	get_constant('fast_retry_delays', 0)
 	get_integer(0, 1)
 	proceed
 
-$111:
+$114:
 	get_constant('set_obvar_name', 0)
 	get_integer(2, 1)
 	proceed
 
-$112:
+$115:
 	get_constant('start_debug_thread_gui', 0)
 	get_integer(0, 1)
 	proceed
 
-$113:
+$116:
 	get_constant('arg', 0)
 	get_integer(3, 1)
 	proceed
 
-$114:
+$117:
 	get_constant('=..', 0)
 	get_integer(2, 1)
 	proceed
 
-$115:
+$118:
 	get_constant(',', 0)
 	get_integer(2, 1)
 	proceed
 
-$116:
-	get_constant('open_string', 0)
-	get_integer(2, 1)
-	proceed
-
-$117:
-	get_constant('open_string', 0)
-	get_integer(3, 1)
-	proceed
-
-$118:
-	get_constant('chr_lookup_hash', 0)
-	get_integer(3, 1)
-	proceed
-
 $119:
-	get_constant('substitution', 0)
+	get_constant('open_string', 0)
 	get_integer(2, 1)
 	proceed
 
 $120:
+	get_constant('open_string', 0)
+	get_integer(3, 1)
+	proceed
+
+$121:
+	get_constant('chr_lookup_hash', 0)
+	get_integer(3, 1)
+	proceed
+
+$122:
+	get_constant('substitution', 0)
+	get_integer(2, 1)
+	proceed
+
+$123:
 	get_constant('sub_atom', 0)
 	get_integer(4, 1)
 	proceed
 
-$121:
+$124:
 	get_constant('del_expansion', 0)
 	get_integer(1, 1)
 	proceed
 
-$122:
+$125:
 	get_constant('call', 0)
 	get_integer(1, 1)
 	proceed
 
-$123:
+$126:
 	get_constant('tcp_host_to_ip_address', 0)
 	get_integer(2, 1)
 	proceed
 
-$124:
+$127:
 	get_constant('stat', 0)
 	get_integer(2, 1)
 	proceed
 
-$125:
+$128:
 	get_constant('tcp_open', 0)
 	get_integer(1, 1)
 	proceed
 
-$126:
+$129:
 	get_constant('open_msgstream', 0)
 	get_integer(3, 1)
 	proceed
 
-$127:
+$130:
 	get_constant('=\\=', 0)
 	get_integer(2, 1)
 	proceed
 
-$128:
+$131:
 	get_constant('atom_concat2', 0)
 	get_integer(3, 1)
 	proceed
 
-$129:
+$132:
 	get_constant('pedro_notify', 0)
 	get_integer(1, 1)
 	proceed
 
-$130:
+$133:
 	get_constant('current_input', 0)
 	get_integer(1, 1)
 	proceed
 
-$131:
+$134:
 	get_constant('keysort', 0)
 	get_integer(2, 1)
 	proceed
 
-$132:
+$135:
 	get_constant('number_codes', 0)
 	get_integer(2, 1)
 	proceed
 
-$133:
+$136:
 	get_constant('read_debug_msg_term', 0)
 	get_integer(2, 1)
 	proceed
 
-$134:
+$137:
 	get_constant('add_multi_expansion', 0)
 	get_integer(1, 1)
 	proceed
 
-$135:
+$138:
 	get_constant('once', 0)
 	get_integer(1, 1)
 	proceed
 
-$136:
+$139:
 	get_constant('number_chars', 0)
 	get_integer(2, 1)
 	proceed
 
-$137:
+$140:
 	get_constant('tell', 0)
 	get_integer(1, 1)
 	proceed
 
-$138:
+$141:
 	get_constant('name', 0)
 	get_integer(2, 1)
 	proceed
 
-$139:
+$142:
 	get_constant('trace', 0)
 	get_integer(0, 1)
 	proceed
 
-$140:
+$143:
 	get_constant('leash', 0)
 	get_integer(1, 1)
 	proceed
 
-$141:
+$144:
 	get_constant('at_end_of_stream', 0)
 	get_integer(0, 1)
 	proceed
 
-$142:
-	get_constant('at_end_of_stream', 0)
-	get_integer(1, 1)
-	proceed
-
-$143:
-	get_constant('sub_string', 0)
-	get_integer(5, 1)
-	proceed
-
-$144:
-	get_constant('writeq_atom', 0)
-	get_integer(2, 1)
-	proceed
-
 $145:
-	get_constant('writeq_atom', 0)
+	get_constant('at_end_of_stream', 0)
 	get_integer(1, 1)
 	proceed
 
 $146:
+	get_constant('sub_string', 0)
+	get_integer(5, 1)
+	proceed
+
+$147:
+	get_constant('writeq_atom', 0)
+	get_integer(2, 1)
+	proceed
+
+$148:
+	get_constant('writeq_atom', 0)
+	get_integer(1, 1)
+	proceed
+
+$149:
 	get_constant('assert', 0)
 	get_integer(2, 1)
 	proceed
 
-$147:
+$150:
 	get_constant('assert', 0)
 	get_integer(1, 1)
 	proceed
 
-$148:
+$151:
 	get_constant('op_table_inherit', 0)
 	get_integer(2, 1)
 	proceed
 
-$149:
+$152:
 	get_constant('setup_call_cleanup', 0)
 	get_integer(3, 1)
 	proceed
 
-$150:
-	get_constant('simplify_term', 0)
-	get_integer(2, 1)
-	proceed
-
-$151:
-	get_constant('simplify_term', 0)
-	get_integer(3, 1)
-	proceed
-
-$152:
-	get_constant('del_expansion_vars', 0)
-	get_integer(1, 1)
-	proceed
-
 $153:
-	get_constant('search_insert', 0)
+	get_constant('simplify_term', 0)
 	get_integer(2, 1)
 	proceed
 
 $154:
-	get_constant('stream_to_string', 0)
-	get_integer(2, 1)
+	get_constant('simplify_term', 0)
+	get_integer(3, 1)
 	proceed
 
 $155:
-	get_constant('throw', 0)
+	get_constant('del_expansion_vars', 0)
 	get_integer(1, 1)
 	proceed
 
 $156:
-	get_constant('get_distinct', 0)
+	get_constant('search_insert', 0)
 	get_integer(2, 1)
 	proceed
 
 $157:
-	get_constant('stream_to_atom', 0)
+	get_constant('stream_to_string', 0)
 	get_integer(2, 1)
 	proceed
 
 $158:
-	get_constant('stdin', 0)
+	get_constant('throw', 0)
 	get_integer(1, 1)
 	proceed
 
 $159:
-	get_constant('collect_simple_terms', 0)
-	get_integer(4, 1)
+	get_constant('get_distinct', 0)
+	get_integer(2, 1)
 	proceed
 
 $160:
-	get_constant('get_name', 0)
+	get_constant('stream_to_atom', 0)
 	get_integer(2, 1)
 	proceed
 
 $161:
-	get_constant('readR', 0)
-	get_integer(2, 1)
-	proceed
-
-$162:
-	get_constant('readR', 0)
+	get_constant('stdin', 0)
 	get_integer(1, 1)
 	proceed
 
+$162:
+	get_constant('collect_simple_terms', 0)
+	get_integer(4, 1)
+	proceed
+
 $163:
-	get_constant(';', 0)
+	get_constant('get_name', 0)
 	get_integer(2, 1)
 	proceed
 
 $164:
-	get_constant('fcompile', 0)
+	get_constant('readR', 0)
 	get_integer(2, 1)
 	proceed
 
 $165:
-	get_constant('fcompile', 0)
+	get_constant('readR', 0)
 	get_integer(1, 1)
 	proceed
 
 $166:
+	get_constant(';', 0)
+	get_integer(2, 1)
+	proceed
+
+$167:
+	get_constant('fcompile', 0)
+	get_integer(2, 1)
+	proceed
+
+$168:
+	get_constant('fcompile', 0)
+	get_integer(1, 1)
+	proceed
+
+$169:
 	get_constant('reconsult', 0)
 	get_integer(1, 1)
 	proceed
 
-$167:
+$170:
 	get_constant('telling', 0)
 	get_integer(1, 1)
 	proceed
 
-$168:
+$171:
 	get_constant('generate_foreign_interface', 0)
 	get_integer(2, 1)
 	proceed
 
-$169:
+$172:
 	get_constant('generate_foreign_interface', 0)
 	get_integer(3, 1)
 	proceed
 
-$170:
+$173:
 	get_constant('<', 0)
 	get_integer(2, 1)
 	proceed
 
-$171:
+$174:
 	get_constant('get0', 0)
 	get_integer(1, 1)
 	proceed
 
-$172:
-	get_constant('get0', 0)
-	get_integer(2, 1)
-	proceed
-
-$173:
-	get_constant('=', 0)
-	get_integer(2, 1)
-	proceed
-
-$174:
-	get_constant('>', 0)
-	get_integer(2, 1)
-	proceed
-
 $175:
-	get_constant('=:=', 0)
+	get_constant('get0', 0)
 	get_integer(2, 1)
 	proceed
 
 $176:
-	get_constant('pedro_address', 0)
-	get_integer(1, 1)
+	get_constant('=', 0)
+	get_integer(2, 1)
 	proceed
 
 $177:
-	get_constant('call_cleanup', 0)
+	get_constant('>', 0)
 	get_integer(2, 1)
 	proceed
 
 $178:
-	get_constant('exception_exception', 0)
-	get_integer(1, 1)
+	get_constant('=:=', 0)
+	get_integer(2, 1)
 	proceed
 
 $179:
-	get_constant('write_atom', 0)
+	get_constant('pedro_address', 0)
 	get_integer(1, 1)
 	proceed
 
 $180:
-	get_constant('write_atom', 0)
+	get_constant('call_cleanup', 0)
 	get_integer(2, 1)
 	proceed
 
 $181:
-	get_constant('freeze_var', 0)
+	get_constant('exception_exception', 0)
 	get_integer(1, 1)
 	proceed
 
 $182:
-	get_constant('retry_woken_delays', 0)
-	get_integer(0, 1)
-	proceed
-
-$183:
-	get_constant('retry_woken_delays', 0)
+	get_constant('write_atom', 0)
 	get_integer(1, 1)
 	proceed
 
+$183:
+	get_constant('write_atom', 0)
+	get_integer(2, 1)
+	proceed
+
 $184:
-	get_constant('exception', 0)
+	get_constant('freeze_var', 0)
 	get_integer(1, 1)
 	proceed
 
 $185:
+	get_constant('retry_woken_delays', 0)
+	get_integer(0, 1)
+	proceed
+
+$186:
+	get_constant('retry_woken_delays', 0)
+	get_integer(1, 1)
+	proceed
+
+$187:
+	get_constant('exception', 0)
+	get_integer(1, 1)
+	proceed
+
+$188:
 	get_constant('gmtime', 0)
 	get_integer(2, 1)
 	proceed
 
-$186:
+$189:
 	get_constant('open', 0)
 	get_integer(3, 1)
 	proceed
 
-$187:
+$190:
 	get_constant('open', 0)
 	get_integer(4, 1)
 	proceed
 
-$188:
+$191:
 	get_constant('same_handle', 0)
 	get_integer(2, 1)
 	proceed
 
-$189:
+$192:
 	get_constant('with_debugging_off', 0)
 	get_integer(1, 1)
 	proceed
 
-$190:
+$193:
 	get_constant('user_exception_message', 0)
 	get_integer(2, 1)
 	proceed
 
-$191:
+$194:
 	get_constant('nospy', 0)
 	get_integer(1, 1)
 	proceed
 
-$192:
+$195:
 	get_constant('thread_is_initial_thread', 0)
 	get_integer(0, 1)
 	proceed
 
-$193:
+$196:
 	get_constant('debug', 0)
 	get_integer(0, 1)
 	proceed
 
-$194:
+$197:
 	get_constant('\\==', 0)
 	get_integer(2, 1)
 	proceed
 
-$195:
+$198:
 	get_constant('dump_builtins', 0)
 	get_integer(1, 1)
 	proceed
 
-$196:
+$199:
 	get_constant('C', 0)
 	get_integer(3, 1)
 	proceed
 
-$197:
+$200:
 	get_constant('call_with_inlining', 0)
 	get_integer(1, 1)
 	proceed
 
-$198:
-	get_constant('pedro_connect', 0)
-	get_integer(2, 1)
-	proceed
-
-$199:
-	get_constant('pedro_connect', 0)
-	get_integer(1, 1)
-	proceed
-
-$200:
-	get_constant('pedro_connect', 0)
-	get_integer(0, 1)
-	proceed
-
 $201:
-	get_constant('->', 0)
+	get_constant('pedro_connect', 0)
 	get_integer(2, 1)
 	proceed
 
 $202:
-	get_constant('thawed_var', 0)
+	get_constant('pedro_connect', 0)
 	get_integer(1, 1)
 	proceed
 
 $203:
+	get_constant('pedro_connect', 0)
+	get_integer(0, 1)
+	proceed
+
+$204:
+	get_constant('->', 0)
+	get_integer(2, 1)
+	proceed
+
+$205:
+	get_constant('thawed_var', 0)
+	get_integer(1, 1)
+	proceed
+
+$206:
 	get_constant('get_args', 0)
 	get_integer(1, 1)
 	proceed
 
-$204:
+$207:
 	get_constant('pedro_is_registered', 0)
 	get_integer(0, 1)
 	proceed
 
-$205:
+$208:
 	get_constant('write_string', 0)
 	get_integer(3, 1)
 	proceed
 
-$206:
+$209:
 	get_constant('chr_remove_aux', 0)
 	get_integer(1, 1)
 	proceed
 
-$207:
+$210:
 	get_constant('delay_until', 0)
 	get_integer(2, 1)
 	proceed
 
-$208:
-	get_constant('body', 0)
-	get_integer(2, 1)
-	proceed
-
-$209:
-	get_constant('erase', 0)
-	get_integer(1, 1)
-	proceed
-
-$210:
-	get_constant('current_output', 0)
-	get_integer(1, 1)
-	proceed
-
 $211:
-	get_constant('freeze_list', 0)
+	get_constant('delete_timer', 0)
 	get_integer(1, 1)
 	proceed
 
 $212:
-	get_constant('with_local_exception_handler', 0)
-	get_integer(3, 1)
+	get_constant('portray', 0)
+	get_integer(1, 1)
 	proceed
 
 $213:
-	get_constant('xtrace', 0)
-	get_integer(0, 1)
+	get_constant('body', 0)
+	get_integer(2, 1)
 	proceed
 
 $214:
-	get_constant('thread_sleep', 0)
+	get_constant('erase', 0)
 	get_integer(1, 1)
 	proceed
 
 $215:
+	get_constant('current_output', 0)
+	get_integer(1, 1)
+	proceed
+
+$216:
+	get_constant('freeze_list', 0)
+	get_integer(1, 1)
+	proceed
+
+$217:
+	get_constant('with_local_exception_handler', 0)
+	get_integer(3, 1)
+	proceed
+
+$218:
+	get_constant('xtrace', 0)
+	get_integer(0, 1)
+	proceed
+
+$219:
+	get_constant('thread_sleep', 0)
+	get_integer(1, 1)
+	proceed
+
+$220:
 	get_constant('write_debug_msg_term', 0)
 	get_integer(2, 1)
 	proceed
 
-$216:
+$221:
 	get_constant('atom_codes', 0)
 	get_integer(2, 1)
 	proceed
 
-$217:
+$222:
 	get_constant('exit_debug_thread_gui', 0)
 	get_integer(0, 1)
 	proceed
 
-$218:
+$223:
 	get_constant('open_length', 0)
 	get_integer(2, 1)
 	proceed
 
-$219:
+$224:
 	get_constant('chr_add_constraint', 0)
 	get_integer(3, 1)
 	proceed
 
-$220:
+$225:
 	get_constant('retractall', 0)
 	get_integer(1, 1)
 	proceed
 
-$221:
+$226:
 	get_constant('chr_add_constraint', 0)
 	get_integer(4, 1)
 	proceed
 
-$222:
+$227:
 	get_constant('parallel_sub', 0)
 	get_integer(3, 1)
 	proceed
 
-$223:
+$228:
 	get_constant('msort', 0)
 	get_integer(3, 1)
 	proceed
 
-$224:
+$229:
 	get_constant('msort', 0)
 	get_integer(2, 1)
 	proceed
 
-$225:
+$230:
 	get_constant('std_var', 0)
 	get_integer(1, 1)
 	proceed
 
-$226:
+$231:
 	get_constant('set_var_name', 0)
 	get_integer(2, 1)
 	proceed
 
-$227:
+$232:
 	get_constant('string_concat', 0)
 	get_integer(3, 1)
 	proceed
 
-$228:
+$233:
 	get_constant('atom_chars', 0)
 	get_integer(2, 1)
 	proceed
 
-$229:
+$234:
 	get_constant('open_socket_stream', 0)
 	get_integer(3, 1)
 	proceed
 
-$230:
+$235:
 	get_constant('quantify', 0)
 	get_integer(4, 1)
 	proceed
 
-$231:
+$236:
 	get_constant('del_multi_expansion', 0)
 	get_integer(1, 1)
 	proceed
 
-$232:
+$237:
 	get_constant('union_list', 0)
 	get_integer(3, 1)
 	proceed
 
-$233:
+$238:
 	get_constant('is_dynamic_call', 0)
 	get_integer(1, 1)
 	proceed
 
-$234:
+$239:
 	get_constant('open_to_closed', 0)
 	get_integer(1, 1)
 	proceed
 
-$235:
+$240:
 	get_constant('set_output', 0)
 	get_integer(1, 1)
 	proceed
 
-$236:
+$241:
 	get_constant('float', 0)
 	get_integer(1, 1)
 	proceed
 
-$237:
+$242:
 	get_constant('save', 0)
 	get_integer(1, 1)
 	proceed
 
-$238:
+$243:
 	get_constant('test_trace_flag', 0)
 	get_integer(1, 1)
 	proceed
 
-$239:
+$244:
 	get_constant('global_state_lookup', 0)
 	get_integer(2, 1)
 	proceed
 
-$240:
+$245:
 	get_constant('freeze_vars', 0)
 	get_integer(1, 1)
 	proceed
 
-$241:
+$246:
 	get_constant('term_expansion', 0)
 	get_integer(2, 1)
 	proceed
 
-$242:
+$247:
 	get_constant('term_expansion', 0)
 	get_integer(3, 1)
 	proceed
 
-$243:
+$248:
 	get_constant('collect_constraints', 0)
 	get_integer(4, 1)
 	proceed
 
-$244:
-	get_constant('readR_1_term', 0)
-	get_integer(3, 1)
-	proceed
-
-$245:
-	get_constant('readR_1_term', 0)
-	get_integer(2, 1)
-	proceed
-
-$246:
-	get_constant('thread_errno', 0)
-	get_integer(1, 1)
-	proceed
-
-$247:
-	get_constant('repeat', 0)
-	get_integer(0, 1)
-	proceed
-
-$248:
-	get_constant('sub_term', 0)
-	get_integer(2, 1)
-	proceed
-
 $249:
-	get_constant('delete', 0)
+	get_constant('readR_1_term', 0)
 	get_integer(3, 1)
 	proceed
 
 $250:
-	get_constant('thread_is_suspended', 0)
-	get_integer(1, 1)
+	get_constant('readR_1_term', 0)
+	get_integer(2, 1)
 	proceed
 
 $251:
-	get_constant('hash_table_insert', 0)
-	get_integer(3, 1)
-	proceed
-
-$252:
-	get_constant('current_atom', 0)
+	get_constant('thread_errno', 0)
 	get_integer(1, 1)
 	proceed
 
+$252:
+	get_constant('repeat', 0)
+	get_integer(0, 1)
+	proceed
+
 $253:
-	get_constant('chr_hash_arg', 0)
+	get_constant('sub_term', 0)
 	get_integer(2, 1)
 	proceed
 
 $254:
-	get_constant('expand_subterms', 0)
-	get_integer(2, 1)
-	proceed
-
-$255:
-	get_constant('expand_subterms', 0)
+	get_constant('delete', 0)
 	get_integer(3, 1)
 	proceed
 
+$255:
+	get_constant('thread_is_suspended', 0)
+	get_integer(1, 1)
+	proceed
+
 $256:
-	get_constant('write_float', 0)
-	get_integer(2, 1)
+	get_constant('hash_table_insert', 0)
+	get_integer(3, 1)
 	proceed
 
 $257:
-	get_constant('var', 0)
+	get_constant('current_atom', 0)
 	get_integer(1, 1)
 	proceed
 
 $258:
-	get_constant('restore', 0)
-	get_integer(1, 1)
+	get_constant('chr_hash_arg', 0)
+	get_integer(2, 1)
 	proceed
 
 $259:
-	get_constant('integer', 0)
-	get_integer(1, 1)
+	get_constant('expand_subterms', 0)
+	get_integer(2, 1)
 	proceed
 
 $260:
-	get_constant('pedro_deregister', 0)
-	get_integer(0, 1)
-	proceed
-
-$261:
-	get_constant('tcp_getsockopt', 0)
+	get_constant('expand_subterms', 0)
 	get_integer(3, 1)
 	proceed
 
+$261:
+	get_constant('write_float', 0)
+	get_integer(2, 1)
+	proceed
+
 $262:
-	get_constant('thaw_list', 0)
+	get_constant('var', 0)
 	get_integer(1, 1)
 	proceed
 
 $263:
-	get_constant('close', 0)
+	get_constant('restore', 0)
 	get_integer(1, 1)
 	proceed
 
 $264:
-	get_constant('close', 0)
-	get_integer(2, 1)
+	get_constant('integer', 0)
+	get_integer(1, 1)
 	proceed
 
 $265:
-	get_constant('debugging', 0)
+	get_constant('pedro_deregister', 0)
 	get_integer(0, 1)
 	proceed
 
 $266:
-	get_constant('tcp_setsockopt', 0)
+	get_constant('tcp_getsockopt', 0)
 	get_integer(3, 1)
 	proceed
 
 $267:
-	get_constant('bagof', 0)
-	get_integer(3, 1)
-	proceed
-
-$268:
-	get_constant('tcp_getpeername', 0)
-	get_integer(3, 1)
-	proceed
-
-$269:
-	get_constant('check_binder', 0)
+	get_constant('thaw_list', 0)
 	get_integer(1, 1)
 	proceed
 
-$270:
-	get_constant('check_binder', 0)
+$268:
+	get_constant('close', 0)
+	get_integer(1, 1)
+	proceed
+
+$269:
+	get_constant('close', 0)
 	get_integer(2, 1)
 	proceed
 
+$270:
+	get_constant('debugging', 0)
+	get_integer(0, 1)
+	proceed
+
 $271:
-	get_constant('index', 0)
+	get_constant('tcp_setsockopt', 0)
 	get_integer(3, 1)
 	proceed
 
 $272:
+	get_constant('bagof', 0)
+	get_integer(3, 1)
+	proceed
+
+$273:
+	get_constant('tcp_getpeername', 0)
+	get_integer(3, 1)
+	proceed
+
+$274:
+	get_constant('check_binder', 0)
+	get_integer(1, 1)
+	proceed
+
+$275:
+	get_constant('check_binder', 0)
+	get_integer(2, 1)
+	proceed
+
+$276:
+	get_constant('index', 0)
+	get_integer(3, 1)
+	proceed
+
+$277:
 	get_constant('atomic', 0)
 	get_integer(1, 1)
 	proceed
 
-$273:
+$278:
 	get_constant('write_term', 0)
 	get_integer(2, 1)
 	proceed
 
-$274:
+$279:
 	get_constant('write_term', 0)
 	get_integer(3, 1)
 	proceed
 
-$275:
+$280:
 	get_constant('access', 0)
 	get_integer(3, 1)
 	proceed
 
-$276:
+$281:
 	get_constant('open_tail', 0)
 	get_integer(2, 1)
 	proceed
 
-$277:
+$282:
 	get_constant('string_to_atom', 0)
 	get_integer(2, 1)
 	proceed
 
-$278:
+$283:
 	get_constant('multi_expand_term', 0)
 	get_integer(3, 1)
 	proceed
 
-$279:
+$284:
 	get_constant('multi_expand_term', 0)
 	get_integer(2, 1)
 	proceed
 
-$280:
+$285:
 	get_constant('^', 0)
 	get_integer(2, 1)
 	proceed
 
-$281:
+$286:
 	get_constant('writeR', 0)
 	get_integer(2, 1)
 	proceed
 
-$282:
+$287:
 	get_constant('writeR', 0)
 	get_integer(1, 1)
 	proceed
 
-$283:
+$288:
 	get_constant('default_signal_handler', 0)
 	get_integer(1, 1)
 	proceed
 
-$284:
+$289:
 	get_constant('atom', 0)
 	get_integer(1, 1)
 	proceed
 
-$285:
+$290:
 	get_constant('collect_vars', 0)
 	get_integer(2, 1)
 	proceed
 
-$286:
+$291:
 	get_constant('add_subterm_expansion', 0)
 	get_integer(1, 1)
 	proceed
 
-$287:
+$292:
 	get_constant('write_integer', 0)
 	get_integer(2, 1)
 	proceed
 
-$288:
+$293:
 	get_constant('distribute_left', 0)
 	get_integer(3, 1)
 	proceed
 
-$289:
+$294:
 	get_constant('stream_property', 0)
 	get_integer(2, 1)
 	proceed
 
-$290:
+$295:
 	get_constant('std_compound', 0)
 	get_integer(1, 1)
 	proceed
 
-$291:
+$296:
 	get_constant('unify_with_occurs_check', 0)
 	get_integer(2, 1)
 	proceed
 
-$292:
+$297:
 	get_constant('call_predicate', 0)
 	get_integer(2, 1)
 	proceed
 
-$293:
-	get_constant('call_predicate', 0)
-	get_integer(3, 1)
-	proceed
-
-$294:
-	get_constant('call_predicate', 0)
-	get_integer(1, 1)
-	proceed
-
-$295:
-	get_constant('call_predicate', 0)
-	get_integer(4, 1)
-	proceed
-
-$296:
-	get_constant('call_predicate', 0)
-	get_integer(5, 1)
-	proceed
-
-$297:
-	get_constant('thread_goal', 0)
-	get_integer(1, 1)
-	proceed
-
 $298:
-	get_constant('filter', 0)
+	get_constant('call_predicate', 0)
 	get_integer(3, 1)
 	proceed
 
 $299:
+	get_constant('call_predicate', 0)
+	get_integer(1, 1)
+	proceed
+
+$300:
+	get_constant('call_predicate', 0)
+	get_integer(4, 1)
+	proceed
+
+$301:
+	get_constant('call_predicate', 0)
+	get_integer(5, 1)
+	proceed
+
+$302:
+	get_constant('thread_goal', 0)
+	get_integer(1, 1)
+	proceed
+
+$303:
+	get_constant('filter', 0)
+	get_integer(3, 1)
+	proceed
+
+$304:
 	get_constant('setarg', 0)
 	get_integer(3, 1)
 	proceed
 
-$300:
+$305:
 	get_constant('notrace', 0)
 	get_integer(0, 1)
 	proceed
 
-$301:
+$306:
 	get_constant('writeT', 0)
 	get_integer(3, 1)
 	proceed
 
-$302:
-	get_constant('writeT', 0)
-	get_integer(2, 1)
-	proceed
-
-$303:
-	get_constant('interpreter', 0)
-	get_integer(0, 1)
-	proceed
-
-$304:
-	get_constant('select', 0)
-	get_integer(2, 1)
-	proceed
-
-$305:
-	get_constant('retry_var_delays', 0)
-	get_integer(1, 1)
-	proceed
-
-$306:
-	get_constant('collect_variables', 0)
-	get_integer(2, 1)
-	proceed
-
 $307:
-	get_constant('hash_variable', 0)
+	get_constant('writeT', 0)
 	get_integer(2, 1)
 	proceed
 
 $308:
-	get_constant('fail', 0)
+	get_constant('interpreter', 0)
 	get_integer(0, 1)
 	proceed
 
 $309:
-	get_constant('nl', 0)
-	get_integer(0, 1)
+	get_constant('select', 0)
+	get_integer(2, 1)
 	proceed
 
 $310:
-	get_constant('nl', 0)
+	get_constant('retry_var_delays', 0)
 	get_integer(1, 1)
 	proceed
 
 $311:
+	get_constant('collect_variables', 0)
+	get_integer(2, 1)
+	proceed
+
+$312:
+	get_constant('hash_variable', 0)
+	get_integer(2, 1)
+	proceed
+
+$313:
+	get_constant('fail', 0)
+	get_integer(0, 1)
+	proceed
+
+$314:
+	get_constant('nl', 0)
+	get_integer(0, 1)
+	proceed
+
+$315:
+	get_constant('nl', 0)
+	get_integer(1, 1)
+	proceed
+
+$316:
 	get_constant('\\+', 0)
 	get_integer(1, 1)
 	proceed
 
-$312:
+$317:
 	get_constant('type_exception', 0)
 	get_integer(3, 1)
 	proceed
 
-$313:
+$318:
 	get_constant('type_exception', 0)
 	get_integer(4, 1)
 	proceed
 
-$314:
+$319:
 	get_constant('fold', 0)
 	get_integer(4, 1)
 	proceed
 
-$315:
+$320:
 	get_constant('length', 0)
 	get_integer(2, 1)
 	proceed
 
-$316:
+$321:
 	get_constant('recorda', 0)
 	get_integer(3, 1)
 	proceed
 
-$317:
+$322:
 	get_constant('chr_extract_active_constraints', 0)
 	get_integer(2, 1)
 	proceed
 
-$318:
+$323:
 	get_constant('srandom', 0)
 	get_integer(1, 1)
 	proceed
 
-$319:
+$324:
 	get_constant('tcp_host_from_ip_address', 0)
 	get_integer(2, 1)
 	proceed
 
-$320:
-	get_constant('write', 0)
-	get_integer(2, 1)
-	proceed
-
-$321:
-	get_constant('write', 0)
-	get_integer(1, 1)
-	proceed
-
-$322:
-	get_constant('clean_constraints', 0)
-	get_integer(2, 1)
-	proceed
-
-$323:
-	get_constant('sort', 0)
-	get_integer(2, 1)
-	proceed
-
-$324:
-	get_constant('sort', 0)
-	get_integer(3, 1)
-	proceed
-
 $325:
-	get_constant('->>', 0)
+	get_constant('write', 0)
 	get_integer(2, 1)
 	proceed
 
 $326:
-	get_constant('multi_expand_depth_limit', 0)
+	get_constant('write', 0)
 	get_integer(1, 1)
 	proceed
 
 $327:
-	get_constant('string_to_list', 0)
+	get_constant('clean_constraints', 0)
 	get_integer(2, 1)
 	proceed
 
 $328:
-	get_constant('tcp_socket', 0)
-	get_integer(3, 1)
+	get_constant('sort', 0)
+	get_integer(2, 1)
 	proceed
 
 $329:
-	get_constant('get', 0)
-	get_integer(1, 1)
+	get_constant('sort', 0)
+	get_integer(3, 1)
 	proceed
 
 $330:
-	get_constant('get', 0)
+	get_constant('->>', 0)
 	get_integer(2, 1)
 	proceed
 
 $331:
+	get_constant('multi_expand_depth_limit', 0)
+	get_integer(1, 1)
+	proceed
+
+$332:
+	get_constant('string_to_list', 0)
+	get_integer(2, 1)
+	proceed
+
+$333:
+	get_constant('tcp_socket', 0)
+	get_integer(3, 1)
+	proceed
+
+$334:
+	get_constant('get', 0)
+	get_integer(1, 1)
+	proceed
+
+$335:
+	get_constant('get', 0)
+	get_integer(2, 1)
+	proceed
+
+$336:
 	get_constant('atom_concat', 0)
 	get_integer(3, 1)
 	proceed
 
-$332:
+$337:
 	get_constant('seeing', 0)
 	get_integer(1, 1)
 	proceed
 
-$333:
+$338:
 	get_constant('clause', 0)
 	get_integer(2, 1)
 	proceed
 
-$334:
+$339:
 	get_constant('structural_unify', 0)
 	get_integer(2, 1)
 	proceed
 
-$335:
+$340:
 	get_constant('chdir', 0)
 	get_integer(1, 1)
 	proceed
 
-$336:
+$341:
 	get_constant('bound_var', 0)
 	get_integer(2, 1)
 	proceed
 
-$337:
+$342:
 	get_constant('quantifier', 0)
 	get_integer(2, 1)
 	proceed
 
-$338:
+$343:
 	get_constant('chr_not_in', 0)
 	get_integer(2, 1)
 	proceed
 
-$339:
+$344:
 	get_constant('chr_add_constraint__2', 0)
 	get_integer(3, 1)
 	proceed
 
-$340:
+$345:
 	get_constant('delay', 0)
 	get_integer(2, 1)
 	proceed
 
-$341:
-	get_constant('freeze_term', 0)
-	get_integer(2, 1)
-	proceed
-
-$342:
-	get_constant('freeze_term', 0)
-	get_integer(1, 1)
-	proceed
-
-$343:
-	get_constant('told', 0)
-	get_integer(0, 1)
-	proceed
-
-$344:
-	get_constant('tcp_bind', 0)
-	get_integer(3, 1)
-	proceed
-
-$345:
-	get_constant('tcp_bind', 0)
-	get_integer(2, 1)
-	proceed
-
 $346:
-	get_constant('\\=', 0)
+	get_constant('freeze_term', 0)
 	get_integer(2, 1)
 	proceed
 
 $347:
-	get_constant('flush_output', 0)
-	get_integer(0, 1)
-	proceed
-
-$348:
-	get_constant('flush_output', 0)
+	get_constant('freeze_term', 0)
 	get_integer(1, 1)
 	proceed
 
+$348:
+	get_constant('told', 0)
+	get_integer(0, 1)
+	proceed
+
 $349:
-	get_constant('read_1_term', 0)
+	get_constant('tcp_bind', 0)
 	get_integer(3, 1)
 	proceed
 
 $350:
-	get_constant('read_1_term', 0)
+	get_constant('tcp_bind', 0)
 	get_integer(2, 1)
 	proceed
 
 $351:
+	get_constant('\\=', 0)
+	get_integer(2, 1)
+	proceed
+
+$352:
+	get_constant('flush_output', 0)
+	get_integer(0, 1)
+	proceed
+
+$353:
+	get_constant('flush_output', 0)
+	get_integer(1, 1)
+	proceed
+
+$354:
+	get_constant('read_1_term', 0)
+	get_integer(3, 1)
+	proceed
+
+$355:
+	get_constant('read_1_term', 0)
+	get_integer(2, 1)
+	proceed
+
+$356:
 	get_constant('recordz', 0)
 	get_integer(3, 1)
 	proceed
 
-$352:
+$357:
 	get_constant('spy', 0)
 	get_integer(1, 1)
 	proceed
 
-$353:
+$358:
 	get_constant('tcp_client', 0)
 	get_integer(3, 1)
 	proceed
 
-$354:
+$359:
 	get_constant('current_predicate', 0)
 	get_integer(1, 1)
 	proceed
 
-$355:
+$360:
 	get_constant('realtime', 0)
 	get_integer(1, 1)
 	proceed
 
-$356:
+$361:
 	get_constant('set_stream_position', 0)
 	get_integer(2, 1)
 	proceed
 
-$357:
+$362:
 	get_constant('instance', 0)
 	get_integer(2, 1)
 	proceed
 
-$358:
+$363:
 	get_constant('pedro_register', 0)
 	get_integer(1, 1)
 	proceed
 
-$359:
+$364:
 	get_constant('>=', 0)
 	get_integer(2, 1)
 	proceed
 
-$360:
-	get_constant('put_line', 0)
-	get_integer(1, 1)
-	proceed
-
-$361:
-	get_constant('put_line', 0)
-	get_integer(2, 1)
-	proceed
-
-$362:
-	get_constant('closed_to_open', 0)
-	get_integer(2, 1)
-	proceed
-
-$363:
-	get_constant('random', 0)
-	get_integer(3, 1)
-	proceed
-
-$364:
-	get_constant('random', 0)
-	get_integer(1, 1)
-	proceed
-
 $365:
-	get_constant('write_canonical', 0)
-	get_integer(2, 1)
+	get_constant('put_line', 0)
+	get_integer(1, 1)
 	proceed
 
 $366:
-	get_constant('signal_to_atom', 0)
+	get_constant('put_line', 0)
 	get_integer(2, 1)
 	proceed
 
 $367:
-	get_constant('write_canonical', 0)
-	get_integer(1, 1)
+	get_constant('closed_to_open', 0)
+	get_integer(2, 1)
 	proceed
 
 $368:
-	get_constant('writeRT', 0)
+	get_constant('random', 0)
 	get_integer(3, 1)
 	proceed
 
 $369:
-	get_constant('writeRT', 0)
-	get_integer(2, 1)
-	proceed
-
-$370:
-	get_constant('list', 0)
+	get_constant('random', 0)
 	get_integer(1, 1)
 	proceed
 
+$370:
+	get_constant('write_canonical', 0)
+	get_integer(2, 1)
+	proceed
+
 $371:
-	get_constant('env_putenv', 0)
+	get_constant('signal_to_atom', 0)
 	get_integer(2, 1)
 	proceed
 
 $372:
+	get_constant('write_canonical', 0)
+	get_integer(1, 1)
+	proceed
+
+$373:
+	get_constant('writeRT', 0)
+	get_integer(3, 1)
+	proceed
+
+$374:
+	get_constant('writeRT', 0)
+	get_integer(2, 1)
+	proceed
+
+$375:
+	get_constant('list', 0)
+	get_integer(1, 1)
+	proceed
+
+$376:
 	get_constant('chr_init', 0)
 	get_integer(0, 1)
 	proceed
 
-$373:
+$377:
 	get_constant('thread_handle', 0)
 	get_integer(1, 1)
 	proceed
 
-$374:
+$378:
 	get_constant('tcp_server', 0)
 	get_integer(3, 1)
 	proceed
 
-$375:
+$379:
 	get_constant('tcp_server', 0)
 	get_integer(2, 1)
 	proceed
 
-$376:
+$380:
 	get_constant('default_exception_handler', 0)
 	get_integer(1, 1)
 	proceed
 
-$377:
+$381:
 	get_constant('list_expansions', 0)
 	get_integer(0, 1)
 	proceed
 
-$378:
+$382:
 	get_constant('quant', 0)
 	get_integer(1, 1)
 	proceed
 
-$379:
+$383:
 	get_constant('catch', 0)
 	get_integer(3, 1)
 	proceed
 
-$380:
+$384:
 	get_constant('not_free_in', 0)
 	get_integer(2, 1)
 	proceed
 
-$381:
+$385:
 	get_constant('thread_set_symbol', 0)
 	get_integer(1, 1)
 	proceed
 
-$382:
+$386:
 	get_constant('errornl', 0)
 	get_integer(0, 1)
 	proceed
 
-$383:
+$387:
 	get_constant('errornl', 0)
 	get_integer(1, 1)
 	proceed
 
-$384:
+$388:
 	get_constant('is_free_in', 0)
 	get_integer(2, 1)
 	proceed
 
-$385:
+$389:
 	get_constant('recorded', 0)
 	get_integer(3, 1)
 	proceed
 
-$386:
+$390:
 	get_constant('atom_search', 0)
 	get_integer(4, 1)
 	proceed
 
-$387:
+$391:
 	get_constant('thread_yield', 0)
 	get_integer(0, 1)
 	proceed
 
-$388:
+$392:
+	get_constant('putenv', 0)
+	get_integer(2, 1)
+	proceed
+
+$393:
 	get_constant('writeq', 0)
 	get_integer(2, 1)
 	proceed
 
-$389:
+$394:
 	get_constant('writeq', 0)
 	get_integer(1, 1)
 	proceed
 
-$390:
+$395:
 	get_constant('atom_length', 0)
 	get_integer(2, 1)
 	proceed
 
-$391:
+$396:
 	get_constant('nodebug', 0)
 	get_integer(0, 1)
 	proceed
 
-$392:
+$397:
 	get_constant('delete_all', 0)
 	get_integer(3, 1)
 	proceed
 
-$393:
+$398:
 	get_constant('substitute', 0)
 	get_integer(3, 1)
 	proceed
 
-$394:
+$399:
 	get_constant('abort', 0)
 	get_integer(0, 1)
 	proceed
 
-$395:
-	get_constant('working_directory', 0)
-	get_integer(2, 1)
-	proceed
-
-$396:
-	get_constant('working_directory', 0)
-	get_integer(1, 1)
-	proceed
-
-$397:
-	get_constant('tcp_getservbyname', 0)
-	get_integer(3, 1)
-	proceed
-
-$398:
-	get_constant('thread_suspend', 0)
-	get_integer(1, 1)
-	proceed
-
-$399:
-	get_constant('thread_suspend', 0)
-	get_integer(0, 1)
-	proceed
-
 $400:
-	get_constant('get_exception_message', 0)
+	get_constant('working_directory', 0)
 	get_integer(2, 1)
 	proceed
 
 $401:
-	get_constant('ipc_peek', 0)
+	get_constant('working_directory', 0)
 	get_integer(1, 1)
 	proceed
 
 $402:
-	get_constant('ipc_peek', 0)
-	get_integer(2, 1)
+	get_constant('tcp_getservbyname', 0)
+	get_integer(3, 1)
 	proceed
 
 $403:
-	get_constant('ipc_peek', 0)
-	get_integer(3, 1)
+	get_constant('thread_suspend', 0)
+	get_integer(1, 1)
 	proceed
 
 $404:
-	get_constant('load_foreign', 0)
-	get_integer(3, 1)
+	get_constant('thread_suspend', 0)
+	get_integer(0, 1)
 	proceed
 
 $405:
-	get_constant('load_foreign', 0)
+	get_constant('get_exception_message', 0)
 	get_integer(2, 1)
 	proceed
 
 $406:
-	get_constant('closed_list', 0)
+	get_constant('ipc_peek', 0)
 	get_integer(1, 1)
 	proceed
 
 $407:
+	get_constant('ipc_peek', 0)
+	get_integer(2, 1)
+	proceed
+
+$408:
+	get_constant('ipc_peek', 0)
+	get_integer(3, 1)
+	proceed
+
+$409:
+	get_constant('changed_predicates', 0)
+	get_integer(2, 1)
+	proceed
+
+$410:
+	get_constant('load_foreign', 0)
+	get_integer(3, 1)
+	proceed
+
+$411:
+	get_constant('load_foreign', 0)
+	get_integer(2, 1)
+	proceed
+
+$412:
+	get_constant('closed_list', 0)
+	get_integer(1, 1)
+	proceed
+
+$413:
 	get_constant('current_op', 0)
 	get_integer(3, 1)
 	proceed
 
-$408:
+$414:
 	get_constant('current_op', 0)
 	get_integer(4, 1)
 	proceed
 
-$409:
+$415:
 	get_constant('pedro_unsubscribe', 0)
 	get_integer(1, 1)
 	proceed
 
-$410:
-	get_constant('write_term_list', 0)
-	get_integer(2, 1)
-	proceed
-
-$411:
-	get_constant('write_term_list', 0)
-	get_integer(1, 1)
-	proceed
-
-$412:
-	get_constant('?=', 0)
-	get_integer(2, 1)
-	proceed
-
-$413:
-	get_constant('open_member_eq', 0)
-	get_integer(2, 1)
-	proceed
-
-$414:
-	get_constant('tcp_close', 0)
-	get_integer(1, 1)
-	proceed
-
-$415:
-	get_constant('<<-', 0)
-	get_integer(2, 1)
-	proceed
-
 $416:
-	get_constant('clear_signal', 0)
-	get_integer(1, 1)
+	get_constant('getenv', 0)
+	get_integer(2, 1)
 	proceed
 
 $417:
-	get_constant('write_debug_msg_term_list', 0)
-	get_integer(1, 1)
+	get_constant('write_term_list', 0)
+	get_integer(2, 1)
 	proceed
 
 $418:
-	get_constant('stdout', 0)
+	get_constant('write_term_list', 0)
 	get_integer(1, 1)
 	proceed
 
 $419:
-	get_constant('set_input', 0)
-	get_integer(1, 1)
-	proceed
-
-$420:
-	get_constant('getcwd', 0)
-	get_integer(1, 1)
-	proceed
-
-$421:
-	get_constant('??', 0)
+	get_constant('?=', 0)
 	get_integer(2, 1)
 	proceed
 
+$420:
+	get_constant('open_member_eq', 0)
+	get_integer(2, 1)
+	proceed
+
+$421:
+	get_constant('tcp_close', 0)
+	get_integer(1, 1)
+	proceed
+
 $422:
-	get_constant('ip_array_init', 0)
+	get_constant('<<-', 0)
 	get_integer(2, 1)
 	proceed
 
 $423:
-	get_constant('get_unify_delays', 0)
+	get_constant('clear_signal', 0)
 	get_integer(1, 1)
 	proceed
 
 $424:
-	get_constant('hash_table_search', 0)
-	get_integer(3, 1)
+	get_constant('write_debug_msg_term_list', 0)
+	get_integer(1, 1)
 	proceed
 
 $425:
-	get_constant('statistics', 0)
-	get_integer(3, 1)
+	get_constant('stdout', 0)
+	get_integer(1, 1)
 	proceed
 
 $426:
-	get_constant('statistics', 0)
-	get_integer(2, 1)
+	get_constant('set_input', 0)
+	get_integer(1, 1)
 	proceed
 
 $427:
-	get_constant('statistics', 0)
-	get_integer(0, 1)
+	get_constant('getcwd', 0)
+	get_integer(1, 1)
 	proceed
 
 $428:
-	get_constant('encoded_write_term', 0)
-	get_integer(3, 1)
+	get_constant('??', 0)
+	get_integer(2, 1)
 	proceed
 
 $429:
-	get_constant('encoded_write_term', 0)
+	get_constant('ip_array_init', 0)
 	get_integer(2, 1)
 	proceed
 
 $430:
-	get_constant('make_builtins', 0)
-	get_integer(0, 1)
-	proceed
-
-$431:
-	get_constant('op_table', 0)
+	get_constant('get_unify_delays', 0)
 	get_integer(1, 1)
 	proceed
 
+$431:
+	get_constant('hash_table_search', 0)
+	get_integer(3, 1)
+	proceed
+
 $432:
-	get_constant('strerror', 0)
-	get_integer(2, 1)
+	get_constant('statistics', 0)
+	get_integer(3, 1)
 	proceed
 
 $433:
-	get_constant('portray_clause', 0)
+	get_constant('statistics', 0)
 	get_integer(2, 1)
 	proceed
 
 $434:
-	get_constant('portray_clause', 0)
-	get_integer(1, 1)
-	proceed
-
-$435:
-	get_constant('past_end_of_stream', 0)
-	get_integer(1, 1)
-	proceed
-
-$436:
-	get_constant('past_end_of_stream', 0)
+	get_constant('statistics', 0)
 	get_integer(0, 1)
 	proceed
 
-$437:
-	get_constant('thaw_vars', 0)
+$435:
+	get_constant('encoded_write_term', 0)
+	get_integer(3, 1)
+	proceed
+
+$436:
+	get_constant('encoded_write_term', 0)
 	get_integer(2, 1)
 	proceed
 
+$437:
+	get_constant('make_builtins', 0)
+	get_integer(0, 1)
+	proceed
+
 $438:
-	get_constant('thaw_vars', 0)
+	get_constant('op_table', 0)
 	get_integer(1, 1)
 	proceed
 
 $439:
-	get_constant('copy_term', 0)
+	get_constant('strerror', 0)
 	get_integer(2, 1)
 	proceed
 
 $440:
-	get_constant('transform_simple_terms', 0)
-	get_integer(3, 1)
-	proceed
-
-$441:
-	get_constant('define_dynamic_lib', 0)
+	get_constant('portray_clause', 0)
 	get_integer(2, 1)
 	proceed
 
-$442:
-	get_constant('findall', 0)
-	get_integer(3, 1)
-	proceed
-
-$443:
-	get_constant('tcp_listen', 0)
+$441:
+	get_constant('portray_clause', 0)
 	get_integer(1, 1)
 	proceed
 
+$442:
+	get_constant('past_end_of_stream', 0)
+	get_integer(1, 1)
+	proceed
+
+$443:
+	get_constant('past_end_of_stream', 0)
+	get_integer(0, 1)
+	proceed
+
 $444:
-	get_constant('pipe', 0)
+	get_constant('thaw_vars', 0)
 	get_integer(2, 1)
 	proceed
 
 $445:
-	get_constant('std_nonvar', 0)
+	get_constant('thaw_vars', 0)
 	get_integer(1, 1)
 	proceed
 
 $446:
+	get_constant('copy_term', 0)
+	get_integer(2, 1)
+	proceed
+
+$447:
+	get_constant('transform_simple_terms', 0)
+	get_integer(3, 1)
+	proceed
+
+$448:
+	get_constant('define_dynamic_lib', 0)
+	get_integer(2, 1)
+	proceed
+
+$449:
+	get_constant('findall', 0)
+	get_integer(3, 1)
+	proceed
+
+$450:
+	get_constant('tcp_listen', 0)
+	get_integer(1, 1)
+	proceed
+
+$451:
+	get_constant('pipe', 0)
+	get_integer(2, 1)
+	proceed
+
+$452:
+	get_constant('std_nonvar', 0)
+	get_integer(1, 1)
+	proceed
+
+$453:
 	get_constant('transform_subterms', 0)
 	get_integer(3, 1)
 	proceed
 
-$447:
+$454:
 	get_constant('retry_delays', 0)
 	get_integer(0, 1)
 	proceed
 
-$448:
+$455:
 	get_constant('get_linking_clause', 0)
 	get_integer(3, 1)
 	proceed
 
-$449:
+$456:
 	get_constant('string_length', 0)
 	get_integer(2, 1)
 	proceed
 
-$450:
+$457:
 	get_constant('remove_obvar_prefix', 0)
 	get_integer(2, 1)
 	proceed
 
-$451:
+$458:
 	get_constant('remove_obvar_prefix', 0)
 	get_integer(1, 1)
 	proceed
 
-$452:
+$459:
 	get_constant('@=<', 0)
 	get_integer(2, 1)
 	proceed
 
-$453:
+$460:
 	get_constant('halt', 0)
 	get_integer(1, 1)
 	proceed
 
-$454:
+$461:
 	get_constant('halt', 0)
 	get_integer(0, 1)
 	proceed
 
-$455:
+$462:
 	get_constant('multifile', 0)
 	get_integer(1, 1)
 	proceed
 
-$456:
+$463:
 	get_constant('<<=', 0)
 	get_integer(2, 1)
 	proceed
 
-$457:
+$464:
 	get_constant('retry_nfi', 0)
 	get_integer(0, 1)
 	proceed
 
-$458:
+$465:
 	get_constant('prompt', 0)
 	get_integer(2, 1)
 	proceed
 
-$459:
+$466:
 	get_constant('spy_cond', 0)
 	get_integer(3, 1)
 	proceed
 
-$460:
-	get_constant('obvar_prefix', 0)
-	get_integer(2, 1)
-	proceed
-
-$461:
-	get_constant('obvar_prefix', 0)
-	get_integer(1, 1)
-	proceed
-
-$462:
-	get_constant('ip_array_clear', 0)
-	get_integer(1, 1)
-	proceed
-
-$463:
-	get_constant('bound', 0)
-	get_integer(1, 1)
-	proceed
-
-$464:
-	get_constant('dcg', 0)
-	get_integer(2, 1)
-	proceed
-
-$465:
-	get_constant('@<', 0)
-	get_integer(2, 1)
-	proceed
-
-$466:
-	get_constant('fold_left', 0)
-	get_integer(4, 1)
-	proceed
-
 $467:
-	get_constant('writeRq', 0)
+	get_constant('obvar_prefix', 0)
 	get_integer(2, 1)
 	proceed
 
 $468:
-	get_constant('writeRq', 0)
+	get_constant('obvar_prefix', 0)
 	get_integer(1, 1)
 	proceed
 
 $469:
-	get_constant('is', 0)
-	get_integer(2, 1)
+	get_constant('ip_array_clear', 0)
+	get_integer(1, 1)
 	proceed
 
 $470:
-	get_constant('nospyall', 0)
-	get_integer(0, 1)
+	get_constant('bound', 0)
+	get_integer(1, 1)
 	proceed
 
 $471:
-	get_constant('@=', 0)
+	get_constant('dcg', 0)
 	get_integer(2, 1)
 	proceed
 
 $472:
-	get_constant('initialization', 0)
-	get_integer(1, 1)
+	get_constant('@<', 0)
+	get_integer(2, 1)
 	proceed
 
 $473:
-	get_constant('thread_symbol', 0)
-	get_integer(1, 1)
+	get_constant('fold_left', 0)
+	get_integer(4, 1)
 	proceed
 
 $474:
-	get_constant('@>', 0)
+	get_constant('writeRq', 0)
 	get_integer(2, 1)
 	proceed
 
 $475:
-	get_constant('thaw_var', 0)
+	get_constant('writeRq', 0)
 	get_integer(1, 1)
 	proceed
 
 $476:
-	get_constant('hash_table_lookup', 0)
-	get_integer(3, 1)
+	get_constant('is', 0)
+	get_integer(2, 1)
 	proceed
 
 $477:
-	get_constant('env_getenv', 0)
-	get_integer(2, 1)
+	get_constant('nospyall', 0)
+	get_integer(0, 1)
 	proceed
 
 $478:
-	get_constant('current_threads', 0)
-	get_integer(1, 1)
+	get_constant('@=', 0)
+	get_integer(2, 1)
 	proceed
 
 $479:
-	get_constant('set_std_stream', 0)
-	get_integer(2, 1)
-	proceed
-
-$480:
-	get_constant('put_char', 0)
-	get_integer(2, 1)
-	proceed
-
-$481:
-	get_constant('put_char', 0)
+	get_constant('initialization', 0)
 	get_integer(1, 1)
 	proceed
 
+$480:
+	get_constant('thread_symbol', 0)
+	get_integer(1, 1)
+	proceed
+
+$481:
+	get_constant('@>', 0)
+	get_integer(2, 1)
+	proceed
+
 $482:
-	get_constant('compound', 0)
+	get_constant('thaw_var', 0)
 	get_integer(1, 1)
 	proceed
 
 $483:
-	get_constant('thread_exit', 0)
-	get_integer(1, 1)
+	get_constant('hash_table_lookup', 0)
+	get_integer(3, 1)
 	proceed
 
 $484:
-	get_constant('thread_exit', 0)
-	get_integer(0, 1)
+	get_constant('current_threads', 0)
+	get_integer(1, 1)
 	proceed
 
 $485:
-	get_constant('tcp_accept', 0)
+	get_constant('set_std_stream', 0)
 	get_integer(2, 1)
 	proceed
 
 $486:
-	get_constant('tcp_accept', 0)
-	get_integer(4, 1)
+	get_constant('put_char', 0)
+	get_integer(2, 1)
 	proceed
 
 $487:
-	get_constant('thaw_term', 0)
+	get_constant('put_char', 0)
 	get_integer(1, 1)
 	proceed
 
 $488:
-	get_constant('thaw_term', 0)
-	get_integer(2, 1)
+	get_constant('compound', 0)
+	get_integer(1, 1)
 	proceed
 
 $489:
-	get_constant('pedro_subscribe', 0)
-	get_integer(3, 1)
+	get_constant('thread_exit', 0)
+	get_integer(1, 1)
 	proceed
 
 $490:
-	get_constant('global_state_decrement', 0)
-	get_integer(2, 1)
+	get_constant('thread_exit', 0)
+	get_integer(0, 1)
 	proceed
 
 $491:
-	get_constant('predicate_property', 0)
+	get_constant('tcp_accept', 0)
 	get_integer(2, 1)
 	proceed
 
 $492:
+	get_constant('tcp_accept', 0)
+	get_integer(4, 1)
+	proceed
+
+$493:
+	get_constant('thaw_term', 0)
+	get_integer(1, 1)
+	proceed
+
+$494:
+	get_constant('thaw_term', 0)
+	get_integer(2, 1)
+	proceed
+
+$495:
+	get_constant('pedro_subscribe', 0)
+	get_integer(3, 1)
+	proceed
+
+$496:
+	get_constant('global_state_decrement', 0)
+	get_integer(2, 1)
+	proceed
+
+$497:
+	get_constant('predicate_property', 0)
+	get_integer(2, 1)
+	proceed
+
+$498:
 	get_constant('forall', 0)
 	get_integer(2, 1)
 	proceed
 
-$493:
+$499:
 	get_constant('writeRTq', 0)
 	get_integer(2, 1)
 	proceed
 
-$494:
+$500:
 	get_constant('writeRTq', 0)
 	get_integer(3, 1)
 	proceed
 
-$495:
+$501:
 	get_constant('chr_not_eq', 0)
 	get_integer(2, 1)
 	proceed
 
-$496:
+$502:
 	get_constant('gc', 0)
 	get_integer(0, 1)
 	proceed
 
-$497:
+$503:
 	get_constant('distribute', 0)
 	get_integer(3, 1)
 	proceed
 
-$498:
+$504:
 	get_constant('tab', 0)
 	get_integer(2, 1)
 	proceed
 
-$499:
+$505:
 	get_constant('tab', 0)
 	get_integer(1, 1)
 	proceed
 
-$500:
+$506:
 	get_constant('open_member', 0)
 	get_integer(2, 1)
 	proceed
 
-$501:
+$507:
 	get_constant('same_args', 0)
 	get_integer(4, 1)
 	proceed
 
-$502:
+$508:
 	get_constant('same_args', 0)
 	get_integer(5, 1)
 	proceed
 
-$503:
+$509:
 	get_constant('add_expansion_vars', 0)
 	get_integer(1, 1)
 	proceed
 
-$504:
+$510:
 	get_constant('add_multi_expansion_vars', 0)
 	get_integer(1, 1)
 	proceed
 
-$505:
+$511:
 	get_constant('chr_collect_constraints_2', 0)
 	get_integer(2, 1)
 	proceed
 
-$506:
+$512:
 	get_constant('reverse', 0)
 	get_integer(2, 1)
 	proceed
 
-$507:
+$513:
 	get_constant('thread_set_defaults', 0)
 	get_integer(1, 1)
 	proceed
 
-$508:
+$514:
 	get_constant('thread_defaults', 0)
 	get_integer(1, 1)
 	proceed
 
-$509:
+$515:
 	get_constant('diff_list', 0)
 	get_integer(3, 1)
 	proceed
 
-$510:
+$516:
 	get_constant('compare', 0)
 	get_integer(3, 1)
 	proceed
 
-$511:
+$517:
 	get_constant('thread_is_runnable', 0)
 	get_integer(1, 1)
 	proceed
 
-$512:
+$518:
 	get_constant('clear_trace_flag', 0)
 	get_integer(1, 1)
 	proceed
 
-$513:
+$519:
 	get_constant('get_unnamed_vars', 0)
 	get_integer(2, 1)
 	proceed
 
-$514:
+$520:
 	get_constant('tcp_checkconn', 0)
 	get_integer(1, 1)
 	proceed
 
-$515:
+$521:
 	get_constant('instantiation_exception', 0)
 	get_integer(4, 1)
 	proceed
 
-$516:
+$522:
 	get_constant('instantiation_exception', 0)
 	get_integer(3, 1)
 	proceed
 
-$517:
+$523:
 	get_constant('string', 0)
 	get_integer(1, 1)
 	proceed
 
-$518:
-	get_constant('reset_std_stream', 0)
-	get_integer(1, 1)
-	proceed
-
-$519:
-	get_constant('thread_atomic_goal', 0)
-	get_integer(1, 1)
-	proceed
-
-$520:
-	get_constant('localtime', 0)
-	get_integer(2, 1)
-	proceed
-
-$521:
-	get_constant('compile_time_only', 0)
-	get_integer(1, 1)
-	proceed
-
-$522:
-	get_constant('ipc_recv', 0)
-	get_integer(3, 1)
-	proceed
-
-$523:
-	get_constant('ipc_recv', 0)
-	get_integer(2, 1)
-	proceed
-
 $524:
-	get_constant('ipc_recv', 0)
+	get_constant('gettimeofday', 0)
 	get_integer(1, 1)
 	proceed
 
 $525:
-	get_constant('display_thread_info', 0)
-	get_integer(0, 1)
+	get_constant('reset_std_stream', 0)
+	get_integer(1, 1)
 	proceed
 
 $526:
-	get_constant('thread_fork', 0)
-	get_integer(3, 1)
+	get_constant('thread_atomic_goal', 0)
+	get_integer(1, 1)
 	proceed
 
 $527:
-	get_constant('thread_fork', 0)
+	get_constant('localtime', 0)
 	get_integer(2, 1)
 	proceed
 
 $528:
-	get_constant('nonvar', 0)
+	get_constant('compile_time_only', 0)
 	get_integer(1, 1)
 	proceed
 
 $529:
-	get_constant('get_open_streams', 0)
-	get_integer(1, 1)
+	get_constant('ipc_recv', 0)
+	get_integer(3, 1)
 	proceed
 
 $530:
-	get_constant('del_subterm_expansion_vars', 0)
-	get_integer(1, 1)
+	get_constant('ipc_recv', 0)
+	get_integer(2, 1)
 	proceed
 
 $531:
-	get_constant('callable', 0)
+	get_constant('ipc_recv', 0)
 	get_integer(1, 1)
 	proceed
 
 $532:
-	get_constant('check_and_update_applied', 0)
-	get_integer(2, 1)
+	get_constant('display_thread_info', 0)
+	get_integer(0, 1)
 	proceed
 
 $533:
-	get_constant('open_append', 0)
-	get_integer(2, 1)
+	get_constant('thread_fork', 0)
+	get_integer(3, 1)
 	proceed
 
 $534:
-	get_constant('encoded_read_term', 0)
+	get_constant('thread_fork', 0)
 	get_integer(2, 1)
 	proceed
 
 $535:
-	get_constant('encoded_read_term', 0)
-	get_integer(3, 1)
+	get_constant('thread_fork', 0)
+	get_integer(4, 1)
 	proceed
 
 $536:
-	get_constant('tcp_connect', 0)
-	get_integer(3, 1)
+	get_constant('nonvar', 0)
+	get_integer(1, 1)
 	proceed
 
 $537:
-	get_constant('same_length', 0)
-	get_integer(2, 1)
+	get_constant('get_open_streams', 0)
+	get_integer(1, 1)
 	proceed
 
 $538:
-	get_constant('setof', 0)
-	get_integer(3, 1)
+	get_constant('del_subterm_expansion_vars', 0)
+	get_integer(1, 1)
 	proceed
 
 $539:
-	get_constant('get_delays', 0)
+	get_constant('callable', 0)
 	get_integer(1, 1)
 	proceed
 
 $540:
-	get_constant('map', 0)
+	get_constant('check_and_update_applied', 0)
 	get_integer(2, 1)
 	proceed
 
 $541:
-	get_constant('map', 0)
-	get_integer(3, 1)
+	get_constant('open_append', 0)
+	get_integer(2, 1)
 	proceed
 
 $542:
-	get_constant('is_not_free_in', 0)
+	get_constant('encoded_read_term', 0)
 	get_integer(2, 1)
 	proceed
 
 $543:
-	get_constant('after_with', 0)
+	get_constant('encoded_read_term', 0)
 	get_integer(3, 1)
 	proceed
 
 $544:
-	get_constant('identical_or_apart', 0)
-	get_integer(2, 1)
+	get_constant('tcp_connect', 0)
+	get_integer(3, 1)
 	proceed
 
 $545:
-	get_constant('ground', 0)
-	get_integer(1, 1)
+	get_constant('same_length', 0)
+	get_integer(2, 1)
 	proceed
 
 $546:
-	get_constant('ip_array_get_entries', 0)
-	get_integer(2, 1)
+	get_constant('setof', 0)
+	get_integer(3, 1)
 	proceed
 
 $547:
-	get_constant('get_var_name', 0)
-	get_integer(2, 1)
+	get_constant('get_delays', 0)
+	get_integer(1, 1)
 	proceed
 
 $548:
-	get_constant('member', 0)
+	get_constant('map', 0)
 	get_integer(2, 1)
 	proceed
 
 $549:
-	get_constant('add_subterm_expansion_vars', 0)
-	get_integer(1, 1)
+	get_constant('map', 0)
+	get_integer(3, 1)
 	proceed
 
 $550:
-	get_constant('frozen_var', 0)
-	get_integer(1, 1)
+	get_constant('is_not_free_in', 0)
+	get_integer(2, 1)
 	proceed
 
 $551:
-	get_constant('between', 0)
+	get_constant('after_with', 0)
 	get_integer(3, 1)
 	proceed
 
 $552:
-	get_constant('pedro_disconnect', 0)
-	get_integer(0, 1)
-	proceed
-
-$553:
-	get_constant('distribute_right', 0)
-	get_integer(3, 1)
-	proceed
-
-$554:
-	get_constant('process_symbol', 0)
-	get_integer(1, 1)
-	proceed
-
-$555:
-	get_constant('del_multi_expansion_vars', 0)
-	get_integer(1, 1)
-	proceed
-
-$556:
-	get_constant('ip_lookup', 0)
+	get_constant('identical_or_apart', 0)
 	get_integer(2, 1)
 	proceed
 
+$553:
+	get_constant('ground', 0)
+	get_integer(1, 1)
+	proceed
+
+$554:
+	get_constant('ip_array_get_entries', 0)
+	get_integer(2, 1)
+	proceed
+
+$555:
+	get_constant('print', 0)
+	get_integer(2, 1)
+	proceed
+
+$556:
+	get_constant('print', 0)
+	get_integer(1, 1)
+	proceed
+
 $557:
-	get_constant('ip_lookup', 0)
-	get_integer(3, 1)
+	get_constant('get_var_name', 0)
+	get_integer(2, 1)
 	proceed
 
 $558:
-	get_constant('unwind_protect', 0)
+	get_constant('member', 0)
 	get_integer(2, 1)
 	proceed
 
 $559:
-	get_constant('intersect_list', 0)
-	get_integer(3, 1)
+	get_constant('add_subterm_expansion_vars', 0)
+	get_integer(1, 1)
 	proceed
 
 $560:
-	get_constant('obvar', 0)
+	get_constant('frozen_var', 0)
 	get_integer(1, 1)
 	proceed
 
 $561:
-	get_constant('number', 0)
-	get_integer(1, 1)
-	proceed
-
-$562:
-	get_constant('tcp_getsockname', 0)
+	get_constant('between', 0)
 	get_integer(3, 1)
 	proceed
 
+$562:
+	get_constant('pedro_disconnect', 0)
+	get_integer(0, 1)
+	proceed
+
 $563:
-	get_constant('load_foreign_files', 0)
-	get_integer(2, 1)
+	get_constant('distribute_right', 0)
+	get_integer(3, 1)
 	proceed
 
 $564:
-	get_constant('load_foreign_files', 0)
+	get_constant('process_symbol', 0)
 	get_integer(1, 1)
 	proceed
 
 $565:
-	get_constant('thread_is_thread', 0)
+	get_constant('del_multi_expansion_vars', 0)
 	get_integer(1, 1)
 	proceed
 
 $566:
-	get_constant('application', 0)
+	get_constant('ip_lookup', 0)
 	get_integer(2, 1)
 	proceed
 
 $567:
-	get_constant('obvar_prefix_table', 0)
-	get_integer(1, 1)
+	get_constant('ip_lookup', 0)
+	get_integer(3, 1)
 	proceed
 
 $568:
-	get_constant('ip_set', 0)
+	get_constant('unwind_protect', 0)
 	get_integer(2, 1)
 	proceed
 
 $569:
-	get_constant('ip_set', 0)
+	get_constant('intersect_list', 0)
 	get_integer(3, 1)
 	proceed
 
 $570:
-	get_constant('put_code', 0)
-	get_integer(2, 1)
+	get_constant('obvar', 0)
+	get_integer(1, 1)
 	proceed
 
 $571:
-	get_constant('put_code', 0)
+	get_constant('number', 0)
 	get_integer(1, 1)
 	proceed
 
 $572:
+	get_constant('create_timer', 0)
+	get_integer(4, 1)
+	proceed
+
+$573:
+	get_constant('tcp_getsockname', 0)
+	get_integer(3, 1)
+	proceed
+
+$574:
+	get_constant('load_foreign_files', 0)
+	get_integer(2, 1)
+	proceed
+
+$575:
+	get_constant('load_foreign_files', 0)
+	get_integer(1, 1)
+	proceed
+
+$576:
+	get_constant('thread_is_thread', 0)
+	get_integer(1, 1)
+	proceed
+
+$577:
+	get_constant('application', 0)
+	get_integer(2, 1)
+	proceed
+
+$578:
+	get_constant('obvar_prefix_table', 0)
+	get_integer(1, 1)
+	proceed
+
+$579:
+	get_constant('ip_set', 0)
+	get_integer(2, 1)
+	proceed
+
+$580:
+	get_constant('ip_set', 0)
+	get_integer(3, 1)
+	proceed
+
+$581:
+	get_constant('put_code', 0)
+	get_integer(2, 1)
+	proceed
+
+$582:
+	get_constant('put_code', 0)
+	get_integer(1, 1)
+	proceed
+
+$583:
 	get_constant('read', 0)
 	get_integer(1, 1)
 	proceed
 
-$573:
+$584:
 	get_constant('read', 0)
 	get_integer(2, 1)
 	proceed
 
-$574:
+$585:
 	get_constant('set_trace_flag', 0)
 	get_integer(1, 1)
 	proceed
 
-$575:
+$586:
 	get_constant('message_choice', 0)
 	get_integer(1, 1)
 	proceed

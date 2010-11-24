@@ -193,7 +193,7 @@ public:
   
   inline bool isRefTag(void) const;
   inline bool isVariable(void) const;
-  inline bool isVariableOther(void) const;
+  inline bool isVariableExtended(void) const;
   inline bool isNormalVariable(void) const;
   inline bool isFrozenVariable(void) const;
   inline bool isThawedVariable(void) const;
@@ -923,9 +923,9 @@ inline bool Object::isVariable(void) const
 {
   return (tag & TypeMask) == TypeVar;
 }
-inline bool Object::isVariableOther(void) const
+inline bool Object::isVariableExtended(void) const
 {
-  return ((tag & TypeTagMask) == VarOtherTag);
+  return (tag & (TypeMask | Reference::FlagExtraInfo)) == (TypeVar | Reference::FlagExtraInfo);
 }
 
 

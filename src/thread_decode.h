@@ -88,6 +88,7 @@ do {									\
     }                                                                   \
 } while (0)								\
 
+/*
 ErrorValue
 decode_thread_conditions(Heap& heap, AtomTable& atoms,
 			 Object * arg,
@@ -105,6 +106,7 @@ do {									\
       PSI_ERROR_RETURN(ev, arg_num);					\
     }									\
 } while (0)
+*/
 
 bool
 decode_defaults(Heap& heap, Object * sizes,

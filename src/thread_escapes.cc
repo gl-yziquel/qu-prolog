@@ -62,14 +62,19 @@
 #include "thread_table.h"
 #include "timeval.h"
 #include "pedro_env.h"
+#include "timer.h"
+
+extern TimerStack timerStack;
 
 // @internaldoc
-// @pred '$thread_fork'(Name, Goal, ThreadSizes)
-// @mode '$thread_fork'(?, +, +) is semidet
-// @type '$thread_fork'(atom, goal, ThreadSizes)
+// @pred '$thread_fork'(Name, Goal, Rootname, ThreadSizes)
+// @mode '$thread_fork'(?, +, +, +) is semidet
+// @type '$thread_fork'(atom, goal, atom, ThreadSizes)
 // @description
 // Create a new thread, with the given goal and whose data areas are the 
 // specified sizes.
+// If Rootname is not fail then the name generated for the thread
+// is based on this name (with an integer extension).
 //
 // ThreadSizes is a structure:
 //   '$thread_sizes'(HeapSize, ScratchpadSize, BindingTrailSize, 
@@ -84,10 +89,12 @@
 Thread::ReturnValue
 Thread::psi_thread_fork(Object *& name_arg,
 			Object *& goal_arg,
+			Object *& rootname_arg,
 			Object *& sizes_arg)
 {
   Object* argN = heap.dereference(name_arg);
   Object* argG = heap.dereference(goal_arg);
+  Object* argR = heap.dereference(rootname_arg);
   Object* argS = heap.dereference(sizes_arg);
   
   // Check to see the name is instantiated and is an atom.
@@ -100,6 +107,16 @@ Thread::psi_thread_fork(Object *& name_arg,
     {
       PSI_ERROR_RETURN(EV_INST, 2);
     }
+  // Check the root name
+  if (argR->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 3);
+    }
+   if (!argR->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 3);
+    }
+ 
 
   // Check and decode the sizes.
   int heap_size; 
@@ -111,7 +128,7 @@ Thread::psi_thread_fork(Object *& name_arg,
   int name_table_size;
   int ip_table_size;
   
-  DECODE_DEFAULTS_ARG(heap, argS, 3,
+  DECODE_DEFAULTS_ARG(heap, argS, 4,
 		      heap_size,
 		      scratchpad_size,
 		      binding_trail_size,
@@ -175,6 +192,16 @@ Thread::psi_thread_fork(Object *& name_arg,
 	  thread_table->RemoveID(loc);
 
 	  PSI_ERROR_RETURN(EV_VALUE, 1);
+	}
+    }
+  else if (argR->isAtom() && (argR != AtomTable::failure))
+    {
+      const char *root = OBJECT_CAST(Atom*, argR)->getName();
+      const char *symbol = thread_table->MakeName(loc, root).c_str();
+      thread->TInfo().SetSymbol(symbol);
+      if (!unify(argN, atoms->add(symbol)))
+	{
+	  return (RV_FAIL);
 	}
     }
   else
@@ -538,7 +565,7 @@ Thread::psi_thread_exit(void)
   Condition(ThreadCondition::EXITED);
 
 #ifdef DEBUG_MT
-  cerr.form("%s %ld\n", __FUNCTION__, TInfo().ID());
+  cerr << __FUNCTION__ << " " << TInfo().ID() << endl;
 #endif
 
   if (TInfo().SymbolSet())
@@ -547,6 +574,7 @@ Thread::psi_thread_exit(void)
       thread_table->RemoveName(TInfo().Symbol());
     }
   if (pedro_channel != NULL) pedro_channel->delete_subscriptions(TInfo().ID());
+  timerStack.delete_all_timers(this);
   return RV_EXIT;
 }
 
@@ -735,32 +763,96 @@ Thread::psi_thread_resume(Object *& thread_id_cell)
 // @end pred
 // @end user
 Thread::ReturnValue
-Thread::psi_thread_wait(Object *& conditions_arg)
+Thread::psi_thread_wait_timeout(Object *& time)
 {
-  Object* argS = heap.dereference(conditions_arg);
-  
-  bool db_flag = false;
-  double timeout = -1;
+  Object* argT = heap.dereference(time);
 
-  DECODE_THREAD_CONDITIONS_ARG(heap, *atoms, argS, 1, db_flag, timeout);
+  assert(argT->isNumber());
+  double timeout;
+  if (argT->isInteger()) 
+    timeout = argT->getInteger();
+  else
+    timeout = argT->getDouble();
+
+  //DECODE_THREAD_CONDITIONS_ARG(heap, *atoms, argS, 1, db_flag, timeout);
   if (block_status.isRestarted())
     {
       return RV_SUCCESS;
     }
-  else if (db_flag)
+  BlockingTimeoutObject* bto = new BlockingTimeoutObject(this, timeout);
+  scheduler->blockedQueue().push_back(bto);
+  block_status.setBlocked();
+  return RV_BLOCK;
+}
+
+Thread::ReturnValue
+Thread::psi_thread_setup_wait(Object *& preds, Object *& until_time, 
+			      Object *& every_time, Object *& wait_ptr)
+{
+  Object* argP = heap.dereference(preds);
+  Object* argU = heap.dereference(until_time);
+  Object* argE = heap.dereference(every_time);
+   BlockingWaitObject* bwo =
+    new BlockingWaitObject(this, code, argP, argU, argE, predicates);
+ wait_ptr = heap.newInteger((long)(reinterpret_cast<heapobject*>(bwo)));
+ //bwo->dump();
+  return RV_SUCCESS;
+}
+
+Thread::ReturnValue
+Thread::psi_thread_wait_free_ptr(Object *& wait_ptr)
+{
+  Object* argW = heap.dereference(wait_ptr);
+  assert(argW->isInteger());
+  long iptr = argW->getInteger();
+  BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
+  delete bwo;
+  return RV_SUCCESS;
+}
+
+Thread::ReturnValue
+Thread::psi_thread_wait_ptr(Object *& wait_ptr)
+{
+  Object* argW = heap.dereference(wait_ptr);
+  assert(argW->isInteger());
+  long iptr = argW->getInteger();
+  BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
+  if (bwo->isWakeOnTimeout())
+    return RV_FAIL;
+  if (block_status.isRestarted())
     {
-      BlockingWaitObject* bwo = new BlockingWaitObject(this, code, timeout);
-      scheduler->blockedQueue().push_back(bwo);
-      block_status.setBlocked();
-      return RV_BLOCK;
-    }
-  else 
-    {
-      BlockingTimeoutObject* bto = new BlockingTimeoutObject(this, timeout);
-      scheduler->blockedQueue().push_back(bto);
-      block_status.setBlocked();
-      return RV_BLOCK;
-    }
+      return RV_SUCCESS;
+    }  
+
+  scheduler->blockedQueue().push_back(bwo);
+  block_status.setBlocked();
+  return RV_BLOCK;
+}
+
+Thread::ReturnValue
+Thread::psi_thread_wait_update(Object *& wait_ptr)
+{
+  Object* argW = heap.dereference(wait_ptr);
+  assert(argW->isInteger());
+  long iptr = argW->getInteger();
+  BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
+  bwo->update();
+  //bwo->dump();
+  return RV_SUCCESS;
+}
+
+Thread::ReturnValue
+Thread::psi_thread_wait_extract_preds(Object *& wait_ptr, Object *& preds)
+{
+  /*
+  Object* argW = heap.dereference(wait_ptr);
+  assert(argW->isInteger());
+  long iptr = argW->getInteger();
+  BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
+  bwo->dump();
+  preds = bwo->extract_changed_preds();
+  */
+  return RV_SUCCESS;
 }
 
 // @internaldoc
@@ -943,9 +1035,11 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
     }
 
   thread->Condition(ThreadCondition::EXITED);
-
+  if (pedro_channel != NULL) 
+    pedro_channel->delete_subscriptions(thread->TInfo().ID());
+  timerStack.delete_all_timers(thread);
 #ifdef DEBUG_MT
-  cerr.form("%s %ld\n", __FUNCTION__, thread->TInfo().ID());
+  cerr <<  __FUNCTION__ << " " << thread->TInfo().ID() << endl;
 #endif
 
   if (thread->TInfo().SymbolSet())
@@ -953,6 +1047,8 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
       // Remove entry from thread table.
       thread_table->RemoveName(thread->TInfo().Symbol());
     }
+  scheduler->deleteThread(thread);
+
   return RV_SUCCESS;
 }
 
@@ -1058,5 +1154,15 @@ Thread::psi_thread_push_goal(Object *& thread_arg,
 }
 
 
-
+Thread::ReturnValue
+Thread::psi_gettimeofday(Object *& tod_arg)
+{
+  timeval tv;
+  gettimeofday(&tv, NULL);
+  double usec = tv.tv_usec;
+  double secs = tv.tv_sec;
+  double tod = secs + usec/1000000.0;
+  tod_arg = heap.newDouble(tod);
+  return RV_SUCCESS;
+}
 

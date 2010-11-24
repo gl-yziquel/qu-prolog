@@ -87,7 +87,7 @@ Thread::InitThread(void)
   catchPoint = EMPTY_LOC;
 
   minCleanupCP = 0xFFFF;
-  doing_gc_throw = false;
+  suspend_gc = false;
   metaCounter = 0;
   objectCounter = 0;
   ForeignFile = NULL;

@@ -74,7 +74,9 @@ Thread::psi_get_args(Object *& object1)
   Object* tail = AtomTable::nil;
   for (word32 i = qem_options->PrologArgc(); i > 0; i--)
     {
-      Object* head = atoms->add(qem_options->PrologArgv()[i - 1]);
+      char* arg = qem_options->PrologArgv()[i - 1];
+      if (strcmp(arg, "--") == 0) continue;
+      Object* head = atoms->add(arg);
       Cons* temp = heap.newCons(head,tail);
       tail = temp;
     }

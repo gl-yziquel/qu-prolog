@@ -113,14 +113,20 @@ end('$stdio'/1):
 	trust($2)
 
 $1:
-	get_x_variable(2, 0)
-	get_x_variable(0, 1)
-	put_x_value(2, 1)
-	execute_predicate('$stream_alias', 2)
+	pseudo_instr1(3, 0)
+	neck_cut
+	get_x_value(1, 0)
+	proceed
 
 $2:
-	pseudo_instr1(3, 0)
-	get_x_value(1, 0)
+	get_x_variable(2, 0)
+	get_x_variable(0, 1)
+	allocate(1)
+	get_y_level(0)
+	put_x_value(2, 1)
+	call_predicate('$stream_alias', 2, 1)
+	cut(0)
+	deallocate
 	proceed
 end('$streamnum'/2):
 

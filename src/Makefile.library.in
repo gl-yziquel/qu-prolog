@@ -20,6 +20,7 @@ export SOURCES.library	= \
 	string_map.cc \
 	string_table.cc \
 	system_support.cc \
+	timer.cc \
 	tcp.cc \
 	write_support.cc
 

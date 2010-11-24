@@ -3,12 +3,19 @@
 
 $1:
 	get_structure('/', 2, 0)
-	unify_x_variable(1)
-	unify_x_variable(2)
+	allocate(2)
+	unify_y_variable(1)
+	unify_y_variable(0)
+	put_structure(2, 0)
+	set_constant('$multifile')
+	set_y_value(1)
+	set_y_value(0)
+	call_predicate('assert', 1, 2)
 	put_structure(2, 0)
 	set_constant('/')
-	set_x_value(1)
-	set_x_value(2)
+	set_y_value(1)
+	set_y_value(0)
+	deallocate
 	execute_predicate('dynamic', 1)
 end('multifile'/1):
 

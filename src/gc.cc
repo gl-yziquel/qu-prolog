@@ -146,7 +146,17 @@ bool check_term(Object* term)
     }
 }
 
-
+bool checkVarExtendedSize(Object* term, int size)
+{
+  if (size != 5)
+    {
+      cerr << size << endl;
+      heapobject* ptr = reinterpret_cast<heapobject*>(term);
+      cerr << hex << (u_int)(ptr) << " : " << *ptr << " " << *(ptr+1) << dec << endl;
+      return false;
+    }
+  return true;
+}
 #endif // QP_DEBUG
 
 #define NEXT do {				 \
@@ -233,17 +243,15 @@ void update_forward_pointers(Heap& heap, GCBits& gcbits)
 	{
 	  if ((x & 1) == 1)
 	    {
-
-
-	      heapobject* ptr = heap.getBase() + bitoffset;
+              heapobject* ptr = heap.getBase() + bitoffset;
 	      Object* term = reinterpret_cast<Object*>(ptr);
 	      assert(gcbits.isSet(bitoffset));
 	      
 	      updateGC(ptr, next_free);
 	      int size = term->size_dispatch();
-              if (term->isVariableOther()) 
+              if (term->isVariableExtended()) 
                 {
-                  assert(size == 5);
+                  assert(checkVarExtendedSize(term, size));
                   heapobject* last = term->last();
                   for (heapobject* next = term->storage(); 
                        next < last; next++)
@@ -252,7 +260,7 @@ void update_forward_pointers(Heap& heap, GCBits& gcbits)
                         threadGC(next);
                     }
                 }
-	      else if (!term->isNumber())
+	      else if (!(term->isNumber() || term->isString()))
 		{
 		  heapobject* last = term->last();
 		  for (heapobject* next = term->storage(); 

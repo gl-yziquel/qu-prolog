@@ -69,6 +69,9 @@
         #include <winsock2.h>
 #endif
 
+#include "objects.h"
+#include "dynamic_code.h"
+
 class Thread;
 class Code;
 class IOManager;
@@ -119,12 +122,17 @@ class BlockingObject
 {
 private:
   Thread* thread;     // the blocked thread
+  bool is_wait;
 public:
-  explicit BlockingObject(Thread* const t) : thread(t) {}
+  explicit BlockingObject(Thread* const t) : thread(t) { is_wait = false; }
 
   virtual ~BlockingObject() {}
 
   Thread* getThread(void) { return thread; }
+
+  bool isWaitObject(void) { return is_wait; }
+
+  void setIsWait(void) { is_wait = true; }
 
   virtual bool unblock(Timeval& tout) = 0;
 
@@ -133,7 +141,6 @@ public:
 #ifdef WIN32
   virtual int getFD(void) = 0;
 #endif
-
   virtual void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) = 0;
 };
 
@@ -199,18 +206,51 @@ class BlockingMessageObject : public BlockingObject
 
 };
 
+class WaitPred
+{
+ public:
+  Object* predname;
+  int arity;
+  DynamicPredicate* predptr;
+  u_int stamp;
+
+  WaitPred(Object* pn, int a, DynamicPredicate* pp, int s); 
+
+  void updateStamp(void);
+};
+      
 class BlockingWaitObject : public BlockingObject
 {
  private:
   Code* code; 
   Timeval timeout;
   u_int stamp;
+  vector<WaitPred*> wait_preds;
+  double retry_timeout;   // -1 if not retry
+  bool wake_on_timeout;
+
  public:
-  BlockingWaitObject(Thread* const t, Code* c, double to);
+  BlockingWaitObject(Thread* const t, Code* c, Object* preds, 
+		     Object* until, Object* every, PredTab* predicates);
+
+  ~BlockingWaitObject(void);
 
   bool unblock(Timeval& tout);
 
   bool hasFD(void) { return false; }
+  
+  void setWakeOnTimeout(bool v) { wake_on_timeout = v; }
+
+  bool isWakeOnTimeout(void) { return wake_on_timeout; }
+
+  void update(void);
+
+  bool is_unblocked(void);
+
+  //Object* extract_changed_preds(void);
+
+  void dump(void);
+
 
 #ifdef WIN32
   int getFD(void) { return NULL; }

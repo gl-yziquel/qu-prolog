@@ -526,3 +526,14 @@ chmod -f a+x bin/kq \
 	  sys_bin/extract_qp_doc \
 	  sys_bin/unexport 
 
+echo
+echo
+echo
+echo "*********************************************************************"
+echo "Command history/editing/completion can be used if rlwrap is installed"
+echo "*********************************************************************"
+echo 
+echo
+echo
+
+

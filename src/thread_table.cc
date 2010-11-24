@@ -89,6 +89,35 @@ ThreadTable::MakeName(const ThreadTableLoc loc)
   assert(false);
   return (symbol);
 }
+//
+// Hash table for mapping from thread names to thread ids.
+//
+string&
+ThreadTable::MakeName(const ThreadTableLoc loc, const char * rootname)
+{
+  ostringstream strm;
+  ThreadHashTableEntry entry;
+  entry.setSymbol(&symbol);
+
+  int id = 0;
+  while (true)
+    {
+      strm.str("");
+      strm << rootname <<  id;
+      symbol = strm.str();
+      int index = hash_table.search(entry);
+      if (index == -1)
+	{
+          ThreadHashTableEntry* new_entry = new ThreadHashTableEntry;
+	  new_entry->Assign(loc, symbol);
+          hash_table.insert(*new_entry, index);
+          return (symbol);
+	}
+      id++;
+    }
+  assert(false);
+  return (symbol);
+}
 
 bool
 ThreadTable::AddName(const string& symbol,	// Name of the thread

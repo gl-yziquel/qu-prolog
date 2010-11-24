@@ -1027,82 +1027,59 @@ end('$psi_call_to_call'/2):
 
 
 
-'$query_psi_errors2010_7_30_11_28_36_831/0$0'/0:
+'$query_psi_errors1290479619_266/0$0'/0:
 
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	put_integer(500, 0)
-	put_constant('fx', 1)
-	put_constant('+', 2)
-	call_predicate('op', 3, 1)
-	cut(0)
-	deallocate
-	proceed
-end('$query_psi_errors2010_7_30_11_28_36_831/0$0'/0):
-
-
-
-'$query_psi_errors2010_7_30_11_28_36_831/0$1'/0:
-
-
-$1:
-	allocate(1)
-	get_y_level(0)
-	put_integer(500, 0)
-	put_constant('fx', 1)
+	put_integer(200, 0)
+	put_constant('fy', 1)
 	put_constant('@', 2)
 	call_predicate('op', 3, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2010_7_30_11_28_36_831/0$1'/0):
+end('$query_psi_errors1290479619_266/0$0'/0):
 
 
 
-'$query_psi_errors2010_7_30_11_28_36_831/0$2'/0:
+'$query_psi_errors1290479619_266/0$1'/0:
 
 
 $1:
 	allocate(1)
 	get_y_level(0)
 	put_integer(500, 0)
-	put_constant('fx', 1)
+	put_constant('fy', 1)
 	put_constant('?', 2)
 	call_predicate('op', 3, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$query_psi_errors2010_7_30_11_28_36_831/0$2'/0):
+end('$query_psi_errors1290479619_266/0$1'/0):
 
 
 
-'$query_psi_errors2010_7_30_11_28_36_831'/0:
+'$query_psi_errors1290479619_266'/0:
 
 	try(0, $1)
 	retry($2)
-	retry($3)
-	trust($4)
+	trust($3)
 
 $1:
 	allocate(0)
-	call_predicate('$query_psi_errors2010_7_30_11_28_36_831/0$0', 0, 0)
+	call_predicate('$query_psi_errors1290479619_266/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_psi_errors2010_7_30_11_28_36_831/0$1', 0, 0)
+	call_predicate('$query_psi_errors1290479619_266/0$1', 0, 0)
 	fail
 
 $3:
-	allocate(0)
-	call_predicate('$query_psi_errors2010_7_30_11_28_36_831/0$2', 0, 0)
-	fail
-
-$4:
 	proceed
-end('$query_psi_errors2010_7_30_11_28_36_831'/0):
+end('$query_psi_errors1290479619_266'/0):
 
 
 
@@ -1110,7 +1087,7 @@ end('$query_psi_errors2010_7_30_11_28_36_831'/0):
 
 
 $1:
-	execute_predicate('$query_psi_errors2010_7_30_11_28_36_831', 0)
+	execute_predicate('$query_psi_errors1290479619_266', 0)
 end('$query'/0):
 
 

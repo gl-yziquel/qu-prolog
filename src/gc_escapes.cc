@@ -133,6 +133,11 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
 	      ptr++;
 	      continue;
 	    }
+	  if (var->isString())
+	    {
+	      ptr++;
+	      continue;
+	    }
 	  if (var->isDouble())
 	    {
 	      ptr ++;
@@ -144,7 +149,7 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
 	      continue;
 	    }
 	  
-          if (var->isVariableOther() && (i == 4))
+          if (var->isVariableExtended() && (i == 4))
 	    {
 	      ptr++;
 	      continue;
@@ -168,7 +173,7 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
                   cerr << hex << (wordptr)(ptr - i + j)  << " : " << (heapobject)(*(ptr -i + j)) << endl;
                 }
               cerr << dec << endl;
-	      reinterpret_cast<Object*>(ptr - i)->printMe_dispatch(*atoms);
+	      //reinterpret_cast<Object*>(ptr - i)->printMe_dispatch(*atoms);
 	      cerr << endl << "PREVIOUS" << endl;
 	      for (int j = 0; j < 20; j++)
 		{
@@ -206,7 +211,7 @@ bool check_heap_marked(Heap& heap, GCBits& gcbits)
       int size = term->size_dispatch();
       if (gcbits.isSet(index))
 	{
-	  if (!term->isNumber())
+	  if (!(term->isNumber() || term->isString()))
 	    {
 	      for (int i = 1; i < size; i++)
 		{
@@ -562,7 +567,7 @@ heap.printMe(*atoms);
 bool 
 Thread::gc(word32 arity)
 {
-  if (isDoingGCThrow()) return true;
+  if (isSuspendedGC()) return true;
 
   status.resetDoGC();
 
@@ -596,7 +601,7 @@ Thread::gc(word32 arity)
     }
 
   if (heap.doGarbageCollection()) {
-    setDoingGCThrow(true);
+    setSuspendGC(true);
     return false;
   }
   return true;
@@ -610,12 +615,18 @@ Thread::psi_gc(void)
 }
 
 Thread::ReturnValue
-Thread::psi_clear_gc_throw(void)
+Thread::psi_suspend_gc(void)
 {
-  setDoingGCThrow(false);
+  setSuspendGC(false);
   return RV_SUCCESS;
 }
 
+Thread::ReturnValue
+Thread::psi_unsuspend_gc(void)
+{
+  setSuspendGC(true);
+  return RV_SUCCESS;
+}
 
 
 

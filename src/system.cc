@@ -195,6 +195,22 @@ Thread::psi_access(Object *& object1, Object *& object2, Object *& object3)
   return(RV_SUCCESS);
 } 
 
+Thread::ReturnValue
+Thread::psi_absolute_path(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  if (!val1->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    } 
+  string filename = OBJECT_CAST(Atom*, val1)->getName();
+  wordexp(filename);
+  char file[1024];
+  strcpy(file, filename.c_str());
+  object2 = atoms->add(file); 
+  return(RV_SUCCESS);
+}
+
 //
 // psi_chdir(atom)
 // Change directory to dir given by the argument

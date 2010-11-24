@@ -233,6 +233,7 @@ private:
 
   // Create a name of the form threadN for the given thread
   string& MakeName(const ThreadTableLoc loc);
+  string& MakeName(const ThreadTableLoc loc, const char * rootname);
 
   // Add a thread's name.
   bool AddName(const string&,	        	// Name of thread

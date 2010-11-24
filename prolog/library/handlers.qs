@@ -1302,7 +1302,7 @@ end('$psi5_resume'/7):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926/0$0'/0:
+'$query_handlers1290479617_141/0$0'/0:
 
 
 $1:
@@ -1316,11 +1316,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926/0$0'/0):
+end('$query_handlers1290479617_141/0$0'/0):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926/0$1'/0:
+'$query_handlers1290479617_141/0$1'/0:
 
 
 $1:
@@ -1334,11 +1334,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926/0$1'/0):
+end('$query_handlers1290479617_141/0$1'/0):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926/0$2'/0:
+'$query_handlers1290479617_141/0$2'/0:
 
 
 $1:
@@ -1352,11 +1352,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926/0$2'/0):
+end('$query_handlers1290479617_141/0$2'/0):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926/0$3'/0:
+'$query_handlers1290479617_141/0$3'/0:
 
 
 $1:
@@ -1370,11 +1370,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926/0$3'/0):
+end('$query_handlers1290479617_141/0$3'/0):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926/0$4'/0:
+'$query_handlers1290479617_141/0$4'/0:
 
 
 $1:
@@ -1388,11 +1388,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926/0$4'/0):
+end('$query_handlers1290479617_141/0$4'/0):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926/0$5'/0:
+'$query_handlers1290479617_141/0$5'/0:
 
 
 $1:
@@ -1406,11 +1406,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926/0$5'/0):
+end('$query_handlers1290479617_141/0$5'/0):
 
 
 
-'$query_handlers2010_7_30_11_28_34_926'/0:
+'$query_handlers1290479617_141'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1422,37 +1422,37 @@ end('$query_handlers2010_7_30_11_28_34_926/0$5'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_handlers2010_7_30_11_28_34_926/0$0', 0, 0)
+	call_predicate('$query_handlers1290479617_141/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_handlers2010_7_30_11_28_34_926/0$1', 0, 0)
+	call_predicate('$query_handlers1290479617_141/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_handlers2010_7_30_11_28_34_926/0$2', 0, 0)
+	call_predicate('$query_handlers1290479617_141/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_handlers2010_7_30_11_28_34_926/0$3', 0, 0)
+	call_predicate('$query_handlers1290479617_141/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_handlers2010_7_30_11_28_34_926/0$4', 0, 0)
+	call_predicate('$query_handlers1290479617_141/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_handlers2010_7_30_11_28_34_926/0$5', 0, 0)
+	call_predicate('$query_handlers1290479617_141/0$5', 0, 0)
 	fail
 
 $7:
 	proceed
-end('$query_handlers2010_7_30_11_28_34_926'/0):
+end('$query_handlers1290479617_141'/0):
 
 
 
@@ -1460,7 +1460,7 @@ end('$query_handlers2010_7_30_11_28_34_926'/0):
 
 
 $1:
-	execute_predicate('$query_handlers2010_7_30_11_28_34_926', 0)
+	execute_predicate('$query_handlers1290479617_141', 0)
 end('$query'/0):
 
 

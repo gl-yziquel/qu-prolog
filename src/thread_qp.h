@@ -138,7 +138,7 @@ private:
   BlockStatus block_status;
   RestartStatus restart_status;
   word32 minCleanupCP;
-  bool doing_gc_throw;
+  bool suspend_gc;
 
   void InitThread(void);
 
@@ -238,9 +238,9 @@ public:
 
   word32*  getCleanupMinCPAddr() { return &minCleanupCP; }
 
-  void setDoingGCThrow(bool v) { doing_gc_throw = v; }
+  void setSuspendGC(bool v) { suspend_gc = v; }
 
-  bool isDoingGCThrow(void) { return doing_gc_throw; }
+  bool isSuspendedGC(void) { return suspend_gc; }
 
   ThreadCondition::ThreadConditionValue Condition() const 
   { return thread_condition.Condition(); }
@@ -460,6 +460,7 @@ public:
 #include "tcp_escapes.h"
 #include "temperature.h"
 #include "thread_escapes.h"
+#include "timer_escapes.h"
 #include "token.h"
 #include "trace_escapes.h"
 #include "trail.h"
@@ -499,7 +500,7 @@ public:
 	PC = nextClause->getCodeBlock()->getCode();
 	backtrackTo(choiceStack.fetchChoice(currentChoicePoint)); 
 	currentChoicePoint = choiceStack.pop(currentChoicePoint); 
-	tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
+	//tidyTrails(choiceStack.getHeapAndTrailsState(currentChoicePoint));
 	cutPoint = choiceStack.fetchChoice(currentChoicePoint)->getCutPoint();
       }
     else

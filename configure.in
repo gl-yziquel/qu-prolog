@@ -487,3 +487,14 @@ chmod -f a+x bin/kq \
 	  bin/qcc \
 	  bin/qppp \
 
+echo
+echo
+echo
+echo "*********************************************************************"
+echo "Command history/editing/completion can be used if rlwrap is installed"
+echo "*********************************************************************"
+echo 
+echo
+echo
+
+

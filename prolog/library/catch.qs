@@ -61,7 +61,6 @@ $2:
 	put_constant('true', 1)
 	call_predicate('$retract', 2, 2)
 	cut(1)
-	pseudo_instr0(16)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('call_predicate', 1)
@@ -169,7 +168,7 @@ end('throw'/1):
 
 
 
-'$query_catch2010_7_30_11_28_31_838/0$0'/0:
+'$query_catch1290479613_725/0$0'/0:
 
 
 $1:
@@ -183,23 +182,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_catch2010_7_30_11_28_31_838/0$0'/0):
+end('$query_catch1290479613_725/0$0'/0):
 
 
 
-'$query_catch2010_7_30_11_28_31_838'/0:
+'$query_catch1290479613_725'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_catch2010_7_30_11_28_31_838/0$0', 0, 0)
+	call_predicate('$query_catch1290479613_725/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_catch2010_7_30_11_28_31_838'/0):
+end('$query_catch1290479613_725'/0):
 
 
 
@@ -207,7 +206,7 @@ end('$query_catch2010_7_30_11_28_31_838'/0):
 
 
 $1:
-	execute_predicate('$query_catch2010_7_30_11_28_31_838', 0)
+	execute_predicate('$query_catch1290479613_725', 0)
 end('$query'/0):
 
 

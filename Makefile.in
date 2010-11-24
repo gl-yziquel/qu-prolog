@@ -17,8 +17,8 @@
 export QPBIN	= @QPHOME@/bin
 
 
-export QC		= qc -Z
-export QCFLAGS		= -DQuAM
+export QC		= qc
+export QCFLAGS		= 
 export COMPILE.qc	= $(QPBIN)/$(QC) $(QCFLAGS)
 
 export PROLOG		= prolog

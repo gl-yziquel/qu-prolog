@@ -253,35 +253,76 @@ $1:
 
 $2:
 	get_list(0)
-	unify_x_variable(3)
 	unify_x_variable(0)
+	allocate(6)
+	unify_y_variable(2)
 	get_list(1)
-	unify_x_variable(4)
-	unify_x_variable(1)
-	put_x_variable(6, 7)
-	get_list(7)
-	unify_x_value(2)
-	unify_x_ref(7)
-	get_list(7)
+	unify_y_variable(5)
+	unify_y_variable(1)
+	get_y_variable(0, 2)
+	put_y_variable(3, 19)
+	put_y_variable(4, 1)
+	call_predicate('$wrap_quotes', 2, 6)
+	put_y_value(5, 0)
+	put_y_value(3, 1)
+	call_predicate('$wrap_quotes', 2, 5)
+	put_x_variable(1, 2)
+	get_list(2)
+	unify_y_value(0)
+	unify_x_ref(2)
+	get_list(2)
 	unify_constant(' < ')
-	unify_x_ref(7)
-	get_list(7)
-	unify_x_value(3)
-	unify_x_ref(3)
-	get_list(3)
+	unify_x_ref(2)
+	get_list(2)
+	unify_y_value(4)
+	unify_x_ref(2)
+	get_list(2)
 	unify_constant(' > ')
-	unify_x_ref(3)
-	get_list(3)
-	unify_x_value(4)
+	unify_x_ref(2)
+	get_list(2)
+	unify_y_value(3)
 	unify_constant('[]')
-	put_constant(' ', 3)
-	pseudo_instr3(28, 6, 3, 5)
-	get_x_variable(3, 5)
-	pseudo_instr2(46, 3, 4)
-	put_integer(0, 3)
-	get_x_value(4, 3)
+	put_constant(' ', 2)
+	pseudo_instr3(28, 1, 2, 0)
+	pseudo_instr2(46, 0, 1)
+	put_integer(0, 0)
+	get_x_value(1, 0)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_value(0, 2)
+	deallocate
 	execute_predicate('$preprocess', 3)
 end('$preprocess'/3):
+
+
+
+'$fcompile_files2/8$0/8$0'/2:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_variable(0)
+	allocate(2)
+	unify_y_variable(1)
+	get_list(1)
+	unify_x_variable(1)
+	unify_y_variable(0)
+	call_predicate('$wrap_quotes', 2, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('$fcompile_files2/8$0/8$0', 2)
+end('$fcompile_files2/8$0/8$0'/2):
 
 
 
@@ -300,24 +341,34 @@ $1:
 	proceed
 
 $2:
-	get_x_variable(8, 0)
-	get_x_variable(9, 1)
-	get_x_variable(0, 2)
-	get_x_variable(1, 3)
-	get_x_variable(2, 4)
-	get_x_variable(3, 5)
-	get_x_variable(4, 6)
-	get_x_variable(6, 7)
-	put_x_variable(7, 10)
-	get_list(10)
+	allocate(8)
+	get_y_variable(6, 0)
+	get_y_variable(5, 2)
+	get_y_variable(4, 3)
+	get_y_variable(3, 4)
+	get_y_variable(2, 5)
+	get_y_variable(1, 6)
+	get_y_variable(0, 7)
+	get_x_variable(0, 1)
+	put_y_variable(7, 1)
+	call_predicate('$fcompile_files2/8$0/8$0', 2, 8)
+	put_x_variable(1, 2)
+	get_list(2)
 	unify_constant('/bin/rm -f')
-	unify_x_value(9)
-	put_constant(' ', 9)
-	pseudo_instr3(28, 7, 9, 5)
-	pseudo_instr2(46, 5, 7)
-	put_integer(0, 5)
-	get_x_value(7, 5)
-	put_x_value(8, 5)
+	unify_y_value(7)
+	put_constant(' ', 2)
+	pseudo_instr3(28, 1, 2, 0)
+	pseudo_instr2(46, 0, 1)
+	put_integer(0, 0)
+	get_x_value(1, 0)
+	put_y_value(5, 0)
+	put_y_value(4, 1)
+	put_y_value(3, 2)
+	put_y_value(2, 3)
+	put_y_value(1, 4)
+	put_y_value(6, 5)
+	put_y_value(0, 6)
+	deallocate
 	execute_predicate('$fcompile_files3', 7)
 end('$fcompile_files2/8$0'/8):
 
@@ -354,6 +405,29 @@ end('$fcompile_files2'/8):
 
 
 
+'$wrap_quotes'/2:
+
+
+$1:
+	pseudo_instr1(2, 0)
+	put_x_variable(3, 4)
+	get_list(4)
+	unify_constant('"')
+	unify_x_ref(4)
+	get_list(4)
+	unify_x_value(0)
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('"')
+	unify_constant('[]')
+	put_constant('', 0)
+	pseudo_instr3(28, 3, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$wrap_quotes'/2):
+
+
+
 '$fcompile_files3/7$0'/2:
 
 	try(2, $1)
@@ -376,58 +450,126 @@ end('$fcompile_files3/7$0'/2):
 
 
 
+'$fcompile_files3/7$1'/2:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_variable(0)
+	allocate(2)
+	unify_y_variable(1)
+	get_list(1)
+	unify_x_variable(1)
+	unify_y_variable(0)
+	call_predicate('$wrap_quotes', 2, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('$fcompile_files3/7$1', 2)
+end('$fcompile_files3/7$1'/2):
+
+
+
+'$fcompile_files3/7$2'/2:
+
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
+
+$3:
+	try(2, $1)
+	trust($2)
+
+$1:
+	get_constant('[]', 0)
+	get_constant('[]', 1)
+	proceed
+
+$2:
+	get_list(0)
+	unify_x_variable(0)
+	allocate(2)
+	unify_y_variable(1)
+	get_list(1)
+	unify_x_variable(1)
+	unify_y_variable(0)
+	call_predicate('$wrap_quotes', 2, 2)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	deallocate
+	execute_predicate('$fcompile_files3/7$2', 2)
+end('$fcompile_files3/7$2'/2):
+
+
+
 '$fcompile_files3'/7:
 
 
 $1:
-	allocate(11)
-	get_y_variable(8, 0)
-	get_y_variable(6, 1)
-	get_y_variable(10, 2)
+	allocate(13)
+	get_y_variable(10, 0)
+	get_y_variable(8, 1)
+	get_y_variable(12, 2)
 	get_x_variable(0, 3)
 	get_x_variable(1, 4)
-	get_y_variable(2, 6)
-	get_y_level(7)
+	get_y_variable(3, 6)
+	get_y_level(9)
+	put_y_variable(7, 19)
+	put_y_variable(6, 19)
 	put_y_variable(5, 19)
 	put_y_variable(4, 19)
-	put_y_variable(3, 19)
+	put_y_variable(2, 19)
 	put_y_variable(1, 19)
 	put_y_variable(0, 19)
-	put_y_variable(9, 2)
+	put_y_variable(11, 2)
+	call_predicate('append', 3, 13)
+	put_y_value(12, 0)
+	put_y_value(11, 1)
+	put_y_value(5, 2)
 	call_predicate('append', 3, 11)
 	put_y_value(10, 0)
-	put_y_value(9, 1)
-	put_y_value(3, 2)
-	call_predicate('append', 3, 9)
-	put_y_value(8, 0)
-	put_y_value(5, 1)
-	call_predicate('$fcompile_files3/7$0', 2, 8)
-	cut(7)
-	put_y_value(6, 2)
-	put_y_value(4, 3)
+	put_y_value(7, 1)
+	call_predicate('$fcompile_files3/7$0', 2, 10)
+	cut(9)
+	put_y_value(8, 2)
+	put_y_value(6, 3)
 	put_constant('.qi', 0)
 	put_constant('.qg', 1)
-	call_predicate('$change_suffix', 4, 6)
-	put_y_value(5, 0)
-	put_y_value(4, 1)
-	put_y_value(0, 2)
-	call_predicate('append', 3, 4)
-	put_y_value(3, 0)
-	put_y_value(0, 1)
+	call_predicate('$change_suffix', 4, 8)
+	put_y_value(7, 0)
+	put_y_value(6, 1)
 	put_y_value(1, 2)
-	call_predicate('append', 3, 3)
+	call_predicate('append', 3, 6)
+	put_y_value(5, 0)
+	put_y_value(1, 1)
+	put_y_value(4, 2)
+	call_predicate('append', 3, 5)
+	put_y_value(4, 0)
+	put_y_value(2, 1)
+	call_predicate('$fcompile_files3/7$1', 2, 4)
 	put_x_variable(1, 2)
 	get_list(2)
 	unify_constant('$QPPATH/qc')
 	unify_x_ref(2)
 	get_list(2)
+	unify_y_value(3)
 	unify_y_value(2)
-	unify_y_value(1)
 	put_constant(' ', 2)
 	pseudo_instr3(28, 1, 2, 0)
 	pseudo_instr2(46, 0, 1)
 	put_integer(0, 0)
 	get_x_value(1, 0)
+	put_y_value(1, 0)
+	put_y_value(0, 1)
+	call_predicate('$fcompile_files3/7$2', 2, 1)
 	put_x_variable(1, 2)
 	get_list(2)
 	unify_constant('/bin/rm -f')
@@ -601,17 +743,22 @@ end('$set_fcompile_options'/2):
 	trust($2)
 
 $1:
+	allocate(2)
+	get_y_variable(0, 1)
 	pseudo_instr1(2, 0)
 	neck_cut
-	put_x_variable(3, 4)
-	get_list(4)
+	put_y_variable(1, 1)
+	call_predicate('$wrap_quotes', 2, 2)
+	put_x_variable(1, 2)
+	get_list(2)
 	unify_constant('-o ')
-	unify_x_ref(4)
-	get_list(4)
-	unify_x_value(0)
+	unify_x_ref(2)
+	get_list(2)
+	unify_y_value(1)
 	unify_constant('[]')
-	pseudo_instr2(31, 3, 2)
-	get_x_value(1, 2)
+	pseudo_instr2(31, 1, 0)
+	get_y_value(0, 0)
+	deallocate
 	proceed
 
 $2:

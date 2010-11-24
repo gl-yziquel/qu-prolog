@@ -158,13 +158,23 @@ end('pedro_disconnect'/0):
 
 
 
-'$clear_gc_throw'/0:
+'$suspend_gc'/0:
 
 
 $1:
 	pseudo_instr0(16)
 	proceed
-end('$clear_gc_throw'/0):
+end('$suspend_gc'/0):
+
+
+
+'$unsuspend_gc'/0:
+
+
+$1:
+	pseudo_instr0(17)
+	proceed
+end('$unsuspend_gc'/0):
 
 
 
@@ -895,13 +905,13 @@ end('thread_resume'/1):
 
 
 
-'$thread_wait'/1:
+'$thread_wait_timeout'/1:
 
 
 $1:
 	pseudo_instr1(71, 0)
 	proceed
-end('$thread_wait'/1):
+end('$thread_wait_timeout'/1):
 
 
 
@@ -1290,6 +1300,57 @@ $1:
 	pseudo_instr1(108, 0)
 	proceed
 end('string'/1):
+
+
+
+'$thread_wait_free_ptr'/1:
+
+
+$1:
+	pseudo_instr1(109, 0)
+	proceed
+end('$thread_wait_free_ptr'/1):
+
+
+
+'$thread_wait_ptr'/1:
+
+
+$1:
+	pseudo_instr1(110, 0)
+	proceed
+end('$thread_wait_ptr'/1):
+
+
+
+'$thread_wait_update'/1:
+
+
+$1:
+	pseudo_instr1(111, 0)
+	proceed
+end('$thread_wait_update'/1):
+
+
+
+'delete_timer'/1:
+
+
+$1:
+	pseudo_instr1(112, 0)
+	proceed
+end('delete_timer'/1):
+
+
+
+'gettimeofday'/1:
+
+
+$1:
+	pseudo_instr1(113, 1)
+	get_x_value(0, 1)
+	proceed
+end('gettimeofday'/1):
 
 
 
@@ -2211,24 +2272,24 @@ end('pipe'/2):
 
 
 
-'env_getenv'/2:
+'getenv'/2:
 
 
 $1:
 	pseudo_instr2(86, 0, 2)
 	get_x_value(1, 2)
 	proceed
-end('env_getenv'/2):
+end('getenv'/2):
 
 
 
-'env_putenv'/2:
+'putenv'/2:
 
 
 $1:
 	pseudo_instr2(87, 0, 1)
 	proceed
-end('env_putenv'/2):
+end('putenv'/2):
 
 
 
@@ -2650,6 +2711,28 @@ $1:
 	get_x_value(1, 2)
 	proceed
 end('stat'/2):
+
+
+
+'$thread_wait_extract_preds'/2:
+
+
+$1:
+	pseudo_instr2(128, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$thread_wait_extract_preds'/2):
+
+
+
+'absolute_file_name'/2:
+
+
+$1:
+	pseudo_instr2(129, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('absolute_file_name'/2):
 
 
 
@@ -3272,13 +3355,14 @@ end('$tcp_service_proto_from_port'/3):
 
 
 
-'$thread_fork'/3:
+'ip_lookup_default'/3:
 
 
 $1:
-	pseudo_instr3(56, 0, 1, 2)
+	pseudo_instr3(56, 0, 3, 2)
+	get_x_value(1, 3)
 	proceed
-end('$thread_fork'/3):
+end('ip_lookup_default'/3):
 
 
 
@@ -3423,17 +3507,6 @@ $1:
 	pseudo_instr3(69, 0, 1, 2)
 	proceed
 end('setarg'/3):
-
-
-
-'ip_lookup_default'/3:
-
-
-$1:
-	pseudo_instr3(70, 0, 3, 2)
-	get_x_value(1, 3)
-	proceed
-end('ip_lookup_default'/3):
 
 
 
@@ -3659,6 +3732,38 @@ $1:
 	get_x_value(2, 4)
 	proceed
 end('ip_lookup_default'/4):
+
+
+
+'$thread_fork'/4:
+
+
+$1:
+	pseudo_instr4(20, 0, 1, 2, 3)
+	proceed
+end('$thread_fork'/4):
+
+
+
+'$thread_setup_wait'/4:
+
+
+$1:
+	pseudo_instr4(21, 0, 1, 2, 4)
+	get_x_value(3, 4)
+	proceed
+end('$thread_setup_wait'/4):
+
+
+
+'create_timer'/4:
+
+
+$1:
+	pseudo_instr4(22, 0, 1, 2, 4)
+	get_x_value(3, 4)
+	proceed
+end('create_timer'/4):
 
 
 

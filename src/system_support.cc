@@ -63,65 +63,64 @@ using namespace std;
 
 void wordexp(string& str)
 {
-
-// TODO
+  
+  // TODO
 #ifdef WIN32
-   bool hasChanged = false;
-
+  bool hasChanged = false;
+  
   /* Windows is stupid - we know this already. So...
    * What we have to do here is a few things:
    *	1. Change those bloody slashes to backslashes.
    *	2. Replace environment variables.
    *	3. Remove special chars such as ~.
    */
-
-	//Temp var
-	string newstr;
-
-	// Lets remove ./
-	int pos = str.find("./");
-	if (pos == 0) 
-	{
-		// It appears that there is a bug here.
-		// Doing: str = str.substr(....) doesn't work
-		// So we waste some more memory...
-		newstr = str.substr(2,str.length() - 2);
-		//Yes, we have changed the string
-		hasChanged = true;
-	}
-
-	// Lets replace all slashes with backslashes
-	int posn = 0;
-	posn = newstr.find("/",posn);
-	while (posn != -1) 
-	{
-		str.replace(posn,posn,"\\");
-		posn = newstr.find("/",posn);
-		//Yes, we have changed the string
-		hasChanged = true;
-	}
-
-	//We're not going to do environment vars yet. TODO!
-	//Nor will we handle special unix chars, since there's
-	//hopefully never that these will get passed to us.
-	if (hasChanged)
-	{
-		str = newstr;
-	} 
-
-#else //UNIX STUFF HERE
-
-  // expand leading ~ to home dir
-  int pos = static_cast<int>(str.find("~/"));
-  if (pos == 0)
+  
+  //Temp var
+  string newstr;
+  
+  // Lets remove ./
+  int pos = str.find("./");
+  if (pos == 0) 
     {
-      str.replace(0,1, getenv("HOME"));
+      // It appears that there is a bug here.
+      // Doing: str = str.substr(....) doesn't work
+      // So we waste some more memory...
+      newstr = str.substr(2,str.length() - 2);
+      //Yes, we have changed the string
+      hasChanged = true;
     }
-  // expand (single) environment variable
-  pos = static_cast<int>(str.find("$"));
-  if (pos >= 0)
+  
+  // Lets replace all slashes with backslashes
+  int posn = 0;
+  posn = newstr.find("/",posn);
+  while (posn != -1) 
     {
-      int end = static_cast<int>(str.find("/", pos));
+      str.replace(posn,posn,"\\");
+      posn = newstr.find("/",posn);
+      //Yes, we have changed the string
+      hasChanged = true;
+    }
+  
+  //We're not going to do environment vars yet. TODO!
+  //Nor will we handle special unix chars, since there's
+  //hopefully never that these will get passed to us.
+  if (hasChanged)
+    {
+      str = newstr;
+    } 
+  
+#else //UNIX STUFF HERE
+  
+  // expand environment variables
+  size_t pos;
+  pos = str.find("$");
+  while (pos != string::npos)
+    {
+      size_t end = str.find("/", pos);
+      if (end == string::npos)
+        {
+          end = str.size();
+        }
       string env = string(str, pos+1, end-pos-1);
       char* expenv = getenv(env.c_str());
       if (expenv == NULL)
@@ -132,6 +131,63 @@ void wordexp(string& str)
         {
 	  str.replace(pos, end-pos, expenv);
         }
+      pos = str.find("$");
     }
+  // expand leading ~ to home dir
+  pos = str.find("~/");
+  if (pos == 0)
+    {
+      str.replace(0,1, getenv("HOME"));
+    }
+  // expand "~"
+  if (str == "~")
+    {
+      str.replace(0,1,getenv("HOME"));
+    }
+  // replace "." by current dir
+  if (str == ".")
+    {
+      char path[256];
+      if (getcwd(path, 255) != NULL)
+        str.replace(0,1,path);
+    }
+  // add full path if path doesn't start with /
+  pos = str.find("/");
+  if (pos != 0)
+    {
+      char path[256];
+      if (getcwd(path, 255) != NULL)
+        {
+          str.insert(0, "/");
+          str.insert(0, path);
+        }
+    }
+  // remove //
+  pos = str.find("//");
+  while (pos != string::npos)
+    {
+      str.replace(pos, pos+1, "/");
+      pos = str.find("//");
+    }
+  // process ".."
+  pos = str.find("..");
+  while (pos != string::npos)
+    {
+      if (str[pos-1] != '/')
+        break;
+      size_t slashpos = str.rfind("/", pos-2);
+      if (slashpos == string::npos)
+        break;
+      str.replace(slashpos, pos+2-slashpos, "");
+      pos = str.find("..");
+    }
+  // replace "/./" with "/"
+  pos = str.find("/./");
+  while (pos != string::npos)
+    {
+      str.replace(pos, 2, "");
+      pos = str.find("/./");
+    }
+
 #endif
 }

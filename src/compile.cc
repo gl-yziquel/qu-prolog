@@ -276,6 +276,7 @@ Thread::ReturnValue
 Thread::psi_ccompile(Object*& clause, Object*& type, 
 		Object*& str, Object*& codeptr)
 {
+  heapobject* heap_top = heap.getTop();
   QPStream *stream;
   bool ctype = (type->variableDereference() == atoms->add("compile"));
   if (ctype)
@@ -336,15 +337,17 @@ Thread::psi_ccompile(Object*& clause, Object*& type,
   array2.resetLast(0);
   // Equiv. to peephole.ql
   heap.peephole(array1, array2, esize, ctype);
-
   if (ctype)
     {
       writeInstructions(array2, stream);
+      heap.setTop(heap_top);
       codeptr = heap.newInteger(0);
     }
   else
     {
-      codeptr = heap.newInteger(reinterpret_cast<wordptr>(dumpInstructions(array2)));
+      wordptr cp = reinterpret_cast<wordptr>(dumpInstructions(array2));
+      heap.setTop(heap_top);
+      codeptr = heap.newInteger(cp);
     }
   return RV_SUCCESS;
 }

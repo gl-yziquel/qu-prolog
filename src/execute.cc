@@ -253,11 +253,11 @@ bool Thread::initializeDPcall(DynamicPredicate* dp, int arity, CodeLoc& PC)
 	    pushChoicePoint((CodeLoc)nextClause, arity);
 	  choiceStack.fetchChoice(currentChoicePoint)->setTimestamp(time);
 	}
-      PC = block->getCodeBlock()->getCode();
-      
+      PC = block->getCodeBlock()->getCode();     
       return true;
     }
 }
+ 
 //
 // Fetch-execute cycle for the Qu-Prolog Abstract Machine.
 //
@@ -327,7 +327,6 @@ Thread::Execute(void)
 #endif
 
   CodeLoc PC = programCounter;
-
   while (true)
     {
 #ifndef NDEBUG
@@ -2272,7 +2271,6 @@ Thread::Execute(void)
 	    // point. 
 	    // 
 	    const word32 i = getRegister(PC);
-
 	    assert(envStack.yReg(currentEnvironment, i)->isNumber());
 	    if (status.testFastRetry() && !status.testDoingRetry())
 	      {
@@ -3356,8 +3354,6 @@ Thread::Execute(void)
 	      }
 	  }
 	  VMBREAK;
-
-
 
 	default:
 #ifdef WIN32

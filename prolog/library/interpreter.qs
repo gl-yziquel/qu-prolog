@@ -535,8 +535,14 @@ $1:
 	execute_predicate('flush_output', 0)
 
 $2:
+	put_constant('$allow_portray', 3)
+	put_constant('true', 4)
+	pseudo_instr2(74, 3, 4)
 	allocate(0)
 	call_predicate('$print_constraints_section', 3, 0)
+	put_constant('$allow_portray', 0)
+	put_constant('fail', 1)
+	pseudo_instr2(74, 0, 1)
 	call_predicate('flush_output', 0, 0)
 	put_constant('[]', 0)
 	deallocate
@@ -595,12 +601,18 @@ $5:
 $1:
 	get_constant('[]', 0)
 	neck_cut
+	put_constant('$allow_portray', 0)
+	put_constant('true', 1)
+	pseudo_instr2(74, 0, 1)
 	allocate(4)
 	put_y_variable(3, 19)
 	put_y_variable(2, 19)
 	put_y_variable(1, 19)
 	put_y_variable(0, 19)
 	call_predicate('$chr_print_constraints', 0, 4)
+	put_constant('$allow_portray', 0)
+	put_constant('fail', 1)
+	pseudo_instr2(74, 0, 1)
 	pseudo_instr1(28, 0)
 	get_y_value(3, 0)
 	put_y_value(3, 0)
@@ -621,6 +633,9 @@ $1:
 	execute_predicate('$print_result/1$0', 3)
 
 $2:
+	put_constant('$allow_portray', 1)
+	put_constant('true', 2)
+	pseudo_instr2(74, 1, 2)
 	pseudo_instr2(111, 0, 1)
 	allocate(5)
 	get_y_variable(0, 1)
@@ -644,6 +659,9 @@ $2:
 	put_y_value(1, 2)
 	put_y_value(2, 3)
 	call_predicate('$print_result/1$1', 4, 1)
+	put_constant('$allow_portray', 0)
+	put_constant('fail', 1)
+	pseudo_instr2(74, 0, 1)
 	call_predicate('flush_output', 0, 1)
 	put_y_value(0, 0)
 	deallocate
@@ -730,8 +748,7 @@ $2:
 	pseudo_instr1(53, 22)
 	put_y_value(1, 0)
 	put_y_value(2, 1)
-	put_constant('writeq', 2)
-	call_predicate('$write_t', 3, 1)
+	call_predicate('$write_t_q', 2, 1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('$print_bindings_section', 1)
@@ -792,8 +809,7 @@ $2:
 	pseudo_instr1(53, 22)
 	put_y_value(1, 0)
 	put_y_value(2, 1)
-	put_constant('writeq', 2)
-	call_predicate('$write_t', 3, 1)
+	call_predicate('$write_t_q', 2, 1)
 	put_y_value(0, 0)
 	deallocate
 	execute_predicate('$print_constraints', 1)

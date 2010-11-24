@@ -1,4 +1,4 @@
-// gc_escapes.h - Garbage collector for threads.
+// timer_escapes.h - Timer procedures
 //
 // ##Copyright##
 // 
@@ -50,86 +50,16 @@
 // 
 // ##Copyright##
 //
-// $Id: gc_escapes.h,v 1.5 2005/03/08 00:35:06 qp Exp $
 
-#ifndef	GC_ESCAPES_H
-#define	GC_ESCAPES_H
+#ifndef	TIMER_ESCAPES_H
+#define	TIMER_ESCAPES_H
 
-public: 
-
-#ifdef QP_DEBUG
-bool check_env(EnvLoc env);
-
-bool check_choice(ChoiceLoc choiceloc);
-
-bool check_trail();
-
-bool check_ips();
-
-bool check_name();
-
-bool check_heap2(Heap& heap);
-
-//
-// Check heap for correct pointers
-//
-bool check_heap(Heap&, AtomTable*, GCBits&);
-#endif // DEBUG
-
-// Mark the registers
-
-void gc_mark_registers(word32);
-
-// Mark the environmants
-void gc_mark_environments(EnvLoc);
-
-// Mark the choicepoints
-void gc_mark_choicepoints(ChoiceLoc);
-
-// Mark the trail
-void gc_mark_trail();
-
-// Mark the implicit parameters
-void gc_mark_ips();
-
-// Mark the variable names
-void gc_mark_names();
-
-// Mark the heap
-
-void gc_marking_phase(word32);
-
-void gc_sweep_registers(word32);
-
-void gc_sweep_trail(void);
-
-void gc_sweep_names(void);
-
-void gc_sweep_ips(void);
-
-void gc_sweep_environments(EnvLoc);
-
-void gc_sweep_choicepoints(ChoiceLoc);
-
-void gc_compaction_phase(word32);
+public:
+ReturnValue psi_create_timer(Object *&, Object *&, Object *&, Object *&);
+ReturnValue psi_delete_timer(Object *&);
+ReturnValue psi_timer_goals(Object *&);
 
 
-// Do garbage collection
 
-bool gc(word32);
 
-// Trigger garbage collection
-
-ReturnValue psi_gc(void);
-
-ReturnValue psi_suspend_gc(void);
-ReturnValue psi_unsuspend_gc(void);
-
-#ifdef QP_DEBUG
-void dump_choices(ChoiceLoc);
-
-void dump_areas(word32);
-
-#endif // QP_DEBUG
-
-#endif	// GC_ESCAPES_H
+#endif	// TIMER_ESCAPES_H

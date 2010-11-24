@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.11 Reference Manual - Built-in Predicates
+Qu-Prolog 8.12 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -310,6 +310,18 @@ Execute <KBD>Goal</KBD>. If <KBD>Goal</KBD> has an inline declaration then it wi
 <BR>
 <BR>no
 </KBD>
+</BLOCKQUOTE>
+
+<P><KBD>call(F, A1)</KBD>
+<BR><KBD>call(F, A1, A2)</KBD>
+<BR><KBD>call(F, A1, A2, A3)</KBD>
+<BR><KBD>call(F, A1, A2, A3, A4)</KBD>
+<BR><KBD>call(F, A1, A2, A3, A5)</KBD>
+<BR><KBD>call(F, A1, A2, A3, A5, A6)</KBD>
+<BR><KBD>call(F, A1, A2, A3, A5, A6, A7)</KBD>
+<BR><KBD>call(F, A1, A2, A3, A5, A6, A7, A8)</KBD>
+<BLOCKQUOTE>
+Build a goal with functor <KBD>F</KBD> and the supplied arguments and call that goal.
 </BLOCKQUOTE>
 
 <P><KBD><a name="callable"></a>callable(Goal)</KBD>
@@ -1899,6 +1911,25 @@ Pretty print <KBD>Clause</KBD> in <KBD>Stream</KBD> or the current output stream
 </KBD>
 </BLOCKQUOTE>
 
+<P><KBD><a name="print"></a>print(Term)</KBD>
+<BR><KBD>print(Stream, Term)</KBD>
+
+
+<BLOCKQUOTE>
+The same as <KBD>writeq</KBD> except that the dynamic predicate <KBD>portray/1</KBD>
+is first tried. If that succeeds then <KBD>writeq</KBD> is not called. This provides a hook 
+for user defined term writing.
+
+<BR><KBD>mode print(@term)</KBD>
+<BR><KBD>mode print(@stream, @term)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="portray"></a>portray(Term)</KBD>
+
+
+<BLOCKQUOTE>
+A dynamic predicate used as a hook for user defined term writing in <KBD>print</KBD>.
+</BLOCKQUOTE>
 
 <!-- Section 3.3.3 -->
 <H3>
@@ -5113,7 +5144,7 @@ predicate.
 <P><KBD><a name="multifile"></a>multifile(PredicateName/Arity)</KBD>
 
 <BLOCKQUOTE>
-The same as <KBD>dynamic(PredicateName/Arity)</KBD> and is to provide an
+Esentially the same as <KBD>dynamic(PredicateName/Arity)</KBD> and is to provide an
 approximation to multifile as used in other Prologs.
 </BLOCKQUOTE>
 
@@ -5174,6 +5205,19 @@ The head of <KBD>Clause</KBD> has <KBD>PredicateName</KBD> and <KBD>Arity</KBD>.
 <BR>Y = Y
 <BR>Pred = p / 2
 </KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="get_predicate_timestamp"></a>get_predicate_timestamp(Predicates, StampedPredicates)</KBD>
+
+<BLOCKQUOTE>
+<KBD>Predicates</KBD> is a list of the form <KBD>P/N</KBD>
+and
+<KBD>StampedPredicates</KBD> is a list of the form <KBD>P/N-Stamp</KBD>.
+The stamp is a number representing the number of times this predicate has been modified and
+is useful for <KBD>thread_wait_on_goal</KBD> to prevent an unnecessary intial call of the goal. 
+<BR><KBD>mode get_predicate_timestamp(@list, -list)</KBD>
+
+
 </BLOCKQUOTE>
 
 <P><KBD><a name="clause"></a>clause(Head, Body)</KBD>
@@ -7562,7 +7606,7 @@ are the arguments following '--' or arguments without a preceding '-'.
 <P><KBD><a name="predicate_property"></a>predicate_property(Head, Property)</KBD>
 
 <BLOCKQUOTE>
-The predicate specified by <KBD>Head</KBD> has <KBD>Property</KBD> (<KBD>built_in<KBD>, <KBD>dynamic</KBD>, <KBD>static</KBD>, <KBD>foreign</KBD>).
+The predicate specified by <KBD>Head</KBD> has <KBD>Property</KBD> (<KBD>built_in<KBD>, <KBD>multifile<KBD>,<KBD>dynamic</KBD>, <KBD>static</KBD>, <KBD>foreign</KBD>).
 <BR><KBD>mode predicate_property(?goal, ?atom)</KBD>
 
 <P>Example:
@@ -8121,7 +8165,9 @@ single Qu-Prolog process. All threads have a symbolic name (an atom).
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_fork"></a>thread_fork(ThreadName, Goal)</KBD>	
+<BR><KBD>thread_fork(ThreadName, Goal, RootName)</KBD>
 <BR><KBD>thread_fork(ThreadName, Goal, Sizes)</KBD>
+<BR><KBD>thread_fork(ThreadName, Goal, Rootname, Sizes)</KBD>
 <BLOCKQUOTE>
 <P>Creates a new thread called <KBD>ThreadName</KBD> and sets its goal 
 to be <KBD>Goal</KBD>. <KBD>ThreadName</KBD> cannot be the name of any existing threads and cannot use the names <KBD>self</KBD> or <KBD>pedro</KBD>.  
@@ -8133,7 +8179,12 @@ supplied sizes are erroneous.
 Note that the new thread is placed just before the creator thread in the run queue and so does not obtain a timeslice until just before the creator thread gets its next turn.
 <P>
 If <KBD>ThreadName</KBD> is a variable at the time of call then the system
-will generate a name.
+will generate a name. If you wish to generate your own thread names based on a root name then
+use the <KBD>RootName</KBD> (an atom). The system will generate a name which is the root name
+followed by an integer. Note that such names will be reused (i.e. the name given to a now-terminated
+thread can be given to a new thread). You need to be careful because the thread handle will be
+reused and so messages to the terminated thread will be picked up by the new thread with
+the same handle. 
 
 <P>Possible items for inclusion in <KBD>Sizes</KBD> are:
 
@@ -8292,16 +8343,18 @@ Currently, if the conditions are set to <KBD>false</KBD>,
 <P> <KBD>Options</KBD> is a list containing:
 <UL type="disc">
 <LI>at most one occurrence of a term 
-of the form <KBD>preds(PredList)</KBD> where <KBD>PredList</KBD> is 
-a list of terms of the form <KBD>P/N</KBD></LI>
+of the form <KBD>wait_preds(PredList)</KBD> where <KBD>PredList</KBD> is 
+a list of terms of the form <KBD>P/N</KBD> or of the form <KBD>P/N-Stamp</KBD>
+where <KBD>Stamp</KBD> is a database stamp - see <KBD><a href="SEC3.html#get_predicate_timestamps">get_predicate_timestamps</a></KBD> 
 <LI>at most one occurrence of a term of the form <KBD>wait_for(Secs)</KBD></LI>
 <LI>at most one occurrence of a term of the form <KBD>retry_every(Secs)</KBD></LI>
 <LI>at most one of the above two terms
 </UL>
-<KBD>Goal</KBD> is first tried, and if it succeeds, then 
+<KBD>Goal</KBD> is first tried (unless <KBD>wait_preds(PredList)</KBD> includes stamps), and if it succeeds, then 
 <KBD>thread_wait_on_goal</KBD> succeeds. Otherwise, <KBD>thread_wait_on_goal</KBD> blocks and waits for the database to change before retrying <KBD>Goal</KBD>.
-If <KBD>preds(PredList)</KBD> is given as an option then it waits until one
-of the listed predicates change. If <KBD>wait_for(Secs)</KBD> is given and
+If <KBD>wait_preds(PredList)</KBD> is given as an option then it waits until one
+of the listed predicates change. 
+If <KBD>wait_for(Secs)</KBD> is given and
 <KBD>Goal</KBD> is not successfully retried within the given number of seconds
 then <KBD>thread_wait_on_goal</KBD> fails. If <KBD>retry_every(Secs)</KBD> is
 given then <KBD>Goal</KBD> is retried at least every <KBD>Secs</KBD> seconds,
@@ -9084,6 +9137,34 @@ and <KBD>OldDir</KBD> is previous working directory.
 
 </BLOCKQUOTE>
 
+<P><KBD><a name="absolute_file_name"></a>absolute_file_name(File, Path)</KBD>
+
+<BLOCKQUOTE>
+Expand <KBD>File</KBD> (file or directory) to its full path (<KBD>Path</KBD>). Enviroment variables,
+<KBD>~</KBD>,  <KBD>.</KBD> and <KBD>..</KBD> are expanded.  
+
+<BR><KBD>mode absolute_file_name(+atom, -atom)</KBD>
+
+</BLOCKQUOTE>
+
+<P><KBD><a name="getenv"></a>getenv(EnvVar, Value)</KBD>
+
+<BLOCKQUOTE>
+Get the environment variable <KBD>EnvVar</KBD> and unify with <KBD>Value</KBD>.
+
+<BR><KBD>mode getenv(+atom, -atom)</KBD>
+
+</BLOCKQUOTE>
+
+<P><KBD><a name="setenv"></a>setenv(EnvVar, Value)</KBD>
+
+<BLOCKQUOTE>
+Set the environment variable <KBD>EnvVar</KBD> to <KBD>Value</KBD>.
+
+<BR><KBD>mode setenv(+atom, +atom)</KBD>
+
+</BLOCKQUOTE>
+
 
 
 <P><KBD><a name="prompt"></a>prompt(Variable, Atom)</KBD>
@@ -9102,7 +9183,6 @@ The current prompt is returned in <KBD>Variable</KBD> before setting the prompt 
 <BR>P2 = atom
 </KBD>
 </BLOCKQUOTE>
-
 <P><KBD><a name="realtime"></a>realtime(Time)</KBD>
  
 <BLOCKQUOTE>
@@ -9144,6 +9224,36 @@ When <KBD>Time</KBD> is given, it has the same semantics as the Unix C function 
 <BR><KBD>mode localtime(@integer, ?compound)</KBD>
 <BR><KBD>mode localtime(?integer, +compound)</KBD>
 </BLOCKQUOTE>
+
+<P><KBD><a name="gettimeofday"></a>gettimeofday(Time)</KBD>
+ 
+<BLOCKQUOTE>
+The argument is unified with the current time given as the number of seconds since the Unix epoch. It is similar to <KBD>realtime</KBD> except it contains the fractional part of the time 
+<BR><KBD>mode gettimeofday(?double)</KBD>
+</BLOCKQUOTE> 
+
+<P><KBD><a name="create_timer"></a>create_timer(Goal, Time, OneTime, ID)</KBD>
+ 
+<BLOCKQUOTE>
+This creates a timer that in <KBD>Time</KBD> seconds will call <KBD>Goal</KBD>. If 
+<KBD>OneTime</KBD> is <KBD>true</KBD> then the timer will be deleted  when the goal is called.
+Otherwise, the timer will reset so that the goal is repeadly called every <KBD>Time</KBD> seconds. <KBD>ID</KBD> is a unique ID given to the timer. When the thread that created the timer
+exists then all its timers will be removed. The goal will be called once and then failed over and so
+the goal should have a side-effect such as database modification. If an exception is thrown in 
+the goal then the entire process terminates.
+
+
+<BR><KBD>mode create_timer(+goal, @number, @term, -integer)</KBD>
+
+</BLOCKQUOTE>
+<P><KBD><a name="delete_timer"></a>delete_timer(ID)</KBD>
+ 
+<BLOCKQUOTE>
+Delete the timer with the given ID. This thread must be the the thread that created the timer.
+<BR><KBD>mode delete_timer(@integer)</KBD>
+</BLOCKQUOTE>
+
+
 
 <HR>
 <TABLE width="100%" border="0" cellspacing="0" cellpadding="0">

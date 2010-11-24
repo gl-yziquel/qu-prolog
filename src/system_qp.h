@@ -73,6 +73,13 @@ ReturnValue	psi_system(Object *& , Object *& );
 ReturnValue	psi_access(Object *& , Object *& , Object *& );
 
 //
+// psi_absolute_path(atom, atom)
+// Get the full path name
+// mode(in, out)
+//
+ReturnValue	psi_absolute_path(Object *& , Object *&);
+
+//
 // psi_chdir(atom)
 // Change directory to dir given by the argument
 // mode(in)

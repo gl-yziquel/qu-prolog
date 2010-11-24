@@ -115,6 +115,8 @@ inline void Putback(QPStream *InStrm, const int c);
 
 int32 base_num(QPStream *InStrm, long& Integer, int base);
 
+int32 get_number_token(QPStream *InStrm, char c, long& Integer, double& Double);
+
 //
 // ReadCharacter(Stream *InStrm, int8 q)
 // Reads one character from a quoted atom or list.

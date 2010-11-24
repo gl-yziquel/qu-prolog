@@ -2708,10 +2708,9 @@ $12:
 	unify_x_ref(3)
 	get_structure('name_vars', 1, 2)
 	unify_x_value(0)
-	get_structure('$write_t', 3, 3)
+	get_structure('$write_t_q', 2, 3)
 	unify_x_value(1)
 	unify_x_value(0)
-	unify_constant('writeq')
 	proceed
 
 $13:

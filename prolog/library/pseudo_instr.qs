@@ -1,11 +1,11 @@
 '$psi0_decl'/5:
 
-	switch_on_term(0, $19, 'fail', 'fail', 'fail', 'fail', $18)
-
-$18:
-	switch_on_constant(0, 64, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17])
+	switch_on_term(0, $20, 'fail', 'fail', 'fail', 'fail', $19)
 
 $19:
+	switch_on_constant(0, 64, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18])
+
+$20:
 	try(5, $1)
 	retry($2)
 	retry($3)
@@ -22,7 +22,8 @@ $19:
 	retry($14)
 	retry($15)
 	retry($16)
-	trust($17)
+	retry($17)
+	trust($18)
 
 $1:
 	get_integer(0, 0)
@@ -186,11 +187,21 @@ $16:
 
 $17:
 	get_integer(16, 0)
-	get_constant('$clear_gc_throw', 1)
-	get_constant('psi_clear_gc_throw', 2)
+	get_constant('$suspend_gc', 1)
+	get_constant('psi_suspend_gc', 2)
 	get_constant('[]', 3)
 	get_list(4)
-	unify_constant('$clear_gc_throw')
+	unify_constant('$suspend_gc')
+	unify_constant('[]')
+	proceed
+
+$18:
+	get_integer(17, 0)
+	get_constant('$unsuspend_gc', 1)
+	get_constant('psi_unsuspend_gc', 2)
+	get_constant('[]', 3)
+	get_list(4)
+	unify_constant('$unsuspend_gc')
 	unify_constant('[]')
 	proceed
 end('$psi0_decl'/5):
@@ -199,12 +210,12 @@ end('$psi0_decl'/5):
 
 '$psi1_decl'/6:
 
-	switch_on_term(0, $111, 'fail', 'fail', 'fail', 'fail', $110)
+	switch_on_term(0, $116, 'fail', 'fail', 'fail', 'fail', $115)
 
-$110:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109])
+$115:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114])
 
-$111:
+$116:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -313,7 +324,12 @@ $111:
 	retry($106)
 	retry($107)
 	retry($108)
-	trust($109)
+	retry($109)
+	retry($110)
+	retry($111)
+	retry($112)
+	retry($113)
+	trust($114)
 
 $1:
 	get_integer(0, 0)
@@ -1597,8 +1613,8 @@ $71:
 
 $72:
 	get_integer(71, 0)
-	get_constant('psi_thread_wait', 3)
-	get_structure('$thread_wait', 1, 1)
+	get_constant('psi_thread_wait_timeout', 3)
+	get_structure('$thread_wait_timeout', 1, 1)
 	unify_x_variable(0)
 	get_x_value(0, 2)
 	get_list(4)
@@ -1607,10 +1623,10 @@ $72:
 	get_list(5)
 	unify_x_ref(0)
 	unify_constant('[]')
-	get_structure('thread_wait', 1, 0)
+	get_structure('$thread_wait_timeout', 1, 0)
 	unify_x_ref(0)
 	get_structure('@', 1, 0)
-	unify_constant('thread_wait_conditions')
+	unify_constant('number')
 	proceed
 
 $73:
@@ -2282,18 +2298,108 @@ $109:
 	get_structure('@', 1, 0)
 	unify_constant('term')
 	proceed
+
+$110:
+	get_integer(109, 0)
+	get_constant('psi_thread_wait_free_ptr', 3)
+	get_structure('$thread_wait_free_ptr', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$thread_wait_free_ptr', 1, 0)
+	unify_x_ref(0)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	proceed
+
+$111:
+	get_integer(110, 0)
+	get_constant('psi_thread_wait_ptr', 3)
+	get_structure('$thread_wait_ptr', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$thread_wait_ptr', 1, 0)
+	unify_x_ref(0)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	proceed
+
+$112:
+	get_integer(111, 0)
+	get_constant('psi_thread_wait_update', 3)
+	get_structure('$thread_wait_update', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$thread_wait_update', 1, 0)
+	unify_x_ref(0)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	proceed
+
+$113:
+	get_integer(112, 0)
+	get_constant('psi_delete_timer', 3)
+	get_structure('delete_timer', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('delete_timer', 1, 0)
+	unify_x_ref(0)
+	get_structure('@', 1, 0)
+	unify_constant('int')
+	proceed
+
+$114:
+	get_integer(113, 0)
+	get_constant('psi_gettimeofday', 3)
+	get_structure('gettimeofday', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('gettimeofday', 1, 0)
+	unify_x_ref(0)
+	get_structure('-', 1, 0)
+	unify_constant('double')
+	proceed
 end('$psi1_decl'/6):
 
 
 
 '$psi2_decl'/7:
 
-	switch_on_term(0, $130, 'fail', 'fail', 'fail', 'fail', $129)
+	switch_on_term(0, $132, 'fail', 'fail', 'fail', 'fail', $131)
 
-$129:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120, 120:$121, 121:$122, 122:$123, 123:$124, 124:$125, 125:$126, 126:$127, 127:$128])
+$131:
+	switch_on_constant(0, 512, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120, 120:$121, 121:$122, 122:$123, 123:$124, 124:$125, 125:$126, 126:$127, 127:$128, 128:$129, 129:$130])
 
-$130:
+$132:
 	try(7, $1)
 	retry($2)
 	retry($3)
@@ -2421,7 +2527,9 @@ $130:
 	retry($125)
 	retry($126)
 	retry($127)
-	trust($128)
+	retry($128)
+	retry($129)
+	trust($130)
 
 $1:
 	get_integer(0, 0)
@@ -4746,7 +4854,7 @@ $86:
 $87:
 	get_integer(86, 0)
 	get_constant('psi_env_getenv', 4)
-	get_structure('env_getenv', 2, 1)
+	get_structure('getenv', 2, 1)
 	unify_x_variable(0)
 	unify_x_variable(1)
 	get_x_value(0, 2)
@@ -4760,7 +4868,7 @@ $87:
 	get_list(6)
 	unify_x_ref(0)
 	unify_constant('[]')
-	get_structure('env_getenv', 2, 0)
+	get_structure('getenv', 2, 0)
 	unify_x_ref(0)
 	unify_x_ref(1)
 	get_structure('+', 1, 0)
@@ -4772,7 +4880,7 @@ $87:
 $88:
 	get_integer(87, 0)
 	get_constant('psi_env_putenv', 4)
-	get_structure('env_putenv', 2, 1)
+	get_structure('putenv', 2, 1)
 	unify_x_variable(0)
 	unify_x_variable(1)
 	get_x_value(0, 2)
@@ -4786,7 +4894,7 @@ $88:
 	get_list(6)
 	unify_x_ref(0)
 	unify_constant('[]')
-	get_structure('env_putenv', 2, 0)
+	get_structure('putenv', 2, 0)
 	unify_x_ref(0)
 	unify_x_ref(1)
 	get_structure('+', 1, 0)
@@ -5876,18 +5984,70 @@ $128:
 	get_structure('?', 1, 1)
 	unify_constant('integer')
 	proceed
+
+$129:
+	get_integer(128, 0)
+	get_constant('psi_thread_wait_extract_preds', 4)
+	get_structure('$thread_wait_extract_preds', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$thread_wait_extract_preds', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('int')
+	get_structure('-', 1, 1)
+	unify_constant('term')
+	proceed
+
+$130:
+	get_integer(129, 0)
+	get_constant('psi_absolute_path', 4)
+	get_structure('absolute_file_name', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('absolute_file_name', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('atom')
+	get_structure('-', 1, 1)
+	unify_constant('atom')
+	proceed
 end('$psi2_decl'/7):
 
 
 
 '$psi3_decl'/8:
 
-	switch_on_term(0, $73, 'fail', 'fail', 'fail', 'fail', $72)
+	switch_on_term(0, $72, 'fail', 'fail', 'fail', 'fail', $71)
+
+$71:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70])
 
 $72:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71])
-
-$73:
 	try(8, $1)
 	retry($2)
 	retry($3)
@@ -5957,8 +6117,7 @@ $73:
 	retry($67)
 	retry($68)
 	retry($69)
-	retry($70)
-	trust($71)
+	trust($70)
 
 $1:
 	get_integer(0, 0)
@@ -7879,8 +8038,8 @@ $56:
 
 $57:
 	get_integer(56, 0)
-	get_constant('psi_thread_fork', 5)
-	get_structure('$thread_fork', 3, 1)
+	get_constant('psi_ip_lookup_default', 5)
+	get_structure('ip_lookup_default', 3, 1)
 	unify_x_variable(0)
 	unify_x_variable(1)
 	unify_x_variable(5)
@@ -7891,7 +8050,7 @@ $57:
 	unify_constant('in')
 	unify_x_ref(0)
 	get_list(0)
-	unify_constant('in')
+	unify_constant('out')
 	unify_x_ref(0)
 	get_list(0)
 	unify_constant('in')
@@ -7899,16 +8058,16 @@ $57:
 	get_list(7)
 	unify_x_ref(0)
 	unify_constant('[]')
-	get_structure('$thread_fork', 3, 0)
+	get_structure('ip_lookup_default', 3, 0)
 	unify_x_ref(0)
 	unify_x_ref(1)
 	unify_x_ref(2)
-	get_structure('?', 1, 0)
+	get_structure('+', 1, 0)
 	unify_constant('atom')
-	get_structure('+', 1, 1)
-	unify_constant('goal')
+	get_structure('-', 1, 1)
+	unify_constant('term')
 	get_structure('@', 1, 2)
-	unify_constant('thread_sizes')
+	unify_constant('term')
 	proceed
 
 $58:
@@ -8352,52 +8511,18 @@ $70:
 	get_structure('@', 1, 2)
 	unify_constant('term')
 	proceed
-
-$71:
-	get_integer(70, 0)
-	get_constant('psi_ip_lookup_default', 5)
-	get_structure('ip_lookup_default', 3, 1)
-	unify_x_variable(0)
-	unify_x_variable(1)
-	unify_x_variable(5)
-	get_x_value(0, 2)
-	get_x_value(1, 3)
-	get_x_value(5, 4)
-	get_list(6)
-	unify_constant('in')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('out')
-	unify_x_ref(0)
-	get_list(0)
-	unify_constant('in')
-	unify_constant('[]')
-	get_list(7)
-	unify_x_ref(0)
-	unify_constant('[]')
-	get_structure('ip_lookup_default', 3, 0)
-	unify_x_ref(0)
-	unify_x_ref(1)
-	unify_x_ref(2)
-	get_structure('+', 1, 0)
-	unify_constant('atom')
-	get_structure('-', 1, 1)
-	unify_constant('term')
-	get_structure('@', 1, 2)
-	unify_constant('term')
-	proceed
 end('$psi3_decl'/8):
 
 
 
 '$psi4_decl'/9:
 
-	switch_on_term(0, $22, 'fail', 'fail', 'fail', 'fail', $21)
+	switch_on_term(0, $25, 'fail', 'fail', 'fail', 'fail', $24)
 
-$21:
-	switch_on_constant(0, 64, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20])
+$24:
+	switch_on_constant(0, 64, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23])
 
-$22:
+$25:
 	try(9, $1)
 	retry($2)
 	retry($3)
@@ -8417,7 +8542,10 @@ $22:
 	retry($17)
 	retry($18)
 	retry($19)
-	trust($20)
+	retry($20)
+	retry($21)
+	retry($22)
+	trust($23)
 
 $1:
 	get_integer(0, 0)
@@ -9265,6 +9393,132 @@ $20:
 	get_structure('@', 1, 3)
 	unify_constant('term')
 	proceed
+
+$21:
+	get_integer(20, 0)
+	get_constant('psi_thread_fork', 6)
+	get_structure('$thread_fork', 4, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(6)
+	unify_x_variable(9)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(6, 4)
+	get_x_value(9, 5)
+	get_list(7)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(8)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$thread_fork', 4, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	unify_x_ref(3)
+	get_structure('?', 1, 0)
+	unify_constant('atom')
+	get_structure('+', 1, 1)
+	unify_constant('goal')
+	get_structure('@', 1, 2)
+	unify_constant('atom')
+	get_structure('@', 1, 3)
+	unify_constant('thread_sizes')
+	proceed
+
+$22:
+	get_integer(21, 0)
+	get_constant('psi_thread_setup_wait', 6)
+	get_structure('$thread_setup_wait', 4, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(6)
+	unify_x_variable(9)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(6, 4)
+	get_x_value(9, 5)
+	get_list(7)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(8)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$thread_setup_wait', 4, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	unify_x_ref(3)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('@', 1, 1)
+	unify_constant('term')
+	get_structure('@', 1, 2)
+	unify_constant('term')
+	get_structure('-', 1, 3)
+	unify_constant('int')
+	proceed
+
+$23:
+	get_integer(22, 0)
+	get_constant('psi_create_timer', 6)
+	get_structure('create_timer', 4, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	unify_x_variable(6)
+	unify_x_variable(9)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_x_value(6, 4)
+	get_x_value(9, 5)
+	get_list(7)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(8)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('create_timer', 4, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	unify_x_ref(2)
+	unify_x_ref(3)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('@', 1, 1)
+	unify_constant('double')
+	get_structure('@', 1, 2)
+	unify_constant('atom')
+	get_structure('-', 1, 3)
+	unify_constant('int')
+	proceed
 end('$psi4_decl'/9):
 
 
@@ -9325,82 +9579,59 @@ end('$psi5_decl'/10):
 
 
 
-'$query_pseudo_instr2010_7_30_11_28_36_497/0$0'/0:
+'$query_pseudo_instr1290479618_920/0$0'/0:
 
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	put_integer(500, 0)
-	put_constant('fx', 1)
-	put_constant('+', 2)
-	call_predicate('op', 3, 1)
-	cut(0)
-	deallocate
-	proceed
-end('$query_pseudo_instr2010_7_30_11_28_36_497/0$0'/0):
-
-
-
-'$query_pseudo_instr2010_7_30_11_28_36_497/0$1'/0:
-
-
-$1:
-	allocate(1)
-	get_y_level(0)
-	put_integer(500, 0)
-	put_constant('fx', 1)
+	put_integer(200, 0)
+	put_constant('fy', 1)
 	put_constant('@', 2)
 	call_predicate('op', 3, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2010_7_30_11_28_36_497/0$1'/0):
+end('$query_pseudo_instr1290479618_920/0$0'/0):
 
 
 
-'$query_pseudo_instr2010_7_30_11_28_36_497/0$2'/0:
+'$query_pseudo_instr1290479618_920/0$1'/0:
 
 
 $1:
 	allocate(1)
 	get_y_level(0)
 	put_integer(500, 0)
-	put_constant('fx', 1)
+	put_constant('fy', 1)
 	put_constant('?', 2)
 	call_predicate('op', 3, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr2010_7_30_11_28_36_497/0$2'/0):
+end('$query_pseudo_instr1290479618_920/0$1'/0):
 
 
 
-'$query_pseudo_instr2010_7_30_11_28_36_497'/0:
+'$query_pseudo_instr1290479618_920'/0:
 
 	try(0, $1)
 	retry($2)
-	retry($3)
-	trust($4)
+	trust($3)
 
 $1:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2010_7_30_11_28_36_497/0$0', 0, 0)
+	call_predicate('$query_pseudo_instr1290479618_920/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_pseudo_instr2010_7_30_11_28_36_497/0$1', 0, 0)
+	call_predicate('$query_pseudo_instr1290479618_920/0$1', 0, 0)
 	fail
 
 $3:
-	allocate(0)
-	call_predicate('$query_pseudo_instr2010_7_30_11_28_36_497/0$2', 0, 0)
-	fail
-
-$4:
 	proceed
-end('$query_pseudo_instr2010_7_30_11_28_36_497'/0):
+end('$query_pseudo_instr1290479618_920'/0):
 
 
 
@@ -9408,7 +9639,7 @@ end('$query_pseudo_instr2010_7_30_11_28_36_497'/0):
 
 
 $1:
-	execute_predicate('$query_pseudo_instr2010_7_30_11_28_36_497', 0)
+	execute_predicate('$query_pseudo_instr1290479618_920', 0)
 end('$query'/0):
 
 

@@ -158,7 +158,7 @@ BlockingMessageObject::unblock(Timeval& tout)
     }
   else if (timeout.isForever())
     {
-      return false;
+      return false; 
     }
   else if (timeout <= now)
     {
@@ -173,21 +173,157 @@ BlockingMessageObject::unblock(Timeval& tout)
     }
 }
 
-BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, double to) 
-  :  BlockingObject(t), code(c), timeout(to)
+WaitPred:: WaitPred(Object* pn, int a, DynamicPredicate* pp, int s) : 
+  predname(pn), arity(a), predptr(pp)
 {
-  stamp = c->GetStamp();
+  stamp = s;
 }
 
+void WaitPred::updateStamp(void)
+{
+  stamp = predptr->GetStamp();
+}
+
+BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, Object* preds,
+				       Object* until, Object* every, 
+				       PredTab* predicates) 
+  :  BlockingObject(t), code(c)
+{
+  setIsWait();
+  setWakeOnTimeout(false);
+  stamp = c->GetStamp();
+  for (Object* predlist = preds; predlist->isCons(); 
+       predlist = OBJECT_CAST(Cons *, predlist)->getTail()->variableDereference())
+    {
+      Object* pred = OBJECT_CAST(Cons *, predlist)->getHead()->variableDereference();
+      assert(pred->isStructure());
+      Structure* predstr = OBJECT_CAST(Structure*, pred);
+      int stamp = -1;
+      if (predstr->getFunctor()->variableDereference() == AtomTable::minus)
+        {
+          stamp = predstr->getArgument(2)->variableDereference()->getInteger();
+          predstr = OBJECT_CAST(Structure*, predstr->getArgument(1)->variableDereference());
+        }
+      Object* predname = predstr->getArgument(1)->variableDereference();
+      assert(predname->isAtom());
+      Object* arityobj = predstr->getArgument(2)->variableDereference();
+      int arity =  arityobj->getInteger();
+      PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, predname), arity,
+				       atoms, code);
+      DynamicPredicate* predptr = predicates->getCode(loc).getDynamicPred();
+      if (stamp == -1) stamp = predptr->GetStamp();
+      WaitPred* wp = new WaitPred(predname, arity, predptr, stamp);
+      wait_preds.push_back(wp);  
+    }
+  double until_time;
+  if (until->isInteger()) 
+    {
+      until_time = until->getInteger();
+      timeout = Timeval(until_time);
+    }
+  else
+    {
+      assert(until->isDouble());
+      until_time = until->getDouble();
+      timeout = Timeval(until_time);
+    }
+  if (every->isInteger()) 
+    {
+      retry_timeout = every->getInteger();
+      if (retry_timeout != -1)
+	timeout = Timeval(retry_timeout);
+    }
+  else
+    {
+      assert(every->isDouble());
+      retry_timeout = every->getDouble();
+    }
+}
+
+BlockingWaitObject::~BlockingWaitObject(void)
+{
+  for (vector<WaitPred*>::iterator iter = wait_preds.begin();
+       iter != wait_preds.end();
+       iter++)
+    {
+      delete *iter;
+    }
+}
+
+void
+BlockingWaitObject::update(void)
+{
+  stamp = code->GetStamp();
+  for (vector<WaitPred*>::iterator iter = wait_preds.begin();
+       iter != wait_preds.end();
+       iter++)
+    {
+      WaitPred* wp = *iter;
+      wp->updateStamp();
+    }
+}
+
+/*
+Object*
+BlockingWaitObject::extract_changed_preds(void)
+{
+  Object* result = AtomTable::nil;
+
+  for (int i = wait_preds.size()-1; i >= 0; i--)
+    {
+      WaitPred* wp = wait_preds[i];
+      if (wp->modified)
+	{
+	  Structure* predstruct = getThread()->TheHeap().newStructure(2);
+	  predstruct->setFunctor(AtomTable::divide);
+	  predstruct->setArgument(1, wp->predname);
+	  predstruct->setArgument(2, getThread()->TheHeap().newInteger(wp->arity));
+	  result = getThread()->TheHeap().newCons(predstruct, result);
+	}
+    }
+  return result;
+}
+*/
+
+bool BlockingWaitObject::is_unblocked(void)
+{
+  if (wait_preds.begin() == wait_preds.end())
+    return stamp < code->GetStamp();
+
+  for (vector<WaitPred*>::iterator iter = wait_preds.begin();
+       iter != wait_preds.end();
+       iter++)
+    {
+      WaitPred* wp = *iter;
+      if (wp->stamp < wp->predptr->GetStamp())
+	return true;
+    }
+  return false;
+}
+
+void BlockingWaitObject::dump(void)
+{
+  for (vector<WaitPred*>::iterator iter = wait_preds.begin();
+       iter != wait_preds.end();
+       iter++)
+    {
+      WaitPred* wp = *iter;
+      cerr << OBJECT_CAST(Atom*, wp->predname)->getName() 
+	   << "/" << wp->arity << " " << wp->stamp;
+    }
+}
 
 bool 
 BlockingWaitObject::unblock(Timeval& tout)
 {
   Timeval now;
 
-  if (stamp < code->GetStamp())
+  if (is_unblocked())
     {
       getThread()->getBlockStatus().setRestartWait();
+      if (retry_timeout != -1) 
+	timeout = Timeval(retry_timeout);
+
       return true;
     }
   else if (timeout.isForever())
@@ -196,6 +332,9 @@ BlockingWaitObject::unblock(Timeval& tout)
     }
   else if (timeout <= now)
     {
+      if (retry_timeout != -1) 
+	timeout = Timeval(retry_timeout);
+      setWakeOnTimeout(retry_timeout == -1);
       getThread()->getBlockStatus().setRestartTime();
       return true;
     }

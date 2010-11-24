@@ -21,9 +21,9 @@ qem.o: qem.cc config.h ../config.h atom_table.h area_offsets.h defs.h \
  occurs_check.h pipe.h process.h pseudo_instr.h quantifier.h random.h \
  read_qp.h signal_escapes.h state.h statistics.h stream_escapes.h \
  string_escapes.h structure.h sub_escape.h symbols.h system_qp.h \
- tcp_escapes.h temperature.h thread_escapes.h token.h trace_escapes.h \
- unify.h user_hash_table_escapes.h varname.h write.h user_hash_table.h \
- tcp_qp.h
+ tcp_escapes.h temperature.h thread_escapes.h timer_escapes.h token.h \
+ trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
+ user_hash_table.h tcp_qp.h timer.h
 qem_options.o: qem_options.cc qem_options.h defs.h config.h ../config.h \
  debug.h option.h options.h tcp_qp.h defaults.h
 scheduler.o: scheduler.cc global.h atom_table.h config.h ../config.h \
@@ -48,6 +48,6 @@ scheduler.o: scheduler.cc global.h atom_table.h config.h ../config.h \
  name.h object_variable.h occurs_check.h pipe.h process.h pseudo_instr.h \
  quantifier.h random.h read_qp.h signal_escapes.h state.h statistics.h \
  stream_escapes.h string_escapes.h structure.h sub_escape.h symbols.h \
- system_qp.h tcp_escapes.h temperature.h thread_escapes.h token.h \
- trace_escapes.h unify.h user_hash_table_escapes.h varname.h write.h \
- protos.h
+ system_qp.h tcp_escapes.h temperature.h thread_escapes.h timer_escapes.h \
+ token.h trace_escapes.h unify.h user_hash_table_escapes.h varname.h \
+ write.h protos.h timer.h

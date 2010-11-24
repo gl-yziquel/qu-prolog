@@ -1326,7 +1326,8 @@ end('$predicate_property'/3):
 	try(3, $1)
 	retry($2)
 	retry($3)
-	trust($4)
+	retry($4)
+	trust($5)
 
 $1:
 	get_constant('built_in', 2)
@@ -1338,6 +1339,15 @@ $1:
 	proceed
 
 $2:
+	get_constant('multifile', 2)
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$multifile', 2, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$3:
 	get_constant('dynamic', 2)
 	pseudo_instr3(33, 0, 1, 2)
 	put_integer(1, 0)
@@ -1345,7 +1355,7 @@ $2:
 	neck_cut
 	proceed
 
-$3:
+$4:
 	get_constant('static', 2)
 	pseudo_instr3(33, 0, 1, 2)
 	put_integer(2, 0)
@@ -1353,7 +1363,7 @@ $3:
 	neck_cut
 	proceed
 
-$4:
+$5:
 	get_constant('foreign', 2)
 	pseudo_instr3(33, 0, 1, 2)
 	put_integer(3, 0)
@@ -1400,6 +1410,49 @@ $1:
 	pseudo_instr4(1, 0, 2, 3, 1)
 	proceed
 end('$internal'/1):
+
+
+
+'$query_symbols1290479620_843/0$0'/0:
+
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	put_structure(2, 0)
+	set_constant('/')
+	set_constant('$multifile')
+	set_integer(2)
+	call_predicate('dynamic', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+end('$query_symbols1290479620_843/0$0'/0):
+
+
+
+'$query_symbols1290479620_843'/0:
+
+	try(0, $1)
+	trust($2)
+
+$1:
+	allocate(0)
+	call_predicate('$query_symbols1290479620_843/0$0', 0, 0)
+	fail
+
+$2:
+	proceed
+end('$query_symbols1290479620_843'/0):
+
+
+
+'$query'/0:
+
+
+$1:
+	execute_predicate('$query_symbols1290479620_843', 0)
+end('$query'/0):
 
 
 

@@ -97,6 +97,7 @@
 #include "thread_table.h"
 #include "user_hash_table.h"
 #include "tcp_qp.h"
+#include "timer.h"
 
 const char *Program = "qem";
 
@@ -198,6 +199,8 @@ heapobject var_id_counter = 1;
 
 PedroMessageChannel* pedro_channel = NULL;
 
+TimerStack timerStack;
+
 // In order that signals to unblock selects we create a pipe and write to
 // it when a signal arrives. By putting the read end of the pipe in
 // the file descriptor set of the select, the select will unblock
@@ -208,11 +211,13 @@ PedroMessageChannel* pedro_channel = NULL;
 static void
 handle_sigint(int)
 {
+  cerr << "In handle_sigint" << endl;
   clearerr(stdin);
   extern Signals *signals;
   if (signals != NULL) {
     char buff[128];
     buff[0] = 'a';
+    buff[1] = '\n';
     int res = send(PipeOutSock, buff, 1, 0);
     if (res != 1) cerr << "Signals:  can't write to socket" << res << endl;
     signals->Increment(SIGINT);
@@ -272,7 +277,7 @@ main(int32 argc, char** argv)
 
 
 #ifdef WIN32
-(void) signal(SIGINT, handle_sigint);
+  (void) signal(SIGINT, handle_sigint);
 #else
   // SIGINT signal handler
   //  
