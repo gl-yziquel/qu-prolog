@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -360,6 +360,7 @@ QPifdstream::get_read(void)
   // read from fd
   #ifdef WIN32
   int buffsize = recv(fd, buff, BUFFSIZE-1, 0);
+  if (buff[0] == -1) buff[0] = '\0';
   #else
   int buffsize = read(fd, buff, BUFFSIZE-1);
   #endif
@@ -424,7 +425,7 @@ QPimstream::isReady(void)
 {
   if (done_get && !eof()) return true;
 
-  if ( message_strings.empty())
+  if (message_strings.empty()) 
     {
       return false;
     }
@@ -436,19 +437,25 @@ QPimstream::isReady(void)
 
 }
 
+bool
+QPimstream::msg_ready(void)
+{
+  fd_set rfds, wfds;
+  FD_ZERO(&rfds);
+  FD_ZERO(&wfds);
+  int max_fd = 0;
+  pedro_channel->updateFDSETS(&rfds, &wfds, max_fd);
+  timeval tv = { 0, 0 };
+  int result = select(max_fd + 1, &rfds, &wfds, NULL, &tv);
+  if (result) {
+    pedro_channel->ShuffleMessages();
+  }
+  return !message_strings.empty();
+}
+
 void
 QPimstream::get_read(void)
 {
-  while (message_strings.empty())
-    {
-      fd_set rfds, wfds;
-      FD_ZERO(&rfds);
-      FD_ZERO(&wfds);
-      int max_fd = 0;
-      pedro_channel->updateFDSETS(&rfds, &wfds, max_fd);
-      select(max_fd + 1, &rfds, &wfds, NULL, NULL);
-      pedro_channel->ShuffleMessages();
-    }
   assert(!message_strings.empty());
   
   string* msg = message_strings.front();
@@ -903,19 +910,19 @@ is_ready(const int fd, const IOType type)
       break;
     }
 
-#ifdef DEBUG_IO
+  #ifdef DEBUG_IO
   cerr << __FUNCTION__ << "result = " << result << " FD_ISSET(%ld, ...) = " << FD_ISSET(fd, &fds) << '\n';
-#endif
-#ifdef WIN32
-  if (result == 0 || result == 128)
-  {
-          return 1;
-  } else {
-          return 0;
-  }
-#else
+  #endif
+  //#ifdef WIN32
+  //  if (result == 0 || result == 128)
+  //  {
+  //         return 1;
+          //  } else {
+  //         return 0;
+  // }
+  //#else
   return result && FD_ISSET(fd, &fds);
-#endif
+  //#endif
 
 }
 

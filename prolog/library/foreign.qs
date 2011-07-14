@@ -489,7 +489,7 @@ $1:
 	put_y_variable(9, 2)
 	put_y_variable(8, 3)
 	call_predicate('$foreign_functions', 4, 10)
-	put_constant('/tmp/foreignXXXXXX', 1)
+	put_constant('foreignXXXXXX', 1)
 	pseudo_instr2(47, 1, 0)
 	get_y_value(2, 0)
 	put_y_value(2, 0)

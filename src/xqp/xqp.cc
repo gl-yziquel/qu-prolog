@@ -202,7 +202,9 @@ void Xqp::process_CTRL_D()
 
 void Xqp::process_CTRL_C()
 {
+#ifndef WIN32
   kill(child_pid, SIGINT);
+#endif
 }
 
 void Xqp::setConfigs(QFont f, QColor c)

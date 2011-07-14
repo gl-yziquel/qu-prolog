@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 8.12 Reference Manual - Built-in Predicates
+Qu-Prolog 9.0 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -6440,14 +6440,14 @@ It requires definitions for <KBD>foreign_file/2</KBD> and <KBD>foreign/3</KBD>.
 <BR>//
 <BR>void mkfoo(char** a)
 <BR>{
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;*a = "foo";
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;*a = (char *)"foo";
 <BR>}
 </KBD>
 
 <P>The file is compiled with the appropriate compiler to obtain the object file.
 
 <KBD>
-<P>g++ -c test.cc
+<P>g++ -c -fPIC test.cc
 </KBD>
 
 <P>The interface is defined in <KBD>test.ql</KBD> with the following clauses.

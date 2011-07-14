@@ -27,7 +27,7 @@ server_thread(NewSocket) :-
     ( Line = -1 ->                    % Client closes socket (EOF)
         tcp_close(NewSocket)  % NB closes ReadS and writeS streams
       ;
-        append("echo - ", Line, Out),
+        string_concat("echo - ", Line, Out),
         put_line(WriteS, Out),
         flush_output(WriteS),    % NB - flush required
         fail

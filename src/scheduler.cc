@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -81,6 +81,25 @@
         #include <windows.h>
         #include <io.h>
 #endif
+static void
+handle_timeslice(int)
+{
+  #ifdef DEBUG_SCHED
+  cerr << __FUNCTION__ << "\n";
+  #endif
+
+  extern Scheduler *scheduler;
+  scheduler->Status().setTimeslice();
+}
+
+
+#ifdef WIN32
+static VOID CALLBACK win32_handle_timer_wrapper(UINT, UINT, DWORD_PTR, 
+                                                DWORD_PTR, DWORD_PTR)
+{
+  handle_timeslice(0);
+}
+#endif
 
 //
 // Determine the length of the scheduler quantum.
@@ -92,7 +111,7 @@ static const int32 TIME_SLICE_USECS = 1000000L;
 #else
 static const int32 TIME_SLICE_SECS = 0L;
 #ifdef WIN32
-static const int32 TIME_SLICE_USECS = 1000L;
+static const int32 TIME_SLICE_USECS = 100L;
 #else
 static const int32 TIME_SLICE_USECS = 100000L;
 #endif
@@ -223,26 +242,26 @@ Scheduler::Sleep()
       // Were there any signals while we were napping?
       if (signals.Status().testSignals() && !in_sigint)
 	{
-#ifdef DEBUG_SCHED
+          #ifdef DEBUG_SCHED
 	  cerr << __FUNCTION__ << " Start signal handler" << "\n";
-#endif
+          #endif
 	  const Thread::ReturnValue result = HandleSignal();
-#ifdef DEBUG_SCHED
+          #ifdef DEBUG_SCHED
 	  cerr << __FUNCTION__ << " Stop signal handler" << "\n";
-#endif
+          #endif
 	  return result;
 	}
       if (poll_fds(theTimeouts))
 	{
 	  break;
 	}
-#ifdef DEBUG_SCHED
+      #ifdef DEBUG_SCHED
       cerr << "End poll" << "\n";
-#endif
+      #endif
     }
-#ifdef DEBUG_BLOCK
+  #ifdef DEBUG_BLOCK
   cerr << __FUNCTION__ << " Finished sleeping" << "\n";
-#endif
+  #endif
   return Thread::RV_SUCCESS;
 }
 
@@ -257,9 +276,9 @@ Scheduler::Sleep()
 bool
 Scheduler::InterQuantum(void)
 {
-#ifdef DEBUG_SCHED
+  #ifdef DEBUG_SCHED
   cerr << "InterQuantum" << "\n";
-#endif
+  #endif
   // First shuffle any new messages
   (void)ShuffleAllMessages();
 
@@ -296,7 +315,9 @@ Scheduler::Schedule(void)
   run_queue.push_back(thread);
 
 #ifdef WIN32
-  timerptr = SetTimer(NULL, NULL, 500, &win32_handle_timer_wrapper);
+  MMRESULT wintimerid;
+  //  timerptr = SetTimer(NULL, NULL, 500, &win32_handle_timer_wrapper);
+  //  cerr << "timerptr = " << timerptr << endl;
 #else
   // Who'd have thought it?! Here's a case where
   // Windows > Unix for C++. Unlike Unix, in
@@ -483,8 +504,10 @@ Scheduler::Schedule(void)
 		   << " usecs)" << "\n";
 #endif
 #ifdef WIN32 //Alright, let's create AND set the timer CHEESE
-             timerptr = SetTimer(0, timerptr, TIME_SLICE_USECS, 
-                                 &win32_handle_timer_wrapper);
+              wintimerid = timeSetEvent(TIME_SLICE_USECS, 5, 
+                                        &win32_handle_timer_wrapper,
+                                        NULL, TIME_ONESHOT);
+
 #else
 #ifdef SOLARIS
 	      SYSTEM_CALL_LESS_ZERO(timer_settime(timerid, 0, &set_timerval,
@@ -500,22 +523,22 @@ Scheduler::Schedule(void)
 	  //
 	  // Run the thread until it drops out, for whatever reason
 	  //
-#ifdef DEBUG_SCHED
+          #ifdef DEBUG_SCHED
 	  cerr << __FUNCTION__
 	       << " Start execution of thread " 
 	       << thread.TInfo().ID() << "\n";
-#endif // DEBUG_SCHED
+          #endif // DEBUG_SCHED
 	  const Thread::ReturnValue result = thread.Execute();
-#ifdef DEBUG_SCHED 
+          #ifdef DEBUG_SCHED 
 
 	  cerr << __FUNCTION__
 	       << " Exit execution of thread "
 	       << thread.TInfo().ID() << "\n";
-#endif // DEBUG_SCHED
+          #endif // DEBUG_SCHED
 
 	  {
 #ifdef WIN32 //Now we need to kill the timer
-            (void)KillTimer(0, timerptr);
+            timeKillEvent(wintimerid);
 #else
 #ifdef SOLARIS
 	    struct itimerspec unset_timerval =
@@ -551,17 +574,17 @@ Scheduler::Schedule(void)
 	      // The timer expired during the thread's execute loop.
 	      // This is the normal case ... simply go to the next thread.
 	      //
-#ifdef DEBUG_SCHED
+              #ifdef DEBUG_SCHED
 	      cerr << "RV_TIMESLICE" << "\n";
-#endif
+              #endif
 	      break;
 	    case Thread::RV_EXIT:
 	      //
 	      // The thread exited via a call to thread_exit.
 	      //
-#ifdef DEBUG_SCHED
+              #ifdef DEBUG_SCHED
 	      cerr << "RV_EXIT" << "\n";
-#endif
+              #endif
 	      {
 		// Clobber the thread.
 		thread_table.RemoveID(thread.TInfo().ID());
@@ -570,17 +593,17 @@ Scheduler::Schedule(void)
 		break;
 	      }
 	    case Thread::RV_HALT:
-#ifdef DEBUG_SCHED
+              #ifdef DEBUG_SCHED
 	      cerr << "RV_HALT" << "\n";
-#endif
+              #endif
 	      // TO DO: Extract exit status from thread's X registers.
 	      // TO DO: Mustn't just exit here! (Remember the ICM CS.)
 	      return 0;
 	      break;
 	    case Thread::RV_BLOCK:
-#ifdef DEBUG_SCHED
+              #ifdef DEBUG_SCHED
 	      cerr << "RV_BLOCK" << "\n";
-#endif
+              #endif
 	      //
 	      // The thread attempted an operation that would have blocked.
 	      //
@@ -593,9 +616,9 @@ Scheduler::Schedule(void)
 	      }
 	    case Thread::RV_SIGNAL:
 	      {
-#ifdef DEBUG_SCHED
+                #ifdef DEBUG_SCHED
 		cerr << "RV_SIGNAL" << "\n";
-#endif
+                #endif
 		//
 		// Set up and execute a thread that executes the appropriate
 		// signal handler. Then, continue with the thread that was
@@ -609,15 +632,15 @@ Scheduler::Schedule(void)
 	      }
 	      break;
 	    case Thread::RV_YIELD:
-#ifdef DEBUG_SCHED
+              #ifdef DEBUG_SCHED
 	      cerr << "RV_YIELD" << "\n";
-#endif
+              #endif
 	      // Nothing really needs to happen here.
 	      break;
 	    default:
-#ifdef DEBUG_SCHED
+              #ifdef DEBUG_SCHED
 	      cerr << __FUNCTION__ << " Exit with result " << result << "\n";
-#endif	// DEBUG_SCHED
+              #endif	// DEBUG_SCHED
 	      
 	      return(result);
 	      break;
@@ -660,11 +683,11 @@ Scheduler::Schedule(void)
 	  // Did it block?
 	  else if (result == Thread::RV_BLOCK)
 	    {
-#ifdef DEBUG_BLOCK
+              #ifdef DEBUG_BLOCK
 	      cerr << __FUNCTION__ 
 		   << " Thread " << thread.TInfo().ID()
 		   << " blocked in forbid/permit section" << "\n";
-#endif
+              #endif
 
 	      // Sleep until something useful happens (maybe).
 		  const Thread::ReturnValue result = Sleep();
@@ -685,10 +708,10 @@ Scheduler::Schedule(void)
 	  (void)ShuffleAllMessages(); // XXXXXX
 	}
 
-#ifdef DEBUG_SCHED
+      #ifdef DEBUG_SCHED
       cerr << __FUNCTION__ << "  blocked = " << blocked
 	   << "(" << run_queue.size() << " in run_queue)" << "\n";
-#endif
+      #endif
 
       // If none of the threads was runnable...
       if (! run_queue.empty() && blocked == run_queue.size())
@@ -767,7 +790,6 @@ Scheduler::HandleSignal(void)
 	cerr << "HandleSignal: read too much" << "\n";
   }
 #else
-  cerr << "in handlesig\n";
   char buff[128];
   int ret = recv(PipeInSock, buff, 120, 0);
   if (ret == 120) {
@@ -914,27 +936,5 @@ void Scheduler::resetThread(Thread* th)
     }
   th->getBlockStatus().setRunnable();
 }
-
-#ifdef WIN32
-VOID CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
-                                         UINT_PTR nIDEvent, DWORD dwTime)
-{
-        //cerr << "Handling a timeslice..." << "\n";
-        handle_timeslice(0);
-}
-#endif
-
-static void
-handle_timeslice(int)
-{
-#ifdef DEBUG_SCHED
-  cerr << __FUNCTION__ << "\n";
-#endif
-
-  extern Scheduler *scheduler;
-  scheduler->Status().setTimeslice();
-}
-
-
 
 

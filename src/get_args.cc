@@ -6,7 +6,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072

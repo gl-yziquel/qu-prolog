@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -207,13 +207,13 @@ LookupMachineIPAddress(const char *name)
     {
       char hostname[255];
       strcpy(hostname, name);
-      if (strcmp(hostname, "localhost") == 0)
-	{
-	  if (gethostname(hostname, 255) != 0)
-	    {
-	      return 0;
-	    }
-	}
+      // if (strcmp(hostname, "localhost") == 0)
+      //   {
+      //     if (gethostname(hostname, 255) != 0)
+      //       {
+      //         return 0;
+      //       }
+      //   }
       hostent *hp;
       
       if ( (hp = gethostbyname(hostname)) == NULL)
@@ -223,16 +223,16 @@ LookupMachineIPAddress(const char *name)
 // 	  hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
 // 	}
 //       if (hp == NULL)
+      //   {
+      //     strcpy(hostname, "127.0.0.1");
+      //     getIPfromifconfig(hostname);
+      //     struct in_addr in;
+      //     in.s_addr = inet_addr(hostname);
+      //     hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+      //   }
+      // if (hp == NULL)
 	{
-	  strcpy(hostname, "127.0.0.1");
-	  getIPfromifconfig(hostname);
-	  struct in_addr in;
-	  in.s_addr = inet_addr(hostname);
-	  hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-	}
-      if (hp == NULL)
-	{
-	  Warning(__FUNCTION__, "host name error");
+	  Fatal(__FUNCTION__, "host name error");
 	  return 0;
 	}
 

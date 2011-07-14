@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -213,6 +213,8 @@ public:
   bool isBindingList(Object* o) const;
 
   Object* newDelay(Object *problem, Object *tail);
+
+  Object* stringToList(char* s);
 
 // Fast equals
 bool fastEqualSubstitution(Object *, Object *);

@@ -1050,6 +1050,47 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
     return false;
   }
 
+
+  // get the client ID
+  u_int id = (u_int)get_ack();
+
+  // create data socket
+  fd = ::socket(AF_INET, SOCK_STREAM, 0);
+  if (!do_connection(fd, data_port, ipaddr)) {
+    close(ack_fd);
+    close(fd);
+    return false;
+  }
+
+
+  // send the client ID on data socket
+  ostringstream strm;
+  strm << id << "\n";
+  string st = strm.str();
+  int len = st.length();
+  // WIN CHANGE int num_written = write(fd, st.c_str(), len);
+  int num_written = ::send(fd, st.c_str(), len, 0);
+  if (num_written != len) {
+    fprintf(stderr, "Pedro Connect: Can't send ID\n");
+    exit(1);
+  }
+  // read flag on data socket
+  char buff[32];
+  int size;
+  int offset = 0;
+  while (1) {
+    size = recv(fd, buff + offset, 30 - offset, 0);
+    offset += size;
+    if (offset > 25) {
+      fprintf(stderr, "Can't get flag\n");
+      exit(1);
+    }
+    if (buff[offset-1] == '\n') {
+      buff[offset] = '\0';
+      break;
+    }
+  }
+
   // figure out my IP address
   struct sockaddr_in add;
   memset(&add, 0, sizeof(add));
@@ -1079,45 +1120,6 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
         }
     }
 
-  // create data socket
-  fd = ::socket(AF_INET, SOCK_STREAM, 0);
-  port = ntohs(pedro_port+1);
-  if (!do_connection(fd, data_port, ipaddr)) {
-    close(ack_fd);
-    close(fd);
-    return false;
-  }
-
-  // get the client ID
-  u_int id = (u_int)get_ack();
-
-  // send the client ID on data socket
-  ostringstream strm;
-  strm << id << "\n";
-  string st = strm.str();
-  int len = st.length();
-  // WIN CHANGE int num_written = write(fd, st.c_str(), len);
-  int num_written = ::send(fd, st.c_str(), len, 0);
-  if (num_written != len) {
-    fprintf(stderr, "Pedro Connect: Can't send ID\n");
-    exit(1);
-  }
-  // read flag on data socket
-  char buff[32];
-  int size;
-  int offset = 0;
-  while (1) {
-    size = recv(fd, buff + offset, 30 - offset, 0);
-    offset += size;
-    if (offset > 25) {
-      fprintf(stderr, "Can't get flag\n");
-      exit(1);
-    }
-    if (buff[offset-1] == '\n') {
-      buff[offset] = '\0';
-      break;
-    }
-  }
   // buff now contains flag - test if "ok\n"
   return (strcmp(buff, "ok\n") == 0);
 }

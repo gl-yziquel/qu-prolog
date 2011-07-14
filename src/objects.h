@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -217,6 +217,7 @@ public:
   inline bool isInteger(void) const;
   inline bool isAtom(void) const;
   inline bool isString(void) const;
+  inline bool isEmptyString(void);
   inline bool isShort(void) const;
   inline bool isLong(void) const;
   inline bool isDouble(void) const;
@@ -1000,6 +1001,13 @@ inline bool Object::isString(void) const
 {
   return (tag & TypeMask) == TypeString;
 }
+
+inline bool Object::isEmptyString(void)
+{
+  return (this->isString() && 
+    (OBJECT_CAST(StringObject*, this)->getChars()[0] == '\0'));
+}
+
 
 inline bool Object::isLong(void) const
 {

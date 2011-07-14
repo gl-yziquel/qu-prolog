@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -177,7 +177,7 @@ class BlockingTimeoutObject : public BlockingObject
   bool hasFD(void) { return false; }
 
 #ifdef WIN32
-  int getFD(void) { return NULL; }
+  int getFD(void) { return -1; }
 #endif
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) {}
@@ -199,7 +199,7 @@ class BlockingMessageObject : public BlockingObject
   bool hasFD(void) { return true; }
 
 #ifdef WIN32
-  int getFD(void) { return NULL; }
+  int getFD(void) { return -1; }
 #endif
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd);
@@ -253,7 +253,7 @@ class BlockingWaitObject : public BlockingObject
 
 
 #ifdef WIN32
-  int getFD(void) { return NULL; }
+  int getFD(void) { return -1; }
 #endif
 
   void updateFDSETS(fd_set* rfds, fd_set* wfds, int& max_fd) {}

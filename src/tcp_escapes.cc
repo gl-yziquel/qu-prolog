@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -1169,7 +1169,8 @@ Thread::psi_tcp_host_from_ip_address(Object *& host_arg,
       PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
   hostent *hp2 = gethostbyname(hp->h_name);
-  if ((hp2 == NULL) or (ip_address != (u_long)(*(int *)hp->h_addr_list[0])))
+  //if ((hp2 == NULL) or (ip_address != (u_long)(*(int *)hp->h_addr_list[0])))
+  if ((hp2 == NULL) or !streq(hp->h_name, hp2->h_name))
     {
       char ip_name[50];
       int p1 = ip_address >> 24;

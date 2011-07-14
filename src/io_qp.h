@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -618,7 +618,7 @@ class QPimstream: public QPStream
   bool msgReady(void);
 
   bool isReady(void);
-  
+  bool msg_ready(void);
   void get_read(void);
   
   void pushString(string* st);

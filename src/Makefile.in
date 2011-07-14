@@ -27,7 +27,7 @@ export DEPEND = $(addprefix depend.,$(DEPEND_TARGETS))
 export GENERATED = $(addprefix GENERATED.,$(DEPEND_TARGETS))
 
 # Optimisation level of compilation
-export OPTIMISATION=-O3
+export OPTIMISATION=-O2
 
 # Debugging options:
 #	QP_DEBUG	: General debugging of system

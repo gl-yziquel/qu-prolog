@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -333,21 +333,20 @@ Thread::psi_put_line(Object *& stream_arg, Object *& code_list)
   //
   QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, argS, 1, stream);
-
   Object* chars = heap.dereference(code_list);
-
 
   if (chars->isList())
     {
+
       // Check input
       int size = 3;
-      Cons* list = OBJECT_CAST(Cons*, chars);
+      Object* list = chars;
       for (;
 	   list->isCons();
-	   list = OBJECT_CAST(Cons*, list->getTail()->variableDereference()))
+	   list = OBJECT_CAST(Cons*, list)->getTail()->variableDereference())
 	{
-	  int32 c;
-	  DECODE_CODE_ARG(list->getHead()->variableDereference(), 2, c);
+          int32 c;
+	  DECODE_CODE_ARG(OBJECT_CAST(Cons*, list)->getHead()->variableDereference(), 2, c);
 	  size++; 
 	}
       if (!list->isNil())

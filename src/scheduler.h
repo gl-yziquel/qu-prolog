@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -156,9 +156,9 @@ public:
 };
 
 #ifdef WIN32
-void CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
+//void CALLBACK win32_handle_timer_wrapper(HWND hWnd, UINT nMsg,
 
-                           UINT_PTR nIDEvent, DWORD dwTime);
+//                           UINT_PTR nIDEvent, DWORD dwTime);
 #endif
 
 #endif	// SCHEDULER_H

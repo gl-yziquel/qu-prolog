@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -288,7 +288,6 @@ Atom *
 AtomTable::add(const char *string)
 {
   AtomKey key(string);
-  
   const AtomLoc index = search(key);
   Atom& entry = getEntry(index);
   if (entry.isEmpty())

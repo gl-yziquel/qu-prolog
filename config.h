@@ -56,8 +56,8 @@
 
 #define MULTIPLE_THREADS 1
 
-#define BITS_PER_WORD 32
-#define BYTES_PER_WORD 4
+#define BITS_PER_WORD 64
+#define BYTES_PER_WORD 8
 #define HAVE_GCC_LABELS 1
 #define INT_TYPE int
 #define SHORT_TYPE short

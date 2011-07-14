@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -59,56 +59,78 @@
 #include "system_support.h"
 #include <cstdlib>
 #include <iostream>
+#ifdef WIN32
+#include <direct.h>
+#endif //WIN32
+
 using namespace std;
 
 void wordexp(string& str)
 {
   
-  // TODO
+
 #ifdef WIN32
-  bool hasChanged = false;
-  
-  /* Windows is stupid - we know this already. So...
-   * What we have to do here is a few things:
-   *	1. Change those bloody slashes to backslashes.
-   *	2. Replace environment variables.
-   *	3. Remove special chars such as ~.
-   */
-  
-  //Temp var
-  string newstr;
-  
-  // Lets remove ./
-  int pos = str.find("./");
-  if (pos == 0) 
+  // expand environment variables
+  size_t pos;
+  pos = str.find("%");
+  while (pos != string::npos)
     {
-      // It appears that there is a bug here.
-      // Doing: str = str.substr(....) doesn't work
-      // So we waste some more memory...
-      newstr = str.substr(2,str.length() - 2);
-      //Yes, we have changed the string
-      hasChanged = true;
+      size_t end = str.find("%", pos+1);
+      if (end != string::npos)
+        {
+          string env = string(str, pos+1, end-pos-1);
+          char* expenv = getenv(env.c_str());
+          if (expenv == NULL)
+            {
+              str.replace(pos, end-pos+1, "");
+            }
+          else
+            {
+              str.replace(pos, end-pos+1, expenv);
+            }
+          pos = end;
+        }
+      pos = str.find("%", pos+1);
     }
-  
-  // Lets replace all slashes with backslashes
-  int posn = 0;
-  posn = newstr.find("/",posn);
-  while (posn != -1) 
+  pos = str.find("/");
+  if (pos == 0)
     {
-      str.replace(posn,posn,"\\");
-      posn = newstr.find("/",posn);
-      //Yes, we have changed the string
-      hasChanged = true;
+      str.replace(0, 1, "C:\\");
     }
-  
-  //We're not going to do environment vars yet. TODO!
-  //Nor will we handle special unix chars, since there's
-  //hopefully never that these will get passed to us.
-  if (hasChanged)
+  // replace /   
+  pos = str.find("/");
+  while (pos != string::npos)
     {
-      str = newstr;
-    } 
-  
+      str.replace(pos, 1, "\\");
+      pos = str.find("/");
+    }
+
+  if (str == ".")
+    {
+      char path[256];
+      if (_getcwd(path, 255) != NULL)
+        str.replace(0,1,path);
+    }
+  // process ".."
+  pos = str.find("..");
+  while (pos != string::npos)
+    {
+      if (str[pos-1] != '\\')
+        break;
+      size_t slashpos = str.rfind("\\", pos-2);
+      if (slashpos == string::npos)
+        break;
+      str.replace(slashpos, pos+2-slashpos, "");
+      pos = str.find("..");
+    }
+
+  pos = str.find("\\.\\");
+  while (pos != string::npos)
+    {
+      str.replace(pos, 2, "");
+      pos = str.find("\\.\\");
+    }
+
 #else //UNIX STUFF HERE
   
   // expand environment variables

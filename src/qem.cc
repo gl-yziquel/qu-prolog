@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -110,6 +110,7 @@ SOCKET PipeOutSock;
 SOCKET PipeInSock;
 void Thread( void* pParams )
 { 
+  extern bool in_sigint;;
   setvbuf(stdin, NULL, _IONBF, 0);
   PipeOutSock=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 
@@ -126,29 +127,31 @@ void Thread( void* pParams )
       std::cout<<WSAGetLastError();
     }
   char buffer[100000];
-  char c;
+  int c;
   int i;
-  c = -1;
-  while (c == -1) c = getchar();
+  c = getchar();
   for (;;) {
     i = 0;
-    buffer[i] = c;
-    if ((c == 4) || (c == 8)) {
-      send(Socket, "\0", 1, 0);
-    } else if (c == 3) {
-      handle_sigint(0);
-    }else {
-      while (c != '\n') {
-        i++;
-        c = getchar();
-        if (c == -1) return;
-        buffer[i] = c;
+    buffer[i] = (char)c;
+    while (c != '\n') {
+      if (c == EOF) {
+        if (!in_sigint) {
+          i = 0;
+          buffer[0] = 255;
+          getchar(); 
+          break;
+        } else {
+          i--;
+        }
       }
-      buffer[i+1] = '\0';
-      send(Socket, buffer, strlen(buffer), 0);
+      c = getchar();
+      i++;
+      buffer[i] = (char)c;
     }
+    buffer[i+1] = '\0';
+    send(Socket, buffer, strlen(buffer), 0);
+
     c = getchar();
-    if (c == -1) return;
   }
   
 }
@@ -211,17 +214,17 @@ TimerStack timerStack;
 static void
 handle_sigint(int)
 {
-  cerr << "In handle_sigint" << endl;
-  clearerr(stdin);
   extern Signals *signals;
   if (signals != NULL) {
     char buff[128];
     buff[0] = 'a';
     buff[1] = '\n';
-    int res = send(PipeOutSock, buff, 1, 0);
-    if (res != 1) cerr << "Signals:  can't write to socket" << res << endl;
+    buff[2] = '\0';
     signals->Increment(SIGINT);
     signals->Status().setSignals();
+    clearerr(stdin);
+    int res = send(PipeOutSock, buff, 2, 0);
+    if (res != 2) cerr << "Signals:  can't write to socket" << res << endl;
   } else {
     cerr << "Signals are null" << endl;
   }

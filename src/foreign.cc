@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -123,18 +123,36 @@ bool
 Thread::LinkLoad(Object* objects, Object* libraries)
 {
   ostringstream strm;
-  char output[16];
+  char output[64];
   Object* file;
   void *handle;
   
   //
   // Generate the linking command.
   //
-#ifndef WIN32
-  strcpy(output, "/tmp/symXXXXXX");
+#ifdef WIN32
+  // Since the dll can't be deleted use the first names object file as the 
+  // name for the dll
+  objects = objects->variableDereference();
+  file =  OBJECT_CAST(Cons*,objects)->getHead()->variableDereference();
+  strcpy(output, OBJECT_CAST(Atom*, file)->getName());
+  output[strlen(output) - 2] = '\0';
+#else
+  strcpy(output, "symXXXXXX");
   int ret = mkstemp(output);
   if (ret == -1) return(false);
+#endif
 
+#ifdef WIN32
+  char dll_file[64];
+  char lib_file[64];
+  strcpy(dll_file, output);
+  strcpy(lib_file, "lib");
+  strcat(dll_file, ".dll");
+  strcat(lib_file, output);
+  strcat(lib_file, ".a");
+  strm << "g++ -shared -o " << dll_file << " "; 
+#else
 #ifdef SOLARIS
   strm << "ld -G ";
 #else
@@ -170,14 +188,15 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   
   assert(libraries->isNil());
   
-#ifndef WIN32
-  
+#ifdef WIN32
+  strm << " -W1," << lib_file;
+#else
 #ifdef SOLARIS
   strm << "-lc -o " << output << ends;
 #else // !SOLARIS
   strm << " -lc -o " << output << ends;
 #endif // SOLARIS
-  
+#endif // WIN32 
   
   
   //
@@ -188,7 +207,7 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   cmd[strm.str().size()] = '\0';
   
   
-#if (defined(FREEBSD) || defined(MACOSX))
+#if (!defined(WIN32) && (defined(FREEBSD) || defined(MACOSX)))
   if (local_bsd_system(cmd))
 #else
     
@@ -209,11 +228,11 @@ Thread::LinkLoad(Object* objects, Object* libraries)
   
   
   delete cmd;
-#endif
+
   
 #ifdef WIN32
   //Load the library here
-  if ((handle = reinterpret_cast<void*>(LoadLibrary(OBJECT_CAST(Atom*,file)->getName()))) == NULL)
+  if ((handle = reinterpret_cast<void*>(LoadLibrary(dll_file))) == NULL)
     {
       Warning(__FUNCTION__, "Error loading DLL. Check that it exists.");
       return(false);

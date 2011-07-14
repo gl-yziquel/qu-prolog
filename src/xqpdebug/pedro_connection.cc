@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -14,6 +15,10 @@
 #include <net/if.h>
 #include "pedro_connection.h"
 #include <string.h>
+
+#include "../tcp_qp.h"
+
+const char *Program = "xqpdebug";
 
 int read_from_socket(int fd, char* buff)
 {  
@@ -34,55 +39,6 @@ int read_from_socket(int fd, char* buff)
 }
 
 
-// No DNS lookup - so use ifcofig to get IP
-void getIPfromifconfig(char* ip)
-{
-  struct ifreq *ifr, ifr_tmp;
-  struct ifconf ifc;
-  char buf[1024];
-  int s, i;
-  struct sockaddr_in *sin;
-
-  s = socket(AF_INET, SOCK_DGRAM, 0);
-  if (s == -1) {
-    fprintf(stderr, "Can't open socket for ifconfig\n");
-    exit(1);
-  }
-
-  ifc.ifc_len = sizeof(buf);
-  ifc.ifc_buf = buf;
-  ioctl(s, SIOCGIFCONF, &ifc);
-
-  for (i = 0; i < ifc.ifc_len; ) {
-    ifr = (struct ifreq *) &ifc.ifc_buf[i];
-    sin = (struct sockaddr_in *) &ifr->ifr_addr;
-    i += sizeof(struct ifreq);
-    /* skip nulls */
-    if (sin->sin_addr.s_addr == 0)
-      continue;
-    /* skip non AF_INET's */
-    if (ifr->ifr_addr.sa_family != AF_INET)
-      continue;
-
-#ifdef SIOCGIFFLAGS
-    memset(&ifr_tmp, 0, sizeof(ifr_tmp));
-    strncpy(ifr_tmp.ifr_name, ifr->ifr_name, sizeof(ifr_tmp.ifr_name) - 1);
-    if (ioctl(s, SIOCGIFFLAGS, (caddr_t) &ifr_tmp) < 0)
-#endif
-      ifr_tmp = *ifr;
-    
-    /* skip DOWN and loopback interfaces */
-    if (((ifr_tmp.ifr_flags & IFF_UP) == 0) ||
-          (ifr_tmp.ifr_flags & IFF_LOOPBACK))
-      continue;
-
-    close(s);
-    strcpy(ip, inet_ntoa(sin->sin_addr));
-    return;
-  }
-  close(s);
-  return;
-}
 
 
 bool needsQuotes(string& str)
@@ -113,75 +69,127 @@ PedroConnection::PedroConnection(string me, string other,
 {
   addQuotes(my_address);
   addQuotes(other_address);
-  ack_fd = (int)(::socket(AF_INET, SOCK_STREAM, 0));
-  
-  struct sockaddr_in add;
-  memset((char *)&add, 0, sizeof(add));
-  add.sin_family = AF_INET;
-  add.sin_port =  htons((unsigned short)port);
-  add.sin_addr.s_addr = ip;
-  const int ret = connect(ack_fd, (struct sockaddr *)&add, sizeof(add));
 
-  if (ret != 0) {
-    if (errno == EINPROGRESS) {
-      fd_set fds;
-      
-      FD_ZERO(&fds);
-      FD_SET(ack_fd, &fds);
-      select(ack_fd + 1, (fd_set *) NULL, &fds, (fd_set *) NULL, NULL);
-    }
-    else {
-      cerr << "Failed to connect" << endl;
+
+  // Create a socket to get info
+  int info_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
+  u_short p_port = ntohs(port);
+  if (!do_connection(info_fd, p_port, ip)) {
+    close(info_fd);
+    return;
+  }
+  // read info
+  char infobuff[1024];
+  int isize;
+  int ioffset = 0;
+  while (1) {
+    isize = recv(info_fd, infobuff + ioffset, 1000 - ioffset, 0);
+    ioffset += isize;
+    if (ioffset > 1000) {
+      fprintf(stderr, "Can't get info\n");
+      close(info_fd);
       exit(1);
     }
+    if (infobuff[ioffset-1] == '\n') {
+      infobuff[ioffset] = '\0';
+      break;
+    }
+  }
+  close(info_fd);
+  int ack_port, data_port;
+  char ipstr[20];
+  if (sscanf(infobuff, "%s %d %d", ipstr, &ack_port, &data_port) != 3) {
+    fprintf(stderr, "Can't read ip and ports\n");
+    exit(1);
+  }
+  ack_port = htons((unsigned short)ack_port);
+  data_port = htons((unsigned short)data_port);
+  unsigned long ipaddr = inet_addr(ipstr);
+
+  // Create a socket connection for ack
+  ack_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
+  if (!do_connection(ack_fd, ack_port, ipaddr)) {
+    close(ack_fd);
+    exit(1);
   }
 
-  // now connected - get client ID
+  // get the client ID
+  u_int id = (u_int)get_ack();
+
+
+  // create data socket
+  data_fd = ::socket(AF_INET, SOCK_STREAM, 0);
+  if (!do_connection(data_fd, data_port, ipaddr)) {
+    close(ack_fd);
+    close(data_fd);
+    exit(1);
+  }
+
+  // send the client ID on data socket
+  ostringstream strm;
+  strm << id << "\n";
+  string st = strm.str();
+  int len = st.length();
+  // WIN CHANGE int num_written = write(fd, st.c_str(), len);
+  int num_written = ::send(data_fd, st.c_str(), len, 0);
+  if (num_written != len) {
+    fprintf(stderr, "Pedro Connect: Can't send ID\n");
+    exit(1);
+  }
+  // read flag on data socket
   char buff[32];
-  if (read_from_socket(ack_fd, buff) == 1){
-    cerr << "Can't complete connection" << endl;
-    close(ack_fd);
-    exit(1);
-  }
-  uint id;
-  istringstream stream1(buff);
-  stream1 >> id;
-
-  // Now connect to data socket
-  data_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-
-  memset((char *)&add, 0, sizeof(add));
-  add.sin_family = AF_INET;
-  add.sin_port =  htons((unsigned short)(port+1));
-  add.sin_addr.s_addr = ip;
-  if(connect(data_fd, (struct sockaddr *)&add, sizeof(add)))
-    {
-      close(ack_fd);
-      close(data_fd);
-      fprintf(stderr, "Can't connect to data\n");
+  int size;
+  int offset = 0;
+  while (1) {
+    size = recv(data_fd, buff + offset, 30 - offset, 0);
+    offset += size;
+    if (offset > 25) {
+      fprintf(stderr, "Can't get flag\n");
       exit(1);
     }
-  /* Send client ID on data socket and get back status */
+    if (buff[offset-1] == '\n') {
+      buff[offset] = '\0';
+      break;
+    }
+  }
+  // buff now contains flag - test if "ok\n"
+  if (strcmp(buff, "ok\n") != 0){
+    cerr << "Can't complete connection" << endl;
+    close(ack_fd);
+    close(data_fd);
+    exit(1);
+  }
+
+  // figure out my IP address
+  struct sockaddr_in add;
+  memset(&add, 0, sizeof(add));
+  socklen_t addr_len = sizeof(add);
+  
+  getsockname(ack_fd, (struct sockaddr *)&add, &addr_len);
+  strcpy(ipstr, inet_ntoa(add.sin_addr));
+  struct in_addr in = add.sin_addr;
+  hostent *hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+  if (hp == NULL) 
+    {
+      // we can't look up name given address so just use dotted IP
+      host = ipstr;
+    } 
+  else 
+    {
+      // check if we can look up the same IP from hostname 
+      hostent *hp2 = gethostbyname(hp->h_name);
+      if ((hp2 == NULL) || (strcmp(hp->h_name, hp2->h_name) != 0))
+        {
+          // no - so use IP address
+          host = ipstr;
+        }
+      else
+        {
+          host = hp->h_name;
+        }
+    }
+
   ostringstream s1;
-  s1 << id << endl;
-  int size = s1.str().length();
-  int len = write(data_fd, s1.str().c_str(),  size);
-  if (len != size) {
-    cerr << "Can't complete connection" << endl;
-    close(ack_fd);
-    close(data_fd);
-    exit(1);
-  }
-  if ((read_from_socket(data_fd, buff) == 1) || (strcmp(buff, "ok\n") != 0)){
-    cerr << "Can't complete connection" << endl;
-    close(ack_fd);
-    close(data_fd);
-    exit(1);
-  }
-
-
-
-
   s1.str("");
   s1 << "register(" << my_address << ")\n";
   if (!send(s1.str())) {
@@ -189,35 +197,6 @@ PedroConnection::PedroConnection(string me, string other,
     exit(1);
   }
 
-  char hostname[1000];
-  gethostname(hostname, 1000);
-
-  hostent *hp = gethostbyname(hostname);
-  if (hp == NULL)
-    {
-      // if we can't get host by name then try to use ifconfig
-      strcpy(hostname, "127.0.0.1");
-      getIPfromifconfig(hostname);
-      host = hostname;
-    }
-  // if we can get the host then try to see if
-  // we can get host by address from hp
-  else {
-      struct in_addr in;
-      struct in_addr in_copy;
-      in.s_addr = *(int*)(hp->h_addr);
-      in_copy.s_addr = *(int*)(hp->h_addr);
-      hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-      if (hp == NULL) 
-        {
-          // we can't look up name given address so just use dotted IP
-          host = inet_ntoa(in_copy);
-        } 
-      else 
-        {
-          host = hp->h_name;
-        }
-  }
   addQuotes(host);
 
 }

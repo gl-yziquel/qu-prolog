@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -964,7 +964,8 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
 	  // Consume /* */ comments.
 	  //
 	  flag = false;
-	  do 
+	  //do
+          while (d >= 0)
 	    {
 	      d = Get(InStrm);
 	      if (flag && d == ENDCOM)
@@ -972,7 +973,7 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
 		  break;
 		}
 	      flag = (d == ASTCOM);
-	    } while (d >= 0);
+	    } // while (d >= 0);
 	  if (d == EOF)
 	    {
 	      InStrm->clear();
@@ -1116,9 +1117,9 @@ Thread::GetToken(QPStream *InStrm, long& Integer, double& Double, char *Simple, 
 	  }
 	else
 	  {
-	    if (*(str.c_str()) == '\0')
-	      String = AtomTable::nil;
-	    else
+	    //if (*(str.c_str()) == '\0')
+            //   String = AtomTable::nil;
+            // else
 	      String = heap.newStringObject(str.c_str());
 	    return(STRING_TOKEN);
 	  }

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2010 
+// Copyright (C) 2000-2011 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -82,13 +82,13 @@
 bool
 StringMap::loadStrings(istream& istrm, const char *file, AtomTable& atoms)
 {
-  for (Code::AddressSizedType StringSize = 
-	 IntLoad<Code::AddressSizedType>(istrm);
+  Code::AddressSizedType StringSize = 
+    IntLoad<Code::AddressSizedType>(istrm);
+  for (;
        StringSize > 0;
        )
     {
       char string[ATOM_LENGTH];
-
       //
       // Get string.
       //
@@ -97,12 +97,10 @@ StringMap::loadStrings(istream& istrm, const char *file, AtomTable& atoms)
 	  WrongFileFormat(__FUNCTION__, file);
 	  return(false);
 	}
-
       //
       // Add to atom table and string map.
       //
       pushElement(atoms.add(string));
-
       StringSize -= static_cast<Code::AddressSizedType>(strlen(string) + 1);
     }
   
