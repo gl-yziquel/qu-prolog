@@ -753,6 +753,11 @@ PedroMessageChannel::ShuffleMessages(void)
       char buff[1101];
       // WIN CHANGE ssize_t size = read(fd, buff, 1100);
       ssize_t size = recv(fd, buff, 1100, 0);
+      if (size == 0) {
+        Warning(Program, "Pedro Server Closed Connection");
+        disconnect();
+        break;
+      }
       buff[size] = '\0';
       in.append(buff);
       new_msg = true;

@@ -7,7 +7,7 @@ end('main'/1):
 
 
 
-'$query_qc11310611693_749/0$0'/0:
+'$query_qc11314055074_249/0$0'/0:
 
 
 $1:
@@ -44,23 +44,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_qc11310611693_749/0$0'/0):
+end('$query_qc11314055074_249/0$0'/0):
 
 
 
-'$query_qc11310611693_749'/0:
+'$query_qc11314055074_249'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_qc11310611693_749/0$0', 0, 0)
+	call_predicate('$query_qc11314055074_249/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_qc11310611693_749'/0):
+end('$query_qc11314055074_249'/0):
 
 
 
@@ -68,7 +68,7 @@ end('$query_qc11310611693_749'/0):
 
 
 $1:
-	execute_predicate('$query_qc11310611693_749', 0)
+	execute_predicate('$query_qc11314055074_249', 0)
 end('$query'/0):
 
 

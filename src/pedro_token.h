@@ -12,7 +12,6 @@ void delete_buffstate();
 
 int scanner(Thread* th, AtomTable* atoms, VarMap* vmap, Object** val, bool r);
 
-
 #define ERROR_TOKEN              0
 #define NEWLINE_TOKEN            1
 #define OBRA_TOKEN               2

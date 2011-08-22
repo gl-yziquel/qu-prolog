@@ -27,14 +27,14 @@ import stat
 
 ##############################
 
-preprocess='/home/pjr/research/qp_dev/rel/qp9.0/bin/qppp'
-expand='/home/pjr/research/qp_dev/rel/qp9.0/bin/qg'
-qpcompile='/home/pjr/research/qp_dev/rel/qp9.0/bin/qc1'
+preprocess='/home/pjr/research/qp_dev/rel/qp9.1/bin/qppp'
+expand='/home/pjr/research/qp_dev/rel/qp9.1/bin/qg'
+qpcompile='/home/pjr/research/qp_dev/rel/qp9.1/bin/qc1'
 compversion='qup'
-assemble='/home/pjr/research/qp_dev/rel/qp9.0/bin/qa'
-link='/home/pjr/research/qp_dev/rel/qp9.0/bin/ql'
-execute='/home/pjr/research/qp_dev/rel/qp9.0/bin/qem'
-libqofiles="/home/pjr/research/qp_dev/rel/qp9.0/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp9.0/prolog/library/*.qo"
+assemble='/home/pjr/research/qp_dev/rel/qp9.1/bin/qa'
+link='/home/pjr/research/qp_dev/rel/qp9.1/bin/ql'
+execute='/home/pjr/research/qp_dev/rel/qp9.1/bin/qem'
+libqofiles="/home/pjr/research/qp_dev/rel/qp9.1/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp9.1/prolog/library/*.qo"
 
 ##############################
 

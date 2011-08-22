@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 9.0 Reference Manual - Built-in Predicates
+Qu-Prolog 9.1 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -5214,8 +5214,18 @@ The head of <KBD>Clause</KBD> has <KBD>PredicateName</KBD> and <KBD>Arity</KBD>.
 and
 <KBD>StampedPredicates</KBD> is a list of the form <KBD>P/N-Stamp</KBD>.
 The stamp is a number representing the number of times this predicate has been modified and
-is useful for <KBD>thread_wait_on_goal</KBD> to prevent an unnecessary intial call of the goal. 
+is useful for <KBD>thread_wait_on_goal</KBD> to prevent an unnecessary initial call of the goal. 
 <BR><KBD>mode get_predicate_timestamp(@list, -list)</KBD>
+
+</BLOCKQUOTE>
+<P><KBD><a name="changed_predicates"></a>changed_predicates(StampedPredicates, SPredicates)</KBD>
+<BLOCKQUOTE>
+<KBD>StampedPredicates</KBD> is a list of the form <KBD>P/N-Stamp</KBD>
+and
+<KBD>Predicates</KBD> is a list of the form <KBD>P/N</KBD>.
+<KBD>Predicates</KBD> is the list of all predicates from <KBD>StampedPredicates</KBD> that have more recent timestamps than those given.
+<BR>Typically this is used in conjunction with <KBD>get_predicate_timestamp/2</KBD> above to determine what predicates have changed since the last call to <KBD>get_predicate_timestamp/2</KBD>.
+<BR><KBD>mode changed_predicates(@list, -list)</KBD>
 
 
 </BLOCKQUOTE>
