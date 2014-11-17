@@ -454,18 +454,19 @@ end('$classify/2$3'/3):
 
 '$classify'/2:
 
-	switch_on_term(0, $10, $9, $10, $9, $9, $9)
+	switch_on_term(0, $11, $10, $11, $10, $10, $10)
 
-$9:
+$10:
 	try(2, $1)
 	retry($2)
 	retry($4)
 	retry($5)
 	retry($6)
 	retry($7)
-	trust($8)
+	retry($8)
+	trust($9)
 
-$10:
+$11:
 	try(2, $1)
 	retry($2)
 	retry($3)
@@ -473,7 +474,8 @@ $10:
 	retry($5)
 	retry($6)
 	retry($7)
-	trust($8)
+	retry($8)
+	trust($9)
 
 $1:
 	pseudo_instr1(1, 0)
@@ -530,13 +532,22 @@ $6:
 	proceed
 
 $7:
+	pseudo_instr1(108, 0)
+	neck_cut
+	pseudo_instr2(136, 0, 2)
+	get_x_variable(0, 2)
+	get_structure('const', 1, 1)
+	unify_x_value(0)
+	proceed
+
+$8:
 	pseudo_instr1(43, 0)
 	neck_cut
 	get_structure('const', 1, 1)
 	unify_x_value(0)
 	proceed
 
-$8:
+$9:
 	get_x_variable(3, 0)
 	get_x_variable(2, 1)
 	put_x_variable(0, 0)

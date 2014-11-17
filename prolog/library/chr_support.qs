@@ -253,33 +253,6 @@ end('$chr_ignore'/1):
 
 
 
-'$chr_compile/2$0'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_constant('[]', 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('$chr_compile/2$0'/1):
-
-
-
 '$chr_compile'/2:
 
 	switch_on_term(0, $8, $7, $7, $7, $7, $5)
@@ -374,8 +347,8 @@ $4:
 	set_x_value(2)
 	put_y_value(8, 2)
 	call_predicate('findall', 3, 9)
-	put_y_value(8, 0)
-	call_predicate('$chr_compile/2$0', 1, 9)
+	put_constant('[]', 0)
+	pseudo_instr2(133, 28, 0)
 	put_y_value(8, 0)
 	put_integer(1, 1)
 	call_predicate('$compile_rules', 2, 8)
@@ -4587,6 +4560,7 @@ $1:
 
 $2:
 	get_x_variable(1, 0)
+	put_x_value(1, 0)
 	get_structure('c', 5, 0)
 	unify_x_variable(2)
 	unify_x_variable(3)
@@ -5048,22 +5022,6 @@ end('$chr_print_constraints'/0):
 
 
 
-'check_and_update_applied/2$0'/2:
-
-	try(2, $1)
-	trust($2)
-
-$1:
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('check_and_update_applied/2$0'/2):
-
-
-
 'check_and_update_applied'/2:
 
 	try(2, $1)
@@ -5078,15 +5036,10 @@ $1:
 	proceed
 
 $2:
-	allocate(2)
-	get_y_variable(1, 0)
 	get_list(1)
+	unify_x_variable(2)
 	unify_x_variable(1)
-	unify_y_variable(0)
-	call_predicate('check_and_update_applied/2$0', 2, 2)
-	put_y_value(1, 0)
-	put_y_value(0, 1)
-	deallocate
+	pseudo_instr2(133, 0, 2)
 	execute_predicate('check_and_update_applied', 2)
 end('check_and_update_applied'/2):
 
@@ -5159,7 +5112,7 @@ end('chr_remove_aux'/1):
 
 
 
-'$query_chr_support1314055067_134/0$0'/0:
+'$query_chr_support1416203175_692/0$0'/0:
 
 
 $1:
@@ -5173,23 +5126,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_chr_support1314055067_134/0$0'/0):
+end('$query_chr_support1416203175_692/0$0'/0):
 
 
 
-'$query_chr_support1314055067_134'/0:
+'$query_chr_support1416203175_692'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_chr_support1314055067_134/0$0', 0, 0)
+	call_predicate('$query_chr_support1416203175_692/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_chr_support1314055067_134'/0):
+end('$query_chr_support1416203175_692'/0):
 
 
 
@@ -5197,7 +5150,7 @@ end('$query_chr_support1314055067_134'/0):
 
 
 $1:
-	execute_predicate('$query_chr_support1314055067_134', 0)
+	execute_predicate('$query_chr_support1416203175_692', 0)
 end('$query'/0):
 
 

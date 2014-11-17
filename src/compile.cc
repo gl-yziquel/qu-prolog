@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -304,7 +304,7 @@ Thread::psi_ccompile(Object*& clause, Object*& type,
   //
   heap.unravel(clause, array1, array2, body);
   heap.setyregs(array3, numys);
-  
+ 
   array3.resetLast(0);
 
   // Equiv to lifetime.ql

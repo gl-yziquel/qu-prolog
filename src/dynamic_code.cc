@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -132,9 +132,14 @@ void ChainEnds::gcChain(word32 time, bool deleteBlock)
 DynamicClauseHashEntry*  
 DynamicPredicate::makeEntry(Thread &th, Object* term)
 {
+  wordptr t, v;
+  if (term == NULL) {
+    t = 0; v = 0;
+    DynamicClauseHashEntry *entry = new DynamicClauseHashEntry(t, v); 
+    return entry;
+  }
   Object* pterm = term->variableDereference();
   const u_int argTag = pterm->tTag();
-  wordptr t, v;
   
   switch (argTag)
     {
@@ -380,7 +385,6 @@ DynamicPredicate::assertClause(Thread &th, Object* indexarg,
 			       const bool asserta)
 {
   word32 newtime = stamp.GetStamp() + 1;
-
   instrs = instrs->variableDereference();
   
   CodeLoc code = reinterpret_cast<CodeLoc>(instrs->getInteger());

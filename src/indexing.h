@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -97,6 +97,7 @@ public:
   static const word16 EMPTY = 0;
   static const word16 INTEGER_TYPE = 1;
   static const word16 ATOM_TYPE = 2;
+  static const word16 STRING_TYPE = 3;
   
   //
   // Check whether the entry is empty or not.

@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -54,6 +54,9 @@
 // $Id: foreign_interface.cc,v 1.2 2006/02/14 02:40:09 qp Exp $
 
 #include "thread_qp.h"
+#include "pedro_env.h"
+
+//class PedroMessage;
 
 Object* 
 ForeignInterface::getXReg(int i) 
@@ -66,6 +69,10 @@ ForeignInterface::makeAtom(const char* s)
 Object* 
 ForeignInterface::makeInteger(const long i) 
 { return threadptr->TheHeap().newInteger(i); }
+
+Object* 
+ForeignInterface::makeString(const char * s) 
+{ return threadptr->TheHeap().newStringObject(s); }
 
 Object* 
 ForeignInterface::makeDouble(const double d)
@@ -83,7 +90,17 @@ char*
 ForeignInterface::getAtomString(Object* a)
 { return OBJECT_CAST(Atom*, a)->getName(); }
 
+char*
+ForeignInterface::getString(Object* a)
+{ return OBJECT_CAST(StringObject*, a)->getChars(); }
+
 bool 
 ForeignInterface::unify(Object* o1, Object* o2)
 { return threadptr->unify(o1 , o2); }
+      
+bool 
+ForeignInterface::push_message(const char * msg)
+{  threadptr->MessageQueue().push_back(new PedroMessage(msg)); 
+  return true;
+}
       

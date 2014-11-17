@@ -50,6 +50,10 @@ QPHOME=`pwd`
 AC_SUBST(QPHOME)
 
 case "$host" in
+arm*-*-linux*) AC_DEFINE(LINUX)
+        AC_DEFINE(ARM)
+        OS=LINUX
+        ;;
 *-*-linux*) AC_DEFINE(LINUX)
 	OS=LINUX
 	;;

@@ -124,6 +124,7 @@ end('$escape_builtin'/2):
 
 $1:
 	get_x_variable(2, 1)
+	put_x_value(2, 1)
 	put_constant('[]', 3)
 	execute_predicate('$split_arg', 4)
 end('$colvars'/2):

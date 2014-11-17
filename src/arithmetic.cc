@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -195,7 +195,6 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
       assert(fun->isAtom());
       
       Atom *op = OBJECT_CAST(Atom *, fun);
-      
       if (op == AtomTable::plus)
 	{
 	  if (arity != 2)
@@ -280,7 +279,21 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 	      return res;
             }
 	}
-      else if (op == AtomTable::abs)
+      else if (op == AtomTable::maxi)
+	{
+	  if (GET_DOUBLE_VAL(res1) > GET_DOUBLE_VAL(res2))
+	    return res1;
+	  else
+	    return res2;
+	}      
+      else if (op == AtomTable::min)
+	{
+	  if (GET_DOUBLE_VAL(res1) < GET_DOUBLE_VAL(res2))
+	    return res1;
+	  else
+	    return res2;
+	}      
+       else if (op == AtomTable::abs)
         {
 	  if (arity != 1)
 	    {

@@ -47,6 +47,7 @@
 #undef TIME_WITH_SYS_TIME
 
 #undef LINUX
+#undef ARM
 #undef SOLARIS
 #undef FREEBSD
 #undef MACOSX

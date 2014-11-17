@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -367,18 +367,27 @@ Thread::psi_sub_atom(Object *& object1, Object *& object2,
   Object* val1 = heap.dereference(object1);
   Object* val2 = heap.dereference(object2);
   Object* val3 = heap.dereference(object3);  
+  Object* val4 = heap.dereference(object4);  
   
   assert(val1->isAtom());
   assert(val2->isShort());
   assert(val3->isShort());
   
   length = val3->getInteger();
-  strncpy(atom_buf1,
-	  OBJECT_CAST(Atom*, val1)->getName() + val2->getInteger() - 1, 
-	  length);
-  atom_buf1[length] = '\0';
-  object4 = atoms->add(atom_buf1);
-  return(RV_SUCCESS);
+  if (val4->isVariable()) {
+    strncpy(atom_buf1,
+	    OBJECT_CAST(Atom*, val1)->getName() + val2->getInteger() - 1, 
+	    length);
+    atom_buf1[length] = '\0';
+    
+    Object* sub_atom = atoms->add(atom_buf1);
+    return BOOL_TO_RV(unify(sub_atom, val4));
+  } else {
+    const char *string1 = OBJECT_CAST(Atom*, val1)->getName() + 
+      val2->getInteger() - 1;
+    const char *string2 = OBJECT_CAST(Atom*, val4)->getName();
+    return BOOL_TO_RV(strstr(string1, string2) == string1);
+  }
 }
 
 

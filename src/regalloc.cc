@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -191,8 +191,22 @@ Heap::excess_registers(WordArray& instr)
 	}
       tmpinstr.addEntry(reinterpret_cast<wordptr>(tstruct));
     }
-  instr.resetLast(0);
+  // fix for excess xreg - add a put_y_variable(...) at the beginning
+  // so all y regs are set before the first call in case garbage
+  // collection happens
   Object* lastxreg = xreg(NUMBER_X_REGISTERS-1);
+  for (int i = 0; i < REGISTERSIZE; i++) {
+    if (xmap[i] != NULL) {
+	      Structure* putinstr = newStructure(4);
+	      putinstr->setFunctor(AtomTable::put);
+	      putinstr->setArgument(1, AtomTable::meta);
+	      putinstr->setArgument(2, AtomTable::variable);
+	      putinstr->setArgument(3, xmap[i]);
+	      putinstr->setArgument(4, lastxreg);
+              tmpinstr.addEntry(reinterpret_cast<wordptr>(putinstr));
+    }
+  }
+  instr.resetLast(0);
   for (int i = tmpinstr.lastEntry()-1; i >= 0; i--)
     {
       Structure* tstruct = OBJECT_CAST(Structure*, reinterpret_cast<Object*>(tmpinstr.Entries()[i])->variableDereference());
@@ -609,6 +623,7 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 		}
 	      else if (is_xreg(arg3, regno))
 		{
+                  reverse_make_dead(arg3, xreg_life);
 		  make_live(arg3, arg4, xreg_life);
 		  if (any_assoc_putset(arg3, i+1, ecode))
 		    {
@@ -693,13 +708,13 @@ Heap::assn_elim(WordArray& ecode, WordArray& acode)
 		{
 		  continue;
 		}
-	      else if (is_xreg(arg3, reg))
+	      else if (is_xreg(arg4, reg))
 		{
-		  if (is_live(arg3, AtomTable::failure, xreg_life))
+		  if (is_live(arg4, AtomTable::failure, xreg_life))
 		    {
 		      acode.addEntry(reinterpret_cast<wordptr>(tstruct));
 		    }
-		  else if (is_live(arg3, arg4, xreg_life))
+		  else if (is_live(arg4, arg3, xreg_life))
 		    {
 		      continue;
 		    }

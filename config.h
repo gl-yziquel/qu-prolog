@@ -48,6 +48,7 @@
 #define TIME_WITH_SYS_TIME 1
 
 #define LINUX 1
+/* #undef ARM */
 /* #undef SOLARIS */
 /* #undef FREEBSD */
 /* #undef MACOSX */

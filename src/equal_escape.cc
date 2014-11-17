@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -146,4 +146,30 @@ Thread::psi_simplify_term3(Object *& term1, Object *& term2, Object *& issimp)
   return RV_SUCCESS;
 }
 
+//
+// test for term1 \= term2
+//
+// mode(in, in)
+//
+Thread::ReturnValue
+Thread::psi_not_equal(Object *& term1, Object *& term2)
+{
+  // Save state
+  heapobject* savesavedtop = heap.getSavedTop();
+  heapobject* savedHT = heap.getTop();
+  TrailLoc savedBindingTrailTop = bindingTrail.getTop();
+  TrailLoc savedOtherTrailTop = otherTrail.getTop();
+  heap.setSavedTop(savedHT);
 
+  bool result = unify(term1, term2);
+
+  // Restore state
+  heap.setTop(savedHT);
+  bindingTrail.backtrackTo(savedBindingTrailTop);
+  assert(bindingTrail.check(heap));
+  otherTrail.backtrackTo(savedOtherTrailTop);
+  assert(otherTrail.check(heap));
+
+  if (result) return RV_FAIL;
+  else return RV_SUCCESS;
+}

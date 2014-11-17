@@ -1677,6 +1677,7 @@ $11:
 $12:
 	get_x_variable(2, 0)
 	get_x_variable(3, 1)
+	put_x_value(2, 0)
 	get_structure('$bound', 1, 0)
 	unify_x_variable(0)
 	get_structure('bound', 1, 0)

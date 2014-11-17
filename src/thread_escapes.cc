@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -63,8 +63,10 @@
 #include "timeval.h"
 #include "pedro_env.h"
 #include "timer.h"
+#include "scheduler.h"
 
 extern TimerStack timerStack;
+extern Scheduler *scheduler;
 
 // @internaldoc
 // @pred '$thread_fork'(Name, Goal, Rootname, ThreadSizes)
@@ -794,9 +796,9 @@ Thread::psi_thread_setup_wait(Object *& preds, Object *& until_time,
   Object* argE = heap.dereference(every_time);
    BlockingWaitObject* bwo =
     new BlockingWaitObject(this, code, argP, argU, argE, predicates);
- wait_ptr = heap.newInteger((long)(reinterpret_cast<heapobject*>(bwo)));
- //bwo->dump();
-  return RV_SUCCESS;
+   wait_ptr = heap.newInteger((long)(reinterpret_cast<heapobject*>(bwo)));
+   //bwo->dump();
+   return RV_SUCCESS;
 }
 
 Thread::ReturnValue
@@ -817,7 +819,8 @@ Thread::psi_thread_wait_ptr(Object *& wait_ptr)
   assert(argW->isInteger());
   long iptr = argW->getInteger();
   BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
-  if (bwo->isWakeOnTimeout())
+  // the wait has timedout and has not become unblocked in the meantime
+  if (bwo->isWakeOnTimeout() && !bwo->is_unblocked())
     return RV_FAIL;
   if (block_status.isRestarted())
     {
@@ -836,22 +839,22 @@ Thread::psi_thread_wait_update(Object *& wait_ptr)
   assert(argW->isInteger());
   long iptr = argW->getInteger();
   BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
-  bwo->update();
   //bwo->dump();
+  bwo->update();
   return RV_SUCCESS;
 }
 
 Thread::ReturnValue
 Thread::psi_thread_wait_extract_preds(Object *& wait_ptr, Object *& preds)
 {
-  /*
+  
   Object* argW = heap.dereference(wait_ptr);
   assert(argW->isInteger());
   long iptr = argW->getInteger();
   BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
-  bwo->dump();
+  //bwo->dump();
   preds = bwo->extract_changed_preds();
-  */
+  
   return RV_SUCCESS;
 }
 
@@ -1166,3 +1169,38 @@ Thread::psi_gettimeofday(Object *& tod_arg)
   return RV_SUCCESS;
 }
 
+// @doc
+// @pred run_scheduler(Threads)
+// @type run_scheduler(list(thread))
+// @mode thread_push_goal(+) is det
+// @description
+// Run a scheduler on Threads (in order) for one round
+//
+// @end pred
+// @end doc
+Thread::ReturnValue
+Thread::psi_schedule_threads_now(Object *& threads_arg)
+{
+  Object* argTs = heap.dereference(threads_arg);
+  if (!argTs->isList())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  list<Thread *> run_queue;
+  Thread *thread;
+  while (argTs->isCons()) {
+    Object* head = heap.dereference(OBJECT_CAST(Cons*,argTs)->getHead());
+    const ErrorValue result = decode_thread(heap, head, *thread_table, &thread);
+    if ((result != EV_NO_ERROR) || (thread == this)) 
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    run_queue.push_back(thread);
+    argTs = heap.dereference(OBJECT_CAST(Cons*,argTs)->getTail());
+  }
+  if (! argTs->isNil())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  return(scheduler->run_scheduler(run_queue));
+}

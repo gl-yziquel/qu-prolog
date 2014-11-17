@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -57,6 +57,7 @@
 #include "atom_table.h"
 #include "io_qp.h"
 #include "thread_qp.h"
+#include "hash_qp.h"
 
 extern AtomTable *atoms;
 extern IOManager *iom;
@@ -152,22 +153,15 @@ Thread::psi_stream_to_string(Object *& stream_arg, Object *& string_arg)
   // Return the atom.
   //
   int size = static_cast<int>(stream->str().length());
-  if (size == 0)
+  string data = stream->str();
+  char* buff = new char[size+1];
+  for (int i = 0; i < size; i++)
     {
-      string_arg = AtomTable::nil;
+      buff[i] = data[i];
     }
-  else
-    {
-      string data = stream->str();
-      char* buff = new char[size+1];
-      for (int i = 0; i < size; i++)
-	{
-	  buff[i] = data[i];
-	}
-      buff[size] = '\0';
-      string_arg = heap.newStringObject(buff);
-      delete buff;
-    }
+  buff[size] = '\0';
+  string_arg = heap.newStringObject(buff);
+  delete buff;
 
   return RV_SUCCESS;
 }
@@ -185,11 +179,6 @@ Thread::psi_list_to_string(Object *& list_arg, Object *& string_arg)
   if (list_object->isVariable())
     {
       PSI_ERROR_RETURN(EV_INST, 1);
-    }
-  if (list_object->isNil()) 
-    {
-      string_arg = list_object;
-      return RV_SUCCESS;
     }
   string lchars;
   while (!list_object->isNil())
@@ -216,6 +205,24 @@ Thread::psi_list_to_string(Object *& list_arg, Object *& string_arg)
   return RV_SUCCESS;
 }
 
+//
+// psi_string_to_list(string, variable)
+// Convert a string into a list
+//
+Thread::ReturnValue
+Thread::psi_string_to_list(Object *& string_arg, Object *& list_arg)
+{
+  Object* string_object = heap.dereference(string_arg);
+
+  if (string_object->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  StringObject* so = OBJECT_CAST(StringObject*, string_object);
+  list_arg = heap.stringToList(so->getChars());
+  return RV_SUCCESS;
+}
+
 
 //
 // psi_string_to_atom(string, variable)
@@ -226,11 +233,6 @@ Thread::psi_string_to_atom(Object *& string_arg, Object *& atom_arg)
 {
   Object* string_object = heap.dereference(string_arg);
 
-  if (string_object->isNil()) 
-    {
-      atom_arg = atoms->add("");
-      return RV_SUCCESS;
-    }
   if (string_object->isVariable())
     {
       PSI_ERROR_RETURN(EV_INST, 1);
@@ -262,10 +264,7 @@ Thread::psi_atom_to_string(Object *& atom_arg, Object *& string_arg)
     }
   char* atomstring = OBJECT_CAST(Atom*, atom_object)->getName();
 
-  if (*atomstring == '\0')
-    string_arg = AtomTable::nil;
-  else
-    string_arg = heap.newStringObject(atomstring);
+  string_arg = heap.newStringObject(atomstring);
 
   return RV_SUCCESS;
 }
@@ -279,11 +278,6 @@ Thread::psi_string_length(Object *& string_arg, Object *& length_arg)
 {
   Object* string_object = heap.dereference(string_arg);
 
-  if (string_object->isNil()) 
-    {
-      length_arg = heap.newInteger(0);
-      return RV_SUCCESS;
-    }
   if (string_object->isVariable())
     {
       PSI_ERROR_RETURN(EV_INST, 1);
@@ -317,24 +311,13 @@ Thread::psi_string_concat(Object *& string1_arg, Object *& string2_arg,
       PSI_ERROR_RETURN(EV_INST, 2);
     }
 
-  if (!string1_object->isString() && !string1_object->isNil())   
+  if (!string1_object->isString())   
     {
       PSI_ERROR_RETURN(EV_INST, 1);
     }
-  if (!string2_object->isString() && !string2_object->isNil())   
+  if (!string2_object->isString())   
     {
       PSI_ERROR_RETURN(EV_INST, 2);
-    }
-
-  if (string1_object->isNil())
-    {
-      concat_arg = string2_object;
-      return RV_SUCCESS;
-    }
-  if (string2_object->isNil())
-    {
-      concat_arg = string1_object;
-      return RV_SUCCESS;
     }
 
   string result(OBJECT_CAST(StringObject*, string1_object)->getChars());
@@ -360,13 +343,30 @@ Thread::psi_split_string(Object *& string_arg, Object *& pos_arg,
   string substr1 = stringstring.substr(0, pos);
   string substr2 = stringstring.substr(pos);
 
-  if (substr1.size() == 0)
-    split1_arg = AtomTable::nil;
-  else
-    split1_arg = heap.newStringObject(substr1.c_str());
-  if (substr2.size() == 0)
-    split2_arg = AtomTable::nil;
-  else
-    split2_arg = heap.newStringObject(substr2.c_str());
+  split1_arg = heap.newStringObject(substr1.c_str());
+  split2_arg = heap.newStringObject(substr2.c_str());
+  return RV_SUCCESS;
+}
+
+
+//
+// psi_hash_string(A,B)
+// mode(in,out)
+// 
+//
+Thread::ReturnValue
+Thread::psi_hash_string(Object *& object1, Object *& object2)
+{
+  PrologValue pval1(object1);
+  heap.prologValueDereference(pval1);
+  Object* dval = pval1.getTerm();
+
+  if (!dval->isString())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+
+  word32 v = Hash(OBJECT_CAST(StringObject*, dval)->getChars());
+  object2 = heap.newInteger(v);
   return RV_SUCCESS;
 }

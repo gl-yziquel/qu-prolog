@@ -96,6 +96,7 @@ class PedroMessageChannel : public MessageChannel
   void send(Object* t);
   void send(string s);
   int get_ack();
+  void clear_ack();
 
  private:
   void pushMessage(int id, string m);

@@ -57,6 +57,31 @@ static const int p2pmsg_string_len = strlen(p2pmsg_string);
 // static PedroMessageChannel* pedro_channel_ptr = NULL;
 
 
+void getIPfromaddinfo(char* ip, char* dotted_ip)
+{
+  struct addrinfo *ailist;
+  struct addrinfo hint;
+  struct sockaddr_in *sinp;
+  const char *addr;
+  char abuf[INET_ADDRSTRLEN];
+
+  hint.ai_flags = 0; 
+  hint.ai_family = 0;
+  hint.ai_socktype = 0;
+  hint.ai_protocol = 0;
+  hint.ai_addrlen = 0;
+  hint.ai_canonname = NULL;
+  hint.ai_addr = NULL;
+  hint.ai_next = NULL;
+  if (getaddrinfo(ip, 0, &hint, &ailist) != 0)
+    return;
+  if (ailist->ai_family == AF_INET) {
+    sinp = (struct sockaddr_in *)ailist->ai_addr;
+    addr = inet_ntop(AF_INET, &sinp->sin_addr, abuf, INET_ADDRSTRLEN);
+    strcpy(dotted_ip, (char*)addr);
+  }
+}
+
 Object* parse_basic(Thread* th, AtomTable& atoms, VarMap& vmap, 
 		    ObjectsStack& stk, bool remember);
 Object* parse_prec50(Thread* th, AtomTable& atoms, VarMap& vmap, 
@@ -766,6 +791,24 @@ PedroMessageChannel::ShuffleMessages(void)
   return new_msg;
 }
 
+void
+PedroMessageChannel::clear_ack()
+{
+  struct timeval timeout = { 0, 0};
+  fd_set rfds;
+  char buff[32];
+  while (1) {
+    FD_ZERO(&rfds);
+    FD_SET(ack_fd, &rfds);
+    int result = select(ack_fd+1, &rfds, NULL, NULL, &timeout);
+    if (result > 0) {
+      //cerr << "removing acks" << endl;
+      recv(ack_fd, buff, 30, 0);
+    } else {
+      break;
+    }
+  }
+}
 int
 PedroMessageChannel::get_ack()
 {
@@ -790,7 +833,7 @@ PedroMessageChannel::get_ack()
 int
 PedroMessageChannel::subscribe(Object* t)
 {
-
+  clear_ack();
   send(t);
   int id = get_ack();
   if (id != 0) attach_subscription(id, t);
@@ -851,11 +894,10 @@ PedroMessageChannel::pushMessage(int id, string m)
 	string message =  m.substr(loc_quote1+1, loc_quote2 - loc_quote1 - 1);
 	removeEscapes(message, '"');
 	iom.updateStreamMessages(from_addr, message);
-
 	return;
       }
     } else {
-      thread_name = "thread0";
+      thread_name = thread_table.getDefaultThread();
     }
 
     // So this is a p2p message that is not being used as a message stream
@@ -906,6 +948,7 @@ PedroMessageChannel::unsubscribe(int tid, Object* t)
   list<int>& entry = thread_subs[tid];
   iter = find(entry.begin(), entry.end(), id);
   if (iter == entry.end()) return false;
+  clear_ack();
   send(t);
   int ack = get_ack();
   if (ack == id) {
@@ -918,8 +961,11 @@ PedroMessageChannel::unsubscribe(int tid, Object* t)
 bool
 PedroMessageChannel::notify(Object* t)
 {
+  char buff[32];
+  recv(ack_fd, buff, 30, MSG_DONTWAIT);
+  //clear_ack();
   send(t);
-  return (get_ack() != 0);
+  return true;
 }
 
 void
@@ -971,6 +1017,7 @@ PedroMessageChannel::delete_subscriptions(int tid)
     ostringstream strm;
     strm << "unsubscribe(" << id << ")\n";
     string s = strm.str();
+  clear_ack();
     send(s); 
     get_ack();
     entry.pop_front();
@@ -1011,7 +1058,6 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
   //         host = atoms->add(hp->h_name);
   //       }
   // }
-
   // Create a socket to get info
   int info_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
   u_short port = ntohs(pedro_port);
@@ -1095,36 +1141,85 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
       break;
     }
   }
+  /*
+  struct in_addr addr;
+  addr.s_addr = ip_address;
+  char *dot_ip = inet_ntoa(addr);
+  char dotted_ip[20];
+  dotted_ip[0] = '\0';
+  getIPfromaddinfo(dot_ip, dotted_ip);
+  cerr << dot_ip << " " << dotted_ip << endl;
+  if (strcmp(dot_ip, dotted_ip) != 0) {
+  */
+    // Can do DNS lookup
+    // figure out my IP address
+    struct sockaddr_in add;
+    memset(&add, 0, sizeof(add));
+    socklen_t addr_len = sizeof(add);
+    
+    getsockname(ack_fd, (struct sockaddr *)&add, &addr_len);
+    strcpy(ipstr, inet_ntoa(add.sin_addr));
+    struct in_addr in = add.sin_addr;
+    hostent *hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
+    if (hp == NULL) 
+      {
+	// we can't look up name given address so just use dotted IP
+	host = atoms->add(ipstr);
+      } 
+    else 
+      {
+	// check if we can look up the same IP from hostname 
+	//hostent *hp2 = gethostbyname(hp->h_name);
+	//cerr << hp->h_name << " " << hp2->h_name << endl;
+	//if ((hp2 == NULL) or !streq(hp->h_name, hp2->h_name))
+	char *str, *token, *saveptr, *lasttoken;
+	int num;
+	// If hp->h_name does not really do a DNS lookup but
+	// succeeds then it must be the hostname which is 
+	// either hostname or hostname.local
+        char hname[100];
+        gethostname(hname, 100);
+        char hname_local[100];
+        strcpy(hname_local, hname);
+        strcat(hname_local, ".local");
+        if (streq(hp->h_name, hname) || streq(hp->h_name,hname_local))
+	  {
+	    // no - so use IP address
+	    host = atoms->add(ipstr);
+	  }
+	else
+	  {
+	    host = atoms->add(hp->h_name);
+	  }
 
-  // figure out my IP address
-  struct sockaddr_in add;
-  memset(&add, 0, sizeof(add));
-  socklen_t addr_len = sizeof(add);
-  
-  getsockname(ack_fd, (struct sockaddr *)&add, &addr_len);
-  strcpy(ipstr, inet_ntoa(add.sin_addr));
-  struct in_addr in = add.sin_addr;
-  hostent *hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-  if (hp == NULL) 
-    {
-      // we can't look up name given address so just use dotted IP
-      host = atoms->add(ipstr);
-    } 
-  else 
-    {
-      // check if we can look up the same IP from hostname 
-      hostent *hp2 = gethostbyname(hp->h_name);
-      if ((hp2 == NULL) or !streq(hp->h_name, hp2->h_name))
-        {
-          // no - so use IP address
-          host = atoms->add(ipstr);
-        }
-      else
-        {
-          host = atoms->add(hp->h_name);
-        }
-    }
-
+        /*
+        cerr << hp->h_name << endl;
+        char name_copy[100];
+        gethostname(name_copy, 100);
+        cerr << "host " << name_copy << endl;
+        strcpy(name_copy, hp->h_name);
+	for (num=0, str = name_copy;;num++,str=NULL) {
+	  token = strtok_r(str, ".", &saveptr);
+	  if (token == NULL) break;
+	  lasttoken = token;
+	}
+        cerr << num << " " << lasttoken << endl;
+	if ((num == 1) || (streq(lasttoken, "local")))
+	  {
+	    // no - so use IP address
+	    host = atoms->add(ipstr);
+	  }
+	else
+	  {
+	    host = atoms->add(hp->h_name);
+	  }
+        */
+      }
+    /*
+  } else {
+    host = atoms->add(ipstr);
+  }
+    */
   // buff now contains flag - test if "ok\n"
   return (strcmp(buff, "ok\n") == 0);
 }
@@ -1146,6 +1241,7 @@ PedroMessageChannel::pedro_register(Object* regname)
   ostringstream strm;
   strm << "register(" << OBJECT_CAST(Atom*, regname)->getName() << ")\n";
   string s = strm.str();
+  clear_ack();
   send(s);
 
   if (get_ack() == 0) return false;
@@ -1159,6 +1255,7 @@ PedroMessageChannel::pedro_deregister(Object* regname)
   ostringstream strm;
   strm << "deregister(" << OBJECT_CAST(Atom*, regname)->getName() << ")\n";
   string s = strm.str();
+  clear_ack();
   send(s);
 
   if (get_ack() == 0) return false;

@@ -350,181 +350,173 @@ end('$pretrans_formula1/5$3'/1):
 
 '$pretrans_formula1'/5:
 
-	switch_on_term(0, $51, $50, $50, $30, $50, $48)
+	switch_on_term(0, $49, $48, $48, $29, $48, $46)
+
+$29:
+	switch_on_structure(0, 32, ['$default':$48, '$'/0:$30, 'message_choice'/1:$31, 'write'/1:$32, 'writeq'/1:$33, 'put_code'/1:$34, 'write'/2:$35, 'writeq'/2:$36, '\\=='/2:$37, '=\\='/2:$38, '>='/2:$39, '>'/2:$40, 'is'/2:$41, '?='/2:$42, '->'/2:$43, ';'/2:$44, ','/2:$45])
 
 $30:
-	switch_on_structure(0, 64, ['$default':$50, '$'/0:$31, 'message_choice'/1:$32, 'write'/1:$33, 'writeq'/1:$34, 'put_code'/1:$35, 'write'/2:$36, 'writeq'/2:$37, '\\='/2:$38, '\\=='/2:$39, '=\\='/2:$40, '>='/2:$41, '>'/2:$42, 'is'/2:$43, '?='/2:$44, '->'/2:$45, ';'/2:$46, ','/2:$47])
+	try(5, $1)
+	retry($2)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	retry($9)
+	retry($10)
+	retry($11)
+	retry($12)
+	retry($13)
+	retry($14)
+	retry($15)
+	retry($16)
+	retry($17)
+	retry($18)
+	retry($19)
+	retry($20)
+	retry($21)
+	retry($22)
+	retry($23)
+	retry($24)
+	retry($25)
+	retry($26)
+	retry($27)
+	trust($28)
 
 $31:
 	try(5, $1)
 	retry($2)
 	retry($5)
-	retry($6)
-	retry($7)
-	retry($8)
-	retry($9)
-	retry($10)
-	retry($11)
-	retry($12)
-	retry($13)
-	retry($14)
-	retry($15)
-	retry($16)
-	retry($17)
-	retry($18)
-	retry($19)
-	retry($20)
-	retry($21)
-	retry($22)
-	retry($23)
-	retry($24)
-	retry($25)
-	retry($26)
 	retry($27)
-	retry($28)
-	trust($29)
+	trust($28)
 
 $32:
 	try(5, $1)
 	retry($2)
-	retry($5)
-	retry($28)
-	trust($29)
+	retry($6)
+	retry($7)
+	retry($27)
+	trust($28)
 
 $33:
 	try(5, $1)
 	retry($2)
-	retry($6)
-	retry($7)
-	retry($28)
-	trust($29)
+	retry($8)
+	retry($27)
+	trust($28)
 
 $34:
 	try(5, $1)
 	retry($2)
-	retry($8)
-	retry($28)
-	trust($29)
+	retry($9)
+	retry($27)
+	trust($28)
 
 $35:
 	try(5, $1)
 	retry($2)
-	retry($9)
-	retry($28)
-	trust($29)
+	retry($10)
+	retry($11)
+	retry($27)
+	trust($28)
 
 $36:
 	try(5, $1)
 	retry($2)
-	retry($10)
-	retry($11)
-	retry($28)
-	trust($29)
+	retry($12)
+	retry($27)
+	trust($28)
 
 $37:
 	try(5, $1)
 	retry($2)
-	retry($12)
-	retry($28)
-	trust($29)
+	retry($13)
+	retry($27)
+	trust($28)
 
 $38:
 	try(5, $1)
 	retry($2)
-	retry($13)
-	retry($28)
-	trust($29)
+	retry($14)
+	retry($27)
+	trust($28)
 
 $39:
 	try(5, $1)
 	retry($2)
-	retry($14)
-	retry($28)
-	trust($29)
+	retry($15)
+	retry($27)
+	trust($28)
 
 $40:
 	try(5, $1)
 	retry($2)
-	retry($15)
-	retry($28)
-	trust($29)
+	retry($16)
+	retry($27)
+	trust($28)
 
 $41:
 	try(5, $1)
 	retry($2)
-	retry($16)
-	retry($28)
-	trust($29)
+	retry($17)
+	retry($18)
+	retry($19)
+	retry($20)
+	retry($27)
+	trust($28)
 
 $42:
 	try(5, $1)
 	retry($2)
-	retry($17)
-	retry($28)
-	trust($29)
+	retry($21)
+	retry($27)
+	trust($28)
 
 $43:
 	try(5, $1)
 	retry($2)
-	retry($18)
-	retry($19)
-	retry($20)
-	retry($21)
-	retry($28)
-	trust($29)
+	retry($22)
+	retry($27)
+	trust($28)
 
 $44:
 	try(5, $1)
 	retry($2)
-	retry($22)
-	retry($28)
-	trust($29)
+	retry($23)
+	retry($24)
+	retry($25)
+	retry($27)
+	trust($28)
 
 $45:
 	try(5, $1)
 	retry($2)
-	retry($23)
-	retry($28)
-	trust($29)
+	retry($26)
+	retry($27)
+	trust($28)
 
 $46:
-	try(5, $1)
-	retry($2)
-	retry($24)
-	retry($25)
-	retry($26)
-	retry($28)
-	trust($29)
+	switch_on_constant(0, 4, ['$default':$48, '!':$47])
 
 $47:
 	try(5, $1)
 	retry($2)
+	retry($3)
+	retry($4)
 	retry($27)
-	retry($28)
-	trust($29)
+	trust($28)
 
 $48:
-	switch_on_constant(0, 4, ['$default':$50, '!':$49])
+	try(5, $1)
+	retry($2)
+	retry($27)
+	trust($28)
 
 $49:
 	try(5, $1)
 	retry($2)
 	retry($3)
 	retry($4)
-	retry($28)
-	trust($29)
-
-$50:
-	try(5, $1)
-	retry($2)
-	retry($28)
-	trust($29)
-
-$51:
-	try(5, $1)
-	retry($2)
-	retry($3)
-	retry($4)
 	retry($5)
 	retry($6)
 	retry($7)
@@ -548,8 +540,7 @@ $51:
 	retry($25)
 	retry($26)
 	retry($27)
-	retry($28)
-	trust($29)
+	trust($28)
 
 $1:
 	get_x_variable(5, 0)
@@ -727,18 +718,6 @@ $12:
 	proceed
 
 $13:
-	get_structure('\\=', 2, 0)
-	unify_x_variable(0)
-	unify_x_variable(5)
-	get_structure('\\+', 1, 1)
-	unify_x_ref(1)
-	get_structure('=', 2, 1)
-	unify_x_value(0)
-	unify_x_value(5)
-	neck_cut
-	proceed
-
-$14:
 	get_structure('\\==', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -750,7 +729,7 @@ $14:
 	neck_cut
 	proceed
 
-$15:
+$14:
 	get_structure('=\\=', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -762,7 +741,7 @@ $15:
 	neck_cut
 	proceed
 
-$16:
+$15:
 	get_structure('>=', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -772,7 +751,7 @@ $16:
 	neck_cut
 	proceed
 
-$17:
+$16:
 	get_structure('>', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -782,7 +761,7 @@ $17:
 	neck_cut
 	proceed
 
-$18:
+$17:
 	get_structure('is', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -801,7 +780,7 @@ $18:
 	deallocate
 	proceed
 
-$19:
+$18:
 	get_structure('is', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -819,7 +798,7 @@ $19:
 	neck_cut
 	proceed
 
-$20:
+$19:
 	get_structure('is', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -835,7 +814,7 @@ $20:
 	neck_cut
 	proceed
 
-$21:
+$20:
 	get_structure('is', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -851,7 +830,7 @@ $21:
 	neck_cut
 	proceed
 
-$22:
+$21:
 	get_structure('?=', 2, 0)
 	unify_x_variable(0)
 	unify_x_variable(5)
@@ -865,7 +844,7 @@ $22:
 	neck_cut
 	proceed
 
-$23:
+$22:
 	get_structure('->', 2, 0)
 	unify_x_variable(0)
 	allocate(4)
@@ -886,7 +865,7 @@ $23:
 	deallocate
 	execute_predicate('$pretrans_formula', 5)
 
-$24:
+$23:
 	get_structure(';', 2, 0)
 	unify_x_variable(0)
 	allocate(6)
@@ -913,7 +892,7 @@ $24:
 	deallocate
 	proceed
 
-$25:
+$24:
 	get_structure(';', 2, 0)
 	allocate(7)
 	unify_y_variable(5)
@@ -941,7 +920,7 @@ $25:
 	deallocate
 	execute_predicate('$pretrans_formula', 5)
 
-$26:
+$25:
 	get_structure(';', 2, 0)
 	unify_x_ref(0)
 	allocate(6)
@@ -972,7 +951,7 @@ $26:
 	deallocate
 	execute_predicate('$pretrans_formula', 5)
 
-$27:
+$26:
 	get_structure(',', 2, 0)
 	unify_x_variable(0)
 	allocate(5)
@@ -993,7 +972,7 @@ $27:
 	deallocate
 	execute_predicate('$pretrans_formula', 5)
 
-$28:
+$27:
 	allocate(3)
 	get_y_variable(1, 0)
 	get_y_variable(0, 1)
@@ -1005,7 +984,7 @@ $28:
 	deallocate
 	execute_predicate('$expand_consult', 2)
 
-$29:
+$28:
 	get_x_value(0, 1)
 	proceed
 end('$pretrans_formula1'/5):

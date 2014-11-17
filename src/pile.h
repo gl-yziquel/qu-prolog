@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -75,7 +75,7 @@ public:
 	//
 	// Push a StoredType onto the pile.
 	//
-	void	push(const StoredType s){ pushElement(s); }
+	void	push(const StoredType s){ this->pushElement(s); }
 
 	//
 	// Pop a StoredType off the pile.
@@ -85,7 +85,7 @@ public:
 	//
 	// Pop n entries of StoredType off the pile.
 	//
-	void	popNEntries(word32 n)	{ setTopOfStack(this->getTopOfStack() - n); }
+	void	popNEntries(word32 n)	{ this->setTopOfStack(this->getTopOfStack() - n); }
 
 	//
 	// Check whether the pile is empty or not.

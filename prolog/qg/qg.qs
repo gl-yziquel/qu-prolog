@@ -81,11 +81,11 @@ $1:
 	put_integer(2, 3)
 	pseudo_instr3(3, 1, 3, 2)
 	get_x_variable(1, 2)
-	put_integer(3, 3)
-	pseudo_instr4(2, 0, 1, 3, 2)
-	get_x_variable(1, 2)
-	put_constant('.qo', 2)
-	get_x_value(1, 2)
+	put_integer(3, 2)
+	put_x_variable(3, 3)
+	pseudo_instr4(2, 0, 1, 2, 3)
+	put_constant('.qo', 1)
+	get_x_value(3, 1)
 	neck_cut
 	allocate(1)
 	get_y_level(0)
@@ -105,7 +105,7 @@ end('$load_qg_rulefile'/1):
 
 
 
-'$query_qg1314055074_327/0$0'/0:
+'$query_qg1416203182_136/0$0'/0:
 
 
 $1:
@@ -142,23 +142,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_qg1314055074_327/0$0'/0):
+end('$query_qg1416203182_136/0$0'/0):
 
 
 
-'$query_qg1314055074_327'/0:
+'$query_qg1416203182_136'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_qg1314055074_327/0$0', 0, 0)
+	call_predicate('$query_qg1416203182_136/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_qg1314055074_327'/0):
+end('$query_qg1416203182_136'/0):
 
 
 
@@ -166,7 +166,7 @@ end('$query_qg1314055074_327'/0):
 
 
 $1:
-	execute_predicate('$query_qg1314055074_327', 0)
+	execute_predicate('$query_qg1416203182_136', 0)
 end('$query'/0):
 
 

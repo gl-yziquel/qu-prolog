@@ -44,17 +44,15 @@ $1:
 	neck_cut
 	put_integer(2, 5)
 	pseudo_instr3(3, 1, 5, 0)
-	put_integer(1, 5)
-	pseudo_instr4(2, 2, 5, 0, 1)
-	get_x_value(3, 1)
+	put_integer(1, 1)
+	pseudo_instr4(2, 2, 1, 0, 3)
 	put_constant('encoded', 0)
 	get_x_value(4, 0)
 	proceed
 
 $2:
-	put_integer(1, 1)
-	pseudo_instr4(2, 2, 1, 5, 0)
-	get_x_value(3, 0)
+	put_integer(1, 0)
+	pseudo_instr4(2, 2, 0, 5, 3)
 	put_constant('normal', 0)
 	get_x_value(4, 0)
 	proceed
@@ -74,7 +72,9 @@ $1:
 	get_x_variable(1, 0)
 	pseudo_instr2(70, 1, 0)
 	get_x_variable(5, 0)
-	put_integer(2, 2)
+	put_integer(2, 0)
+	get_x_variable(2, 0)
+	put_x_variable(0, 0)
 	pseudo_instr4(2, 25, 5, 2, 0)
 	get_y_level(0)
 	put_y_variable(4, 19)

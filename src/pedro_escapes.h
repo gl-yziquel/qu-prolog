@@ -27,3 +27,7 @@ ReturnValue psi_pedro_address(Object*& port_obj);
 ReturnValue psi_pedro_port(Object*& port_obj);
 
 ReturnValue psi_local_p2p(Object*& thread_obj, Object*& msg_obj);
+
+ReturnValue psi_set_default_message_thread(Object*& thread_name);
+
+ReturnValue psi_default_message_thread(Object*& thread_name);

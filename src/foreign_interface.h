@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -72,11 +72,14 @@ class ForeignInterfaceBase
   virtual Object* getXReg(int i) = 0;
   virtual Object* makeAtom(const char* s) = 0;
   virtual Object* makeInteger(const long i) = 0;
+  virtual Object* makeString(const char* s) = 0;
   virtual Object* makeDouble(const double d) = 0;
   virtual Structure* makeStructure(const int n) = 0;
   virtual Object* makeCons(Object* h, Object* t) = 0;
   virtual char* getAtomString(Object* a) = 0;
+  virtual char* getString(Object* a) = 0;
   virtual bool unify(Object* o1, Object* o2) = 0;
+  virtual bool push_message(const char * msg) = 0;
 };
 
 class ForeignInterface : public ForeignInterfaceBase
@@ -87,13 +90,15 @@ class ForeignInterface : public ForeignInterfaceBase
     Object* getXReg(int i); 
     Object* makeAtom(const char* s); 
     Object* makeInteger(const long i); 
+    Object* makeString(const char* s); 
     Object* makeDouble(const double d);
     Structure* makeStructure(const int n);
     Object* makeCons(Object* h, Object* t);
 
     char* getAtomString(Object* a);
+    char* getString(Object* a);
     bool unify(Object* o1, Object* o2);
-      
+    bool push_message(const char * msg);
     private:
       Thread* threadptr;
  };

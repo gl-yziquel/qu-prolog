@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -571,7 +571,6 @@ inline StringObject*
 Heap::newStringObject(const char* s)
 {
   int size = strlen(s);
-  assert(size > 0);
   int word_size = (size + sizeof(heapobject))/sizeof(heapobject);
   heapobject *x = allocateHeapSpace(1 + word_size);
   x[0] = static_cast<heapobject>((word_size << 8) | Object::StringTag);

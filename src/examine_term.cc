@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -322,7 +322,7 @@ Thread::psi_string(Object *& object1)
   assert(object1->variableDereference()->hasLegalSub());
   Object* val1 = heap.dereference(object1);
 
-  return(BOOL_TO_RV(val1->isString() || (val1 == AtomTable::nil)));
+  return(BOOL_TO_RV(val1->isString()));
 }
 
 //

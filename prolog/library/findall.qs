@@ -72,60 +72,6 @@ end('$findall1'/4):
 
 
 
-'bagof/3$0'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_constant('[]', 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('bagof/3$0'/1):
-
-
-
-'bagof/3$1'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, '[]':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_constant('[]', 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('bagof/3$1'/1):
-
-
-
 'bagof'/3:
 
 	try(3, $1)
@@ -143,8 +89,8 @@ $1:
 	put_y_value(5, 1)
 	put_y_variable(1, 2)
 	call_predicate('$free_vars', 3, 7)
-	put_y_value(1, 0)
-	call_predicate('bagof/3$0', 1, 7)
+	put_constant('[]', 0)
+	pseudo_instr2(133, 21, 0)
 	cut(6)
 	put_structure(2, 0)
 	set_constant(',')
@@ -166,9 +112,10 @@ $2:
 	allocate(1)
 	get_y_variable(0, 2)
 	call_predicate('findall', 3, 1)
-	put_y_value(0, 0)
+	put_constant('[]', 0)
+	pseudo_instr2(133, 20, 0)
 	deallocate
-	execute_predicate('bagof/3$1', 1)
+	proceed
 end('bagof'/3):
 
 
@@ -621,7 +568,8 @@ $1:
 	get_structure(',', 2, 1)
 	unify_x_variable(1)
 	unify_void(1)
-	execute_predicate('@<', 2)
+	pseudo_instr2(130, 0, 1)
+	proceed
 end('$bag_compare'/2):
 
 
@@ -688,7 +636,8 @@ $1:
 	get_structure('-', 2, 1)
 	unify_x_variable(1)
 	unify_void(1)
-	execute_predicate('@<', 2)
+	pseudo_instr2(130, 0, 1)
+	proceed
 end('$key_order'/2):
 
 

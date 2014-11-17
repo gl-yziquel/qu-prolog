@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -81,6 +81,13 @@ ReturnValue psi_simplify_term(Object *&, Object *&);
 // mode(in,out,out)
 //
 ReturnValue psi_simplify_term3(Object *&, Object *&, Object *&);
+
+//
+// test for term1 \= term2
+//
+// mode(in, in)
+//
+ReturnValue psi_not_equal(Object *&, Object *&);
 
 #endif	// EQUAL_ESCAPE_H
 

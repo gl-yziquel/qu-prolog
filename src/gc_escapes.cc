@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -124,6 +124,7 @@ bool Thread::check_heap(Heap& heap, AtomTable* atoms, GCBits& gcbits)
     {
       
       int size = reinterpret_cast<Object*>(ptr)->size_dispatch();
+      
       Object* var = reinterpret_cast<Object*>(ptr);
       ptr++;
       for (int i = 1; i < size; i++)
@@ -220,7 +221,6 @@ bool check_heap_marked(Heap& heap, GCBits& gcbits)
 		    {
 		      if (!gcbits.isSet(argp - heap.getBase() )) 
 			{
-			  cerr << "xxx" << endl;
 			  return false;
 			}
 		    }
@@ -264,6 +264,7 @@ Thread::gc_mark_registers(word32 arity)
 void 
 Thread::gc_mark_environments(EnvLoc env)
 {
+  //assert(env != NULL);
   while (true)
     {
       if (envStack.gc_isMarkedEnv(env))
@@ -272,7 +273,9 @@ Thread::gc_mark_environments(EnvLoc env)
 	}
       for (int i = (int)(envStack.getNumYRegs(env))-1; i >= 0; i--)
 	{
+          assert(envStack.yReg(env, i)->check_object());
 	  assert(!envStack.yReg(env, i)->isSubstitutionBlock());
+          
 	  gc_mark_pointer(envStack.yReg(env, i), heap, gcstack, gcbits);
 	}
       envStack.gc_markEnv(env);
@@ -580,15 +583,12 @@ Thread::gc(word32 arity)
     }
 
   assert(check_heap(heap, atoms, gcbits));
-  //  assert(check_env(currentEnvironment));
-  // assert(check_heap2(heap));
+  //assert(check_env(currentEnvironment));
+  //assert(check_heap2(heap));
   assert(otherTrail.check(heap));
   gc_marking_phase(arity);
-
   assert(otherTrail.check(heap));
-  assert(check_heap(heap, atoms, gcbits));
   gc_compaction_phase(arity);
-
   assert(check_heap(heap, atoms, gcbits));
   //assert(check_env(currentEnvironment));
   assert(check_heap2(heap));
@@ -617,14 +617,14 @@ Thread::psi_gc(void)
 Thread::ReturnValue
 Thread::psi_suspend_gc(void)
 {
-  setSuspendGC(false);
+  setSuspendGC(true);
   return RV_SUCCESS;
 }
 
 Thread::ReturnValue
 Thread::psi_unsuspend_gc(void)
 {
-  setSuspendGC(true);
+  setSuspendGC(false);
   return RV_SUCCESS;
 }
 

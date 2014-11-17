@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -301,5 +301,8 @@ ReturnValue psi_thread_throw(Object *&, Object *&);
 ReturnValue psi_thread_push_goal(Object *&, Object *&);
 
 ReturnValue psi_gettimeofday(Object *&);
+
+ReturnValue psi_schedule_threads_now(Object *&);
+
 
 #endif	// THREAD_ESCAPES_H

@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -227,7 +227,8 @@ bool Thread::initializeDPcall(DynamicPredicate* dp, int arity, CodeLoc& PC)
   assert(dp != NULL);
   const word8 arg = dp->getIndexedArg();
   
-  ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]->variableDereference());
+  assert(X[arg] != NULL);
+  ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]);
   assert(chain != NULL);
   LinkedClause* block = chain->first();
   if (block == NULL)
@@ -772,15 +773,9 @@ Thread::Execute(void)
 		  case UT(Object::UNumber):
 		  case UT(Object::UAtom):
 		  case UT(Object::UStruct):
+		  case UT(Object::UString):
 		    BACKTRACK;
 		    break;
-		  case UT(Object::UString):
-		    {
-		      Cons* newlist = heap.newCons(OBJECT_CAST(StringObject*, xval)->getChars());
-		      ReadMode = true;
-		      StructurePointer = newlist->storage();
-		      break;
-		    }
 		  case UT(Object::UCons):
 		    {
 		      StructurePointer = xval->storage();
@@ -2371,6 +2366,11 @@ Thread::Execute(void)
 		constant.assign(reinterpret_cast<wordptr>(val), 
 				ConstEntry::ATOM_TYPE);
 	      }
+            else if (val->isString())
+              {
+                constant.assign((long)(Hash(OBJECT_CAST(StringObject*, val)->getChars())),
+                                ConstEntry::INTEGER_TYPE);
+              }
 	    else
 	      {
 		assert(val->isNumber());

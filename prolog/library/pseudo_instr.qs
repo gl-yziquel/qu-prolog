@@ -210,12 +210,12 @@ end('$psi0_decl'/5):
 
 '$psi1_decl'/6:
 
-	switch_on_term(0, $116, 'fail', 'fail', 'fail', 'fail', $115)
+	switch_on_term(0, $119, 'fail', 'fail', 'fail', 'fail', $118)
 
-$115:
-	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114])
+$118:
+	switch_on_constant(0, 256, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117])
 
-$116:
+$119:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -329,7 +329,10 @@ $116:
 	retry($111)
 	retry($112)
 	retry($113)
-	trust($114)
+	retry($114)
+	retry($115)
+	retry($116)
+	trust($117)
 
 $1:
 	get_integer(0, 0)
@@ -2388,18 +2391,74 @@ $114:
 	get_structure('-', 1, 0)
 	unify_constant('double')
 	proceed
+
+$115:
+	get_integer(114, 0)
+	get_constant('psi_schedule_threads_now', 3)
+	get_structure('$schedule_threads_now', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('schedule_threads_now', 1, 0)
+	unify_x_ref(0)
+	get_structure('@', 1, 0)
+	unify_x_ref(0)
+	get_structure('list', 1, 0)
+	unify_constant('atom')
+	proceed
+
+$116:
+	get_integer(115, 0)
+	get_constant('psi_set_default_message_thread', 3)
+	get_structure('set_default_message_thread', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('set_default_message_thread', 1, 0)
+	unify_x_ref(0)
+	get_structure('@', 1, 0)
+	unify_constant('atom')
+	proceed
+
+$117:
+	get_integer(116, 0)
+	get_constant('psi_default_message_thread', 3)
+	get_structure('default_message_thread', 1, 1)
+	unify_x_variable(0)
+	get_x_value(0, 2)
+	get_list(4)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(5)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('default_message_thread', 1, 0)
+	unify_x_ref(0)
+	get_structure('-', 1, 0)
+	unify_constant('atom')
+	proceed
 end('$psi1_decl'/6):
 
 
 
 '$psi2_decl'/7:
 
-	switch_on_term(0, $132, 'fail', 'fail', 'fail', 'fail', $131)
+	switch_on_term(0, $139, 'fail', 'fail', 'fail', 'fail', $138)
 
-$131:
-	switch_on_constant(0, 512, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120, 120:$121, 121:$122, 122:$123, 123:$124, 124:$125, 125:$126, 126:$127, 127:$128, 128:$129, 129:$130])
+$138:
+	switch_on_constant(0, 512, ['$default':'fail', 0:$1, 1:$2, 2:$3, 3:$4, 4:$5, 5:$6, 6:$7, 7:$8, 8:$9, 9:$10, 10:$11, 11:$12, 12:$13, 13:$14, 14:$15, 15:$16, 16:$17, 17:$18, 18:$19, 19:$20, 20:$21, 21:$22, 22:$23, 23:$24, 24:$25, 25:$26, 26:$27, 27:$28, 28:$29, 29:$30, 30:$31, 31:$32, 32:$33, 33:$34, 34:$35, 35:$36, 36:$37, 37:$38, 38:$39, 39:$40, 40:$41, 41:$42, 42:$43, 43:$44, 44:$45, 45:$46, 46:$47, 47:$48, 48:$49, 49:$50, 50:$51, 51:$52, 52:$53, 53:$54, 54:$55, 55:$56, 56:$57, 57:$58, 58:$59, 59:$60, 60:$61, 61:$62, 62:$63, 63:$64, 64:$65, 65:$66, 66:$67, 67:$68, 68:$69, 69:$70, 70:$71, 71:$72, 72:$73, 73:$74, 74:$75, 75:$76, 76:$77, 77:$78, 78:$79, 79:$80, 80:$81, 81:$82, 82:$83, 83:$84, 84:$85, 85:$86, 86:$87, 87:$88, 88:$89, 89:$90, 90:$91, 91:$92, 92:$93, 93:$94, 94:$95, 95:$96, 96:$97, 97:$98, 98:$99, 99:$100, 100:$101, 101:$102, 102:$103, 103:$104, 104:$105, 105:$106, 106:$107, 107:$108, 108:$109, 109:$110, 110:$111, 111:$112, 112:$113, 113:$114, 114:$115, 115:$116, 116:$117, 117:$118, 118:$119, 119:$120, 120:$121, 121:$122, 122:$123, 123:$124, 124:$125, 125:$126, 126:$127, 127:$128, 128:$129, 129:$130, 130:$131, 131:$132, 132:$133, 133:$134, 134:$135, 135:$136, 136:$137])
 
-$132:
+$139:
 	try(7, $1)
 	retry($2)
 	retry($3)
@@ -2529,7 +2588,14 @@ $132:
 	retry($127)
 	retry($128)
 	retry($129)
-	trust($130)
+	retry($130)
+	retry($131)
+	retry($132)
+	retry($133)
+	retry($134)
+	retry($135)
+	retry($136)
+	trust($137)
 
 $1:
 	get_integer(0, 0)
@@ -6036,6 +6102,198 @@ $130:
 	get_structure('-', 1, 1)
 	unify_constant('atom')
 	proceed
+
+$131:
+	get_integer(130, 0)
+	get_constant('psi_term_less_than', 4)
+	get_structure('@<', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('@<', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('@', 1, 1)
+	unify_constant('term')
+	proceed
+
+$132:
+	get_integer(131, 0)
+	get_constant('psi_term_at_equal', 4)
+	get_structure('@=', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('@=', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('@', 1, 1)
+	unify_constant('term')
+	proceed
+
+$133:
+	get_integer(132, 0)
+	get_constant('psi_term_greater_than', 4)
+	get_structure('@>', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('@>', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('@', 1, 1)
+	unify_constant('term')
+	proceed
+
+$134:
+	get_integer(133, 0)
+	get_constant('psi_not_equal', 4)
+	get_structure('\\=', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('in')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('\\=', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('term')
+	get_structure('@', 1, 1)
+	unify_constant('term')
+	proceed
+
+$135:
+	get_integer(134, 0)
+	get_constant('psi_string_to_list', 4)
+	get_structure('$string_to_list', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('string_to_list', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(2)
+	get_structure('@', 1, 0)
+	unify_constant('string')
+	get_structure('?', 1, 2)
+	unify_constant('list')
+	get_list(1)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('string_to_list', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('?', 1, 0)
+	unify_constant('string')
+	get_structure('@', 1, 1)
+	unify_constant('list')
+	proceed
+
+$136:
+	get_integer(135, 0)
+	get_constant('psi_peek', 4)
+	get_structure('$peek', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('peek', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('stream')
+	get_structure('-', 1, 1)
+	unify_constant('integer')
+	proceed
+
+$137:
+	get_integer(136, 0)
+	get_constant('psi_hash_string', 4)
+	get_structure('$hash_string', 2, 1)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_x_value(0, 2)
+	get_x_value(1, 3)
+	get_list(5)
+	unify_constant('in')
+	unify_x_ref(0)
+	get_list(0)
+	unify_constant('out')
+	unify_constant('[]')
+	get_list(6)
+	unify_x_ref(0)
+	unify_constant('[]')
+	get_structure('$hash_string', 2, 0)
+	unify_x_ref(0)
+	unify_x_ref(1)
+	get_structure('@', 1, 0)
+	unify_constant('string')
+	get_structure('-', 1, 1)
+	unify_constant('integer')
+	proceed
 end('$psi2_decl'/7):
 
 
@@ -8653,7 +8911,7 @@ $3:
 	unify_constant('in')
 	unify_x_ref(0)
 	get_list(0)
-	unify_constant('out')
+	unify_constant('in')
 	unify_constant('[]')
 	get_list(8)
 	unify_x_ref(0)
@@ -9579,7 +9837,7 @@ end('$psi5_decl'/10):
 
 
 
-'$query_pseudo_instr1314055071_472/0$0'/0:
+'$query_pseudo_instr1416203179_633/0$0'/0:
 
 
 $1:
@@ -9592,11 +9850,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr1314055071_472/0$0'/0):
+end('$query_pseudo_instr1416203179_633/0$0'/0):
 
 
 
-'$query_pseudo_instr1314055071_472/0$1'/0:
+'$query_pseudo_instr1416203179_633/0$1'/0:
 
 
 $1:
@@ -9609,11 +9867,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_pseudo_instr1314055071_472/0$1'/0):
+end('$query_pseudo_instr1416203179_633/0$1'/0):
 
 
 
-'$query_pseudo_instr1314055071_472'/0:
+'$query_pseudo_instr1416203179_633'/0:
 
 	try(0, $1)
 	retry($2)
@@ -9621,17 +9879,17 @@ end('$query_pseudo_instr1314055071_472/0$1'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_pseudo_instr1314055071_472/0$0', 0, 0)
+	call_predicate('$query_pseudo_instr1416203179_633/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_pseudo_instr1314055071_472/0$1', 0, 0)
+	call_predicate('$query_pseudo_instr1416203179_633/0$1', 0, 0)
 	fail
 
 $3:
 	proceed
-end('$query_pseudo_instr1314055071_472'/0):
+end('$query_pseudo_instr1416203179_633'/0):
 
 
 
@@ -9639,7 +9897,7 @@ end('$query_pseudo_instr1314055071_472'/0):
 
 
 $1:
-	execute_predicate('$query_pseudo_instr1314055071_472', 0)
+	execute_predicate('$query_pseudo_instr1416203179_633', 0)
 end('$query'/0):
 
 

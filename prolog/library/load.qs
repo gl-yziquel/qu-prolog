@@ -143,11 +143,11 @@ $1:
 	put_integer(2, 4)
 	pseudo_instr3(3, 2, 4, 3)
 	get_x_variable(2, 3)
-	put_integer(3, 4)
-	pseudo_instr4(2, 0, 2, 4, 3)
-	get_x_variable(2, 3)
-	put_constant('.qo', 3)
-	get_x_value(2, 3)
+	put_integer(3, 3)
+	put_x_variable(4, 4)
+	pseudo_instr4(2, 0, 2, 3, 4)
+	put_constant('.qo', 2)
+	get_x_value(4, 2)
 	neck_cut
 	pseudo_instr2(83, 0, 2)
 	get_x_value(1, 2)
@@ -217,8 +217,7 @@ end('$search_dir'/1):
 $1:
 	pseudo_instr3(3, 0, 1, 4)
 	get_x_variable(0, 4)
-	pseudo_instr4(2, 2, 1, 0, 4)
-	get_x_value(3, 4)
+	pseudo_instr4(2, 2, 1, 0, 3)
 	proceed
 
 $2:
@@ -251,8 +250,7 @@ $2:
 	get_x_variable(3, 4)
 	pseudo_instr2(69, 3, 4)
 	get_x_variable(3, 4)
-	pseudo_instr4(2, 0, 1, 3, 4)
-	get_x_value(2, 4)
+	pseudo_instr4(2, 0, 1, 3, 2)
 	proceed
 end('$search_dir1'/3):
 
@@ -278,11 +276,11 @@ $1:
 	put_integer(2, 5)
 	pseudo_instr3(3, 0, 5, 4)
 	get_x_variable(0, 4)
-	put_integer(3, 5)
-	pseudo_instr4(2, 1, 0, 5, 4)
-	get_x_variable(0, 4)
-	put_constant('.qo', 1)
-	get_x_value(0, 1)
+	put_integer(3, 4)
+	put_x_variable(5, 5)
+	pseudo_instr4(2, 1, 0, 4, 5)
+	put_constant('.qo', 0)
+	get_x_value(5, 0)
 	neck_cut
 	put_integer(3, 1)
 	pseudo_instr3(3, 2, 1, 0)
@@ -321,8 +319,7 @@ $2:
 	put_y_value(3, 1)
 	put_y_variable(1, 3)
 	call_predicate('$basename1/3$0', 4, 4)
-	pseudo_instr4(2, 23, 22, 21, 0)
-	get_y_value(0, 0)
+	pseudo_instr4(2, 23, 22, 21, 20)
 	deallocate
 	proceed
 end('$basename1'/3):

@@ -4,7 +4,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -147,7 +147,7 @@ private:
   // occur if this is not changed.
   //
   Environment *fetchEnv(const EnvLoc env)
-  { return((Environment *)(fetchAddr(env))); }
+  { assert(fetchAddr(env) != NULL); return((Environment *)(fetchAddr(env))); }
   
   //
   // Return the name of the area.

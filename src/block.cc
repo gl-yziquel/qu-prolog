@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -173,15 +173,42 @@ BlockingMessageObject::unblock(Timeval& tout)
     }
 }
 
-WaitPred:: WaitPred(Object* pn, int a, DynamicPredicate* pp, int s) : 
+WaitPred:: WaitPred(Object* pn, int a, DynamicPredicate* pp, int s,
+		    int as, int rs, bool ca, bool cr) : 
   predname(pn), arity(a), predptr(pp)
 {
   stamp = s;
+  assert_stamp = as;
+  retract_stamp = rs;
+  saved_stamp = s;
+  saved_assert_stamp = as;
+  saved_retract_stamp = rs;
+  check_assert = ca;
+  check_retract = cr;
+  modified = false;
 }
 
-void WaitPred::updateStamp(void)
+void WaitPred::updateStamps(void)
 {
-  stamp = predptr->GetStamp();
+  u_int newstamp = predptr->GetStamp();
+  u_int newassertstamp = predptr->GetAssertStamp();
+  u_int newretractstamp = predptr->GetRetractStamp();
+  if (newstamp != stamp) {
+    stamp = newstamp;
+    modified = true;
+    assert_stamp = saved_assert_stamp;
+    retract_stamp = saved_retract_stamp;
+    saved_assert_stamp = newassertstamp;
+    saved_retract_stamp = newretractstamp;    
+  } else if (assert_stamp != newassertstamp) {
+    modified = true;
+    assert_stamp = saved_assert_stamp;
+    saved_assert_stamp = newassertstamp;
+  } else if (retract_stamp != newretractstamp) {
+    modified = true;
+    retract_stamp = saved_retract_stamp;
+    saved_retract_stamp = newretractstamp;    
+  }
 }
 
 BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, Object* preds,
@@ -198,21 +225,46 @@ BlockingWaitObject::BlockingWaitObject(Thread* const t, Code* c, Object* preds,
       Object* pred = OBJECT_CAST(Cons *, predlist)->getHead()->variableDereference();
       assert(pred->isStructure());
       Structure* predstr = OBJECT_CAST(Structure*, pred);
-      int stamp = -1;
-      if (predstr->getFunctor()->variableDereference() == AtomTable::minus)
-        {
-          stamp = predstr->getArgument(2)->variableDereference()->getInteger();
-          predstr = OBJECT_CAST(Structure*, predstr->getArgument(1)->variableDereference());
-        }
-      Object* predname = predstr->getArgument(1)->variableDereference();
-      assert(predname->isAtom());
+      int s = -1; 
+      int as = -1; 
+      int rs = -1; 
+      bool has_stamp = false;
+      int tmp_stamp = 0;
+      if (predstr->getFunctor()->variableDereference() == AtomTable::multiply) {
+        pred = predstr->getArgument(1)->variableDereference();
+        tmp_stamp = predstr->getArgument(2)->variableDereference()->getInteger();
+        has_stamp = true;
+        predstr = OBJECT_CAST(Structure*, pred);
+      }
       Object* arityobj = predstr->getArgument(2)->variableDereference();
       int arity =  arityobj->getInteger();
-      PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, predname), arity,
+      Object* predname = predstr->getArgument(1)->variableDereference();
+      bool ca = false;
+      bool cr = false;
+      Object* realpredname;
+      if (predname->isStructure()) {
+	Structure* realpredstr = OBJECT_CAST(Structure*, predname);
+	Object* functor = realpredstr->getFunctor()->variableDereference();
+	realpredname = realpredstr->getArgument(1)->variableDereference();
+	if (functor == AtomTable::minus) {
+	  cr = true;
+          if (has_stamp) rs = tmp_stamp;
+	} else {
+	  ca = true;
+          if (has_stamp) as = tmp_stamp;
+	}
+      } else {
+	realpredname = predname;
+        if (has_stamp) s = tmp_stamp;
+      }
+      PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, realpredname), arity,
 				       atoms, code);
       DynamicPredicate* predptr = predicates->getCode(loc).getDynamicPred();
-      if (stamp == -1) stamp = predptr->GetStamp();
-      WaitPred* wp = new WaitPred(predname, arity, predptr, stamp);
+      if (s == -1) s = predptr->GetStamp();
+      if (as == -1) as = predptr->GetAssertStamp();
+      if (rs == -1) rs = predptr->GetRetractStamp();
+      WaitPred* wp = new WaitPred(realpredname, arity, predptr, 
+				  s, as, rs, ca, cr);
       wait_preds.push_back(wp);  
     }
   double until_time;
@@ -259,31 +311,47 @@ BlockingWaitObject::update(void)
        iter++)
     {
       WaitPred* wp = *iter;
-      wp->updateStamp();
+      wp->updateStamps();
     }
 }
 
-/*
+
 Object*
 BlockingWaitObject::extract_changed_preds(void)
 {
   Object* result = AtomTable::nil;
-
   for (int i = wait_preds.size()-1; i >= 0; i--)
     {
       WaitPred* wp = wait_preds[i];
+      Object* annotatedpredobj;
+      bool ca = wp->assert_stamp < wp->predptr->GetAssertStamp();
+      bool cr = wp->retract_stamp < wp->predptr->GetRetractStamp();
+      bool neither = !(wp->check_assert || wp->check_retract);
       if (wp->modified)
 	{
+	  if ((wp->check_assert) && ca) { 
+	    Structure* annotatedpred = getThread()->TheHeap().newStructure(1);
+	    annotatedpred->setFunctor(AtomTable::plus);
+	    annotatedpred->setArgument(1, wp->predname);
+	    annotatedpredobj = annotatedpred;
+	  } else  if ((wp->check_retract) && cr) { 
+	    Structure*annotatedpred = getThread()->TheHeap().newStructure(1);
+	    annotatedpred->setFunctor(AtomTable::minus);
+	    annotatedpred->setArgument(1, wp->predname);
+	    annotatedpredobj = annotatedpred;
+	  } else {
+	    annotatedpredobj = wp->predname;
+	  }
 	  Structure* predstruct = getThread()->TheHeap().newStructure(2);
 	  predstruct->setFunctor(AtomTable::divide);
-	  predstruct->setArgument(1, wp->predname);
+	  predstruct->setArgument(1, annotatedpredobj);
 	  predstruct->setArgument(2, getThread()->TheHeap().newInteger(wp->arity));
 	  result = getThread()->TheHeap().newCons(predstruct, result);
+	  wp->modified = false; // XXXX
 	}
     }
   return result;
 }
-*/
 
 bool BlockingWaitObject::is_unblocked(void)
 {
@@ -295,8 +363,19 @@ bool BlockingWaitObject::is_unblocked(void)
        iter++)
     {
       WaitPred* wp = *iter;
-      if (wp->stamp < wp->predptr->GetStamp())
-	return true;
+      if (wp->check_assert) {
+	if (wp->saved_assert_stamp < wp->predptr->GetAssertStamp()) {
+	  return true;
+	}
+      }	else if (wp->check_retract) {
+	if (wp->saved_retract_stamp < wp->predptr->GetRetractStamp()) {
+	  return true;
+	}
+      }	else {
+	if (wp->stamp < wp->predptr->GetStamp()) {
+	  return true;
+	}
+      }
     }
   return false;
 }
@@ -309,7 +388,8 @@ void BlockingWaitObject::dump(void)
     {
       WaitPred* wp = *iter;
       cerr << OBJECT_CAST(Atom*, wp->predname)->getName() 
-	   << "/" << wp->arity << " " << wp->stamp;
+	   << "/" << wp->arity << " " << wp->stamp  << "  " << 
+	    wp->assert_stamp  << "  " <<  wp->retract_stamp << endl;
     }
 }
 

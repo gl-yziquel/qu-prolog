@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -1242,6 +1242,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
     case OBJECT_VARIABLE_ESC_TOKEN:
     case QUANT_ESC_TOKEN:
     case NEWLINE_TOKEN:
+      value_arg = heap.newInteger(0);
       break;
       
     case STRING_TOKEN:
@@ -1249,6 +1250,7 @@ Thread::psi_read_next_token(Object *& stream_arg, Object *& type_arg, Object *& 
       break;
       
     case EOF_TOKEN:
+      value_arg = heap.newInteger(0);
       break;
       
     default:

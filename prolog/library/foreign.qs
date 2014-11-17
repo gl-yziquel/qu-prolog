@@ -1,14 +1,15 @@
 '$write_type'/1:
 
-	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
-
-$4:
-	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'atom':$3])
+	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
 
 $5:
+	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'atom':$3, 'string':$4])
+
+$6:
 	try(1, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($4)
 
 $1:
 	get_constant('integer', 0)
@@ -24,21 +25,27 @@ $3:
 	get_constant('atom', 0)
 	put_constant('char *', 0)
 	execute_predicate('$foreign_write', 1)
+
+$4:
+	get_constant('string', 0)
+	put_constant('char *', 0)
+	execute_predicate('$foreign_write', 1)
 end('$write_type'/1):
 
 
 
 '$type_check'/1:
 
-	switch_on_term(0, $5, 'fail', 'fail', 'fail', 'fail', $4)
-
-$4:
-	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'atom':$3])
+	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
 
 $5:
+	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'atom':$3, 'string':$4])
+
+$6:
 	try(1, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($4)
 
 $1:
 	get_constant('integer', 0)
@@ -54,22 +61,28 @@ $3:
 	get_constant('atom', 0)
 	put_constant('isAtom()', 0)
 	execute_predicate('$foreign_write', 1)
+
+$4:
+	get_constant('string', 0)
+	put_constant('isString()', 0)
+	execute_predicate('$foreign_write', 1)
 end('$type_check'/1):
 
 
 
 '$extract_value'/2:
 
-	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
-
-$5:
-	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'double':$3, 'atom':$4])
+	switch_on_term(0, $7, 'fail', 'fail', 'fail', 'fail', $6)
 
 $6:
+	switch_on_constant(0, 16, ['$default':'fail', 'integer':$1, 'float':$2, 'double':$3, 'atom':$4, 'string':$5])
+
+$7:
 	try(2, $1)
 	retry($2)
 	retry($3)
-	trust($4)
+	retry($4)
+	trust($5)
 
 $1:
 	get_constant('integer', 0)
@@ -109,22 +122,35 @@ $4:
 	put_constant(')', 0)
 	deallocate
 	execute_predicate('$foreign_write', 1)
+
+$5:
+	get_constant('string', 0)
+	allocate(1)
+	get_y_variable(0, 1)
+	put_constant('fi->getString(', 0)
+	call_predicate('$foreign_write', 1, 1)
+	put_y_value(0, 0)
+	call_predicate('$write_pval', 1, 0)
+	put_constant(')', 0)
+	deallocate
+	execute_predicate('$foreign_write', 1)
 end('$extract_value'/2):
 
 
 
 '$make_term'/2:
 
-	switch_on_term(0, $6, 'fail', 'fail', 'fail', 'fail', $5)
-
-$5:
-	switch_on_constant(0, 8, ['$default':'fail', 'integer':$1, 'float':$2, 'double':$3, 'atom':$4])
+	switch_on_term(0, $7, 'fail', 'fail', 'fail', 'fail', $6)
 
 $6:
+	switch_on_constant(0, 16, ['$default':'fail', 'integer':$1, 'float':$2, 'double':$3, 'string':$4, 'atom':$5])
+
+$7:
 	try(2, $1)
 	retry($2)
 	retry($3)
-	trust($4)
+	retry($4)
+	trust($5)
 
 $1:
 	get_constant('integer', 0)
@@ -166,6 +192,19 @@ $3:
 	execute_predicate('$write_foreign_val', 2)
 
 $4:
+	get_constant('string', 0)
+	allocate(1)
+	get_y_variable(0, 1)
+	put_y_value(0, 0)
+	call_predicate('$write_output_val', 1, 1)
+	put_constant(' = fi->makeString(', 0)
+	call_predicate('$foreign_write', 1, 1)
+	put_y_value(0, 1)
+	put_constant('string', 0)
+	deallocate
+	execute_predicate('$write_foreign_val', 2)
+
+$5:
 	get_constant('atom', 0)
 	allocate(1)
 	get_y_variable(0, 1)
@@ -1238,7 +1277,6 @@ $1:
 	put_constant('$foreign_stream', 0)
 	pseudo_instr2(74, 0, 21)
 	put_constant('#include "QuProlog.h"
-
 ', 0)
 	call_predicate('$foreign_write', 1, 8)
 	put_y_value(7, 0)
@@ -2183,7 +2221,6 @@ $1:
 	put_y_value(0, 0)
 	call_predicate('$write_foreign_call_args', 1, 0)
 	put_constant(');
-
 ', 0)
 	deallocate
 	execute_predicate('$foreign_write', 1)

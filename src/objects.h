@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -880,10 +880,8 @@ Object::switchOffset() const
     case tLong:
     case tDouble:
     case tAtom:
-      return 5;
-      break;
     case tString:
-      return 2;
+      return 5;
       break;
     case tStruct:
       return 3;
@@ -2137,6 +2135,7 @@ inline void ObjectVariable::printMe(AtomTable& atoms, bool all)
 }
 #endif // QP_DEBUG
 
+
 //
 // variableDereference() follows the (ob)variable-reference chain from
 // an object -- iteratively, not recursively -- and returns the object
@@ -2151,7 +2150,12 @@ Object::variableDereference()
   // Ensure we're not about to dereference a NULL pointer
   //
   assert(o != NULL);
-  
+#ifdef QP_DEBUG
+  if (!o->check_object()) cerr << "object error " << hex << (u_long)o << " -> " << (u_long)(*((heapobject*)o)) << dec << endl;
+  assert(o->check_object());
+
+#endif
+
   while ((o->getTag() & Object::DerefMask) == 0) 
     {
       //

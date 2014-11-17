@@ -884,11 +884,15 @@ end('$interpreter_cont_section/1$0'/2):
 
 
 $1:
-	allocate(3)
+	allocate(4)
 	get_y_variable(1, 0)
+	put_y_variable(2, 19)
 	put_y_variable(0, 19)
-	put_y_variable(2, 0)
-	call_predicate('get_line', 1, 3)
+	put_y_variable(3, 0)
+	call_predicate('get_line', 1, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	call_predicate('string_to_list', 2, 3)
 	put_y_value(2, 0)
 	put_y_value(0, 1)
 	call_predicate('$interpreter_cont_section/1$0', 2, 2)

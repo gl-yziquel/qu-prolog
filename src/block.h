@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -213,10 +213,19 @@ class WaitPred
   int arity;
   DynamicPredicate* predptr;
   u_int stamp;
+  u_int assert_stamp;
+  u_int retract_stamp;
+  u_int saved_stamp;
+  u_int saved_assert_stamp;
+  u_int saved_retract_stamp;
+  bool modified;
+  bool check_assert;
+  bool check_retract;
 
-  WaitPred(Object* pn, int a, DynamicPredicate* pp, int s); 
+  WaitPred(Object* pn, int a, DynamicPredicate* pp, int s, int as, 
+	   int rs, bool ca, bool cr); 
 
-  void updateStamp(void);
+  void updateStamps(void);
 };
       
 class BlockingWaitObject : public BlockingObject
@@ -247,7 +256,7 @@ class BlockingWaitObject : public BlockingObject
 
   bool is_unblocked(void);
 
-  //Object* extract_changed_preds(void);
+  Object* extract_changed_preds(void);
 
   void dump(void);
 

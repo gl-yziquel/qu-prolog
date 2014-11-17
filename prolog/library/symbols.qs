@@ -335,16 +335,14 @@ $1:
 	cut(5)
 	put_integer(1, 1)
 	pseudo_instr3(3, 23, 1, 0)
-	put_integer(1, 2)
-	pseudo_instr4(2, 22, 2, 0, 1)
-	get_y_value(4, 1)
+	put_integer(1, 1)
+	pseudo_instr4(2, 22, 1, 0, 24)
 	pseudo_instr2(30, 22, 0)
 	pseudo_instr3(3, 0, 23, 1)
 	get_x_variable(0, 1)
+	put_x_variable(1, 1)
 	pseudo_instr4(2, 22, 21, 0, 1)
-	get_x_variable(0, 1)
-	pseudo_instr2(32, 0, 1)
-	get_x_variable(0, 1)
+	pseudo_instr2(32, 1, 0)
 	pseudo_instr2(39, 0, 1)
 	get_y_value(0, 1)
 	deallocate
@@ -1413,7 +1411,7 @@ end('$internal'/1):
 
 
 
-'$query_symbols1314055073_314/0$0'/0:
+'$query_symbols1416203181_244/0$0'/0:
 
 
 $1:
@@ -1427,23 +1425,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_symbols1314055073_314/0$0'/0):
+end('$query_symbols1416203181_244/0$0'/0):
 
 
 
-'$query_symbols1314055073_314'/0:
+'$query_symbols1416203181_244'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_symbols1314055073_314/0$0', 0, 0)
+	call_predicate('$query_symbols1416203181_244/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_symbols1314055073_314'/0):
+end('$query_symbols1416203181_244'/0):
 
 
 
@@ -1451,7 +1449,7 @@ end('$query_symbols1314055073_314'/0):
 
 
 $1:
-	execute_predicate('$query_symbols1314055073_314', 0)
+	execute_predicate('$query_symbols1416203181_244', 0)
 end('$query'/0):
 
 

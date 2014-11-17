@@ -220,6 +220,213 @@ end('get_char'/2):
 
 
 
+'peek/1$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	pseudo_instr2(135, 0, 2)
+	get_x_variable(0, 2)
+	neck_cut
+	get_x_value(1, 0)
+	proceed
+
+$2:
+	get_x_variable(2, 0)
+	put_structure(1, 3)
+	set_constant('peek')
+	set_x_value(1)
+	put_structure(4, 0)
+	set_constant('stream_error')
+	set_constant('unrecoverable')
+	set_x_value(3)
+	set_constant('default')
+	set_x_value(2)
+	execute_predicate('exception', 1)
+end('peek/1$0'/2):
+
+
+
+'peek'/1:
+
+
+$1:
+	get_x_variable(1, 0)
+	pseudo_instr1(27, 0)
+	execute_predicate('peek/1$0', 2)
+end('peek'/1):
+
+
+
+'peek/2$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	pseudo_instr2(135, 0, 2)
+	get_x_variable(0, 2)
+	neck_cut
+	get_x_value(1, 0)
+	proceed
+
+$2:
+	get_x_variable(2, 0)
+	put_structure(2, 3)
+	set_constant('peek')
+	set_x_value(2)
+	set_x_value(1)
+	put_structure(4, 0)
+	set_constant('stream_error')
+	set_constant('unrecoverable')
+	set_x_value(3)
+	set_constant('default')
+	set_x_value(2)
+	execute_predicate('exception', 1)
+end('peek/2$0'/2):
+
+
+
+'peek/2$1'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	pseudo_instr2(135, 0, 2)
+	get_x_variable(0, 2)
+	neck_cut
+	get_x_value(1, 0)
+	proceed
+
+$2:
+	get_x_variable(2, 0)
+	put_structure(2, 3)
+	set_constant('peek')
+	set_x_value(2)
+	set_x_value(1)
+	put_structure(4, 0)
+	set_constant('stream_error')
+	set_constant('unrecoverable')
+	set_x_value(3)
+	set_constant('default')
+	set_x_value(2)
+	execute_predicate('exception', 1)
+end('peek/2$1'/2):
+
+
+
+'peek'/2:
+
+	try(2, $1)
+	retry($2)
+	retry($3)
+	trust($4)
+
+$1:
+	get_x_variable(2, 0)
+	pseudo_instr1(1, 2)
+	neck_cut
+	put_structure(2, 0)
+	set_constant('peek')
+	set_x_value(2)
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('gcomp')
+	put_structure(1, 2)
+	set_constant('?')
+	set_constant('atomic')
+	put_structure(2, 3)
+	set_constant('peek')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(1)
+	set_x_value(3)
+	set_constant('[]')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('?')
+	set_constant('atomic')
+	put_structure(2, 4)
+	set_constant('peek')
+	set_x_value(2)
+	set_x_value(3)
+	put_list(2)
+	set_x_value(4)
+	set_x_value(1)
+	put_integer(1, 1)
+	execute_predicate('instantiation_exception', 3)
+
+$2:
+	pseudo_instr1(3, 0)
+	pseudo_instr2(101, 0, 2)
+	get_structure('$prop', 7, 2)
+	unify_void(1)
+	unify_constant('input')
+	unify_void(5)
+	neck_cut
+	execute_predicate('peek/2$0', 2)
+
+$3:
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_level(2)
+	put_y_variable(0, 1)
+	call_predicate('$streamnum', 2, 3)
+	pseudo_instr2(101, 20, 0)
+	get_structure('$prop', 7, 0)
+	unify_void(1)
+	unify_constant('input')
+	unify_void(5)
+	cut(2)
+	put_y_value(0, 0)
+	put_y_value(1, 1)
+	deallocate
+	execute_predicate('peek/2$1', 2)
+
+$4:
+	get_x_variable(2, 0)
+	put_structure(2, 0)
+	set_constant('peek')
+	set_x_value(2)
+	set_x_value(1)
+	put_structure(1, 1)
+	set_constant('@')
+	set_constant('gcomp')
+	put_structure(1, 2)
+	set_constant('?')
+	set_constant('atomic')
+	put_structure(2, 3)
+	set_constant('peek')
+	set_x_value(1)
+	set_x_value(2)
+	put_list(1)
+	set_x_value(3)
+	set_constant('[]')
+	put_structure(1, 2)
+	set_constant('@')
+	set_constant('atom')
+	put_structure(1, 3)
+	set_constant('?')
+	set_constant('atomic')
+	put_structure(2, 4)
+	set_constant('peek')
+	set_x_value(2)
+	set_x_value(3)
+	put_list(2)
+	set_x_value(4)
+	set_x_value(1)
+	put_integer(1, 1)
+	put_constant('stream', 3)
+	execute_predicate('type_exception', 4)
+end('peek'/2):
+
+
+
 '$get_char1/2$0'/1:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)

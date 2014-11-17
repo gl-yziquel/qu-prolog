@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -367,10 +367,12 @@ Thread::psi_assert(Object*& object1, Object*& object2,
   assert(val3->isInteger());
   bool asserta = (val3->getInteger() == 0);
   DynamicPredicate* dp =  predicates->getCode(loc).getDynamicPred();
-  if (arity != 0)
+  int index = (int)(dp->getIndexedArg());
+  indexarg = NULL;
+  if ((arity != 0) && (index != 255))
     {
       indexarg = 
-	OBJECT_CAST(Structure*, val1)->getArgument(1 + dp->getIndexedArg());
+	OBJECT_CAST(Structure*, val1)->getArgument(1 + index);
     }
 #ifdef QP_DEBUG_ASSERT
   cerr << "======= assert ==========" << endl;
@@ -378,6 +380,7 @@ Thread::psi_assert(Object*& object1, Object*& object2,
 #endif
   dp->assertClause(*this, indexarg, object2, asserta); 
   dp->Stamp();
+  dp->AssertStamp();
 #ifdef QP_DEBUG_ASSERT
   dp->display();
 #endif
@@ -403,6 +406,7 @@ Thread::psi_retract(Object*& object1)
   DynamicPredicate* pred = codeb->getThisPred();
   pred->makeDirty();
   pred->Stamp();
+  pred->RetractStamp();
   codeb->setDelete(pred->GetStamp());
 
   return(RV_SUCCESS);
@@ -414,6 +418,57 @@ Thread::psi_retract(Object*& object1)
 Thread::ReturnValue
 Thread::psi_predicate_stamp(Object*& object1, Object*& object2,
                             Object*& object3)
+{
+  bool is_minus = false;
+  bool is_plus = false;
+  Object* pred = object1->variableDereference();
+  if (pred->isStructure()) {
+    Structure* predstr = OBJECT_CAST(Structure*, pred);
+    Object* functor = predstr->getFunctor()->variableDereference();
+    if (functor == AtomTable::minus) {
+      is_minus = true;
+    } else {
+      is_plus = true;
+    }
+    pred = predstr->getArgument(1)->variableDereference();
+  }
+  Object* arityObject = object2->variableDereference();
+  
+  int arity = arityObject->getInteger();
+  
+  PredLoc loc = predicates->lookUp(OBJECT_CAST(Atom*, pred), arity,
+				   atoms, code);
+  if (loc == EMPTY_LOC)
+    {
+      return(RV_FAIL);
+    }
+  else if ((predicates->getCode(loc)).type() == PredCode::DYNAMIC_PRED)
+    {
+      DynamicPredicate* dp =  predicates->getCode(loc).getDynamicPred();
+      int s;
+      if (is_minus) {
+        s = dp->GetRetractStamp();
+      } else if (is_plus) {
+        s = dp->GetAssertStamp();
+      } else {
+        s = dp->GetStamp();
+      }
+      object3 = heap.newInteger(s);
+      return(RV_SUCCESS);
+    }
+  else
+    {
+      return(RV_FAIL);
+    }
+
+}
+
+// Get the P/N info if the timestamps have changed
+// mode psi_predicate_stamp_change(in,in,out)
+//
+Thread::ReturnValue
+Thread::psi_predicate_stamp_change(Object*& object1, Object*& object2,
+				   Object*& object3)
 {
   Object* pred = object1->variableDereference();
   Object* arityObject = object2->variableDereference();
@@ -488,7 +543,7 @@ Thread::psi_dynamic(Object*& object1, Object*& object2,
   
   int indexArg = indexArgObject->getInteger();
   
-  if ((arity > 0) && ((indexArg < 1) || (indexArg > arity)))
+  if ((arity > 0) && ((indexArg < 0) || (indexArg > arity)))
     {
       PSI_ERROR_RETURN(EV_RANGE, 3);
     }
@@ -577,8 +632,10 @@ Thread::psi_get_dynamic_chain(Object*& object1, Object*& object2)
   Object* argObject;
   
   const word8 arg = pred.getDynamicPred()->getIndexedArg();
-  assert(arity == 0 || arg < arity);
-  if (arity == 0)
+  //assert(arity == 0 || arg < arity);
+  if ((int)(arg) == 255) {
+    argObject = NULL;
+  } else if (arity == 0)
     {
       argObject = AtomTable::nil; 
     }
@@ -645,21 +702,19 @@ Thread::psi_get_first_clause(Object*& object1, Object*& object2,
       return (RV_FAIL);
     }
 
-  Object* argObject;
+  Object* argObject = NULL;
   
   const word8 arg = pred.getDynamicPred()->getIndexedArg();
-  assert(arity == 0 || arg < arity);
-  if (arity == 0)
-    {
-      argObject = AtomTable::nil; 
-    }
-  else
-    {
-      argObject = OBJECT_CAST(Structure*, val1)->getArgument(arg+1)->variableDereference();
-    }
+    //assert(arity == 0 || arg < arity);
+  if ((int)(arg) == 255) {
+    argObject = NULL;
+  } else if (arity == 0) {
+    argObject = AtomTable::nil; 
+  } else {
+    argObject = OBJECT_CAST(Structure*, val1)->getArgument(arg+1)->variableDereference();
+  }
   DynamicPredicate* dp = pred.getDynamicPred();
   ChainEnds* chain = dp->lookUpClauseChain(*this, argObject);
-
   assert(object2->variableDereference()->isInteger());
   word32 time = (word32)(object2->variableDereference()->getInteger());
 

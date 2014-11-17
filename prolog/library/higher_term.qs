@@ -491,12 +491,28 @@ end('$transform_args'/5):
 
 'transform_subterms'/3:
 
+
+$1:
+	pseudo_instr2(65, 1, 3)
+	allocate(1)
+	get_y_variable(0, 3)
+	call_predicate('$transform_subterms', 3, 1)
+	pseudo_instr1(52, 20)
+	deallocate
+	proceed
+end('transform_subterms'/3):
+
+
+
+'$transform_subterms'/3:
+
 	try(3, $1)
 	retry($2)
 	retry($3)
 	retry($4)
 	retry($5)
-	trust($6)
+	retry($6)
+	trust($7)
 
 $1:
 	allocate(6)
@@ -517,7 +533,7 @@ $1:
 	put_y_value(4, 0)
 	put_y_value(3, 1)
 	put_y_value(0, 2)
-	call_predicate('transform_subterms', 3, 3)
+	call_predicate('$transform_subterms', 3, 3)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
 	put_y_value(2, 2)
@@ -542,6 +558,11 @@ $4:
 	execute_predicate('call_predicate', 3)
 
 $5:
+	pseudo_instr1(108, 1)
+	neck_cut
+	execute_predicate('call_predicate', 3)
+
+$6:
 	allocate(6)
 	get_y_variable(2, 0)
 	get_y_variable(4, 1)
@@ -553,7 +574,7 @@ $5:
 	pseudo_instr3(0, 24, 1, 23)
 	put_y_variable(0, 19)
 	put_y_variable(5, 2)
-	call_predicate('transform_subterms', 3, 6)
+	call_predicate('$transform_subterms', 3, 6)
 	pseudo_instr3(0, 20, 25, 23)
 	put_y_value(3, 0)
 	put_y_value(2, 1)
@@ -566,7 +587,7 @@ $5:
 	deallocate
 	execute_predicate('call_predicate', 3)
 
-$6:
+$7:
 	allocate(7)
 	get_y_variable(1, 0)
 	get_y_variable(0, 2)
@@ -583,11 +604,11 @@ $6:
 	put_y_value(1, 0)
 	put_y_value(6, 1)
 	put_y_value(2, 2)
-	call_predicate('transform_subterms', 3, 6)
+	call_predicate('$transform_subterms', 3, 6)
 	put_y_value(1, 0)
 	put_y_value(5, 1)
 	put_y_value(4, 2)
-	call_predicate('transform_subterms', 3, 5)
+	call_predicate('$transform_subterms', 3, 5)
 	put_constant('[]', 0)
 	pseudo_instr2(61, 23, 0)
 	put_x_variable(1, 1)
@@ -596,7 +617,7 @@ $6:
 	put_y_value(0, 2)
 	deallocate
 	execute_predicate('call_predicate', 3)
-end('transform_subterms'/3):
+end('$transform_subterms'/3):
 
 
 
@@ -631,7 +652,7 @@ $2:
 	pseudo_instr3(1, 23, 20, 0)
 	get_x_variable(2, 0)
 	put_y_value(2, 0)
-	call_predicate('transform_subterms', 3, 4)
+	call_predicate('$transform_subterms', 3, 4)
 	pseudo_instr2(70, 23, 0)
 	put_y_value(2, 1)
 	put_y_value(1, 2)
@@ -705,7 +726,7 @@ $2:
 	put_y_value(0, 0)
 	put_x_value(3, 1)
 	put_x_value(4, 2)
-	call_predicate('transform_subterms', 3, 3)
+	call_predicate('$transform_subterms', 3, 3)
 	put_y_value(2, 0)
 	put_y_value(1, 1)
 	put_y_value(0, 2)
@@ -752,7 +773,7 @@ $2:
 	put_y_value(0, 0)
 	put_x_value(3, 1)
 	put_x_value(4, 2)
-	call_predicate('transform_subterms', 3, 3)
+	call_predicate('$transform_subterms', 3, 3)
 	put_y_value(2, 0)
 	put_y_value(1, 1)
 	put_y_value(0, 2)

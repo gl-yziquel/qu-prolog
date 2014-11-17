@@ -4,7 +4,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -75,7 +75,11 @@ Thread::psi_get_catch(Object *& object1)
 //
 Thread::ReturnValue
 Thread::psi_set_catch(Object *& object1)
-{
+{  
+  // If the throw was by garbage collection failure then suspendedGC
+  // will be set to true and subsequent GCs will not work
+  setSuspendGC(false);
+
   Object* val1 = heap.dereference(object1);
   
   assert(val1->isNumber());

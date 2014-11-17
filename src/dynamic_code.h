@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -332,11 +332,21 @@ class DynamicPredicate
   ChainEnds          varChain;
   DynamicClauseHash  indexedClauses;
   Timestamp	     stamp;
+  Timestamp	     assert_stamp;
+  Timestamp	     retract_stamp;
+
 
  public:
 
   const word32 GetStamp(void) { return stamp.GetStamp(); }
   void Stamp(void) { stamp.Stamp(); }
+
+  const word32 GetAssertStamp(void) { return assert_stamp.GetStamp(); }
+  void AssertStamp(void) { assert_stamp.Stamp(); }
+
+  const word32 GetRetractStamp(void) { return retract_stamp.GetStamp(); }
+  void RetractStamp(void) { retract_stamp.Stamp(); }
+
 
   word8 getIndexedArg(void) const 
   { return indexedArg; }
@@ -405,6 +415,9 @@ class DynamicPredicate
 	  //
 	  return &allChain;
 	}
+      if (indexarg != NULL)
+        indexarg = indexarg->variableDereference();
+
       int index = lookUp(th, indexarg);
       if (index == -2)
 	{

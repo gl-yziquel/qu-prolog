@@ -21,7 +21,7 @@ router_monitor :-
       ;
         Msg = to(RealMsg, To),
 	From = FThread:FProcess@FMachine,
-	To = ToThread:=ToProcess@ToMachine,
+	To = ToThread:ToProcess@ToMachine,
         write('Message: '), write(Msg),
         write_term_list([nl, wa('From: '), w(FThread), tab(3),
                          wa(FProcess), tab(3), wa(FMachine)]),

@@ -215,3 +215,28 @@ Thread::psi_local_p2p(Object*& thread_obj, Object*& msg_obj)
   }
   return RV_SUCCESS;
 }
+
+Thread::ReturnValue
+Thread::psi_set_default_message_thread(Object*& thread_name)
+{
+  Object* threadname = thread_name->variableDereference();
+  
+  if (threadname->isVariable())
+    {
+      PSI_ERROR_RETURN(EV_INST, 1);
+    }
+  if (!threadname->isAtom())
+    {
+      PSI_ERROR_RETURN(EV_TYPE, 1);
+    }
+  thread_table->setDefaultThread(OBJECT_CAST(Atom*, threadname)->getName());
+  return RV_SUCCESS;
+}
+
+Thread::ReturnValue
+Thread::psi_default_message_thread(Object*& thread_name)
+{
+  thread_name = atoms->add(thread_table->getDefaultThread());
+  return RV_SUCCESS;
+}
+  

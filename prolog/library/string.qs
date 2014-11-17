@@ -410,12 +410,8 @@ end('stream_to_string'/2):
 $1:
 	pseudo_instr1(108, 0)
 	neck_cut
-	get_list(0)
-	unify_x_variable(0)
-	unify_x_variable(2)
-	get_list(1)
-	unify_x_value(0)
-	unify_x_value(2)
+	pseudo_instr2(134, 0, 2)
+	get_x_value(1, 2)
 	proceed
 
 $2:

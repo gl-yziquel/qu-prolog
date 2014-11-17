@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -107,6 +107,43 @@ Thread::psi_get_char(Object *& stream_arg, Object *& char_arg)
       stream->newline();
     }
 
+  if (ch != -1)  // EOF
+    {
+      c[0] = ch;
+    }
+
+  //
+  // Return the character.
+  //
+  char_arg = atoms->add(c);
+  return RV_SUCCESS;
+}
+//
+// psi_peek(stream_index, variable)
+// Peek the next character from the input stream.
+//
+Thread::ReturnValue
+Thread::psi_peek(Object *& stream_arg, Object *& char_arg)
+{
+  Object * argS = heap.dereference(stream_arg);
+  
+  //
+  // Check argument.
+  //
+  QPStream *stream;
+  DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
+  
+  IS_READY_STREAM(stream);
+
+  char c[2] = { '\0', '\0' };
+
+  //
+  // Peek the character.
+  //
+  int ch;
+
+  ch = stream->get();
+  stream->unget();
   if (ch != -1)  // EOF
     {
       c[0] = ch;
@@ -309,9 +346,9 @@ Thread::psi_get_line(Object *& stream_arg,
           c = stream->get();
 	}
     }
-  if (chars.length() == 0)
-    *strPtr = AtomTable::nil;
-  else
+  //  if (chars.length() == 0)
+  //  *strPtr = heap.newStringObject(;
+  //else
     *strPtr = heap.newStringObject(chars.c_str());
   return RV_SUCCESS;
 }

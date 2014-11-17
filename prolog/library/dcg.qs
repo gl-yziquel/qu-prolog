@@ -173,71 +173,81 @@ end('$dcg_expand_head'/5):
 
 '$dcg_expand_body'/4:
 
-	switch_on_term(0, $25, $24, $13, $14, $24, $21)
+	switch_on_term(0, $26, $25, $14, $15, $25, $22)
 
-$13:
+$14:
 	try(4, $1)
 	retry($10)
 	retry($11)
-	trust($12)
-
-$14:
-	switch_on_structure(0, 16, ['$default':$24, '$'/0:$15, ','/2:$16, ';'/2:$17, '->'/2:$18, '\\+'/1:$19, '{}'/1:$20])
+	retry($12)
+	trust($13)
 
 $15:
-	try(4, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($8)
-	trust($12)
+	switch_on_structure(0, 16, ['$default':$25, '$'/0:$16, ','/2:$17, ';'/2:$18, '->'/2:$19, '\\+'/1:$20, '{}'/1:$21])
 
 $16:
 	try(4, $1)
 	retry($2)
-	trust($12)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($8)
+	retry($12)
+	trust($13)
 
 $17:
 	try(4, $1)
-	retry($3)
-	retry($4)
-	trust($12)
+	retry($2)
+	retry($12)
+	trust($13)
 
 $18:
 	try(4, $1)
-	retry($5)
-	trust($12)
+	retry($3)
+	retry($4)
+	retry($12)
+	trust($13)
 
 $19:
 	try(4, $1)
-	retry($6)
-	trust($12)
+	retry($5)
+	retry($12)
+	trust($13)
 
 $20:
 	try(4, $1)
-	retry($8)
-	trust($12)
+	retry($6)
+	retry($12)
+	trust($13)
 
 $21:
-	switch_on_constant(0, 4, ['$default':$24, '!':$22, '[]':$23])
+	try(4, $1)
+	retry($8)
+	retry($12)
+	trust($13)
 
 $22:
-	try(4, $1)
-	retry($7)
-	trust($12)
+	switch_on_constant(0, 4, ['$default':$25, '!':$23, '[]':$24])
 
 $23:
 	try(4, $1)
-	retry($9)
-	trust($12)
+	retry($7)
+	retry($12)
+	trust($13)
 
 $24:
 	try(4, $1)
-	trust($12)
+	retry($9)
+	retry($12)
+	trust($13)
 
 $25:
+	try(4, $1)
+	retry($12)
+	trust($13)
+
+$26:
 	try(4, $1)
 	retry($2)
 	retry($3)
@@ -249,12 +259,17 @@ $25:
 	retry($9)
 	retry($10)
 	retry($11)
-	trust($12)
+	retry($12)
+	trust($13)
 
 $1:
 	pseudo_instr1(1, 0)
 	neck_cut
-	fail
+	get_structure('=', 2, 3)
+	unify_x_value(0)
+	unify_x_value(1)
+	get_x_value(1, 2)
+	proceed
 
 $2:
 	get_structure(',', 2, 0)
@@ -475,6 +490,22 @@ $11:
 	proceed
 
 $12:
+	allocate(4)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
+	pseudo_instr1(108, 0)
+	neck_cut
+	put_y_variable(0, 1)
+	call_predicate('string_to_list', 2, 4)
+	put_y_value(0, 0)
+	put_y_value(3, 1)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
+	deallocate
+	execute_predicate('$dcg_expand_body', 4)
+
+$13:
 	put_x_variable(4, 4)
 	execute_predicate('$dcg_expand_head', 5)
 end('$dcg_expand_body'/4):

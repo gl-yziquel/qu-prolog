@@ -1354,6 +1354,37 @@ end('gettimeofday'/1):
 
 
 
+'$schedule_threads_now'/1:
+
+
+$1:
+	pseudo_instr1(114, 0)
+	proceed
+end('$schedule_threads_now'/1):
+
+
+
+'set_default_message_thread'/1:
+
+
+$1:
+	pseudo_instr1(115, 0)
+	proceed
+end('set_default_message_thread'/1):
+
+
+
+'default_message_thread'/1:
+
+
+$1:
+	pseudo_instr1(116, 1)
+	get_x_value(0, 1)
+	proceed
+end('default_message_thread'/1):
+
+
+
 'is'/2:
 
 
@@ -2736,6 +2767,79 @@ end('absolute_file_name'/2):
 
 
 
+'@<'/2:
+
+
+$1:
+	pseudo_instr2(130, 0, 1)
+	proceed
+end('@<'/2):
+
+
+
+'@='/2:
+
+
+$1:
+	pseudo_instr2(131, 0, 1)
+	proceed
+end('@='/2):
+
+
+
+'@>'/2:
+
+
+$1:
+	pseudo_instr2(132, 0, 1)
+	proceed
+end('@>'/2):
+
+
+
+'\\='/2:
+
+
+$1:
+	pseudo_instr2(133, 0, 1)
+	proceed
+end('\\='/2):
+
+
+
+'$string_to_list'/2:
+
+
+$1:
+	pseudo_instr2(134, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$string_to_list'/2):
+
+
+
+'$peek'/2:
+
+
+$1:
+	pseudo_instr2(135, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$peek'/2):
+
+
+
+'$hash_string'/2:
+
+
+$1:
+	pseudo_instr2(136, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$hash_string'/2):
+
+
+
 'functor'/3:
 
 
@@ -3535,8 +3639,7 @@ end('atom_search'/4):
 
 
 $1:
-	pseudo_instr4(2, 0, 1, 2, 4)
-	get_x_value(3, 4)
+	pseudo_instr4(2, 0, 1, 2, 3)
 	proceed
 end('$sub_atom'/4):
 

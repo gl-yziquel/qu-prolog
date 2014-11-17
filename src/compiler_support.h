@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -59,8 +59,8 @@
 #include "errors.h"
 // #include "io_qp.h"
 
-#define WARRAYSIZE 8000
-#define REGISTERSIZE 800
+#define WARRAYSIZE 16000
+#define REGISTERSIZE 1600
 
 extern const char *Program;
 
@@ -257,6 +257,7 @@ void prefer_registers(WordArray&, xreglife&, WordArray&, int);
 void init_live(Object**);
 void make_live(Object*, Object*, Object**);
 void make_dead(Object*, Object**);
+void reverse_make_dead(Object*, Object**);
 void make_pseudo_dead(Object*, Object**);
 bool is_live(Object*, Object*, Object**);
 

@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -193,7 +193,10 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_thread_wait_ptr,	0,	"psi_thread_wait_ptr"}, 
 	{&Thread::psi_thread_wait_update,	0,	"psi_thread_wait_update"}, 
 	{&Thread::psi_delete_timer,	0,	"psi_delete_timer"}, 
-	{&Thread::psi_gettimeofday,	1,	"psi_gettimeofday"}
+	{&Thread::psi_gettimeofday,	1,	"psi_gettimeofday"}, 
+	{&Thread::psi_schedule_threads_now,	0,	"psi_schedule_threads_now"}, 
+	{&Thread::psi_set_default_message_thread,	0,	"psi_set_default_message_thread"}, 
+	{&Thread::psi_default_message_thread,	1,	"psi_default_message_thread"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -326,7 +329,14 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_hash_variable,	1,	"psi_hash_variable"}, 
 	{&Thread::psi_stat,	1,	"psi_stat"}, 
 	{&Thread::psi_thread_wait_extract_preds,	1,	"psi_thread_wait_extract_preds"}, 
-	{&Thread::psi_absolute_path,	1,	"psi_absolute_path"}
+	{&Thread::psi_absolute_path,	1,	"psi_absolute_path"}, 
+	{&Thread::psi_term_less_than,	0,	"psi_term_less_than"}, 
+	{&Thread::psi_term_at_equal,	0,	"psi_term_at_equal"}, 
+	{&Thread::psi_term_greater_than,	0,	"psi_term_greater_than"}, 
+	{&Thread::psi_not_equal,	0,	"psi_not_equal"}, 
+	{&Thread::psi_string_to_list,	1,	"psi_string_to_list"}, 
+	{&Thread::psi_peek,	1,	"psi_peek"}, 
+	{&Thread::psi_hash_string,	1,	"psi_hash_string"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -405,7 +415,7 @@ pseudo_instr4_data pseudo_instr4_array[] =
 {
 	{&Thread::psi_dynamic,	0,	"psi_dynamic"}, 
 	{&Thread::psi_atom_search,	1,	"psi_atom_search"}, 
-	{&Thread::psi_sub_atom,	1,	"psi_sub_atom"}, 
+	{&Thread::psi_sub_atom,	0,	"psi_sub_atom"}, 
 	{&Thread::psi_load_foreign,	0,	"psi_load_foreign"}, 
 	{&Thread::psi_open_string,	1,	"psi_open_string"}, 
 	{&Thread::psi_get_pred_from_pred_table,	7,	"psi_get_pred_from_pred_table"}, 

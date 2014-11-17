@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -209,6 +209,9 @@ private:
   // String to hold thread name
   string symbol;
 
+  // String to hold default message thread
+  string default_thread;
+
  public:
   typedef Thread* ThreadPtr;
   explicit ThreadTable(const word32 TableSize = THREAD_TABLE_SIZE)
@@ -223,6 +226,8 @@ private:
 	{
 	  array[i] = NULL;
 	}
+      
+      default_thread = "thread0";
     }
 
   //
@@ -272,6 +277,10 @@ private:
   size_t Live(void) const { return live; }
   void IncLive(void) { live++; }
   void DecLive(void) { live--; }
+
+  void setDefaultThread(string name) { default_thread = name; }
+
+  string getDefaultThread(void) { return default_thread; }
 };
 
 // Print out some information about a thread table in

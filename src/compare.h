@@ -4,7 +4,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -79,6 +79,11 @@ ReturnValue psi_compare_atom(Object *& , Object *& , Object *& );
 //
 ReturnValue psi_compare_pointers(Object *& , Object *& );
 
+int compareTerms(PrologValue * term1, PrologValue * term2);
+
+ReturnValue psi_term_less_than(Object *& object1, Object *& object2);
+ReturnValue psi_term_at_equal(Object *& object1, Object *& object2);
+ReturnValue psi_term_greater_than(Object *& object1, Object *& object2);
 #endif // COMPARE_H
 
 

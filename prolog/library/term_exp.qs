@@ -1366,12 +1366,12 @@ end('$expand_subterms/6$2'/7):
 
 '$expand_subterms'/6:
 
-	switch_on_term(0, $13, $12, $12, $12, $12, $10)
-
-$10:
-	switch_on_constant(0, 4, ['$default':$12, 0:$11])
+	switch_on_term(0, $14, $13, $13, $13, $13, $11)
 
 $11:
+	switch_on_constant(0, 4, ['$default':$13, 0:$12])
+
+$12:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -1380,9 +1380,10 @@ $11:
 	retry($6)
 	retry($7)
 	retry($8)
-	trust($9)
+	retry($9)
+	trust($10)
 
-$12:
+$13:
 	try(6, $2)
 	retry($3)
 	retry($4)
@@ -1390,9 +1391,10 @@ $12:
 	retry($6)
 	retry($7)
 	retry($8)
-	trust($9)
+	retry($9)
+	trust($10)
 
-$13:
+$14:
 	try(6, $1)
 	retry($2)
 	retry($3)
@@ -1401,7 +1403,8 @@ $13:
 	retry($6)
 	retry($7)
 	retry($8)
-	trust($9)
+	retry($9)
+	trust($10)
 
 $1:
 	get_integer(0, 0)
@@ -1557,6 +1560,12 @@ $7:
 	proceed
 
 $8:
+	pseudo_instr1(108, 4)
+	neck_cut
+	get_x_value(5, 4)
+	proceed
+
+$9:
 	allocate(10)
 	get_y_variable(6, 0)
 	get_y_variable(5, 1)
@@ -1592,7 +1601,7 @@ $8:
 	deallocate
 	execute_predicate('$expand_subterms/6$1', 7)
 
-$9:
+$10:
 	allocate(10)
 	get_y_variable(5, 0)
 	get_y_variable(4, 1)

@@ -159,87 +159,6 @@ end('thread_fork'/4):
 
 
 
-'$thread_fork_ok/1$0'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, 'self':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_constant('self', 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('$thread_fork_ok/1$0'/1):
-
-
-
-'$thread_fork_ok/1$1'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, '':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_constant('', 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('$thread_fork_ok/1$1'/1):
-
-
-
-'$thread_fork_ok/1$2'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, 'pedro':$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_constant('pedro', 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('$thread_fork_ok/1$2'/1):
-
-
-
 '$thread_fork_ok'/1:
 
 	try(1, $1)
@@ -251,15 +170,13 @@ $1:
 	proceed
 
 $2:
-	allocate(1)
-	get_y_variable(0, 0)
-	call_predicate('$thread_fork_ok/1$0', 1, 1)
-	put_y_value(0, 0)
-	call_predicate('$thread_fork_ok/1$1', 1, 1)
-	put_y_value(0, 0)
-	call_predicate('$thread_fork_ok/1$2', 1, 1)
-	pseudo_instr1(2, 20)
-	deallocate
+	put_constant('self', 1)
+	pseudo_instr2(133, 0, 1)
+	put_constant('', 1)
+	pseudo_instr2(133, 0, 1)
+	put_constant('pedro', 1)
+	pseudo_instr2(133, 0, 1)
+	pseudo_instr1(2, 0)
 	proceed
 end('$thread_fork_ok'/1):
 
@@ -511,21 +428,23 @@ end('thread_wait_on_goal'/1):
 	trust($2)
 
 $1:
-	allocate(5)
-	get_y_variable(3, 0)
+	allocate(6)
+	get_y_variable(4, 0)
 	get_x_variable(0, 1)
-	get_y_level(4)
-	put_y_variable(2, 1)
-	put_y_variable(1, 2)
-	put_y_variable(0, 3)
-	call_predicate('$process_twg_options', 4, 5)
-	cut(4)
-	put_y_value(3, 0)
-	put_y_value(2, 1)
-	put_y_value(1, 2)
-	put_y_value(0, 3)
+	get_y_level(5)
+	put_y_variable(3, 1)
+	put_y_variable(2, 2)
+	put_y_variable(1, 3)
+	put_y_variable(0, 4)
+	call_predicate('$process_twg_options', 5, 6)
+	cut(5)
+	put_y_value(4, 0)
+	put_y_value(3, 1)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
+	put_y_value(0, 4)
 	deallocate
-	execute_predicate('$thread_wait_on_goal', 4)
+	execute_predicate('$thread_wait_on_goal', 5)
 
 $2:
 	get_x_variable(2, 0)
@@ -550,7 +469,7 @@ end('thread_wait_on_goal'/2):
 
 
 
-'$process_twg_options/4$0'/1:
+'$process_twg_options/5$0'/1:
 
 	try(1, $1)
 	trust($2)
@@ -564,29 +483,11 @@ $1:
 
 $2:
 	proceed
-end('$process_twg_options/4$0'/1):
+end('$process_twg_options/5$0'/1):
 
 
 
-'$process_twg_options/4$1'/1:
-
-	try(1, $1)
-	trust($2)
-
-$1:
-	pseudo_instr1(1, 0)
-	neck_cut
-	put_integer(-1, 1)
-	get_x_value(0, 1)
-	proceed
-
-$2:
-	proceed
-end('$process_twg_options/4$1'/1):
-
-
-
-'$process_twg_options/4$2'/1:
+'$process_twg_options/5$1'/1:
 
 	try(1, $1)
 	trust($2)
@@ -600,26 +501,46 @@ $1:
 
 $2:
 	proceed
-end('$process_twg_options/4$2'/1):
+end('$process_twg_options/5$1'/1):
 
 
 
-'$process_twg_options'/4:
+'$process_twg_options/5$2'/1:
 
-	switch_on_term(0, $7, 'fail', $6, 'fail', 'fail', $1)
+	try(1, $1)
+	trust($2)
 
-$6:
-	try(4, $2)
-	retry($3)
-	retry($4)
-	trust($5)
+$1:
+	pseudo_instr1(1, 0)
+	neck_cut
+	put_integer(-1, 1)
+	get_x_value(0, 1)
+	proceed
+
+$2:
+	proceed
+end('$process_twg_options/5$2'/1):
+
+
+
+'$process_twg_options'/5:
+
+	switch_on_term(0, $8, 'fail', $7, 'fail', 'fail', $1)
 
 $7:
-	try(4, $1)
+	try(5, $2)
+	retry($3)
+	retry($4)
+	retry($5)
+	trust($6)
+
+$8:
+	try(5, $1)
 	retry($2)
 	retry($3)
 	retry($4)
-	trust($5)
+	retry($5)
+	trust($6)
 
 $1:
 	get_constant('[]', 0)
@@ -627,12 +548,12 @@ $1:
 	allocate(2)
 	get_y_variable(1, 2)
 	get_y_variable(0, 3)
-	call_predicate('$process_twg_options/4$0', 1, 2)
+	call_predicate('$process_twg_options/5$0', 1, 2)
 	put_y_value(1, 0)
-	call_predicate('$process_twg_options/4$1', 1, 1)
+	call_predicate('$process_twg_options/5$1', 1, 1)
 	put_y_value(0, 0)
 	deallocate
-	execute_predicate('$process_twg_options/4$2', 1)
+	execute_predicate('$process_twg_options/5$2', 1)
 
 $2:
 	get_list(0)
@@ -645,83 +566,122 @@ $2:
 $3:
 	get_list(0)
 	unify_x_ref(0)
-	allocate(4)
-	unify_y_variable(2)
-	get_structure('wait_preds', 1, 0)
+	allocate(5)
 	unify_y_variable(3)
-	get_y_value(3, 1)
-	get_y_variable(1, 2)
-	get_y_variable(0, 3)
+	get_structure('wait_preds', 1, 0)
+	unify_y_variable(4)
+	get_y_value(4, 1)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
+	get_y_variable(0, 4)
 	neck_cut
-	put_y_value(3, 0)
+	put_y_value(4, 0)
 	put_x_variable(1, 1)
-	call_predicate('$check_preds', 2, 4)
-	put_y_value(2, 0)
-	put_y_value(3, 1)
-	put_y_value(1, 2)
-	put_y_value(0, 3)
+	call_predicate('$check_preds', 2, 5)
+	put_y_value(3, 0)
+	put_y_value(4, 1)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
+	put_y_value(0, 4)
 	deallocate
-	execute_predicate('$process_twg_options', 4)
+	execute_predicate('$process_twg_options', 5)
 
 $4:
 	get_list(0)
 	unify_x_ref(0)
-	allocate(4)
+	allocate(5)
 	unify_y_variable(2)
-	get_structure('wait_for', 1, 0)
+	get_structure('wait_preds', 2, 0)
+	unify_y_variable(4)
 	unify_y_variable(3)
-	get_y_variable(1, 1)
-	get_y_value(3, 2)
+	get_y_value(4, 1)
+	get_y_variable(1, 2)
 	get_y_variable(0, 3)
+	get_y_value(3, 4)
 	neck_cut
-	put_y_value(3, 0)
-	call_predicate('number', 1, 4)
-	put_integer(0, 0)
-	pseudo_instr2(2, 0, 23)
+	put_y_value(4, 0)
+	put_x_variable(1, 1)
+	call_predicate('$check_preds', 2, 5)
+	pseudo_instr1(1, 23)
 	put_y_value(2, 0)
-	put_y_value(1, 1)
-	put_y_value(3, 2)
+	put_y_value(4, 1)
+	put_y_value(1, 2)
 	put_y_value(0, 3)
+	put_y_value(3, 4)
 	deallocate
-	execute_predicate('$process_twg_options', 4)
+	execute_predicate('$process_twg_options', 5)
 
 $5:
 	get_list(0)
 	unify_x_ref(0)
-	allocate(4)
-	unify_y_variable(2)
-	get_structure('retry_every', 1, 0)
+	allocate(5)
 	unify_y_variable(3)
-	get_y_variable(1, 1)
-	get_y_variable(0, 2)
-	get_y_value(3, 3)
+	get_structure('wait_for', 1, 0)
+	unify_y_variable(4)
+	get_y_variable(2, 1)
+	get_y_value(4, 2)
+	get_y_variable(1, 3)
+	get_y_variable(0, 4)
 	neck_cut
-	put_y_value(3, 0)
-	call_predicate('number', 1, 4)
+	put_y_value(4, 0)
+	call_predicate('number', 1, 5)
 	put_integer(0, 0)
-	pseudo_instr2(2, 0, 23)
-	put_y_value(2, 0)
-	put_y_value(1, 1)
-	put_y_value(0, 2)
-	put_y_value(3, 3)
+	pseudo_instr2(2, 0, 24)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(4, 2)
+	put_y_value(1, 3)
+	put_y_value(0, 4)
 	deallocate
-	execute_predicate('$process_twg_options', 4)
-end('$process_twg_options'/4):
+	execute_predicate('$process_twg_options', 5)
+
+$6:
+	get_list(0)
+	unify_x_ref(0)
+	allocate(5)
+	unify_y_variable(3)
+	get_structure('retry_every', 1, 0)
+	unify_y_variable(4)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_y_value(4, 3)
+	get_y_variable(0, 4)
+	neck_cut
+	put_y_value(4, 0)
+	call_predicate('number', 1, 5)
+	put_integer(0, 0)
+	pseudo_instr2(2, 0, 24)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	put_y_value(1, 2)
+	put_y_value(4, 3)
+	put_y_value(0, 4)
+	deallocate
+	execute_predicate('$process_twg_options', 5)
+end('$process_twg_options'/5):
 
 
 
 '$check_preds'/2:
 
-	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
+	switch_on_term(0, $9, 'fail', $8, 'fail', 'fail', $1)
 
-$4:
+$8:
 	try(2, $2)
-	trust($3)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	trust($7)
 
-$5:
+$9:
 	try(2, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	trust($7)
 
 $1:
 	get_constant('[]', 0)
@@ -731,42 +691,113 @@ $2:
 	get_list(0)
 	unify_x_ref(2)
 	unify_x_variable(0)
+	get_structure('*', 2, 2)
+	unify_x_ref(2)
+	unify_void(1)
 	get_structure('/', 2, 2)
-	unify_x_variable(2)
+	unify_x_ref(2)
 	unify_x_variable(3)
+	get_structure('-', 1, 2)
+	unify_x_variable(2)
 	neck_cut
+	put_constant('true', 4)
+	get_x_value(1, 4)
 	pseudo_instr3(33, 2, 3, 4)
 	put_integer(1, 2)
 	get_x_value(4, 2)
-	put_constant('normal', 2)
-	get_x_value(1, 2)
 	execute_predicate('$check_preds', 2)
 
 $3:
 	get_list(0)
 	unify_x_ref(2)
 	unify_x_variable(0)
-	get_structure('-', 2, 2)
+	get_structure('*', 2, 2)
+	unify_x_ref(2)
+	unify_void(1)
+	get_structure('/', 2, 2)
 	unify_x_ref(2)
 	unify_x_variable(3)
+	get_structure('+', 1, 2)
+	unify_x_variable(2)
+	neck_cut
+	put_constant('true', 4)
+	get_x_value(1, 4)
+	pseudo_instr3(33, 2, 3, 4)
+	put_integer(1, 2)
+	get_x_value(4, 2)
+	execute_predicate('$check_preds', 2)
+
+$4:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('*', 2, 2)
+	unify_x_ref(2)
+	unify_void(1)
 	get_structure('/', 2, 2)
 	unify_x_variable(2)
-	unify_x_variable(4)
+	unify_x_variable(3)
 	neck_cut
-	pseudo_instr3(33, 2, 4, 5)
+	put_constant('true', 4)
+	get_x_value(1, 4)
+	pseudo_instr3(33, 2, 3, 4)
 	put_integer(1, 2)
-	get_x_value(5, 2)
-	put_constant('stamped', 2)
-	get_x_value(1, 2)
-	pseudo_instr1(3, 3)
-	put_integer(0, 2)
-	pseudo_instr2(2, 2, 3)
+	get_x_value(4, 2)
+	execute_predicate('$check_preds', 2)
+
+$5:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('/', 2, 2)
+	unify_x_ref(2)
+	unify_x_variable(3)
+	get_structure('-', 1, 2)
+	unify_x_variable(2)
+	neck_cut
+	put_constant('fail', 4)
+	get_x_value(1, 4)
+	pseudo_instr3(33, 2, 3, 4)
+	put_integer(1, 2)
+	get_x_value(4, 2)
+	execute_predicate('$check_preds', 2)
+
+$6:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('/', 2, 2)
+	unify_x_ref(2)
+	unify_x_variable(3)
+	get_structure('+', 1, 2)
+	unify_x_variable(2)
+	neck_cut
+	put_constant('fail', 4)
+	get_x_value(1, 4)
+	pseudo_instr3(33, 2, 3, 4)
+	put_integer(1, 2)
+	get_x_value(4, 2)
+	execute_predicate('$check_preds', 2)
+
+$7:
+	get_list(0)
+	unify_x_ref(2)
+	unify_x_variable(0)
+	get_structure('/', 2, 2)
+	unify_x_variable(2)
+	unify_x_variable(3)
+	neck_cut
+	put_constant('fail', 4)
+	get_x_value(1, 4)
+	pseudo_instr3(33, 2, 3, 4)
+	put_integer(1, 2)
+	get_x_value(4, 2)
 	execute_predicate('$check_preds', 2)
 end('$check_preds'/2):
 
 
 
-'$thread_wait_on_goal/4$0'/3:
+'$thread_wait_on_goal/5$0'/4:
 
 	switch_on_term(0, $7, $6, $6, $6, $6, $4)
 
@@ -774,16 +805,16 @@ $4:
 	switch_on_constant(0, 4, ['$default':$6, 'true':$5])
 
 $5:
-	try(3, $1)
+	try(4, $1)
 	retry($2)
 	trust($3)
 
 $6:
-	try(3, $2)
+	try(4, $2)
 	trust($3)
 
 $7:
-	try(3, $1)
+	try(4, $1)
 	retry($2)
 	trust($3)
 
@@ -798,8 +829,9 @@ $2:
 	allocate(2)
 	get_y_variable(0, 1)
 	get_x_variable(0, 2)
+	get_x_variable(2, 3)
 	get_y_level(1)
-	call_predicate('$_wait_', 2, 2)
+	call_predicate('$_wait_', 3, 2)
 	cut(1)
 	pseudo_instr1(109, 20)
 	deallocate
@@ -808,145 +840,148 @@ $2:
 $3:
 	pseudo_instr1(109, 1)
 	fail
-end('$thread_wait_on_goal/4$0'/3):
+end('$thread_wait_on_goal/5$0'/4):
 
 
 
-'$thread_wait_on_goal'/4:
+'$thread_wait_on_goal'/5:
 
 
 $1:
-	allocate(3)
-	get_y_variable(2, 0)
-	put_structure(4, 4)
-	set_constant('$thread_setup_wait')
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(2, 4)
+	put_structure(6, 0)
+	set_constant('$thread_wait_on_goal_atomic')
 	set_x_value(1)
 	set_x_value(2)
 	set_x_value(3)
 	set_y_variable(1)
-	put_structure(2, 0)
-	set_constant('/')
-	set_void(2)
-	put_structure(2, 2)
-	set_constant('-')
-	set_x_value(0)
-	set_void(1)
-	put_list(0)
-	set_x_value(2)
-	set_void(1)
-	put_structure(2, 2)
-	set_constant('=')
-	set_x_value(1)
-	set_x_value(0)
-	put_structure(2, 0)
-	set_constant('=')
+	set_y_value(3)
 	set_y_variable(0)
-	set_constant('fail')
-	put_structure(2, 1)
-	set_constant('->')
-	set_x_value(2)
-	set_x_value(0)
-	put_structure(2, 0)
-	set_constant('=')
-	set_y_value(0)
-	set_constant('true')
-	put_structure(2, 2)
-	set_constant('->')
-	set_y_value(2)
-	set_x_value(0)
-	put_structure(2, 0)
-	set_constant('=')
-	set_y_value(0)
-	set_constant('fail')
-	put_structure(2, 3)
-	set_constant(';')
-	set_x_value(2)
-	set_x_value(0)
-	put_structure(2, 2)
-	set_constant(';')
-	set_x_value(1)
-	set_x_value(3)
-	put_structure(2, 0)
-	set_constant(',')
-	set_x_value(4)
-	set_x_value(2)
-	call_predicate('thread_atomic_goal', 1, 3)
+	call_predicate('thread_atomic_goal', 1, 4)
 	put_y_value(0, 0)
 	put_y_value(1, 1)
-	put_y_value(2, 2)
+	put_y_value(3, 2)
+	put_y_value(2, 3)
 	deallocate
-	execute_predicate('$thread_wait_on_goal/4$0', 3)
-end('$thread_wait_on_goal'/4):
+	execute_predicate('$thread_wait_on_goal/5$0', 4)
+end('$thread_wait_on_goal'/5):
 
 
 
-'$_wait_/2$0'/3:
+'$thread_wait_on_goal_atomic'/6:
 
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
-$3:
-	switch_on_constant(0, 4, ['$default':$2, 'true':$4])
+$1:
+	get_x_variable(6, 1)
+	get_x_variable(7, 2)
+	get_x_variable(1, 4)
+	get_x_variable(2, 5)
+	pseudo_instr4(21, 0, 6, 7, 4)
+	get_x_value(3, 4)
+	execute_predicate('$thread_wait_on_goal_atomic_aux', 3)
+end('$thread_wait_on_goal_atomic'/6):
+
+
+
+'$thread_wait_on_goal_atomic_aux'/3:
+
+	switch_on_term(0, $5, $4, $5, $4, $4, $4)
 
 $4:
-	try(3, $1)
-	trust($2)
+	try(3, $2)
+	trust($3)
 
 $5:
 	try(3, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
-	put_constant('true', 1)
-	get_x_value(0, 1)
+	get_constant('fail', 2)
+	get_list(0)
+	unify_x_ref(0)
+	unify_void(1)
+	get_structure('*', 2, 0)
+	unify_x_ref(0)
+	unify_void(1)
+	get_structure('/', 2, 0)
+	unify_void(2)
 	neck_cut
 	proceed
 
 $2:
+	get_constant('true', 2)
 	get_x_variable(0, 1)
-	get_x_variable(1, 2)
-	execute_predicate('$_wait_', 2)
-end('$_wait_/2$0'/3):
+	allocate(1)
+	get_y_level(0)
+	call_predicate('call', 1, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$3:
+	get_constant('fail', 2)
+	proceed
+end('$thread_wait_on_goal_atomic_aux'/3):
 
 
 
-'$_wait_'/2:
+'$_wait_/3$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(110, 0)
+	neck_cut
+	proceed
+
+$2:
+	allocate(1)
+	get_y_variable(0, 1)
+	cut(0)
+	fail
+end('$_wait_/3$0'/2):
+
+
+
+'$_wait_'/3:
 
 
 $1:
-	allocate(3)
-	get_y_variable(2, 0)
-	get_y_variable(1, 1)
-	pseudo_instr1(110, 21)
-	put_structure(1, 1)
-	set_constant('$thread_wait_update')
-	set_y_value(1)
-	put_structure(2, 0)
-	set_constant('=')
-	set_y_variable(0)
-	set_constant('true')
-	put_structure(2, 2)
-	set_constant('->')
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_y_level(0)
+	call_predicate('repeat', 0, 4)
+	put_y_value(2, 0)
+	put_y_value(0, 1)
+	call_predicate('$_wait_/3$0', 2, 4)
+	put_structure(3, 0)
+	set_constant('$_wait_atomic')
+	set_y_value(3)
 	set_y_value(2)
-	set_x_value(0)
-	put_structure(2, 0)
-	set_constant('=')
-	set_y_value(0)
-	set_constant('fail')
-	put_structure(2, 3)
-	set_constant(';')
-	set_x_value(2)
-	set_x_value(0)
-	put_structure(2, 0)
-	set_constant(',')
-	set_x_value(1)
-	set_x_value(3)
-	call_predicate('thread_atomic_goal', 1, 3)
-	put_y_value(0, 0)
-	put_y_value(2, 1)
-	put_y_value(1, 2)
+	set_y_value(1)
+	call_predicate('thread_atomic_goal', 1, 1)
+	cut(0)
 	deallocate
-	execute_predicate('$_wait_/2$0', 3)
-end('$_wait_'/2):
+	proceed
+end('$_wait_'/3):
+
+
+
+'$_wait_atomic'/3:
+
+
+$1:
+	pseudo_instr1(111, 1)
+	pseudo_instr2(128, 1, 3)
+	get_x_value(2, 3)
+	execute_predicate('call', 1)
+end('$_wait_atomic'/3):
 
 
 
@@ -973,7 +1008,7 @@ $2:
 	get_list(1)
 	unify_x_ref(4)
 	unify_x_variable(1)
-	get_structure('-', 2, 4)
+	get_structure('*', 2, 4)
 	unify_x_ref(4)
 	unify_x_variable(5)
 	get_structure('/', 2, 4)
@@ -986,18 +1021,13 @@ end('get_predicate_timestamps'/2):
 
 
 
-'changed_predicates'/2:
+'update_predicate_timestamps'/2:
 
-	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $1)
+	switch_on_term(0, $3, 'fail', $2, 'fail', 'fail', $1)
 
-$4:
-	try(2, $2)
-	trust($3)
-
-$5:
+$3:
 	try(2, $1)
-	retry($2)
-	trust($3)
+	trust($2)
 
 $1:
 	get_constant('[]', 0)
@@ -1008,30 +1038,25 @@ $2:
 	get_list(0)
 	unify_x_ref(2)
 	unify_x_variable(0)
-	get_structure('-', 2, 2)
+	get_structure('*', 2, 2)
 	unify_x_ref(2)
-	unify_x_variable(3)
+	unify_void(1)
 	get_structure('/', 2, 2)
 	unify_x_variable(2)
-	unify_x_variable(4)
+	unify_x_variable(3)
 	get_list(1)
-	unify_x_ref(5)
+	unify_x_ref(4)
 	unify_x_variable(1)
-	get_structure('/', 2, 5)
+	get_structure('*', 2, 4)
+	unify_x_ref(4)
+	unify_x_variable(5)
+	get_structure('/', 2, 4)
 	unify_x_value(2)
-	unify_x_value(4)
-	pseudo_instr3(66, 2, 4, 5)
-	get_x_variable(2, 5)
-	pseudo_instr2(1, 3, 2)
-	neck_cut
-	execute_predicate('changed_predicates', 2)
-
-$3:
-	get_list(0)
-	unify_void(1)
-	unify_x_variable(0)
-	execute_predicate('changed_predicates', 2)
-end('changed_predicates'/2):
+	unify_x_value(3)
+	pseudo_instr3(66, 2, 3, 4)
+	get_x_value(5, 4)
+	execute_predicate('update_predicate_timestamps', 2)
+end('update_predicate_timestamps'/2):
 
 
 
@@ -1601,6 +1626,30 @@ $2:
 	pseudo_instr0(8)
 	proceed
 end('$call_timer_goals_handler'/1):
+
+
+
+'schedule_threads_now'/1:
+
+	try(1, $1)
+	trust($2)
+
+$1:
+	pseudo_instr1(114, 0)
+	neck_cut
+	proceed
+
+$2:
+	put_structure(1, 1)
+	set_constant('schedule_threads_now')
+	set_x_value(0)
+	put_structure(3, 0)
+	set_constant('context_exception')
+	set_constant('fatal')
+	set_x_value(1)
+	set_constant('Calling schedule_threads_now recursively')
+	execute_predicate('exception', 1)
+end('schedule_threads_now'/1):
 
 
 

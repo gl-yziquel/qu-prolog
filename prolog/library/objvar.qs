@@ -308,10 +308,10 @@ $1:
 	pseudo_instr4(1, 2, 3, 4, 1)
 	neck_cut
 	pseudo_instr2(70, 1, 3)
-	get_x_variable(1, 3)
-	put_integer(1, 4)
-	pseudo_instr4(2, 2, 4, 1, 3)
-	get_x_variable(1, 3)
+	put_integer(1, 1)
+	get_x_variable(4, 1)
+	put_x_variable(1, 1)
+	pseudo_instr4(2, 2, 4, 3, 1)
 	execute_predicate('$obvar_prefix_decl', 2)
 
 $2:

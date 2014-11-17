@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -374,6 +374,23 @@ void make_dead(Object* reg, Object** xreg_life)
       assert(arg->getInteger() >= 0);
       assert((u_long)(arg->getInteger()) < NUMBER_X_REGISTERS);
       xreg_life[arg->getInteger()] = AtomTable::failure;
+    }
+}
+
+void reverse_make_dead(Object* reg, Object** xreg_life)
+{
+  assert(reg == reg->variableDereference());
+  if(!reg->isStructure())
+    {
+      return;
+    }
+  for (u_int i = 0; i < NUMBER_X_REGISTERS; i++)
+    {
+      if (equal_regs(xreg_life[i],reg))
+        {
+           xreg_life[i] = AtomTable::failure;
+           break;
+        }
     }
 }
 
@@ -837,7 +854,7 @@ void writeInstructions(WordArray& instrs, QPStream* stream)
                   *stream << "string(";
 		  *(stream) << "\"";
 		  string str = OBJECT_CAST(StringObject*, arg3)->getChars();
-		  addEscapes(str, '"');
+		  //addEscapes(str, '"');
 		  *(stream) << str.c_str();
 		  *(stream) << "\"";
 		  *stream << ", ";

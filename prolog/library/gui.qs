@@ -151,33 +151,6 @@ end('start_debug_thread_gui'/0):
 
 
 
-'exit_debug_thread_gui/0$0'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, 0:$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_integer(0, 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('exit_debug_thread_gui/0$0'/1):
-
-
-
 'exit_debug_thread_gui'/0:
 
 	try(0, $1)
@@ -194,8 +167,8 @@ $1:
 	set_y_variable(1)
 	set_y_variable(0)
 	call_predicate('retract', 1, 3)
-	put_y_value(1, 0)
-	call_predicate('exit_debug_thread_gui/0$0', 1, 3)
+	put_integer(0, 0)
+	pseudo_instr2(133, 21, 0)
 	cut(2)
 	put_y_value(0, 0)
 	put_constant('$exit_gui', 1)
@@ -294,16 +267,20 @@ end('write_debug_msg_term'/2):
 
 
 $1:
-	allocate(3)
+	allocate(4)
 	get_y_variable(1, 0)
 	pseudo_instr1(68, 0)
+	put_y_variable(2, 19)
 	put_y_variable(0, 19)
-	put_y_variable(2, 1)
+	put_y_variable(3, 1)
 	put_x_variable(2, 2)
-	call_predicate('$thread_debug_set', 3, 3)
+	call_predicate('$thread_debug_set', 3, 4)
+	put_y_value(3, 0)
+	put_y_value(2, 1)
+	call_predicate('get_line', 2, 3)
 	put_y_value(2, 0)
 	put_y_value(0, 1)
-	call_predicate('get_line', 2, 2)
+	call_predicate('string_to_list', 2, 2)
 	put_y_value(0, 0)
 	put_list(1)
 	set_integer(10)

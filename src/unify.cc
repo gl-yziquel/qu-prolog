@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -1291,7 +1291,6 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
       Object* dummy;
       switch(term.getTerm()->tTag())
 	{
-	case Object::tString:	 
 	case Object::tCons:	 
 	  if (heap.yieldList(term.getTerm(), 
 			     variable.getSubstitutionBlockList(),
@@ -1350,6 +1349,7 @@ Thread::unifyVariableTerm(PrologValue& variable, PrologValue& term,
 	case Object::tLong:	 
 	case Object::tDouble:	 
 	case Object::tAtom:	 
+	case Object::tString:	 
 	  if (heap.yieldConstant(term.getTerm(), 
 				 variable.getSubstitutionBlockList(),
 				 status))
@@ -1578,8 +1578,6 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
       return(unifyVariableTerm(term2, term1, in_quant));
       break;
     case CrossTag(Object::UAtom, Object::UString):
-      return (term1.getTerm()->isNil() && term2.getTerm()->isEmptyString());
-      break;
     case CrossTag(Object::UAtom, Object::UNumber):
     case CrossTag(Object::UAtom, Object::UStruct):
     case CrossTag(Object::UAtom, Object::UCons):
@@ -1604,19 +1602,11 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
       return(unifyVariableTerm(term2, term1, in_quant));
       break;
     case CrossTag(Object::UString, Object::UAtom):
-      return (term1.getTerm()->isEmptyString() && term2.getTerm()->isNil());
-      break;
     case CrossTag(Object::UString, Object::UNumber):
     case CrossTag(Object::UString, Object::UStruct):
+    case CrossTag(Object::UString, Object::UCons):
       return false;
       break;
-    case CrossTag(Object::UString, Object::UCons):
-      {
-	StringObject* so = OBJECT_CAST(StringObject*, term1.getTerm());
-	PrologValue sval(heap.stringToList(so->getChars()));
-	return (unifyPrologValues(sval, term2));
-	break;
-      }
     case CrossTag(Object::UString, Object::UString):
       return (term1.getTerm()->equalUninterp(term2.getTerm()));
       break;
@@ -1696,15 +1686,9 @@ Thread::unifyPrologValues(PrologValue& term1, PrologValue& term2,
     case CrossTag(Object::UCons, Object::UNumber):
     case CrossTag(Object::UCons, Object::UAtom):
     case CrossTag(Object::UCons, Object::UStruct):
+    case CrossTag(Object::UCons, Object::UString):
       return false;
       break;
-    case CrossTag(Object::UCons, Object::UString):
-      {
-	StringObject* so = OBJECT_CAST(StringObject*, term2.getTerm());
-	PrologValue sval(heap.stringToList(so->getChars()));
-	return (unifyPrologValues(sval, term1));
-	break;
-      }
 
     case CrossTag(Object::UCons, Object::UCons):
        {
@@ -2008,8 +1992,6 @@ Thread::unify(Object* term1, Object* term2, bool in_quant)
       return(true);
       break;
     case CrossTag(Object::UAtom, Object::UString):
-      return (term1->isNil() and term2->isEmptyString());
-      break;
     case CrossTag(Object::UAtom, Object::UNumber):
     case CrossTag(Object::UAtom, Object::UAtom):
     case CrossTag(Object::UAtom, Object::UStruct):
@@ -2029,17 +2011,13 @@ Thread::unify(Object* term1, Object* term2, bool in_quant)
       return(true);
       break;
     case CrossTag(Object::UString, Object::UAtom):
-      return (term2->isNil() and term1->isEmptyString());
-      break;
     case CrossTag(Object::UString, Object::UNumber):
     case CrossTag(Object::UString, Object::UStruct):
+    case CrossTag(Object::UString, Object::UCons):
       return(false);
       break;
     case CrossTag(Object::UString, Object::UString):
       return (term1->equalUninterp(term2));
-      break;
-    case CrossTag(Object::UString, Object::UCons):
-      return (unify(heap.stringToList(OBJECT_CAST(StringObject*, term1)->getChars()), term2, in_quant));
       break;
     case CrossTag(Object::UString, Object::UOther):
       return unifyOtherTerm(term2, term1, in_quant);
@@ -2107,10 +2085,8 @@ Thread::unify(Object* term1, Object* term2, bool in_quant)
     case CrossTag(Object::UCons, Object::UNumber):
     case CrossTag(Object::UCons, Object::UAtom):
     case CrossTag(Object::UCons, Object::UStruct):
-      return(false);
-      break;
     case CrossTag(Object::UCons, Object::UString):
-      return (unify(heap.stringToList(OBJECT_CAST(StringObject*, term2)->getChars()), term1, in_quant));
+      return(false);
       break;
     case CrossTag(Object::UCons, Object::UCons):
       {
@@ -2676,8 +2652,6 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
       return structuralUnifyVarConst(term2, term1);
       break;
     case CrossTag(Object::UAtom, Object::UString):
-      return (term1.getTerm()->isNil() && term2.getTerm()->isEmptyString());
-      break;
     case CrossTag(Object::UAtom, Object::UAtom):
     case CrossTag(Object::UAtom, Object::UStruct):
     case CrossTag(Object::UAtom, Object::UCons):
@@ -2694,21 +2668,14 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
     case CrossTag(Object::UString, Object::UVarOC):
       return structuralUnifyVarConst(term2, term1);
       break;
-    case CrossTag(Object::UString, Object::UAtom):
-      return (term1.getTerm()->isEmptyString() && term2.getTerm()->isNil());
-      break;
     case CrossTag(Object::UString, Object::UString):
       return term1.getTerm()->equalUninterp(term2.getTerm());
       break;
+    case CrossTag(Object::UString, Object::UAtom):
     case CrossTag(Object::UString, Object::UStruct):
+    case CrossTag(Object::UString, Object::UCons):
       return false;
       break;
-    case CrossTag(Object::UString, Object::UCons):
-      {
-	PrologValue term3(heap.newCons(OBJECT_CAST(StringObject*, term1.getTerm())->getChars()));
-	return structuralUnify(term3, term2);
-      break;
-      }
     case CrossTag(Object::UString, Object::UOther):
       return (term2.getTerm()->isVariable() &&
 	      structuralUnifyVarConst(term2, term1));
@@ -2770,14 +2737,9 @@ Thread::structuralUnify(PrologValue& term1, PrologValue& term2)
     case CrossTag(Object::UCons, Object::UNumber):
     case CrossTag(Object::UCons, Object::UAtom):
     case CrossTag(Object::UCons, Object::UStruct):
+    case CrossTag(Object::UCons, Object::UString):
       return false;
       break;
-    case CrossTag(Object::UCons, Object::UString):
-      {
-	PrologValue term3(heap.stringToList(OBJECT_CAST(StringObject*, term2.getTerm())->getChars()));
-	return structuralUnify(term3, term1);
-      break;
-      }
     case CrossTag(Object::UCons, Object::UCons):
       {
 	Cons* list1 = OBJECT_CAST(Cons*, term1.getTerm());

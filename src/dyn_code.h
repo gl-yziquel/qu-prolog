@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -158,6 +158,11 @@ ReturnValue psi_retract(Object*& object1);
 //
 ReturnValue psi_predicate_stamp(Object*& object1, Object*& object2,
                             Object*& object3);
+// Get the P/N info if the timestamps have changed
+// mode psi_predicate_stamp_change(in,in,out)
+//
+ReturnValue psi_predicate_stamp_change(Object*& object1, Object*& object2,
+				       Object*& object3);
 //
 // psi_dynamic(pred, arity, indexArg, hashtablesize)
 // Declare pred/arity as a dynamic predicate with indexArg (default = 1)

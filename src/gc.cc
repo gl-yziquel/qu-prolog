@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -152,7 +152,7 @@ bool checkVarExtendedSize(Object* term, int size)
     {
       cerr << size << endl;
       heapobject* ptr = reinterpret_cast<heapobject*>(term);
-      cerr << hex << (u_int)(ptr) << " : " << *ptr << " " << *(ptr+1) << dec << endl;
+      cerr << hex << (u_long)(ptr) << " : " << *ptr << " " << *(ptr+1) << dec << endl;
       return false;
     }
   return true;

@@ -668,7 +668,7 @@ end('assert'/2):
 
 
 
-'$assert_clause/3$0'/3:
+'$assert_clause/3$0/3$0/3$0'/3:
 
 	try(3, $1)
 	trust($2)
@@ -689,11 +689,11 @@ $2:
 	get_y_variable(0, 2)
 	cut(0)
 	fail
-end('$assert_clause/3$0'/3):
+end('$assert_clause/3$0/3$0/3$0'/3):
 
 
 
-'$assert_clause/3$1'/4:
+'$assert_clause/3$0/3$0/3$1'/4:
 
 
 $1:
@@ -703,7 +703,75 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$assert_clause/3$1'/4):
+end('$assert_clause/3$0/3$0/3$1'/4):
+
+
+
+'$assert_clause/3$0/3$0'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(7)
+	get_y_variable(6, 0)
+	get_y_variable(5, 1)
+	get_y_variable(2, 2)
+	get_y_level(0)
+	put_y_variable(4, 19)
+	put_y_variable(3, 19)
+	put_y_variable(1, 19)
+	put_y_value(0, 2)
+	call_predicate('$assert_clause/3$0/3$0/3$0', 3, 7)
+	call_predicate('$ignore_delays', 0, 7)
+	put_integer(1, 0)
+	put_integer(0, 1)
+	pseudo_instr2(10, 0, 1)
+	put_x_variable(0, 1)
+	get_structure(',', 2, 1)
+	unify_y_value(6)
+	unify_y_value(5)
+	pseudo_instr1(52, 0)
+	put_y_value(6, 0)
+	put_y_value(4, 1)
+	call_predicate('$correct_name', 2, 6)
+	put_x_variable(1, 2)
+	get_structure(',', 2, 2)
+	unify_y_value(4)
+	unify_y_value(5)
+	pseudo_instr2(95, 1, 0)
+	get_structure(',', 2, 0)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	put_y_value(1, 2)
+	put_y_value(3, 3)
+	call_predicate('$assert_clause/3$0/3$0/3$1', 4, 5)
+	pseudo_instr4(11, 24, 23, 22, 0)
+	get_y_value(1, 0)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('$assert_clause/3$0/3$0'/3):
+
+
+
+'$assert_clause/3$0'/3:
+
+	try(3, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$assert_clause/3$0/3$0', 3, 1)
+	cut(0)
+	fail
+
+$2:
+	proceed
+end('$assert_clause/3$0'/3):
 
 
 
@@ -713,44 +781,13 @@ end('$assert_clause/3$1'/4):
 	trust($2)
 
 $1:
-	allocate(7)
-	get_y_variable(5, 0)
-	get_y_variable(4, 1)
-	get_y_variable(1, 2)
-	get_y_level(6)
-	put_y_variable(3, 19)
-	put_y_variable(2, 19)
-	put_y_variable(0, 19)
-	put_y_value(6, 2)
-	call_predicate('$assert_clause/3$0', 3, 6)
-	call_predicate('$ignore_delays', 0, 6)
-	put_integer(1, 0)
-	put_integer(0, 1)
-	pseudo_instr2(10, 0, 1)
-	put_x_variable(0, 1)
-	get_structure(',', 2, 1)
-	unify_y_value(5)
-	unify_y_value(4)
-	pseudo_instr1(52, 0)
-	put_y_value(5, 0)
-	put_y_value(3, 1)
-	call_predicate('$correct_name', 2, 5)
-	put_x_variable(1, 2)
-	get_structure(',', 2, 2)
-	unify_y_value(3)
-	unify_y_value(4)
-	pseudo_instr2(95, 1, 0)
-	get_structure(',', 2, 0)
-	unify_x_variable(0)
-	unify_x_variable(1)
-	put_y_value(0, 2)
-	put_y_value(2, 3)
-	call_predicate('$assert_clause/3$1', 4, 4)
-	pseudo_instr4(11, 23, 22, 21, 0)
-	get_y_value(0, 0)
+	pseudo_instr0(16)
+	allocate(0)
+	call_predicate('$assert_clause/3$0', 3, 0)
 	fail
 
 $2:
+	pseudo_instr0(17)
 	proceed
 end('$assert_clause'/3):
 

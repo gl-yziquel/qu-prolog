@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -238,6 +238,8 @@ public:
   static Atom *start;
 
 
+  static Atom *maxi;
+  static Atom *min;
   static Atom *plus;
   static Atom *minus;
   static Atom *multiply;
@@ -446,6 +448,8 @@ public:
     cpseudo_instr5 = add("$pseudo_instr5");
     start = add("start");
 
+    maxi = add("max");
+    min = add("min");
     plus = add("+");
     minus = add("-");
     multiply = add("*");

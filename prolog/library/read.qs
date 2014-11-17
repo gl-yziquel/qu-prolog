@@ -1703,33 +1703,6 @@ end('$collect_tokens'/8):
 
 
 
-'$read_next_token_or_nl/3$0'/1:
-
-	switch_on_term(0, $5, $2, $2, $2, $2, $3)
-
-$3:
-	switch_on_constant(0, 4, ['$default':$2, 13:$4])
-
-$4:
-	try(1, $1)
-	trust($2)
-
-$5:
-	try(1, $1)
-	trust($2)
-
-$1:
-	put_integer(13, 1)
-	get_x_value(0, 1)
-	neck_cut
-	fail
-
-$2:
-	proceed
-end('$read_next_token_or_nl/3$0'/1):
-
-
-
 '$read_next_token_or_nl'/3:
 
 
@@ -1743,8 +1716,8 @@ $1:
 	pseudo_instr3(35, 23, 0, 1)
 	get_y_value(1, 0)
 	get_y_value(2, 1)
-	put_y_value(1, 0)
-	call_predicate('$read_next_token_or_nl/3$0', 1, 1)
+	put_integer(13, 0)
+	pseudo_instr2(133, 21, 0)
 	cut(0)
 	deallocate
 	proceed

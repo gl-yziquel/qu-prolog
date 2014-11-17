@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -83,6 +83,12 @@ ReturnValue psi_stream_to_string(Object *& stream_arg, Object *& string_arg);
 ReturnValue psi_list_to_string(Object *& list_arg, Object *& string_arg);
 
 //
+// psi_string_to_list(string, variable)
+// Convert a string into a list
+//
+ReturnValue psi_string_to_list(Object *& string_arg, Object *& list_arg);
+
+//
 // psi_string_to_atom(string, variable)
 // Convert a string into an atom
 //
@@ -115,5 +121,10 @@ ReturnValue psi_split_string(Object *& string_arg, Object *& pos_arg,
 			     Object *& split1_arg, Object *& split2_arg);
 
 
-
+//
+// psi_hash_string(A,B)
+// mode(in,out)
+// 
+//
+ReturnValue psi_hash_string(Object *& object1, Object *& object2);
 #endif // STRING_ESCAPES_H

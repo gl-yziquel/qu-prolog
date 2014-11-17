@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 9.1 Reference Manual - Built-in Predicates
+Qu-Prolog 9.5 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -1811,6 +1811,36 @@ Write <KBD>Integer</KBD> to <KBD>Stream</KBD>. <KBD>write_integer</KBD> is faste
 <BR>42
 <BR>
 <BR>no
+</KBD>
+</BLOCKQUOTE>
+<P><KBD><a name="write_string"></a>write_string(Stream, String)</KBD>
+
+<BLOCKQUOTE>
+Write <KBD>String</KBD> to <KBD>Stream</KBD> but without the quotes. 
+<BR><KBD>mode write_string(@string)</KBD>
+<BR><KBD>mode write_string(@stream, @string)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- write_string(stdout, "Hello World").
+<BR>Hello World
+<BR>
+</KBD>
+</BLOCKQUOTE>
+<P><KBD><a name="writeq_string"></a>writeq_string(Stream, String)</KBD>
+
+<BLOCKQUOTE>
+Write <KBD>String</KBD> to <KBD>Stream</KBD> with quotes. 
+<BR><KBD>mode writeq_string(@string)</KBD>
+<BR><KBD>mode writeq_string(@stream, @string)</KBD>
+
+<P>Example:
+
+<KBD>
+<P>| ?- writeq_string(stdout, "Hello World").
+<BR>"Hello World"
+<BR>
 </KBD>
 </BLOCKQUOTE>
 
@@ -5215,7 +5245,15 @@ and
 <KBD>StampedPredicates</KBD> is a list of the form <KBD>P/N-Stamp</KBD>.
 The stamp is a number representing the number of times this predicate has been modified and
 is useful for <KBD>thread_wait_on_goal</KBD> to prevent an unnecessary initial call of the goal. 
+As with <KBD>thread_wait_on_goal</KBD>, the predicates can be prefixed with a <KBD>+</KBD> or a  <KBD>-</KBD> and in which case the stamp will be for a timestamp for asserting or retracting.
 <BR><KBD>mode get_predicate_timestamp(@list, -list)</KBD>
+</BLOCKQUOTE>
+<P><KBD><a name="update_predicate_timestamp"></a>update_predicate_timestamp(OldStampedPredicates, StampedPredicates)</KBD>
+
+<BLOCKQUOTE>
+<KBD>OldStampedPredicates</KBD> and <KBD>StampedPredicates</KBD> are lists of the form <KBD>P/N-Stamps</KBD>.
+This is like <KBD>get_predicate_timestamp</KBD> except that stamped predicates are used rather than predicates.
+<BR><KBD>mode update_predicate_timestamp(@list, -list)</KBD>
 
 </BLOCKQUOTE>
 <P><KBD><a name="changed_predicates"></a>changed_predicates(StampedPredicates, SPredicates)</KBD>
@@ -6394,6 +6432,10 @@ The foreign function, <KBD>ForeignFn</KBD>, is written in <KBD>Language</KBD>, w
 </TR>
 <TR>
 <TD><KBD>atom</KBD></TD>
+<TD><KBD>char *</KBD></TD>
+</TR>
+<TR>
+<TD><KBD>string</KBD></TD>
 <TD><KBD>char *</KBD></TD>
 </TR>
 </TABLE>
@@ -8335,8 +8377,8 @@ to multi-threading.
 <BR>Wait on any database change (including changes to the global state and hash table).
 <BR>default: <KBD>true</KBD>
 <LI>
-<KBD>timeout(N)</KBD>
-<BR>The call will wait for <KBD>N</KBD> seconds before continuing.
+<KBD>timeout(T)</KBD>
+<BR>The call will wait for <KBD>T</KBD> seconds before continuing.
 <BR>default: <KBD>block</KBD>
 </UL>
 <P> Note: A timeout of <KBD>block</KBD> means that the thread will never timeout. 
@@ -8355,7 +8397,7 @@ Currently, if the conditions are set to <KBD>false</KBD>,
 <LI>at most one occurrence of a term 
 of the form <KBD>wait_preds(PredList)</KBD> where <KBD>PredList</KBD> is 
 a list of terms of the form <KBD>P/N</KBD> or of the form <KBD>P/N-Stamp</KBD>
-where <KBD>Stamp</KBD> is a database stamp - see <KBD><a href="SEC3.html#get_predicate_timestamps">get_predicate_timestamps</a></KBD> 
+where <KBD>Stamp</KBD> is a database stamp - see <KBD><a href="SEC3.html#get_predicate_timestamp">get_predicate_timestamp</a></KBD> 
 <LI>at most one occurrence of a term of the form <KBD>wait_for(Secs)</KBD></LI>
 <LI>at most one occurrence of a term of the form <KBD>retry_every(Secs)</KBD></LI>
 <LI>at most one of the above two terms
@@ -8369,9 +8411,15 @@ If <KBD>wait_for(Secs)</KBD> is given and
 then <KBD>thread_wait_on_goal</KBD> fails. If <KBD>retry_every(Secs)</KBD> is
 given then <KBD>Goal</KBD> is retried at least every <KBD>Secs</KBD> seconds,
 even if there is no change to the dynamic database.
+<P>It is sometimes useful for <KBD>Goal</KBD> to be able to access the predicates that have changed when timestamps are used in <KBD>wait_preds</KBD>. To support this, the variant <KBD>wait_preds(PredList, CPreds)</KBD> can be used (where 
+<KBD>CPreds</KBD> is an unbound variable at the time of call). 
+If <KBD>PredList</KBD> contains timestamps then each time <KBD>Goal</KBD> is tried <KBD>CPreds</KBD> will be rebound to those predicates in <KBD>PredList</KBD>  that  have been changed since the last time <KBD>Goal</KBD> was tried.
+As a further enhancement, the predicates in <KBD>PredList</KBD> can be prefixed by <KBD>+</KBD> or <KBD>-</KBD>. A <KBD>+</KBD> (respectively <KBD>-</KBD>)
+ means that the goal will be retried if the predicate is changed by an assert 
+(respectively retract) of the predicate. 
 <P> Note that if the supplied goal produces a side-effect and then fails, then
 the side-effect will be produced each time the database is modified.
-Also note that, if <KBD>wait_each(Secs)</KBD> is given, one way the goal could succeed without a change to the database is if the Prolog state changed in another way, for example by the use of random or because of a message or socket event.
+Also note that, if <KBD>retry_every(Secs)</KBD> is given, one way the goal could succeed without a change to the database is if the Prolog state changed in another way, for example by the use of random or because of a message or socket event.
 
 <BR><KBD>mode thread_wait_on_goal(+term)</KBD>
 <BR><KBD>mode thread_wait_on_goal(+term, @list(terms))</KBD>
@@ -8381,7 +8429,7 @@ Also note that, if <KBD>wait_each(Secs)</KBD> is given, one way the goal could s
 <BLOCKQUOTE>
 <P>This is the same as 
 <BR><KBD>thread_wait([timeout(Time_Out), db(false)])</KBD>.
-<BR><KBD>mode thread_sleep(+integer)</KBD>
+<BR><KBD>mode thread_sleep(+number)</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_sleep_until"></a>thread_sleep_until(Time)</KBD>
@@ -8411,6 +8459,13 @@ seconds since the Unix epoch. See <KBD><a href="#realtime">realtime/[1]</a></KBD
 <BLOCKQUOTE>
 <P>Returns the current errno for this thread.
 <BR><KBD>mode thread_errno(-integer)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="schedule_threads_now"></a>schedule_threads_now(ThreadNames)</KBD>
+<BLOCKQUOTE>
+<P>This runs a single timeslice for all threads whose names are listed in
+<KBD>ThreadNames</KBD>. This predicate produces an error if a listed thread does not exist, the calling thread is listed, or is called by a thread within the execution of <KBD>schedule_threads_now</KBD>.
+<BR><KBD>mode schedule_threads_now(@list(atoms))</KBD>
 </BLOCKQUOTE>
 
 <P><KBD><a name="thread_yield"></a>thread_yield</KBD>
@@ -8766,6 +8821,21 @@ the process is connected.
 <BLOCKQUOTE>
 <P> <KBD>Port</KBD> is the port used by the Pedro server with which the process is connected.
 <BR><KBD>mode pedro_port(?integer)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="set_default_message_thread"></a>set_default_message_thread(ThreadName)</KBD>
+<BLOCKQUOTE>
+<P> Set the name of the thread that receives peer-to-peer messages that do not include a thread name as part of the address.
+
+<BR><KBD>mode set_default_message_thread(@atom)</KBD>
+</BLOCKQUOTE>
+
+<P><KBD><a name="default_message_thread"></a>default_message_thread(ThreadName)</KBD>
+<BLOCKQUOTE>
+<P> Return true iff <KBD>ThreadName</KBD> is the name of the default message 
+thread.
+
+<BR><KBD>mode default_message_thread(?atom)</KBD>
 </BLOCKQUOTE>
 
 

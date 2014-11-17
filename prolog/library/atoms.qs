@@ -83,13 +83,11 @@ $2:
 	put_y_variable(2, 2)
 	put_integer(0, 0)
 	call_predicate('between', 3, 5)
-	put_integer(1, 1)
-	pseudo_instr4(2, 21, 1, 22, 0)
-	get_y_value(4, 0)
+	put_integer(1, 0)
+	pseudo_instr4(2, 21, 0, 22, 24)
 	pseudo_instr3(3, 23, 22, 0)
 	pseudo_instr2(69, 22, 1)
-	pseudo_instr4(2, 21, 1, 0, 2)
-	get_y_value(0, 2)
+	pseudo_instr4(2, 21, 1, 0, 20)
 	deallocate
 	proceed
 
@@ -305,9 +303,34 @@ end('atom_concat'/3):
 	try(4, $1)
 	retry($2)
 	retry($3)
-	trust($4)
+	retry($4)
+	trust($5)
 
 $1:
+	allocate(4)
+	get_y_variable(3, 0)
+	get_y_variable(2, 1)
+	get_y_variable(1, 2)
+	get_y_variable(0, 3)
+	pseudo_instr1(2, 23)
+	pseudo_instr1(2, 20)
+	neck_cut
+	pseudo_instr2(30, 23, 0)
+	pseudo_instr2(30, 20, 1)
+	get_y_value(1, 1)
+	put_x_variable(2, 3)
+	get_structure('+', 2, 3)
+	unify_x_value(0)
+	unify_integer(1)
+	pseudo_instr3(3, 2, 21, 1)
+	put_y_value(2, 2)
+	put_integer(1, 0)
+	call_predicate('between', 3, 4)
+	pseudo_instr4(2, 23, 22, 21, 20)
+	deallocate
+	proceed
+
+$2:
 	pseudo_instr1(2, 0)
 	pseudo_instr1(3, 1)
 	pseudo_instr1(3, 2)
@@ -317,12 +340,12 @@ $1:
 	pseudo_instr2(70, 5, 6)
 	get_x_variable(5, 6)
 	pseudo_instr2(2, 5, 4)
+	put_x_variable(4, 4)
 	pseudo_instr4(2, 0, 1, 2, 4)
-	get_x_variable(0, 4)
-	get_x_value(3, 0)
+	get_x_value(3, 4)
 	proceed
 
-$2:
+$3:
 	allocate(5)
 	get_y_variable(3, 0)
 	get_y_variable(2, 1)
@@ -341,12 +364,13 @@ $2:
 	put_y_value(1, 2)
 	put_integer(0, 0)
 	call_predicate('between', 3, 4)
+	put_x_variable(0, 0)
 	pseudo_instr4(2, 23, 22, 21, 0)
 	get_y_value(0, 0)
 	deallocate
 	proceed
 
-$3:
+$4:
 	get_x_variable(4, 0)
 	pseudo_instr1(1, 4)
 	neck_cut
@@ -380,7 +404,7 @@ $3:
 	put_integer(1, 1)
 	execute_predicate('instantiation_exception', 3)
 
-$4:
+$5:
 	get_x_variable(4, 0)
 	put_structure(4, 0)
 	set_constant('sub_atom')

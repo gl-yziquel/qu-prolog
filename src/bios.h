@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-2011 
+// Copyright (C) 2000-Mon Nov 17 15:45:58 AEST 2014 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -62,6 +62,12 @@ public:
 // mode(in,out)
 //
 ReturnValue psi_get_char(Object *&, Object *&);
+//
+// psi_peek(stream_index, variable)
+// Peek at the next character from the input stream.
+// mode(in,out)
+//
+ReturnValue psi_peek(Object *&, Object *&);
 
 //
 // psi_put_char(stream_index, character)
