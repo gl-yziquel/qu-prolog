@@ -917,7 +917,7 @@ end('$throw_cleanup'/0):
 
 
 
-'$query_call1416203175_286/0$0'/0:
+'$query_call1431386253_733/0$0'/0:
 
 
 $1:
@@ -931,23 +931,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_call1416203175_286/0$0'/0):
+end('$query_call1431386253_733/0$0'/0):
 
 
 
-'$query_call1416203175_286'/0:
+'$query_call1431386253_733'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_call1416203175_286/0$0', 0, 0)
+	call_predicate('$query_call1431386253_733/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_call1416203175_286'/0):
+end('$query_call1431386253_733'/0):
 
 
 
@@ -955,7 +955,7 @@ end('$query_call1416203175_286'/0):
 
 
 $1:
-	execute_predicate('$query_call1416203175_286', 0)
+	execute_predicate('$query_call1431386253_733', 0)
 end('$query'/0):
 
 
