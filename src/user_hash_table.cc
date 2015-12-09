@@ -10,24 +10,18 @@ UserHashTable::~UserHashTable(void) {}
 void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
 {
   int index;
-  wordptr sh2;
-  bool isint;
-  if (h2->isInteger())
-    {
-      sh2 = (wordptr)(h2->getInteger());
-      isint = true;
-    }
-  else
-    {
-      sh2 = (wordptr)h2;
-      isint = false;
-    }
+
   // Garbage Collect?
   if (userhashheap->doGarbageCollection())
   {
     garbageCollect();
    } 
-  UserHashEntry* new_entry = new UserHashEntry((wordptr)h1, sh2, isint);
+  Object* h2_copy;
+  if (h2->isAtom())
+    h2_copy = h2;
+  else
+    h2_copy = heap.copyTerm(h2, *userhashheap);
+  UserHashEntry* new_entry = new UserHashEntry(h1, h2_copy);
   heapobject* old_top = userhashheap->getTop();
   Object* copy = heap.copyTerm(term, *userhashheap);
   heapobject* new_top = userhashheap->getTop();
@@ -65,19 +59,8 @@ void UserHashState::addEntry(Object* h1, Object* h2, Object* term, Heap& heap)
 
 bool UserHashState::lookupEntry(Object* h1, Object* h2, Object*& ret, Heap& heap)
 {
-  wordptr sh2;
-  bool isint;
-  if (h2->isInteger())
-    {
-      sh2 = (wordptr)(h2->getInteger());
-      isint = true;
-    }
-  else
-    {
-      sh2 = (wordptr)h2;
-      isint = false;
-    }
-  UserHashEntry entry((wordptr)h1, sh2, isint);
+
+  UserHashEntry entry(h1, h2);
   const int index = hash_table.search(entry);
   if (index == -1) return false;
   Object* val = hash_table.getEntry(index).getValue();
@@ -87,19 +70,7 @@ bool UserHashState::lookupEntry(Object* h1, Object* h2, Object*& ret, Heap& heap
 
 bool UserHashState::removeEntry(Object* h1, Object* h2)
 {
-  wordptr sh2;
-  bool isint;
-  if (h2->isInteger())
-    {
-      sh2 = (wordptr)(h2->getInteger());
-      isint = true;
-    }
-  else
-    {
-      sh2 = (wordptr)h2;
-      isint = false;
-    }
-  UserHashEntry entry((wordptr)h1, sh2, isint);
+  UserHashEntry entry(h1, h2);
   const int index = hash_table.search(entry);
   if (index == -1) return false;
   hash_table.remove(index);
@@ -117,15 +88,12 @@ bool UserHashState::hashIterNext(Object*& a, Object*& b, Object*& c,
   int index  = hash_table.iter_next();
   if (index == -1) return false;
   UserHashEntry entry = hash_table.getEntry(index);
-  a = (Object*)(entry.getFstEntry());
-  if (entry.getIsInt())
-    {
-      b = heap.newInteger((int)(entry.getSndEntry()));
-    }
+  a = entry.getFstEntry();
+  Object* snd = entry.getSndEntry();
+  if (snd->isAtom()) 
+    b = snd;
   else
-    {
-      b = (Object*)(entry.getSndEntry());
-    }
+    b = userhashheap->copyTerm(snd, heap);
   c = userhashheap->copyTerm(entry.getValue(), heap);
   return true;
 }

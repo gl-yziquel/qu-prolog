@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -287,7 +287,7 @@ Thread::psi_set_var_name(Object *& object1, Object *& object2)
   char* str = OBJECT_CAST(Atom*, val2)->getName();
   if (*str < 'A' || *str > 'Z')
     {
-      PSI_ERROR_RETURN(EV_TYPE, 2);
+      return(RV_SUCCESS); //PSI_ERROR_RETURN(EV_TYPE, 2);
     }
 
   //

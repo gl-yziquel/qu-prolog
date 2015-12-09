@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -820,7 +820,8 @@ Thread::psi_thread_wait_ptr(Object *& wait_ptr)
   long iptr = argW->getInteger();
   BlockingWaitObject* bwo = reinterpret_cast<BlockingWaitObject*>(iptr);
   // the wait has timedout and has not become unblocked in the meantime
-  if (bwo->isWakeOnTimeout() && !bwo->is_unblocked())
+  if (bwo->is_unblocked()) return RV_SUCCESS;
+  if (bwo->isWakeOnTimeout())
     return RV_FAIL;
   if (block_status.isRestarted())
     {
@@ -1192,9 +1193,8 @@ Thread::psi_schedule_threads_now(Object *& threads_arg)
   while (argTs->isCons()) {
     Object* head = heap.dereference(OBJECT_CAST(Cons*,argTs)->getHead());
     const ErrorValue result = decode_thread(heap, head, *thread_table, &thread);
-    if ((result != EV_NO_ERROR) || (thread == this)) 
-      PSI_ERROR_RETURN(EV_TYPE, 1);
-    run_queue.push_back(thread);
+    if ((result == EV_NO_ERROR) && (thread != this)) 
+      run_queue.push_back(thread);
     argTs = heap.dereference(OBJECT_CAST(Cons*,argTs)->getTail());
   }
   if (! argTs->isNil())

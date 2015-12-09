@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -77,7 +77,7 @@ Thread::psi_user_ht_insert(Object *& fst_obj, Object *& snd_obj,
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  if (!snd->isAtom() && !snd->isInteger()) 
+  if (!snd->isConstant()) 
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -103,7 +103,7 @@ Thread::psi_user_ht_lookup(Object *& fst_obj, Object *& snd_obj,
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  if (!snd->isAtom() && !snd->isInteger()) 
+  if (!snd->isConstant()) 
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -125,7 +125,7 @@ Thread::psi_user_ht_remove(Object *& fst_obj, Object *& snd_obj)
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  if (!snd->isAtom() && !snd->isInteger()) 
+  if (!snd->isConstant()) 
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -152,7 +152,7 @@ Thread::psi_user_ht_search(Object *& fst_obj, Object *& snd_obj,
     {
       PSI_ERROR_RETURN(EV_TYPE, 1);
     }
-  if (!snd->isAtom() && !snd->isInteger() && !snd->isVariable()) 
+  if (!snd->isConstant() && !snd->isVariable()) 
     {
       PSI_ERROR_RETURN(EV_TYPE, 2);
     }
@@ -161,14 +161,14 @@ Thread::psi_user_ht_search(Object *& fst_obj, Object *& snd_obj,
 
   data =  AtomTable::nil;
 
-  Object *fst1, *snd1, *t1;
+  Object *fst1, *snd1, *t1; 
   while (user_hash->hashIterNext(fst1, snd1, t1, TheHeap()))
     {
       if ((fst->isVariable() || fst->equalConstants(fst1))
 	  &&
 	  (snd->isVariable() || snd->equalConstants(snd1)))
 	{
-	  Structure* term = TheHeap().newStructure(3);
+ 	  Structure* term = TheHeap().newStructure(3);
 	  term->setFunctor(AtomTable::dollar);
 	  term->setArgument(1, fst1);
 	  term->setArgument(2, snd1);

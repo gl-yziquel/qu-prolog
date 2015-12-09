@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 9.6 Reference Manual - Built-in Predicates
+Qu-Prolog 9.7 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -5577,15 +5577,16 @@ Erase the record database entry at <KBD>Reference</KBD>.
 <A NAME="Section3.8.3">3.8.3 Global State Database</A>
 </H3>
 
-<P>The global state database associates atomics with atoms. It is designed to give efficient (non-backtrackable) access/update of atomic values and increment/decrement of integer values.
+<P>The global state database associates atoms/integers with atoms. It is designed to give efficient (non-backtrackable) access/update of atom/integer values and increment/decrement of integer values.
 
 <P>Predicates:
 
-<P><KBD><a name="global_state_set"></a>global_state_set(Atom, Atomic)</KBD>
+<P><KBD><a name="global_state_set"></a>global_state_set(Atom, AtomOrInt)</KBD>
 
 <BLOCKQUOTE>
-The value of the global state associated with <KBD>Atom</KBD> is set to <KBD>Atomic</KBD>.
-<BR><KBD>mode global_state_set(@atom, @atomic)</KBD>
+The value of the global state associated with <KBD>Atom</KBD> is set to <KBD>AtomOrInt</KBD>.
+<BR><KBD>mode global_state_set(@atom, @atom)</KBD>
+<KBD>mode global_state_set(@atom, @integer)</KBD>
 
 <P>Example:
 
@@ -5596,11 +5597,12 @@ The value of the global state associated with <KBD>Atom</KBD> is set to <KBD>Ato
 </KBD>
 </BLOCKQUOTE>
 
-<P><KBD><a name="global_state_lookup"></a>global_state_lookup(Atom, Atomic)</KBD>
+<P><KBD><a name="global_state_lookup"></a>global_state_lookup(Atom, AtomOrInt)</KBD>
 
 <BLOCKQUOTE>
-The current value of the global state associated with <KBD>Atom</KBD> is unified with <KBD>Atomic</KBD>. Fails if the global state associated with <KBD>Atom</KBD> has not been given a value.
-<BR><KBD>mode global_state_lookup(@atom, ?atomic)</KBD>
+The current value of the global state associated with <KBD>Atom</KBD> is unified with <KBD>AtomOrInt</KBD>. Fails if the global state associated with <KBD>Atom</KBD> has not been given a value.
+<BR><KBD>mode global_state_lookup(@atom, ?atom)</KBD>
+<KBD>mode global_state_lookup(@atom, ?integer)</KBD>
 
 <P>Examples (Continued from last):
 

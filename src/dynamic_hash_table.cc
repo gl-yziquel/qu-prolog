@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072

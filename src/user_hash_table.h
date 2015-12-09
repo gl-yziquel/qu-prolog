@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -63,26 +63,76 @@
 class UserHashEntry
 {
 private:
-    word32 fst_entry;
-    word32 snd_entry;
+    Object* fst_entry;
+    Object* snd_entry;
     int size;
     Object* value;
     heapobject* ptr;
     bool removed;
-    bool isInt;
 public:
     void clearEntry(void) { fst_entry = 0; }
     bool isEmpty(void) const {  return (fst_entry == 0); }
     bool isRemoved(void) { return removed; }
     void makeRemoved(void) { removed = true; }
-    int hashFn(void) const { return (fst_entry*31 + snd_entry); }
+    int hashFn(void) const 
+    {
+      wordlong fst_hash;
+      switch (fst_entry->tTag())
+        {
+        case Object::tShort:
+          fst_hash = (wordlong)(OBJECT_CAST(Short *, fst_entry)->getValue());
+          break;
+        case Object::tLong:
+          fst_hash = (wordlong)(OBJECT_CAST(Long *, fst_entry)->getValue());
+          break;
+        case Object::tAtom:
+          fst_hash = (wordlong)(OBJECT_CAST(Long *, fst_entry)->getValue());
+          break;
+        case Object::tDouble:
+          fst_hash = (wordlong)(OBJECT_CAST(Double *, fst_entry)->hashFn());
+          break;
+        case Object::tString:
+          fst_hash = (wordlong)(OBJECT_CAST(StringObject *, fst_entry)->hashFn());
+          break;
+        default:
+          // Not all Tags considered!
+          std::cerr << "Bogus type" << std::endl;
+          std::cerr << (wordptr)(this) << " -> " << *((heapobject*)(this)) << std::endl;
+          assert(false);
+        }
+      wordlong snd_hash;
+      switch (snd_entry->tTag())
+        {
+        case Object::tShort:
+          snd_hash = (wordlong)(OBJECT_CAST(Short *, snd_entry)->getValue());
+          break;
+        case Object::tLong:
+          snd_hash = (wordlong)(OBJECT_CAST(Long *, snd_entry)->getValue());
+          break;
+        case Object::tAtom:
+          snd_hash = (wordlong)(OBJECT_CAST(Long *, snd_entry)->getValue());
+          break;
+        case Object::tDouble:
+          snd_hash = (wordlong)(OBJECT_CAST(Double *, snd_entry)->hashFn());
+          break;
+        case Object::tString:
+          snd_hash = (wordlong)(OBJECT_CAST(StringObject *, snd_entry)->hashFn());
+          break;
+        default:
+          // Not all Tags considered!
+          std::cerr << "Bogus type" << std::endl;
+          std::cerr << (wordptr)(this) << " -> " << *((heapobject*)(this)) << std::endl;
+          assert(false);
+        }
+      return (int)(fst_hash ^ snd_hash);
+    }
+
     bool operator==(const UserHashEntry entry) const
       { return ((fst_entry == entry.fst_entry) &&
-                (snd_entry == entry.snd_entry) &&
-                (isInt == entry.isInt)); }
+                (snd_entry == entry.snd_entry) ); }
     void operator=(const UserHashEntry entry)
       { fst_entry = entry.fst_entry; snd_entry = entry.snd_entry;
-        isInt = entry.isInt; value = entry.value;
+        value = entry.value;
         ptr = entry.ptr; size = entry.size; removed = entry.removed; }
 
     void setSize(int s) { size = s; }
@@ -94,13 +144,12 @@ public:
     void setValue(Object* o) { value = o; }
     Object* getValue(void) {return value; }
 
-    word32 getFstEntry(void) {return fst_entry; }
-    word32 getSndEntry(void) {return snd_entry; }
-    bool   getIsInt(void) { return isInt; }
+    Object* getFstEntry(void) {return fst_entry; }
+    Object* getSndEntry(void) {return snd_entry; }
 
-    UserHashEntry(word32 t = 0, word32 s = 0, bool i = true)
+    UserHashEntry(Object* t = AtomTable::dollar, Object* s = AtomTable::dollar)
     : fst_entry(t), snd_entry(s), size(0),
-      value(NULL),  ptr(NULL), removed(false), isInt(i)
+      value(NULL),  ptr(NULL), removed(false)
   {};
 
 };

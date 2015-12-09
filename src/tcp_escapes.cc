@@ -3,7 +3,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -1116,7 +1116,6 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
 //       in.s_addr = inet_addr(hostname);
 //       hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
 //     }
-
   if (hp == NULL)
     {
       strcpy(hostname, "127.0.0.1");

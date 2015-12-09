@@ -5,7 +5,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -431,6 +431,7 @@ public:
   
 public:
   static inline size_t size(void);
+  inline wordlong hashFn(void) const;
   
 #ifdef QP_DEBUG
 public:
@@ -468,6 +469,7 @@ class StringObject : public Object
  public:
   char* getChars() { return (char*)theChars; }
   inline size_t size(void) const;
+  inline wordlong hashFn(void) const;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -1300,7 +1302,22 @@ inline size_t Double::size(void)
 {
   return sizeof(Double) / BYTES_PER_WORD;
 }
+inline wordlong Double::hashFn(void) const
+{
+  u_char	s[sizeof(double)];
+  double d = getValue();
+  memcpy(s, &d, sizeof(double));
+  wordlong	value = 0;
+  
+  u_char* sp = s;
+  while (*sp != '\0')
+    {
+      value *= 167;
+      value ^= *sp++;
+    }
+  return(value);
 
+}
 //////////////////////////////////////////////////////////////////////
 // Inline functions for the Long class
 
@@ -1333,6 +1350,20 @@ inline size_t StringObject::size() const
   return (tag >> 8) - 1 + sizeof(StringObject) / BYTES_PER_WORD;
 }
 
+inline wordlong StringObject::hashFn(void) const
+{
+  char	*s;
+  wordlong	value = 0;
+  
+  s = (char*)theChars;
+  while (*s != '\0')
+    {
+      value *= 167;
+      value ^= *s++;
+    }
+  return(value);
+
+}
 //////////////////////////////////////////////////////////////////////
 // Inline functions for the Structure class
 
@@ -2210,7 +2241,7 @@ inline bool Object::equalConstants(Object* const2)
       ptr1++;
       ptr2++;
     }
-  return false;
+  return true;
 }
 
 inline bool Object::equalUninterp(Object* const2)

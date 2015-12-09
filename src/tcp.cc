@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -362,7 +362,7 @@ void getIPfromifconfig(char* ip)
     if ((family == AF_INET) 
         && (ifa->ifa_flags & IFF_UP) 
         && !(ifa->ifa_flags & IFF_LOOPBACK )) {
-      printf("%s", ifa->ifa_name);
+      //printf("%s", ifa->ifa_name);
       s = getnameinfo(ifa->ifa_addr,
                       (family == AF_INET) ? sizeof(struct sockaddr_in) :
                       sizeof(struct sockaddr_in6),

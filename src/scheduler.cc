@@ -2,7 +2,7 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Tue May 12 09:17:22 AEST 2015 
+// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
 // School of Information Technology and Electrical Engineering
 // The University of Queensland
 // Australia 4072
@@ -998,8 +998,48 @@ Thread::ReturnValue
        iter++
        )
     {
-      (void) InterQuantum(); // try to unblock
+
       Thread& thread = **iter;
+      if (thread.Condition() == ThreadCondition::EXITED)
+        {
+          // remove from blocked queue
+          for (list<BlockingObject *>::iterator biter 
+                 = blocked_queue.begin();
+               biter != blocked_queue.end();
+               // iterator is advanced in loop
+               )
+            {
+              if ((*biter)->getThread() == &thread)
+                {
+                  delete *biter;
+                  biter = blocked_queue.erase(biter);
+                }
+              else
+                {
+                  biter++;
+                }
+            }
+          
+          thread_table.RemoveID(thread.TInfo().ID());
+          thread_table.DecLive();
+          delete &thread;
+	  
+          // Did it exit while executing in a forbid/permit section?
+          if (scheduler_status.testEnableTimeslice())
+            {
+              // No. It's exited nicely.
+              iter = run_queue.erase(iter);
+            }
+          else
+            {
+              // Yes. It's exited unwisely.
+              Fatal(__FUNCTION__, "Thread exited during forbid/permit section");
+            }
+          continue;
+        }
+      
+
+      (void) InterQuantum(); // try to unblock
       
       BlockStatus& bs = thread.getBlockStatus();
       if (bs.isBlocked()) continue;  // ignore blocked threads
