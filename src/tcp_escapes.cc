@@ -3,52 +3,20 @@
 //
 // ##Copyright##
 // 
-// Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
-// School of Information Technology and Electrical Engineering
-// The University of Queensland
-// Australia 4072
-// 
-// email: pjr@itee.uq.edu.au
-// 
-// The Qu-Prolog System and Documentation  
-// 
-// COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
-// 
-// Permission to use, copy and distribute this software and associated
-// documentation for any non-commercial purpose and without fee is hereby 
-// granted, subject to the following conditions:
-// 
-// 1. 	that the above copyright notice and this permission notice and 
-// 	warranty disclaimer appear in all copies and in supporting 
-// 	documentation; 
-// 
-// 2.	that the name of the University of Queensland not be used in 
-// 	advertising or publicity pertaining to distribution of the software 
-// 	without specific, written prior permission; 
-// 
-// 3.	that users of this software should be responsible for determining the 
-// 	fitness of the software for the purposes for which the software is 
-// 	employed by them; 
-// 
-// 4. 	that no changes to the system or documentation are subsequently 
-// 	made available to third parties or redistributed without prior 
-// 	written consent from the ITEE; and
-// 
-// The University of Queensland disclaims all warranties with regard to this
-// software, including all implied warranties of merchantability and fitness
-// to the extent permitted by law. In no event shall the University of 
-// Queensland be liable for any special, indirect or consequential damages or 
-// any damages whatsoever resulting from loss of use, data or profits, whether 
-// in an action of contract, negligence or other tortious action, arising out 
-// of or in connection with the use or performance of this software.
-// 
-// THE UNIVERSITY OF QUEENSLAND MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR
-// SUITABILITY OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
-// WITHOUT ANY EXPRESSED OR IMPLIED WARRANTIES.
-// 
-// 
-// For information on commercial use of this software contact ITEE.
-// 
+// Copyright 2000-2016 Peter Robinson  (pjr@itee.uq.edu.au)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.00 
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 // ##Copyright##
 //
 // Prolog Primitives to support TCP comunication
@@ -116,6 +84,7 @@
 
 extern IOManager *iom;
 extern SocketManager *sockm;
+
 
 //
 // decode_socket decodes the socket number supplied in the cell,
@@ -227,6 +196,16 @@ machine_ip_address(Heap& heap,
     }
   else if (addr->isAtom())
     {
+      u_long ip_address;
+      char hostname[1000];
+      (void)strcpy(hostname, OBJECT_CAST(Atom*, addr)->getName());
+      if (ip_to_ipnum(hostname, ip_address) == -1) {
+        return 0;
+      }
+      return ip_address;
+    }
+  return 0;
+      /*
       char hostname[1000];
       (void)strcpy(hostname, OBJECT_CAST(Atom*, addr)->getName());
       if (strcmp(hostname, "localhost") == 0)
@@ -261,6 +240,7 @@ machine_ip_address(Heap& heap,
     {
       return 0;
     }
+      */
 }
 
 //
@@ -1022,20 +1002,18 @@ Thread::psi_tcp_getsockname(
     {
       PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
-
   if (gethostname(io_buf, IO_BUF_LENGTH) < 0)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
+  u_long ip_address;
 
-  hostent *hp = gethostbyname(io_buf);
-  if (hp == NULL)
+  if (ip_to_ipnum(io_buf, ip_address) == -1)
     {
       PSI_ERROR_RETURN(EV_SYSTEM, errno);
     }
-
   port_arg = heap.newInteger(ntohs(addr.sin_port));
-  ip_address_arg = heap.newInteger(ntohl(*(int *)hp->h_addr_list[0]));
+  ip_address_arg = heap.newInteger(ntohl(ip_address));
 
   return RV_SUCCESS;
 }
@@ -1109,7 +1087,9 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
 	  PSI_ERROR_RETURN(EV_SYSTEM, errno);
 	}
     }
+  /*
   hostent *hp = gethostbyname(hostname);
+
 //   if (hp == NULL)
 //     {
 //       struct in_addr in;
@@ -1134,7 +1114,10 @@ Thread::psi_tcp_host_to_ip_address(Object *& host_arg,
   endhostent();
 #endif
  ip_address_arg =  heap.newInteger(ntohl(*(int *)hp->h_addr_list[0]));
-
+  */
+  u_long ip_num;
+  ip_to_ipnum(hostname, ip_num);
+  ip_address_arg =  heap.newInteger(ntohl((int)ip_num));
   return RV_SUCCESS;
 }
 
@@ -1155,7 +1138,16 @@ Thread::psi_tcp_host_from_ip_address(Object *& host_arg,
 {
   Object* argA = heap.dereference(ip_address_arg);
 
-  u_long ip_address;
+  if (!argA->isInteger()) {
+    PSI_ERROR_RETURN(EV_TYPE, 2);
+  }
+  u_long ip_address = htonl((u_long)(argA->getInteger()));
+  char ip[200];
+  if (ipnum_to_ip(ip_address, ip) == -1) {
+    PSI_ERROR_RETURN(EV_SYSTEM, errno);
+  }
+  host_arg = atoms->add(ip);
+  /*
   DECODE_IP_ADDRESS_ARG(heap, *atoms, argA, 2, ip_address);
     
   struct hostent *hp =
@@ -1183,6 +1175,7 @@ Thread::psi_tcp_host_from_ip_address(Object *& host_arg,
     {
       host_arg = atoms->add(hp->h_name);
     }
+  */
   return RV_SUCCESS;
 }
 

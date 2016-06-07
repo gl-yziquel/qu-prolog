@@ -292,7 +292,9 @@ $2:
 	pseudo_instr4(18, 4, 0, 5, 3)
 	get_x_variable(0, 4)
 	get_x_value(2, 5)
+	pseudo_instr2(65, 0, 2)
 	get_x_value(1, 0)
+	pseudo_instr1(52, 2)
 	proceed
 end('$ipc_peek/5$0'/4):
 
@@ -302,20 +304,23 @@ end('$ipc_peek/5$0'/4):
 
 
 $1:
-	allocate(6)
+	allocate(7)
 	get_y_variable(3, 0)
 	get_y_variable(2, 1)
 	get_y_variable(1, 2)
-	get_y_variable(5, 3)
+	get_y_variable(6, 3)
 	get_y_variable(0, 4)
+	pseudo_instr1(113, 0)
+	get_y_variable(5, 0)
 	pseudo_instr1(101, 0)
-	put_y_value(5, 1)
+	put_y_value(6, 1)
 	put_y_variable(4, 2)
-	call_predicate('$ipc_first_timeout', 3, 6)
+	call_predicate('$ipc_first_timeout', 3, 7)
 	put_y_value(4, 0)
 	put_y_value(2, 1)
-	put_y_value(5, 2)
-	call_predicate('$ipc_peek1', 3, 4)
+	put_y_value(6, 2)
+	put_y_value(5, 3)
+	call_predicate('$ipc_peek1', 4, 4)
 	put_y_value(2, 0)
 	put_y_value(3, 1)
 	put_y_value(1, 2)
@@ -381,9 +386,9 @@ end('$ipc_next_timeout'/3):
 
 
 
-'$ipc_peek1/3$0'/3:
+'$ipc_peek1/4$0'/4:
 
-	try(3, $1)
+	try(4, $1)
 	trust($2)
 
 $1:
@@ -391,26 +396,83 @@ $1:
 	proceed
 
 $2:
-	allocate(3)
-	get_y_variable(2, 1)
-	get_y_variable(1, 2)
-	put_y_variable(0, 1)
-	call_predicate('$ipc_next_timeout', 3, 3)
+	allocate(6)
+	get_y_variable(5, 0)
+	get_y_variable(3, 1)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
+	put_y_variable(0, 19)
+	put_y_value(2, 0)
+	put_y_value(1, 1)
+	put_y_variable(4, 2)
+	call_predicate('$ipc_peek_get_delay', 3, 6)
+	put_y_value(5, 0)
+	put_y_value(0, 1)
+	put_y_value(4, 2)
+	call_predicate('$ipc_next_timeout', 3, 4)
 	put_y_value(0, 0)
-	put_y_value(2, 1)
-	put_y_value(1, 2)
+	put_y_value(3, 1)
+	put_y_value(2, 2)
+	put_y_value(1, 3)
 	deallocate
-	execute_predicate('$ipc_peek1', 3)
-end('$ipc_peek1/3$0'/3):
+	execute_predicate('$ipc_peek1', 4)
+end('$ipc_peek1/4$0'/4):
 
 
 
-'$ipc_peek1'/3:
+'$ipc_peek1'/4:
 
 	switch_on_term(0, $5, $2, $2, $2, $2, $3)
 
 $3:
 	switch_on_constant(0, 4, ['$default':$2, 'timeout':$4])
+
+$4:
+	try(4, $1)
+	trust($2)
+
+$5:
+	try(4, $1)
+	trust($2)
+
+$1:
+	get_constant('timeout', 0)
+	get_constant('timeout', 1)
+	neck_cut
+	proceed
+
+$2:
+	execute_predicate('$ipc_peek1/4$0', 4)
+end('$ipc_peek1'/4):
+
+
+
+'$ipc_peek_get_delay/3$0'/2:
+
+	try(2, $1)
+	trust($2)
+
+$1:
+	put_integer(0, 2)
+	pseudo_instr2(1, 0, 2)
+	neck_cut
+	put_integer(0, 0)
+	get_x_value(1, 0)
+	proceed
+
+$2:
+	get_x_value(1, 0)
+	proceed
+end('$ipc_peek_get_delay/3$0'/2):
+
+
+
+'$ipc_peek_get_delay'/3:
+
+	switch_on_term(0, $5, $2, $2, $2, $2, $3)
+
+$3:
+	switch_on_constant(0, 4, ['$default':$2, 'block':$4])
 
 $4:
 	try(3, $1)
@@ -421,14 +483,23 @@ $5:
 	trust($2)
 
 $1:
-	get_constant('timeout', 0)
-	get_constant('timeout', 1)
+	get_constant('block', 0)
+	get_constant('block', 2)
 	neck_cut
 	proceed
 
 $2:
-	execute_predicate('$ipc_peek1/3$0', 3)
-end('$ipc_peek1'/3):
+	get_x_variable(3, 1)
+	get_x_variable(1, 2)
+	pseudo_instr1(113, 2)
+	put_x_variable(5, 6)
+	get_structure('-', 2, 6)
+	unify_x_value(0)
+	unify_x_value(2)
+	pseudo_instr3(2, 5, 3, 4)
+	get_x_variable(0, 4)
+	execute_predicate('$ipc_peek_get_delay/3$0', 2)
+end('$ipc_peek_get_delay'/3):
 
 
 

@@ -1,5 +1,7 @@
 #ifdef WIN32
         #include <winsock2.h>
+        #define _WIN32_WINNT 0x501
+        #include <ws2tcpip.h>
         #define _WINSOCKAPI_
         #include <windows.h>
         typedef int socklen_t;
@@ -9,6 +11,23 @@
         WORD wVersionRequested = MAKEWORD( 2, 2 );
         int err = WSAStartup( wVersionRequested, &wsaData );
 
+        #define MSG_DONTWAIT 0
+        #include <stdio.h>
+        const char* inet_ntop(int af, const void* src, char* dst, int cnt){
+ 
+            struct sockaddr_in srcaddr;
+ 
+            memset(&srcaddr, 0, sizeof(struct sockaddr_in));
+            memcpy(&(srcaddr.sin_addr), src, sizeof(srcaddr.sin_addr));
+ 
+            srcaddr.sin_family = af;
+            if (WSAAddressToString((struct sockaddr*) &srcaddr, sizeof(struct sockaddr_in), 0, dst, (LPDWORD) &cnt) != 0) {
+            DWORD rv = WSAGetLastError();
+            printf("WSAAddressToString() : %d\n",rv);
+            return NULL;
+         }
+        return dst;
+      }
 #else
         #include <sys/types.h>
         #include <netdb.h>
@@ -962,7 +981,11 @@ bool
 PedroMessageChannel::notify(Object* t)
 {
   char buff[32];
+  #ifdef WIN32
+  clear_ack();
+  #else
   recv(ack_fd, buff, 30, MSG_DONTWAIT);
+  #endif
   //clear_ack();
   send(t);
   return true;
@@ -991,9 +1014,14 @@ PedroMessageChannel::send(string s)
   
   // WIN CHANGE size_t num_written = write(fd, s.c_str(), len);
   size_t num_written = ::send(fd, s.c_str(), len, 0);
-  
   while (num_written != len)
     {
+      #ifdef WIN32
+      if (num_written == SOCKET_ERROR) {
+        cerr << "Socket Error in pedro send" << endl;
+        return;
+      }
+      #endif
       s.erase(0, num_written);
       fd_set fds;
       FD_ZERO(&fds);
@@ -1029,35 +1057,6 @@ bool
 PedroMessageChannel::connect(int pedro_port, u_long ip_address)
 {
  
-  // // get my host name
-  // char hostname[1000];
-  // gethostname(hostname, 1000);
-  // hostent *hp = gethostbyname(hostname);
-  // if (hp == NULL)
-  //   {
-  //     // if we can't get host by name then try to use ifconfig
-  //     strcpy(hostname, "127.0.0.1");
-  //     getIPfromifconfig(hostname);
-  //     host = atoms->add(hostname);
-  //   }
-  // // if we can get the host then try to see if
-  // // we can get host by address from hp
-  // else {
-  //     struct in_addr in;
-  //     struct in_addr in_copy;
-  //     in.s_addr = *(int*)(hp->h_addr);
-  //     in_copy.s_addr = *(int*)(hp->h_addr);
-  //     hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-  //     if (hp == NULL) 
-  //       {
-  //         // we can't look up name given address so just use dotted IP
-  //         host = atoms->add(inet_ntoa(in_copy));
-  //       } 
-  //     else 
-  //       {
-  //         host = atoms->add(hp->h_name);
-  //       }
-  // }
   // Create a socket to get info
   int info_fd = ::socket(AF_INET, SOCK_STREAM, 0); 
   u_short port = ntohs(pedro_port);
@@ -1141,33 +1140,25 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
       break;
     }
   }
-  /*
-  struct in_addr addr;
-  addr.s_addr = ip_address;
-  char *dot_ip = inet_ntoa(addr);
-  char dotted_ip[20];
-  dotted_ip[0] = '\0';
-  getIPfromaddinfo(dot_ip, dotted_ip);
-  cerr << dot_ip << " " << dotted_ip << endl;
-  if (strcmp(dot_ip, dotted_ip) != 0) {
-  */
-    // Can do DNS lookup
+
     // figure out my IP address
-    struct sockaddr_in add;
-    memset(&add, 0, sizeof(add));
-    socklen_t addr_len = sizeof(add);
-    
-    getsockname(ack_fd, (struct sockaddr *)&add, &addr_len);
-    strcpy(ipstr, inet_ntoa(add.sin_addr));
-    struct in_addr in = add.sin_addr;
-    hostent *hp = gethostbyaddr((char *) &in, sizeof(in), AF_INET);
-    if (hp == NULL) 
-      {
-	// we can't look up name given address so just use dotted IP
-	host = atoms->add(ipstr);
-      } 
-    else 
-      {
+  u_long ip_num;
+  char ip_name[100];
+  struct sockaddr_in add;
+  memset(&add, 0, sizeof(add));
+  socklen_t addr_len = sizeof(add);
+  getsockname(ack_fd, (struct sockaddr *)&add, &addr_len);
+  strcpy(ipstr, inet_ntoa(add.sin_addr));
+  if (ip_to_ipnum(ipstr, ip_num) == -1 ||
+      ipnum_to_ip(ip_num, ip_name) == -1)  
+    {
+      // we can't look up name given address so just use dotted IP
+      host = atoms->add(ipstr);
+    } 
+  else 
+    {
+      host = atoms->add(ip_name);
+      /*
 	// check if we can look up the same IP from hostname 
 	//hostent *hp2 = gethostbyname(hp->h_name);
 	//cerr << hp->h_name << " " << hp2->h_name << endl;
@@ -1192,34 +1183,9 @@ PedroMessageChannel::connect(int pedro_port, u_long ip_address)
 	    host = atoms->add(hp->h_name);
 	  }
 
-        /*
-        cerr << hp->h_name << endl;
-        char name_copy[100];
-        gethostname(name_copy, 100);
-        cerr << "host " << name_copy << endl;
-        strcpy(name_copy, hp->h_name);
-	for (num=0, str = name_copy;;num++,str=NULL) {
-	  token = strtok_r(str, ".", &saveptr);
-	  if (token == NULL) break;
-	  lasttoken = token;
-	}
-        cerr << num << " " << lasttoken << endl;
-	if ((num == 1) || (streq(lasttoken, "local")))
-	  {
-	    // no - so use IP address
-	    host = atoms->add(ipstr);
-	  }
-	else
-	  {
-	    host = atoms->add(hp->h_name);
-	  }
-        */
+      */
       }
-    /*
-  } else {
-    host = atoms->add(ipstr);
-  }
-    */
+
   // buff now contains flag - test if "ok\n"
   return (strcmp(buff, "ok\n") == 0);
 }

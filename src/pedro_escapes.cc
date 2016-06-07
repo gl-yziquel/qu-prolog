@@ -33,7 +33,11 @@ Thread::psi_pedro_connect(Object*& port_obj, Object*& addr_obj)
 
   pedro_port = port_obj->variableDereference()->getInteger();
   pedro_address = OBJECT_CAST(Atom*, addr_obj->variableDereference())->getName();
-  u_long ip_address = LookupMachineIPAddress(pedro_address);
+  u_long ip_address; // = LookupMachineIPAddress(pedro_address);
+  if (ip_to_ipnum(pedro_address, ip_address) == -1) {
+    Fatal(__FUNCTION__, "host name error");
+    return RV_FAIL;
+  }
   if (pedro_channel->connect(pedro_port, ip_address))
     return RV_SUCCESS;
   else

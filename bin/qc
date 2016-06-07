@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ## qc - a compiler for Qu-Prolog
-## Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
+## Copyright (C) 2000-Tue Jun  7 10:54:26 AEST 2016 
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -27,14 +27,14 @@ import stat
 
 ##############################
 
-preprocess='/home/pjr/research/qp_dev/rel/qp9.7/bin/qppp'
-expand='/home/pjr/research/qp_dev/rel/qp9.7/bin/qg'
-qpcompile='/home/pjr/research/qp_dev/rel/qp9.7/bin/qc1'
+preprocess='/home/pjr/research/qp_dev/rel/qp10.0/bin/qppp'
+expand='/home/pjr/research/qp_dev/rel/qp10.0/bin/qg'
+qpcompile='/home/pjr/research/qp_dev/rel/qp10.0/bin/qc1'
 compversion='qup'
-assemble='/home/pjr/research/qp_dev/rel/qp9.7/bin/qa'
-link='/home/pjr/research/qp_dev/rel/qp9.7/bin/ql'
-execute='/home/pjr/research/qp_dev/rel/qp9.7/bin/qem'
-libqofiles="/home/pjr/research/qp_dev/rel/qp9.7/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp9.7/prolog/library/*.qo"
+assemble='/home/pjr/research/qp_dev/rel/qp10.0/bin/qa'
+link='/home/pjr/research/qp_dev/rel/qp10.0/bin/ql'
+execute='/home/pjr/research/qp_dev/rel/qp10.0/bin/qem'
+libqofiles="/home/pjr/research/qp_dev/rel/qp10.0/prolog/compiler/*.qo /home/pjr/research/qp_dev/rel/qp10.0/prolog/library/*.qo"
 
 ##############################
 

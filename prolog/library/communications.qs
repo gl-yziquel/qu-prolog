@@ -559,8 +559,10 @@ $1:
 	put_y_value(2, 0)
 	put_y_value(3, 1)
 	call_predicate('$same_handle_from', 2, 2)
-	put_y_value(1, 0)
-	get_y_value(0, 0)
+	pseudo_instr2(65, 20, 0)
+	put_y_value(1, 1)
+	get_y_value(0, 1)
+	pseudo_instr1(52, 0)
 	deallocate
 	proceed
 end('<<-'/2):
@@ -584,8 +586,10 @@ $1:
 	put_y_value(4, 0)
 	put_y_value(5, 1)
 	call_predicate('$same_handle_from', 2, 4)
-	put_y_value(3, 0)
-	get_y_value(2, 0)
+	pseudo_instr2(65, 22, 0)
+	put_y_value(3, 1)
+	get_y_value(2, 1)
+	pseudo_instr1(52, 0)
 	pseudo_instr1(55, 21)
 	cut(0)
 	deallocate
@@ -966,15 +970,26 @@ $1:
 	get_structure('$same_handle_from', 2, 1)
 	unify_x_value(4)
 	unify_x_value(5)
+	get_structure(',', 2, 3)
+	unify_x_ref(1)
+	unify_x_ref(3)
+	get_structure('freeze_term', 2, 1)
+	unify_x_value(2)
+	unify_x_variable(1)
+	get_structure(',', 2, 3)
+	unify_x_ref(3)
+	unify_x_ref(4)
 	get_structure('=', 2, 3)
 	unify_x_value(0)
 	unify_x_value(2)
+	get_structure('thaw_term', 1, 4)
+	unify_x_value(1)
 	proceed
 end('$mc_get_msg_addr_code'/5):
 
 
 
-'$query_communications1449694450_194/0$0'/0:
+'$query_communications1465260878_113/0$0'/0:
 
 
 $1:
@@ -987,11 +1002,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$0'/0):
+end('$query_communications1465260878_113/0$0'/0):
 
 
 
-'$query_communications1449694450_194/0$1'/0:
+'$query_communications1465260878_113/0$1'/0:
 
 
 $1:
@@ -1004,11 +1019,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$1'/0):
+end('$query_communications1465260878_113/0$1'/0):
 
 
 
-'$query_communications1449694450_194/0$2'/0:
+'$query_communications1465260878_113/0$2'/0:
 
 
 $1:
@@ -1021,11 +1036,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$2'/0):
+end('$query_communications1465260878_113/0$2'/0):
 
 
 
-'$query_communications1449694450_194/0$3'/0:
+'$query_communications1465260878_113/0$3'/0:
 
 
 $1:
@@ -1038,11 +1053,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$3'/0):
+end('$query_communications1465260878_113/0$3'/0):
 
 
 
-'$query_communications1449694450_194/0$4'/0:
+'$query_communications1465260878_113/0$4'/0:
 
 
 $1:
@@ -1055,11 +1070,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$4'/0):
+end('$query_communications1465260878_113/0$4'/0):
 
 
 
-'$query_communications1449694450_194/0$5'/0:
+'$query_communications1465260878_113/0$5'/0:
 
 
 $1:
@@ -1072,11 +1087,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$5'/0):
+end('$query_communications1465260878_113/0$5'/0):
 
 
 
-'$query_communications1449694450_194/0$6'/0:
+'$query_communications1465260878_113/0$6'/0:
 
 
 $1:
@@ -1089,11 +1104,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$6'/0):
+end('$query_communications1465260878_113/0$6'/0):
 
 
 
-'$query_communications1449694450_194/0$7'/0:
+'$query_communications1465260878_113/0$7'/0:
 
 
 $1:
@@ -1106,11 +1121,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$7'/0):
+end('$query_communications1465260878_113/0$7'/0):
 
 
 
-'$query_communications1449694450_194/0$8'/0:
+'$query_communications1465260878_113/0$8'/0:
 
 
 $1:
@@ -1123,11 +1138,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$8'/0):
+end('$query_communications1465260878_113/0$8'/0):
 
 
 
-'$query_communications1449694450_194/0$9'/0:
+'$query_communications1465260878_113/0$9'/0:
 
 
 $1:
@@ -1140,11 +1155,11 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_communications1449694450_194/0$9'/0):
+end('$query_communications1465260878_113/0$9'/0):
 
 
 
-'$query_communications1449694450_194'/0:
+'$query_communications1465260878_113'/0:
 
 	try(0, $1)
 	retry($2)
@@ -1160,57 +1175,57 @@ end('$query_communications1449694450_194/0$9'/0):
 
 $1:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$0', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$0', 0, 0)
 	fail
 
 $2:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$1', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$1', 0, 0)
 	fail
 
 $3:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$2', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$2', 0, 0)
 	fail
 
 $4:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$3', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$3', 0, 0)
 	fail
 
 $5:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$4', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$4', 0, 0)
 	fail
 
 $6:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$5', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$5', 0, 0)
 	fail
 
 $7:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$6', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$6', 0, 0)
 	fail
 
 $8:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$7', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$7', 0, 0)
 	fail
 
 $9:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$8', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$8', 0, 0)
 	fail
 
 $10:
 	allocate(0)
-	call_predicate('$query_communications1449694450_194/0$9', 0, 0)
+	call_predicate('$query_communications1465260878_113/0$9', 0, 0)
 	fail
 
 $11:
 	proceed
-end('$query_communications1449694450_194'/0):
+end('$query_communications1465260878_113'/0):
 
 
 
@@ -1218,7 +1233,7 @@ end('$query_communications1449694450_194'/0):
 
 
 $1:
-	execute_predicate('$query_communications1449694450_194', 0)
+	execute_predicate('$query_communications1465260878_113', 0)
 end('$query'/0):
 
 

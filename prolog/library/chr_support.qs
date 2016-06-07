@@ -3569,27 +3569,35 @@ end('$is_chr_repeat'/2):
 
 
 
-'$is_char_repeat_1/8$0/7$0'/7:
+'$is_char_repeat_1/8$0/8$0'/8:
 
-	try(7, $1)
+	try(8, $1)
 	trust($2)
 
 $1:
-	allocate(3)
-	get_y_variable(2, 1)
-	get_x_variable(1, 5)
-	get_y_variable(1, 6)
-	put_x_variable(5, 6)
-	get_structure(',', 2, 6)
+	allocate(5)
+	get_y_variable(4, 1)
+	get_y_variable(2, 2)
+	get_y_variable(1, 3)
+	get_x_variable(1, 6)
+	get_y_variable(3, 7)
+	put_x_variable(2, 3)
+	get_structure(',', 2, 3)
 	unify_x_value(0)
-	unify_x_ref(6)
-	get_structure(',', 2, 6)
+	unify_x_ref(3)
+	get_structure(',', 2, 3)
+	unify_y_value(4)
+	unify_x_ref(3)
+	get_structure(',', 2, 3)
 	unify_y_value(2)
-	unify_x_value(2)
-	pseudo_instr1(51, 5)
-	get_x_value(3, 4)
+	unify_y_value(1)
+	pseudo_instr1(51, 2)
+	get_x_value(4, 5)
 	get_y_level(0)
-	call_predicate('$chr_perm', 2, 3)
+	call_predicate('$chr_perm', 2, 5)
+	put_y_value(4, 0)
+	put_y_value(3, 1)
+	call_predicate('$chr_equal_goals', 2, 3)
 	put_y_value(2, 0)
 	put_y_value(1, 1)
 	call_predicate('$chr_equal_goals', 2, 1)
@@ -3598,25 +3606,25 @@ $1:
 
 $2:
 	proceed
-end('$is_char_repeat_1/8$0/7$0'/7):
+end('$is_char_repeat_1/8$0/8$0'/8):
 
 
 
-'$is_char_repeat_1/8$0'/7:
+'$is_char_repeat_1/8$0'/8:
 
-	try(7, $1)
+	try(8, $1)
 	trust($2)
 
 $1:
 	allocate(1)
 	get_y_level(0)
-	call_predicate('$is_char_repeat_1/8$0/7$0', 7, 1)
+	call_predicate('$is_char_repeat_1/8$0/8$0', 8, 1)
 	cut(0)
 	fail
 
 $2:
 	proceed
-end('$is_char_repeat_1/8$0'/7):
+end('$is_char_repeat_1/8$0'/8):
 
 
 
@@ -3628,8 +3636,15 @@ $1:
 	get_x_variable(0, 1)
 	get_x_variable(1, 2)
 	get_x_variable(2, 3)
-	put_x_value(8, 3)
-	execute_predicate('$is_char_repeat_1/8$0', 7)
+	get_x_variable(9, 4)
+	get_x_variable(10, 5)
+	get_x_variable(11, 6)
+	get_x_variable(3, 7)
+	put_x_value(8, 4)
+	put_x_value(9, 5)
+	put_x_value(10, 6)
+	put_x_value(11, 7)
+	execute_predicate('$is_char_repeat_1/8$0', 8)
 end('$is_char_repeat_1'/8):
 
 
@@ -5112,7 +5127,7 @@ end('chr_remove_aux'/1):
 
 
 
-'$query_chr_support1449694450_66/0$0'/0:
+'$query_chr_support1465260877_985/0$0'/0:
 
 
 $1:
@@ -5126,23 +5141,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_chr_support1449694450_66/0$0'/0):
+end('$query_chr_support1465260877_985/0$0'/0):
 
 
 
-'$query_chr_support1449694450_66'/0:
+'$query_chr_support1465260877_985'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_chr_support1449694450_66/0$0', 0, 0)
+	call_predicate('$query_chr_support1465260877_985/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_chr_support1449694450_66'/0):
+end('$query_chr_support1465260877_985'/0):
 
 
 
@@ -5150,7 +5165,7 @@ end('$query_chr_support1449694450_66'/0):
 
 
 $1:
-	execute_predicate('$query_chr_support1449694450_66', 0)
+	execute_predicate('$query_chr_support1465260877_985', 0)
 end('$query'/0):
 
 

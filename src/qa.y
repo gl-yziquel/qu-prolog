@@ -1,9 +1,10 @@
 %{
 /*
- * Copyright (C) 2000-Thu Dec 10 06:53:58 AEST 2015 
+ * Copyright (C) 2000-Tue Jun  7 10:54:26 AEST 2016 
  * Department of Computer Science and Electrical Engineering, 
  * The University of Queensland
  */
+
 
 #include <stdio.h>
 #include <iostream>
@@ -1290,8 +1291,12 @@ main(int argc, char **argv)
 	}
     }
 
-
+  #ifdef WIN32
+  ofstream ostrm(qa_options->OutputFile(), ios_base::binary);
+  #else
   ofstream ostrm(qa_options->OutputFile());
+  #endif
+
 
   asm_string_table->save(ostrm);
 
