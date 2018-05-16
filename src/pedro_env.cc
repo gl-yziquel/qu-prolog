@@ -724,7 +724,8 @@ PedroMessage::constructMessage(Object*& sender, Object*& msgterm,
   buff[size+1] = '\0';
   ObjectsStack stk(1024);
   VarMap varMap;
-  
+
+
   set_buffstate(buff, size+2);
   Object* term = parsePedroTerm(&thread, atoms, varMap, stk, rn); 
   delete_buffstate();
@@ -918,7 +919,6 @@ PedroMessageChannel::pushMessage(int id, string m)
     } else {
       thread_name = thread_table.getDefaultThread();
     }
-
     // So this is a p2p message that is not being used as a message stream
     // erase the to address for this string because the recipient knows
     // who they are

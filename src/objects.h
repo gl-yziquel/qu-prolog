@@ -1210,7 +1210,7 @@ inline void Atom::printMe(AtomTable& atoms, bool)
        << this->getName() << "\" ";
   
 #ifndef WIN32
-  switch (hasAssociatedItem())
+  switch (tag & AssociatedMask)
     {
     case AssociatedNone:
 	    std::cerr << "(no info)";

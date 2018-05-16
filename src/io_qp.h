@@ -329,11 +329,11 @@ class QPStream
       return 0;
     }
 
-  virtual bool seekp(streampos pos, ios::seekdir d = ios::beg)
+  virtual ostream& seekp(streampos pos, ios::seekdir d = ios::beg)
     {
       assert(isOutput());
       abort();
-      return true;
+      return  cout;
     }
 
   virtual bool put(char ch)
@@ -660,7 +660,7 @@ class QPostream: public QPStream
   bool good(void)
     { return stream->good(); }
 
-  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+  ostream& seekp(streampos pos, ios::seekdir d = ios::beg)
     {
       return stream->seekp(pos, d);
     }
@@ -734,7 +734,7 @@ class QPostringstream: public QPStream
   bool good(void)
     { return stream.good(); }
 
-  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+  ostream& seekp(streampos pos, ios::seekdir d = ios::beg)
     {
       return stream.seekp(pos, d);
     }
@@ -814,7 +814,7 @@ class QPofdstream: public QPStream
   bool good(void)
     { return stream.good(); }
 
-  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+  ostream& seekp(streampos pos, ios::seekdir d = ios::beg)
     {
       return stream.seekp(pos, d);
     }
@@ -874,7 +874,7 @@ class QPomstream: public QPStream
   bool good(void)
     { return stream.good(); }
 
-  bool seekp(streampos pos, ios::seekdir d = ios::beg)
+  ostream& seekp(streampos pos, ios::seekdir d = ios::beg)
     {
       return stream.seekp(pos, d);
     }

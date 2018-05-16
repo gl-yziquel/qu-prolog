@@ -192,11 +192,15 @@ extern CodeLoc failblock;
 
 bool Thread::initializeDPcall(DynamicPredicate* dp, int arity, CodeLoc& PC)
 {
+  ChainEnds* chain;
   assert(dp != NULL);
   const word8 arg = dp->getIndexedArg();
-  
-  assert(X[arg] != NULL);
-  ChainEnds* chain = dp->lookUpClauseChain(*this, X[arg]);
+  if (arg == (word8)(-1)) { // -1 as word8 - no indexing - treat as variable
+    chain = dp->lookUpClauseChain(*this, NULL);
+  } else {
+    assert(X[arg] != NULL);
+    chain = dp->lookUpClauseChain(*this, X[arg]);
+  }
   assert(chain != NULL);
   LinkedClause* block = chain->first();
   if (block == NULL)

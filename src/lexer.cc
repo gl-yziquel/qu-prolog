@@ -890,7 +890,7 @@ char *yytext;
 #line 1 "qa.l"
 #line 3 "qa.l"
 /*
- * Copyright (C) 2000-Tue Jun  7 10:54:26 AEST 2016 
+ * Copyright (C) 2000-Wednesday 16 May  13:50:25 AEST 2018 
  *
  * Department of Computer Science,
  * University of Queensland

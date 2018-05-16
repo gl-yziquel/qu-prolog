@@ -26,6 +26,17 @@
 #include "io_qp.h"
 #include "thread_qp.h"
 #include "hash_qp.h"
+#if defined(PCRE) || defined(LINUX)
+  #include <regex.h>
+  #include <pcre.h>
+#endif
+#ifdef WIN32
+  #define PCRE_STATIC 1
+  #include <string>
+  #include <iostream>
+  #include "regex.h"
+  #include "pcre.h"
+#endif
 
 extern AtomTable *atoms;
 extern IOManager *iom;
@@ -113,7 +124,6 @@ Thread::ReturnValue
 Thread::psi_stream_to_string(Object *& stream_arg, Object *& string_arg)
 {
   Object* stream_object = heap.dereference(stream_arg);
-  
   QPStream *stream;
   DECODE_STREAM_OUTPUT_ARG(heap, *iom, stream_object, 1, stream);
 
@@ -336,5 +346,101 @@ Thread::psi_hash_string(Object *& object1, Object *& object2)
 
   word32 v = Hash(OBJECT_CAST(StringObject*, dval)->getChars());
   object2 = heap.newInteger(v);
+  return RV_SUCCESS;
+}
+
+
+Thread::ReturnValue
+Thread::psi_re_free(Object *& object1)
+{
+  pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
+  if (rptr != NULL) {
+    //cerr << "free re" << endl;
+    pcre_free(rptr);
+  }
+  return RV_SUCCESS;
+}
+
+Thread::ReturnValue
+Thread::psi_re_compile(Object *& object1, Object *& object2)
+{
+#if defined(PCRE) || defined(LINUX) || defined(WIN32)
+  Object* string1_object = heap.dereference(object1);
+  char* restring = OBJECT_CAST(StringObject*, string1_object)->getChars();
+
+  const char *error;
+  int erroffset;
+  pcre* rptr = pcre_compile(restring,       
+                            0,                 
+                            &error,           
+                            &erroffset,      
+                            NULL);              
+
+  if (rptr == NULL) {
+    return(RV_FAIL);
+  }
+  object2 = heap.newInteger((long)(rptr));
+  return RV_SUCCESS;
+#else
+  cerr << "PCRE library not installed" << endl;
+  return RV_FAIL;
+#endif
+}
+
+
+Thread::ReturnValue
+Thread::psi_re_match(Object *& object1, Object *& object2,
+                     Object *& object3, Object *& object4, Object *& object5)
+{
+  pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
+  Object* string1_object = heap.dereference(object2);
+  char* subject = OBJECT_CAST(StringObject*, string1_object)->getChars();
+  int startpos = object5->variableDereference()->getInteger();
+  const int oveccount = 30;
+  int ovector[oveccount];
+  int subject_length = (int)strlen(subject);
+  int rc = pcre_exec(rptr,                   
+                     NULL,                 
+                     subject,             
+                     subject_length,      
+                     0,                    
+                     0,                    
+                     ovector,              
+                     oveccount);
+  
+  if (rc < 0) {
+    //printf ("No matches.\n");
+    return RV_FAIL;
+  }
+  if (rc == 0) {
+    //printf ("ovector not long enough.\n");
+    return RV_FAIL;
+  }
+
+  Cons* list = heap.newCons();
+  object4 = list;
+  for (int i = 0; i < rc; i++) {
+    int start;
+    int finish;
+    if (ovector[2*i] < 0) {
+      return RV_FAIL;
+    }
+    start = ovector[2*i]+startpos;
+    finish = ovector[2*i+1]+startpos;
+    Structure* sterm = heap.newStructure(2);
+    sterm->setFunctor(AtomTable::colon);
+    sterm->setArgument(1, heap.newInteger(start));
+    sterm->setArgument(2, heap.newInteger(finish));
+    list->setHead(sterm);
+    if (i == (rc - 1)) {
+      list->setTail(AtomTable::nil);
+      break;
+    }
+    Cons* list_tmp = heap.newCons();
+    list->setTail(list_tmp);
+    list = list_tmp;
+  }
+  subject += ovector[1];
+  object3 = heap.newStringObject(subject);
   return RV_SUCCESS;
 }

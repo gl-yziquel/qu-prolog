@@ -578,15 +578,8 @@ end('$bag_compare'/2):
 
 
 $1:
-	allocate(2)
-	get_y_variable(1, 1)
-	put_y_variable(0, 1)
 	put_constant('@<', 2)
-	call_predicate('$merge_sort', 3, 2)
-	put_y_value(0, 0)
-	put_y_value(1, 1)
-	deallocate
-	execute_predicate('$remove_sorted_duplicates', 2)
+	execute_predicate('$merge_sort', 3)
 end('sort'/2):
 
 
@@ -764,7 +757,8 @@ end('$merge_sort'/5):
 '$merge_sort2'/4:
 
 	try(4, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $1:
 	get_x_variable(4, 0)
@@ -786,10 +780,24 @@ $1:
 	proceed
 
 $2:
+	get_x_variable(4, 0)
 	get_list(2)
 	unify_x_value(1)
-	unify_x_ref(1)
-	get_list(1)
+	unify_x_ref(0)
+	get_list(0)
+	unify_x_value(4)
+	unify_constant('[]')
+	get_x_variable(0, 3)
+	allocate(1)
+	get_y_level(0)
+	put_x_value(4, 2)
+	call_predicate('call_predicate', 3, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$3:
+	get_list(2)
 	unify_x_value(0)
 	unify_constant('[]')
 	proceed
@@ -799,16 +807,27 @@ end('$merge_sort2'/4):
 
 '$merge'/4:
 
-	switch_on_term(0, $5, 'fail', $4, 'fail', 'fail', $3)
+	switch_on_term(0, $9, $5, $6, $5, $5, $7)
 
-$4:
-	try(4, $1)
-	trust($2)
-
-$5:
+$6:
 	try(4, $1)
 	retry($2)
-	trust($3)
+	retry($3)
+	trust($5)
+
+$7:
+	switch_on_constant(0, 4, ['$default':$5, '[]':$8])
+
+$8:
+	try(4, $4)
+	trust($5)
+
+$9:
+	try(4, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	trust($5)
 
 $1:
 	get_list(0)
@@ -839,15 +858,52 @@ $1:
 $2:
 	get_list(0)
 	unify_x_variable(4)
-	unify_x_variable(0)
+	allocate(6)
+	unify_y_variable(4)
+	get_list(1)
+	unify_y_variable(3)
+	unify_y_variable(2)
 	get_list(2)
 	unify_x_value(4)
-	unify_x_variable(2)
+	unify_y_variable(1)
+	get_y_variable(0, 3)
+	get_y_level(5)
+	put_y_value(0, 0)
+	put_x_value(4, 1)
+	put_y_value(3, 2)
+	call_predicate('call_predicate', 3, 6)
+	cut(5)
+	put_y_value(4, 0)
+	put_list(1)
+	set_y_value(3)
+	set_y_value(2)
+	put_y_value(1, 2)
+	put_y_value(0, 3)
+	deallocate
 	execute_predicate('$merge', 4)
 
 $3:
+	get_list(0)
+	unify_x_variable(4)
+	unify_x_variable(0)
+	get_list(1)
+	unify_void(1)
+	unify_x_variable(1)
+	get_list(2)
+	unify_x_value(4)
+	unify_x_variable(2)
+	neck_cut
+	execute_predicate('$merge', 4)
+
+$4:
 	get_constant('[]', 0)
 	get_x_value(1, 2)
+	neck_cut
+	proceed
+
+$5:
+	get_constant('[]', 1)
+	get_x_value(0, 2)
 	proceed
 end('$merge'/4):
 

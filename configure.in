@@ -23,10 +23,16 @@ AC_INIT(src/qem.h)
 #
 # Check for addtional command line options.
 #
-DEBUGGING=" -DNDEBUG "
-AC_ARG_ENABLE(debug, [ --enable-debug        Turn on debugging],
-[ DEBUGGING=])
+
+AC_ARG_ENABLE(debug, [ --enable-debug        Turn on debugging])
+if test "$enable_debug" = yes; then
+	DEBUGGING=
+else
+	DEBUGGING=" -DNDEBUG "
+fi
+
 AC_SUBST(DEBUGGING)
+
 
 # Single versus multiple thread configuraation.
 AC_ARG_ENABLE(multiple-threads, [ --disable-multiple-threads     Single Prolog thread per process ])
@@ -454,6 +460,12 @@ AC_CACHE_VAL(qp_cv_gcc_labels,
 AC_MSG_RESULT($qp_cv_gcc_labels)
 if test "$qp_cv_gcc_labels" = yes; then
 	AC_DEFINE(HAVE_GCC_LABELS)
+fi
+AC_MSG_CHECKING(whether pkg-config finds the PCRE library)
+if test x`pkg-config --cflags libpcre` != x; then
+      AC_DEFINE(PCRE)
+else
+     AC_MSG_WARN(The PCRE library was not found using pkg-config)   
 fi
 #------------------------------------------------------------------------------
 

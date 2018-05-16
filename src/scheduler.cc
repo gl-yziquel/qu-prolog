@@ -143,6 +143,7 @@ Scheduler::run_timer_goal(Thread* thread)
     predicates.getCode(predicates.lookUp(atoms->add("$call_timer_goals"), 1, atoms, code)).getPredicate(code);
   thread->XRegs()[0] = goal;
   thread->setSuspendGC(true);
+  scheduler_status.resetTimeslice();
   const Thread::ReturnValue result = thread->Execute();
   thread->setSuspendGC(false);
   for (i = 0; i < NUMBER_X_REGISTERS; i++)
@@ -445,7 +446,7 @@ Scheduler::Schedule(void)
 	  //
 	  // Enable the timer for timeslicing
 	  //
-	  if (scheduler_status.testEnableTimeslice())
+	  if (1) //scheduler_status.testEnableTimeslice())
 	    {
 	      scheduler_status.resetTimeslice();
 	      

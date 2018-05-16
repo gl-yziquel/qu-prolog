@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 10.0 Reference Manual - Built-in Predicates
+Qu-Prolog 10.1 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -3459,6 +3459,36 @@ remaining in <KBD>String</KBD> after the end of <KBD>SubString</KBD>.
 <BR>
 </KBD>
 </BLOCKQUOTE>
+
+<P><KBD><a name="re_match"></a>re_match(REString, String, Match)</KBD>
+
+  <BLOCKQUOTE>
+    <KBD>Match</KBD> is a list of index ranges representing a match of the
+    regular expression <KBD>REString</KBD> in the string <KBD>String</KBD>.
+    On backtracking all matches will be found.
+    <P> See <a href="http://www.pcre.org/current/doc/html/pcre2syntax.html">http://www.pcre.org/current/doc/html/pcre2syntax.html</a> for details of the syntax of the regular expression library PCRE2. NOTE: the pcre library needs to be installed before building QuProlog for this predicate to be accessable.
+
+    <P>Example:
+      <KBD>
+        <P>| ?- re_match("(\\d*)(\\s*)", "12   3 45", R).
+          <BR>
+          <BR>R = [0 : 5, 0 : 2, 2 : 5];
+          <BR>
+          <BR>R = [5 : 7, 5 : 6, 6 : 7];
+          <BR>
+          <BR>R = [7 : 9, 7 : 9, 9 : 9];
+          <BR>
+          <BR>R = [9 : 9, 9 : 9, 9 : 9];
+          <BR>
+      </KBD>
+      <P>
+      Note that the backslash of the regular expression needs to be escaped.
+      For the first answer, 0 is the index of the beginning of the match and
+      5 is the index of the end of the overall match. The next two ranges give
+      the matchs for the bracketed sub-RE: 0:2 matches the digits and 2:5 matches the spaces.
+      <P>The range values in combination with the use of <KBD>sub_string</KBD> can be used to extract the required substring.
+  </BLOCKQUOTE>
+    
 
 
 <P><KBD><a name="quantify"></a>quantify(Quantified, Quantifier, VarList, Body)</KBD>

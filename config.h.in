@@ -55,6 +55,7 @@
 #undef ELVIN_DEF
 
 #undef MULTIPLE_THREADS
+#undef PCRE
 
 #define BITS_PER_WORD 32
 #define BYTES_PER_WORD 4

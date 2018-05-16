@@ -745,15 +745,14 @@ $1:
 	put_y_variable(0, 19)
 	put_y_variable(4, 0)
 	call_predicate('$make_cleanup_cp_call', 1, 6)
-	put_constant('$cleanup', 0)
-	pseudo_instr3(40, 0, 24, 25)
-	call_predicate('call_cleanup/2$0', 0, 5)
+	call_predicate('call_cleanup/2$0', 0, 6)
 	put_y_value(3, 0)
-	call_predicate('thread_symbol', 1, 5)
-	put_structure(2, 0)
+	call_predicate('thread_symbol', 1, 6)
+	put_structure(3, 0)
 	set_constant('$cleanup')
 	set_y_value(3)
 	set_y_value(4)
+	set_y_value(5)
 	call_predicate('asserta', 1, 3)
 	pseudo_instr1(7, 0)
 	get_y_value(0, 0)
@@ -801,10 +800,11 @@ $1:
 	put_y_variable(2, 0)
 	call_predicate('thread_symbol', 1, 4)
 	put_x_variable(1, 0)
-	put_structure(2, 2)
+	put_structure(3, 2)
 	set_constant('$cleanup')
 	set_y_value(2)
 	set_x_value(1)
+	set_void(1)
 	put_structure(2, 3)
 	set_constant('=<')
 	set_y_value(3)
@@ -867,17 +867,17 @@ $1:
 
 $2:
 	get_list(0)
+	unify_x_variable(2)
 	allocate(3)
-	unify_y_variable(2)
 	unify_y_variable(1)
 	get_y_variable(0, 1)
-	put_structure(2, 0)
+	put_structure(3, 0)
 	set_constant('$cleanup')
 	set_y_value(0)
-	set_y_value(2)
+	set_x_value(2)
+	set_y_variable(2)
 	call_predicate('retract', 1, 3)
-	put_constant('$cleanup', 1)
-	pseudo_instr3(41, 1, 22, 0)
+	put_y_value(2, 0)
 	call_predicate('$cleanup_process_levels/2$0', 1, 2)
 	put_y_value(1, 0)
 	put_y_value(0, 1)
@@ -917,7 +917,7 @@ end('$throw_cleanup'/0):
 
 
 
-'$query_call1465260877_682/0$0'/0:
+'$query_call1526442631_626/0$0'/0:
 
 
 $1:
@@ -926,28 +926,28 @@ $1:
 	put_structure(2, 0)
 	set_constant('/')
 	set_constant('$cleanup')
-	set_integer(2)
+	set_integer(3)
 	call_predicate('dynamic', 1, 1)
 	cut(0)
 	deallocate
 	proceed
-end('$query_call1465260877_682/0$0'/0):
+end('$query_call1526442631_626/0$0'/0):
 
 
 
-'$query_call1465260877_682'/0:
+'$query_call1526442631_626'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_call1465260877_682/0$0', 0, 0)
+	call_predicate('$query_call1526442631_626/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_call1465260877_682'/0):
+end('$query_call1526442631_626'/0):
 
 
 
@@ -955,7 +955,7 @@ end('$query_call1465260877_682'/0):
 
 
 $1:
-	execute_predicate('$query_call1465260877_682', 0)
+	execute_predicate('$query_call1526442631_626', 0)
 end('$query'/0):
 
 

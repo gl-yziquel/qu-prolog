@@ -164,7 +164,8 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_gettimeofday,	1,	"psi_gettimeofday"}, 
 	{&Thread::psi_schedule_threads_now,	0,	"psi_schedule_threads_now"}, 
 	{&Thread::psi_set_default_message_thread,	0,	"psi_set_default_message_thread"}, 
-	{&Thread::psi_default_message_thread,	1,	"psi_default_message_thread"}
+	{&Thread::psi_default_message_thread,	1,	"psi_default_message_thread"}, 
+	{&Thread::psi_re_free,	0,	"psi_re_free"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -304,7 +305,8 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_not_equal,	0,	"psi_not_equal"}, 
 	{&Thread::psi_string_to_list,	1,	"psi_string_to_list"}, 
 	{&Thread::psi_peek,	1,	"psi_peek"}, 
-	{&Thread::psi_hash_string,	1,	"psi_hash_string"}
+	{&Thread::psi_hash_string,	1,	"psi_hash_string"}, 
+	{&Thread::psi_re_compile,	1,	"psi_re_compile"}
 };
 pseudo_instr3_data pseudo_instr3_array[] =
 {
@@ -407,5 +409,6 @@ pseudo_instr4_data pseudo_instr4_array[] =
 };
 pseudo_instr5_data pseudo_instr5_array[] =
 {
-	{&Thread::psi_call_predicate4,	0,	"psi_call_predicate4"}
+	{&Thread::psi_call_predicate4,	0,	"psi_call_predicate4"}, 
+	{&Thread::psi_re_match,	6,	"psi_re_match"}
 };

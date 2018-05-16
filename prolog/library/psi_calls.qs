@@ -1385,6 +1385,16 @@ end('default_message_thread'/1):
 
 
 
+'$re_free'/1:
+
+
+$1:
+	pseudo_instr1(117, 0)
+	proceed
+end('$re_free'/1):
+
+
+
 'is'/2:
 
 
@@ -2840,6 +2850,17 @@ end('$hash_string'/2):
 
 
 
+'$re_compile'/2:
+
+
+$1:
+	pseudo_instr2(137, 0, 2)
+	get_x_value(1, 2)
+	proceed
+end('$re_compile'/2):
+
+
+
 'functor'/3:
 
 
@@ -3877,6 +3898,18 @@ $1:
 	pseudo_instr5(0, 0, 1, 2, 3, 4)
 	proceed
 end('$call_predicate4'/5):
+
+
+
+'$re_match'/5:
+
+
+$1:
+	pseudo_instr5(1, 0, 1, 5, 6, 4)
+	get_x_value(2, 5)
+	get_x_value(3, 6)
+	proceed
+end('$re_match'/5):
 
 
 

@@ -172,7 +172,7 @@ open_socket(const u_short port)	// Network byte order.
 {
   // Open the socket
   const int s = static_cast<const int>(socket(AF_INET, SOCK_DGRAM, 0));
-  if (socket < 0)
+  if (s < 0)
     {
       perror(__FUNCTION__);
       Fatal(__FUNCTION__, "socket() failed");

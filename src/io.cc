@@ -785,6 +785,7 @@ QPStream*
 IOManager::GetStream(u_int i)
 {
   assert(i >= 0 && i < NUM_OPEN_STREAMS);
+
   return (open_streams[i]);
 }
 
@@ -804,7 +805,7 @@ IOManager::set_std_stream(int stdstrm, u_int i)
     {
       open_streams[stdstrm] = open_streams[i];
       open_streams[stdstrm]->setFD(stdstrm);
-      open_streams[i] = NULL;
+      //open_streams[i] = NULL;
       return true;
     }
   return false;
@@ -820,7 +821,7 @@ IOManager::reset_std_stream(int stdstrm)
 	{
 	  return false;
 	}
-      delete open_streams[0];
+      //delete open_streams[0];
       open_streams[0] = save_stdin;
       break;
     case 1:
@@ -828,7 +829,7 @@ IOManager::reset_std_stream(int stdstrm)
 	{
 	  return false;
 	}
-      delete open_streams[1];
+      //delete open_streams[1];
       open_streams[1] = save_stdout;
       break;
     case 2:
@@ -836,7 +837,7 @@ IOManager::reset_std_stream(int stdstrm)
 	{
 	  return false;
 	}
-      delete open_streams[2];
+      //delete open_streams[2];
       open_streams[2] = save_stderr;
       break;
     default:
