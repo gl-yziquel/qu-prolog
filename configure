@@ -5488,7 +5488,7 @@ if test "$qp_cv_gcc_labels" = yes; then
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether pkg-config finds the PCRE library" >&5
 $as_echo_n "checking whether pkg-config finds the PCRE library... " >&6; }
-if test x`pkg-config --cflags libpcre` != x; then
+if pkg-config --exists libpcre; then
       $as_echo "#define PCRE 1" >>confdefs.h
 
 else

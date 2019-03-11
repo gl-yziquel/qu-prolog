@@ -462,7 +462,7 @@ if test "$qp_cv_gcc_labels" = yes; then
 	AC_DEFINE(HAVE_GCC_LABELS)
 fi
 AC_MSG_CHECKING(whether pkg-config finds the PCRE library)
-if test x`pkg-config --cflags libpcre` != x; then
+if pkg-config --exists libpcre; then
       AC_DEFINE(PCRE)
 else
      AC_MSG_WARN(The PCRE library was not found using pkg-config)   

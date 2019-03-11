@@ -35,7 +35,7 @@ ForeignInterface::makeAtom(const char* s)
 {return atoms->add(s); }
 
 Object* 
-ForeignInterface::makeInteger(const long i) 
+ForeignInterface::makeInteger(const qint64 i) 
 { return threadptr->TheHeap().newInteger(i); }
 
 Object* 

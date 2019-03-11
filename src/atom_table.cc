@@ -296,7 +296,7 @@ AtomTable::atomToBool(Object* c)
 void 
 AtomTable::shiftStringPtrs(char* old_string_base)
 {
-  long offset = stringTable.getString(0) - old_string_base;
+  qint64 offset = stringTable.getString(0) - old_string_base;
 
   for (u_int i = 0; i < size(); i++)
     {

@@ -253,7 +253,7 @@ Thread::psi_mktemp(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_realtime(Object *& time_arg)
 {
-  time_arg = heap.newInteger(static_cast<long>(time((time_t *) NULL)));
+  time_arg = heap.newInteger(static_cast<qint64>(time((time_t *) NULL)));
   return RV_SUCCESS;
 }
 
@@ -357,7 +357,7 @@ Thread::psi_gmtime(Object *& time_obj, Object *& time_struct)
         {
           PSI_ERROR_RETURN(EV_TYPE, 2);
         }
-      Object* timet = heap.newInteger(static_cast<long>(etime));
+      Object* timet = heap.newInteger(static_cast<qint64>(etime));
 
       return BOOL_TO_RV(unify(time_arg, timet));
     }
@@ -453,7 +453,7 @@ Thread::psi_localtime(Object *& time_obj, Object *& time_struct)
 	{
 	  PSI_ERROR_RETURN(EV_TYPE, 2);
 	}
-      Object* timet = heap.newInteger(static_cast<long>(etime));
+      Object* timet = heap.newInteger(static_cast<qint64>(etime));
       return BOOL_TO_RV(unify(time_arg, timet));
     }
   PSI_ERROR_RETURN(EV_INST, 1);

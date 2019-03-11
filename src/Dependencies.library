@@ -243,8 +243,8 @@ timer.o: timer.cc timer.h heap_qp.h area_offsets.h defs.h config.h \
  system_qp.h tcp_escapes.h temperature.h thread_escapes.h timer_escapes.h \
  token.h trace_escapes.h unify.h user_hash_table_escapes.h varname.h \
  write.h
-tcp.o: tcp.cc netinet_in.h config.h ../config.h tcp_qp.h errors.h \
- area_offsets.h defs.h debug.h error_value.h
+tcp.o: tcp.cc netinet_in.h config.h ../config.h tcp_qp.h defs.h debug.h \
+ errors.h area_offsets.h
 write_support.o: write_support.cc write_support.h objects.h debug.h \
  defs.h config.h ../config.h string_table.h area_offsets.h magic.h \
  qem_options.h option.h options.h stack_qp.h errors.h page_table.h int.h \
