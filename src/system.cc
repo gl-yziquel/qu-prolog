@@ -639,6 +639,44 @@ Thread::psi_stat(Object *& object1, Object *& object2)
 
 
 
+Thread::ReturnValue
+Thread::psi_file_directory_name(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  assert(val1->isAtom());
+
+  string filename = OBJECT_CAST(Atom*, val1)->getName();
+  wordexp(filename);
+  size_t found = filename.find_last_of("/\\");
+  string path = filename.substr(0,found);
+  char tmpstr[1024];
+  strcpy(tmpstr, path.c_str());
+  object2 = atoms->add(tmpstr); 
+
+  return RV_SUCCESS;
+
+}
+
+
+Thread::ReturnValue
+Thread::psi_file_base_name(Object *& object1, Object *& object2)
+{
+  Object* val1 = heap.dereference(object1);
+  assert(val1->isAtom());
+
+  string filename = OBJECT_CAST(Atom*, val1)->getName();
+  wordexp(filename);
+  size_t found = filename.find_last_of("/\\");
+  string file = filename.substr(found+1);
+  char tmpstr[1024];
+  strcpy(tmpstr, file.c_str());
+  object2 = atoms->add(tmpstr); 
+
+  return RV_SUCCESS;
+
+}
+
+  
 
 
 

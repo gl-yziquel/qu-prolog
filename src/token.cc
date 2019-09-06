@@ -666,7 +666,10 @@ int32 Thread::get_number_token(QPStream *InStrm, char c, qint64& Integer, double
       
       if (c == TERMIN)
         {
-	  sprintf(number, "%lld", Integer);
+          stringstream out;
+          out << Integer;
+          strcpy(number, out.str().c_str()); 
+	  //sprintf(number, "%lld", Integer);
 	  size_t len = strlen(number);
 	  numptr = number + len;
 	  *numptr++ = c;
@@ -704,7 +707,10 @@ int32 Thread::get_number_token(QPStream *InStrm, char c, qint64& Integer, double
         }
       if (c == 'e')
         {
-	  sprintf(number, "%lld", Integer);
+          stringstream out;
+          out << Integer;
+          strcpy(number, out.str().c_str()); 
+	  //sprintf(number, "%lld", Integer);
 	  size_t len = strlen(number);
 	  numptr = number + len;
 	  *numptr++ = c;

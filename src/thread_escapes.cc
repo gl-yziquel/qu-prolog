@@ -998,6 +998,10 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
 
   assert(thread->Condition() == ThreadCondition::RUNNABLE);
 
+  if (TInfo().ID() == thread->TInfo().ID()) {
+      return psi_thread_exit();
+  }  
+
   thread->otherTrail.backtrackTo(thread->otherTrail.getHigh());
   //
   // If the thread is the initial thread then exit the application.
@@ -1010,9 +1014,9 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
   if (pedro_channel != NULL) 
     pedro_channel->delete_subscriptions(thread->TInfo().ID());
   timerStack.delete_all_timers(thread);
-#ifdef DEBUG_MT
+ #ifdef DEBUG_MT
   cerr <<  __FUNCTION__ << " " << thread->TInfo().ID() << endl;
-#endif
+ #endif
 
   if (thread->TInfo().SymbolSet())
     {
@@ -1020,7 +1024,6 @@ Thread::psi_thread_exit(Object *& thread_id_cell)
       thread_table->RemoveName(thread->TInfo().Symbol());
     }
   scheduler->deleteThread(thread);
-
   return RV_SUCCESS;
 }
 

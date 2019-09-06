@@ -1,6 +1,6 @@
 #ifdef WIN32
         #include <winsock2.h>
-//#define _WIN32_WINNT 0x501
+#define _WIN32_WINNT 0x501
         #include <ws2tcpip.h>
         #define _WINSOCKAPI_
         #include <windows.h>

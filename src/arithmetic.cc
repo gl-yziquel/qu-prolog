@@ -367,7 +367,13 @@ arithEvaluate(PrologValue& val, Heap& heap, ErrorValue& error_value)
 	      return zero;
 	    }
 	  number res;
+	  errno = 0;
 	  MAKE_DOUBLE(res, sqrt(GET_DOUBLE_VAL(res1)));
+	  if (errno != 0)
+	    {
+	      error_value = EV_RANGE;
+	      return zero;
+	    }
 	  return res;
         }
       else if (op == AtomTable::sin)

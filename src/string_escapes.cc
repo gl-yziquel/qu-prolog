@@ -353,12 +353,17 @@ Thread::psi_hash_string(Object *& object1, Object *& object2)
 Thread::ReturnValue
 Thread::psi_re_free(Object *& object1)
 {
-  pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
+#if defined(PCRE) ||  defined(WIN32)
+   pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
   if (rptr != NULL) {
     //cerr << "free re" << endl;
     pcre_free(rptr);
   }
   return RV_SUCCESS;
+#else
+  cerr << "PCRE library not installed" << endl;
+  return RV_FAIL;
+#endif
 }
 
 Thread::ReturnValue
@@ -392,6 +397,7 @@ Thread::ReturnValue
 Thread::psi_re_match(Object *& object1, Object *& object2,
                      Object *& object3, Object *& object4, Object *& object5)
 {
+#if defined(PCRE) ||  defined(WIN32)
   pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
   Object* string1_object = heap.dereference(object2);
   char* subject = OBJECT_CAST(StringObject*, string1_object)->getChars();
@@ -443,4 +449,8 @@ Thread::psi_re_match(Object *& object1, Object *& object2,
   subject += ovector[1];
   object3 = heap.newStringObject(subject);
   return RV_SUCCESS;
+#else
+  cerr << "PCRE library not installed" << endl;
+  return RV_FAIL;
+#endif
 }
