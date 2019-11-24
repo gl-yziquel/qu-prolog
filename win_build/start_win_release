@@ -107,4 +107,7 @@ sed -e"s%#QPVER#%$RELEASE%" qpwin.iss > tmp
 mv tmp qpwin.iss
 cp ../prepare_rel .
 cd ..
-echo -e "robocopy /E $DIR C:\MinGW\msys\1.0\home\pjr\\$DIR" > cp2win.bat
+#echo -e "set safety off & robocopy /E $DIR C:\msys64\home\pjr\'$DIR' & set safety on" > cp2win.bat
+
+sed -e"s%XXXX%$DIR%g" cp2win.bat > tmp
+mv tmp cp2win.bat

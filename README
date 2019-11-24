@@ -1,6 +1,6 @@
-Welcome to Qu-Prolog 10.3.
+Welcome to Qu-Prolog 10.4.
 
-Qu-Prolog 10.3 is an extended Prolog with built-in support for quantifiers, 
+Qu-Prolog 10.4 is an extended Prolog with built-in support for quantifiers, 
 object-variables and substitutions. It is designed as an implementation
 language for systems such as interactive theorem provers.
 

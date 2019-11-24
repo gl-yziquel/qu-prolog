@@ -1,1 +1,1 @@
-robocopy /E qp10.2 C:\MinGW\msys\1.0\home\pjr\qp10.2
+set safety off & robocopy /E XXXX C:\msys64\home\pjr\XXXX & set safety on

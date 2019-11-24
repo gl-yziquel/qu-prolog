@@ -246,9 +246,11 @@ Object* parse_prec50(Thread* th, AtomTable& atoms, VarMap& vmap,
 		      ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_basic(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if (curr_token == AtomTable::colon) {
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_basic(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(AtomTable::colon);
     sterm->setArgument(1, t1);
@@ -262,9 +264,11 @@ Object* parse_prec100(Thread* th, AtomTable& atoms, VarMap& vmap,
 		      ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_prec50(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if (curr_token == AtomTable::at) {
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec50(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(AtomTable::at);
     sterm->setArgument(1, t1);
@@ -283,15 +287,18 @@ Object* parse_prec200(Thread* th, AtomTable& atoms, VarMap& vmap,
   if (curr_token == AtomTable::minus) {
     next_token(th, atoms, vmap, remember);
     Object* arg = parse_prec100(th, atoms, vmap, stk, remember);
+    if (arg == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(1);
     sterm->setFunctor(AtomTable::minus);
     sterm->setArgument(1, arg);
     return sterm;
   }
   Object* t1 = parse_prec100(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if (curr_token == AtomTable::power) {
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec100(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(AtomTable::power);
     sterm->setArgument(1, t1);
@@ -305,6 +312,7 @@ Object* parse_prec400(Thread* th, AtomTable& atoms, VarMap& vmap,
 		      ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_prec200(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   while ((curr_token == AtomTable::multiply) ||
          (curr_token == AtomTable::divide) ||
          (curr_token == AtomTable::intdivide) ||
@@ -314,6 +322,7 @@ Object* parse_prec400(Thread* th, AtomTable& atoms, VarMap& vmap,
     Object* op = curr_token;
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec200(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(op);
     sterm->setArgument(1, t1);
@@ -327,6 +336,7 @@ Object* parse_prec500(Thread* th, AtomTable& atoms, VarMap& vmap,
 		      ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_prec400(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   while ((curr_token == AtomTable::plus) ||
          (curr_token == AtomTable::minus) ||
          (curr_token == AtomTable::bitwiseand) ||
@@ -334,6 +344,7 @@ Object* parse_prec500(Thread* th, AtomTable& atoms, VarMap& vmap,
     Object* op = curr_token;
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec400(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(op);
     sterm->setArgument(1, t1);
@@ -347,12 +358,14 @@ Object* parse_prec700(Thread* th, AtomTable& atoms, VarMap& vmap,
 		      ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_prec500(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if ((curr_token == AtomTable::equal) || (curr_token == AtomTable::is) ||
       (curr_token == AtomTable::lt) || (curr_token == AtomTable::gt) ||
       (curr_token == AtomTable::le) || (curr_token == AtomTable::ge)) {
     Object* op = curr_token;
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec500(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(op);
     sterm->setArgument(1, t1);
@@ -366,10 +379,12 @@ Object* parse_prec1000(Thread* th, AtomTable& atoms, VarMap& vmap,
 		       ObjectsStack& stk, bool remember)
 {  
   Object* t1 = parse_prec700(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if (curr_token_type == COMMA_TOKEN) {
     Object* op = AtomTable::comma;
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec1000(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(op);
     sterm->setArgument(1, t1);
@@ -383,10 +398,12 @@ Object* parse_prec1050(Thread* th, AtomTable& atoms, VarMap& vmap,
 		       ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_prec1000(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if (curr_token == AtomTable::arrow) {
     Object* op = curr_token;
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec1050(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(op);
     sterm->setArgument(1, t1);
@@ -400,10 +417,12 @@ Object* parse_prec1100(Thread* th, AtomTable& atoms, VarMap& vmap,
 		       ObjectsStack& stk, bool remember)
 {
   Object* t1 = parse_prec1050(th, atoms, vmap, stk, remember);
+  if (t1 == NULL) return NULL;
   if (curr_token == AtomTable::semi) {
     Object* op = curr_token;
     next_token(th, atoms, vmap, remember);
     Object* t2 = parse_prec1100(th, atoms, vmap, stk, remember);
+    if (t2 == NULL) return NULL;
     Structure* sterm = th->TheHeap().newStructure(2);
     sterm->setFunctor(op);
     sterm->setArgument(1, t1);
@@ -419,6 +438,7 @@ Object* parsePedroTerm(Thread* th, AtomTable& atoms,
 {
   next_token(th, atoms, vmap, remember);
   Object* t = parse_prec1100(th, atoms, vmap, stk, remember);
+  if (t == NULL) return NULL;
   assert(curr_token_type == NEWLINE_TOKEN);
   return t;
 }

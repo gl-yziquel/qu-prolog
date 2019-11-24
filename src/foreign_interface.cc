@@ -23,6 +23,7 @@
 
 #include "thread_qp.h"
 #include "pedro_env.h"
+#include "global.h"
 
 //class PedroMessage;
 
@@ -68,7 +69,9 @@ ForeignInterface::unify(Object* o1, Object* o2)
       
 bool 
 ForeignInterface::push_message(const char * msg)
-{  threadptr->MessageQueue().push_back(new PedroMessage(msg)); 
+{
+  threadptr->MessageQueue().push_back(new PedroMessage(msg)); 
   return true;
+
 }
       

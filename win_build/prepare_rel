@@ -40,7 +40,7 @@ rm install-sh
 cd bin
 rm Make*
 rm kq*
-#rm qc
+rm qc
 rm *boot*
 #rm qc1.qup
 #rm qc1.qup.qx
