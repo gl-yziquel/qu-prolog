@@ -461,7 +461,7 @@ Thread::psi_setarg(Object *& object1, Object *& object2, Object *& object3)
     }
   else if (funct->isCons())
     {
-      if ((i > 0) && (i <= 2)) {
+      if ((i <= 0) && (i > 2)) {
         PSI_ERROR_RETURN(EV_RANGE, 1);
       }
       if(val3->isVariable())
