@@ -47,7 +47,7 @@ export OPTIMISATION=-O2
 #export DEBUGGING=-DQP_DEBUG
 ##ENDBLOCK##
 
-export CXXFLAGS = -fno-strict-aliasing -Wall -D_GNU_SOURCE=1 $(OPTIMISATION)  -DNDEBUG   -Wno-uninitialized 
+export CXXFLAGS = -static -fno-strict-aliasing -Wall -D_GNU_SOURCE=1 $(OPTIMISATION)  -DNDEBUG   -Wno-uninitialized 
 export QACXXFLAGS = -Wall -D_GNU_SOURCE=1  -DNDEBUG   -Wno-uninitialized
 
 .PHONY: all

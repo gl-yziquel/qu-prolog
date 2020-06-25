@@ -138,6 +138,9 @@ void next_token(Thread* th, AtomTable& atoms, VarMap& vmap, bool remember)
 int parseargs(Thread* th, AtomTable& atoms, VarMap& vmap, 
 	      ObjectsStack& stk, bool remember)
 {
+  if (curr_token_type == CBRA_TOKEN) {
+    return 0;
+  }
   int num = 0;
   Object* t = parse_prec700(th, atoms, vmap, stk, remember);
   assert(t != NULL);
@@ -219,6 +222,13 @@ Object* parse_basic(Thread* th, AtomTable& atoms, VarMap& vmap,
 	{
 	  next_token(th, atoms, vmap, remember);
 	  int arity = parseargs(th, atoms, vmap, stk, remember);
+          if (arity == 0) {
+            next_token(th, atoms, vmap, remember);
+            Structure* compound = th->TheHeap().newStructure(1);
+            compound->setFunctor(t);
+            compound->setArgument(1, AtomTable::a_d_none_);
+            return compound;
+          }
 	  assert((arity != 0) && (curr_token_type == CBRA_TOKEN));
 	  next_token(th, atoms, vmap, remember);
 	  Structure* compound = th->TheHeap().newStructure(arity);
@@ -609,14 +619,19 @@ void write_infix_comma(Object* larg, Object* rarg, int prec,
 void write_structure(Structure* str, int arity, ostringstream& strm)
 {
   write_term(str->getFunctor(), 999, strm);
-  strm << '(';
-  for (int i = 1; i <arity; i++)
-    {
-      write_term(str->getArgument(i), 999, strm);
-      strm << ", ";
-    }
-  write_term(str->getArgument(arity), 999, strm);
-  strm << ')';
+  Object* arg = str->getArgument(1)->variableDereference();
+  if (arg == AtomTable::a_d_none_) {
+    strm << "()";
+  } else {
+    strm << '(';
+    for (int i = 1; i <arity; i++)
+      {
+        write_term(str->getArgument(i), 999, strm);
+        strm << ", ";
+      }
+    write_term(str->getArgument(arity), 999, strm);
+    strm << ')';
+  }
 }
 
 void write_term(Object* term, int prec, ostringstream& strm)

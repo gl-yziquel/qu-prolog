@@ -98,6 +98,8 @@ cp ../configure .
 cp ../src_makefiles_in/* src
 cp ../Makefile.in .
 cp ../pcre3.dll bin
+cp ../libwinpthread-1.dll bin
+cp ../libpcre-1.dll bin
 cp ../pcre.lib src
 cp ../pcreposix.lib src
 

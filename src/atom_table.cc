@@ -231,6 +231,8 @@ Atom *AtomTable::trace_all;
 Atom *AtomTable::code;
 Atom *AtomTable::record_db;
 
+Atom *AtomTable::a_d_none_;
+
 //
 // Using the string to hash into the atom table.
 // No idea of this algorithm.  It is from Ross.
