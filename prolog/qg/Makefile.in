@@ -18,7 +18,8 @@ $(PROGRAM): $(OBJECTS)
 
 .PHONY:	clean
 clean:
-	$(RM) Makefile $(OBJECTS) 
+	$(RM) Makefile 
+
 
 
 %.qo: %.qs

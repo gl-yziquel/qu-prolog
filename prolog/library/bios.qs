@@ -220,6 +220,17 @@ end('get_char'/2):
 
 
 
+'$is_ready'/0:
+
+
+$1:
+	pseudo_instr1(27, 0)
+	pseudo_instr1(117, 0)
+	proceed
+end('$is_ready'/0):
+
+
+
 'peek/1$0'/2:
 
 	try(2, $1)

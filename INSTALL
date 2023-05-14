@@ -1,4 +1,4 @@
-Installing Qu-Prolog 10.6
+Installing Qu-Prolog 10.8
 
 Execute the following
 
@@ -34,17 +34,9 @@ Then try
 ./configure --with-gcclib=PATH
 where PATH is the path to the STL library includes.
 
+For regular expressions we use the pcre2-8 library and so that needs to be
+installed in order to be able to process regular expressions via re_match. 
 
-QT GUI
-------
-If you have the QT libraries and qmake then you can build a qt interface to
-the qp interpreter (xqp) and for the debugger (xqpdebug) by executing the
-following
-
-make xqp
-
-Before doing this you should check that the environment variable QTDIR is
-set to the QT home.
 
 Installing on MacOSX
 --------------------

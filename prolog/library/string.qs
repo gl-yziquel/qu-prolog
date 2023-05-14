@@ -744,43 +744,15 @@ end('sub_string'/5):
 
 
 $1:
-	pseudo_instr2(137, 0, 3)
-	put_structure(4, 0)
-	set_constant('$re_match_top')
-	set_x_value(3)
-	set_x_value(1)
-	set_x_value(2)
-	set_integer(0)
-	put_structure(1, 1)
-	set_constant('$re_free')
-	set_x_value(3)
-	execute_predicate('call_cleanup', 2)
+	put_integer(0, 3)
+	execute_predicate('$re_match_aux', 4)
 end('re_match'/3):
 
 
 
-'$re_match_top/4$0/6$0'/3:
+'$re_match_aux/4$0'/5:
 
-	try(3, $1)
-	trust($2)
-
-$1:
-	allocate(1)
-	get_y_variable(0, 2)
-	get_x_value(0, 1)
-	neck_cut
-	cut(0)
-	fail
-
-$2:
-	proceed
-end('$re_match_top/4$0/6$0'/3):
-
-
-
-'$re_match_top/4$0'/6:
-
-	try(6, $1)
+	try(5, $1)
 	trust($2)
 
 $1:
@@ -788,51 +760,41 @@ $1:
 	proceed
 
 $2:
-	get_x_variable(6, 0)
-	get_x_variable(0, 2)
-	allocate(3)
-	get_y_variable(2, 3)
-	get_y_variable(1, 4)
-	get_y_variable(0, 5)
-	get_list(1)
-	unify_x_ref(1)
+	get_x_variable(5, 0)
+	get_x_variable(6, 1)
+	get_x_variable(1, 3)
+	get_x_variable(0, 4)
+	pseudo_instr2(133, 2, 1)
+	put_x_value(6, 2)
+	get_list(2)
+	unify_x_ref(2)
 	unify_void(1)
-	get_structure(':', 2, 1)
+	get_structure(':', 2, 2)
 	unify_void(1)
 	unify_x_variable(3)
-	put_y_value(2, 1)
-	put_x_value(6, 2)
-	call_predicate('$re_match_top', 4, 3)
-	put_y_value(1, 0)
-	put_y_value(2, 1)
-	put_y_value(0, 2)
-	deallocate
-	execute_predicate('$re_match_top/4$0/6$0', 3)
-end('$re_match_top/4$0'/6):
+	put_x_value(5, 2)
+	execute_predicate('$re_match_aux', 4)
+end('$re_match_aux/4$0'/5):
 
 
 
-'$re_match_top'/4:
+'$re_match_aux'/4:
 
 
 $1:
-	get_x_variable(5, 0)
-	get_x_variable(4, 1)
+	get_x_variable(4, 0)
+	get_x_variable(5, 1)
 	get_x_variable(0, 2)
-	allocate(1)
-	get_y_level(0)
-	pseudo_instr5(1, 5, 4, 1, 2, 3)
+	pseudo_instr5(1, 4, 5, 1, 2, 3)
 	get_x_variable(3, 1)
 	get_x_variable(1, 2)
 	put_x_value(5, 2)
-	put_y_value(0, 5)
-	deallocate
-	execute_predicate('$re_match_top/4$0', 6)
-end('$re_match_top'/4):
+	execute_predicate('$re_match_aux/4$0', 5)
+end('$re_match_aux'/4):
 
 
 
-'$query_string1593041821_898/0$0'/0:
+'$query_string1684026315_960/0$0'/0:
 
 
 $1:
@@ -845,23 +807,23 @@ $1:
 	cut(0)
 	deallocate
 	proceed
-end('$query_string1593041821_898/0$0'/0):
+end('$query_string1684026315_960/0$0'/0):
 
 
 
-'$query_string1593041821_898'/0:
+'$query_string1684026315_960'/0:
 
 	try(0, $1)
 	trust($2)
 
 $1:
 	allocate(0)
-	call_predicate('$query_string1593041821_898/0$0', 0, 0)
+	call_predicate('$query_string1684026315_960/0$0', 0, 0)
 	fail
 
 $2:
 	proceed
-end('$query_string1593041821_898'/0):
+end('$query_string1684026315_960'/0):
 
 
 
@@ -869,7 +831,7 @@ end('$query_string1593041821_898'/0):
 
 
 $1:
-	execute_predicate('$query_string1593041821_898', 0)
+	execute_predicate('$query_string1684026315_960', 0)
 end('$query'/0):
 
 

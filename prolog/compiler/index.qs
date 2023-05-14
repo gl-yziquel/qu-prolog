@@ -647,9 +647,8 @@ end('$build_index_tree'/10):
 	trust($2)
 
 $1:
-	get_x_variable(2, 0)
-	put_constant('$default', 0)
-	get_x_value(2, 0)
+	put_constant('$default', 2)
+	get_x_value(0, 2)
 	neck_cut
 	put_constant('true', 0)
 	get_x_value(1, 0)
@@ -667,9 +666,8 @@ end('$update_tree/17$0'/2):
 	trust($2)
 
 $1:
-	get_x_variable(2, 0)
-	put_constant('$default', 0)
-	get_x_value(2, 0)
+	put_constant('$default', 2)
+	get_x_value(0, 2)
 	neck_cut
 	put_constant('true', 0)
 	get_x_value(1, 0)

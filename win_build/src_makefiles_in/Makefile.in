@@ -47,7 +47,7 @@ export OPTIMISATION=-O2
 #export DEBUGGING=-DQP_DEBUG
 ##ENDBLOCK##
 
-export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 -static-libgcc -static-libstdc++ $(OPTIMISATION) @DEBUGGING@ @GCCINCLUDES@ -Wno-uninitialized 
+export CXXFLAGS = @GCC_ALIAS_FLAG@ -Wall -D_GNU_SOURCE=1 -static-libgcc -static-libstdc++ $(OPTIMISATION) @DEBUGGING@ @GCCINCLUDES@ -Wno-uninitialized -Iinclude
 export QACXXFLAGS = -Wall -D_GNU_SOURCE=1 -static-libgcc -static-libstdc++ @DEBUGGING@ @GCCINCLUDES@ -Wno-uninitialized
 
 .PHONY: all

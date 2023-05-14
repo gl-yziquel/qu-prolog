@@ -97,10 +97,6 @@ ReturnValue psi_split_string(Object *& string_arg, Object *& pos_arg,
 ReturnValue psi_hash_string(Object *& object1, Object *& object2);
 
 
-ReturnValue psi_re_free(Object *& object1);
-
-ReturnValue psi_re_compile(Object *& object1, Object *& object2);
-
 ReturnValue psi_re_match(Object *& object1, Object *& object2,
                          Object *& object3, Object *& object4,
                          Object *& object5);

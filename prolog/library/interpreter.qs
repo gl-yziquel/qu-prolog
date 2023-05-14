@@ -92,7 +92,26 @@ end('$interpreter'/1):
 
 
 
-'$fetch_execute/1$0'/3:
+'$fetch_execute/1$0'/0:
+
+	try(0, $1)
+	trust($2)
+
+$1:
+	allocate(1)
+	get_y_level(0)
+	call_predicate('$is_ready', 0, 1)
+	cut(0)
+	deallocate
+	execute_predicate('$clear_to_nl', 0)
+
+$2:
+	proceed
+end('$fetch_execute/1$0'/0):
+
+
+
+'$fetch_execute/1$1'/3:
 
 	try(3, $1)
 	trust($2)
@@ -114,7 +133,7 @@ $2:
 	put_y_value(0, 1)
 	deallocate
 	execute_predicate('$solve_query', 2)
-end('$fetch_execute/1$0'/3):
+end('$fetch_execute/1$1'/3):
 
 
 
@@ -158,17 +177,40 @@ $1:
 	set_x_value(3)
 	set_x_value(2)
 	call_predicate('read_term', 2, 4)
+	call_predicate('$fetch_execute/1$0', 0, 4)
 	put_constant('$in_interpreter_query', 0)
 	put_constant('fail', 1)
 	pseudo_instr2(3, 0, 1)
 	put_y_value(2, 0)
 	put_y_value(1, 1)
 	put_y_value(3, 2)
-	call_predicate('$fetch_execute/1$0', 3, 1)
+	call_predicate('$fetch_execute/1$1', 3, 1)
 	cut(0)
 	deallocate
 	proceed
 end('$fetch_execute'/1):
+
+
+
+'$clear_to_nl'/0:
+
+	try(0, $1)
+	trust($2)
+
+$1:
+	allocate(2)
+	get_y_level(0)
+	put_y_variable(1, 0)
+	call_predicate('get0', 1, 2)
+	put_integer(10, 0)
+	pseudo_instr2(133, 21, 0)
+	cut(0)
+	deallocate
+	execute_predicate('$clear_to_nl', 0)
+
+$2:
+	proceed
+end('$clear_to_nl'/0):
 
 
 

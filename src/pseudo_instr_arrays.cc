@@ -165,7 +165,7 @@ pseudo_instr1_data pseudo_instr1_array[] =
 	{&Thread::psi_schedule_threads_now,	0,	"psi_schedule_threads_now"}, 
 	{&Thread::psi_set_default_message_thread,	0,	"psi_set_default_message_thread"}, 
 	{&Thread::psi_default_message_thread,	1,	"psi_default_message_thread"}, 
-	{&Thread::psi_re_free,	0,	"psi_re_free"}
+	{&Thread::psi_is_ready,	0,	"psi_is_ready"}
 };
 pseudo_instr2_data pseudo_instr2_array[] =
 {
@@ -306,7 +306,6 @@ pseudo_instr2_data pseudo_instr2_array[] =
 	{&Thread::psi_string_to_list,	1,	"psi_string_to_list"}, 
 	{&Thread::psi_peek,	1,	"psi_peek"}, 
 	{&Thread::psi_hash_string,	1,	"psi_hash_string"}, 
-	{&Thread::psi_re_compile,	1,	"psi_re_compile"}, 
 	{&Thread::psi_file_directory_name,	1,	"psi_file_directory_name"}, 
 	{&Thread::psi_file_base_name,	1,	"psi_file_base_name"}
 };

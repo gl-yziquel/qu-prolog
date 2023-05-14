@@ -17,11 +17,11 @@
 export QPBIN	= @QPHOME@/bin
 
 
-export QC		= qc
-export QC_RELEASE	= qc
+export QC		= $(QPBIN)/qc
+export QC_RELEASE	= $(QC)
 export QCFLAGS		= 
-export BOOTSTRAP.qc	= $(QPBIN)/$(QC) $(QCFLAGS)
-export COMPILE.qc	= $(QPBIN)/qc $(QCFLAGS)
+export COMPILE.qc	= $(QC) $(QCFLAGS)
+export BOOTSTRAP.qc	= $(QC) $(QCFLAGS)
 
 export PROLOG		= prolog
 
@@ -41,9 +41,6 @@ objects:
 
 
 
-.PHONY: tkICM
-tkICM:
-	@$(MAKE) -C @QPHOME@/src tkICM
 
 .PHONY: xqp
 xqp:
@@ -56,6 +53,5 @@ xqp:
 
 .PHONY: clean
 clean:
-	@$(MAKE) -C @QPHOME@/bin	$(PARALLEL) clean
 	@$(MAKE) -C @QPHOME@/src	$(PARALLEL) clean
 	@$(MAKE) -C @QPHOME@/prolog	$(PARALLEL) clean

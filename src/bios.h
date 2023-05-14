@@ -37,6 +37,14 @@ ReturnValue psi_get_char(Object *&, Object *&);
 //
 ReturnValue psi_peek(Object *&, Object *&);
 
+
+//
+// psi_is_ready(stream_index)
+// Is there something to read.
+//
+ReturnValue psi_is_ready(Object *& stream_arg);
+
+
 //
 // psi_put_char(stream_index, character)
 // Put the character into the output stream.

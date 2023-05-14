@@ -100,7 +100,7 @@ all: $(OBJECTS)
 
 .PHONY:	clean
 clean:
-	$(RM) $(OBJECTS) Makefile
+	$(RM)  Makefile
 
 
 %.qo: %.qs

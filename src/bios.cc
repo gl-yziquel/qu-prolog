@@ -104,6 +104,7 @@ Thread::psi_peek(Object *& stream_arg, Object *& char_arg)
   IS_READY_STREAM(stream);
 
   char c[2] = { '\0', '\0' };
+  
 
   //
   // Peek the character.
@@ -122,6 +123,23 @@ Thread::psi_peek(Object *& stream_arg, Object *& char_arg)
   //
   char_arg = atoms->add(c);
   return RV_SUCCESS;
+}
+
+//
+// psi_is_ready(stream_index)
+// Is there something to read.
+//
+Thread::ReturnValue
+Thread::psi_is_ready(Object *& stream_arg)
+{
+  Object * argS = heap.dereference(stream_arg);
+  
+  //
+  // Check argument.
+  //
+  QPStream *stream;
+  DECODE_STREAM_INPUT_ARG(heap, *iom, argS, 1, stream);
+  return BOOL_TO_RV(stream->isReady());
 }
 
 #define CHECK_CHAR_ARG(object, arg_num, c)	        \

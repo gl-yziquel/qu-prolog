@@ -1385,13 +1385,13 @@ end('default_message_thread'/1):
 
 
 
-'$re_free'/1:
+'$is_ready'/1:
 
 
 $1:
 	pseudo_instr1(117, 0)
 	proceed
-end('$re_free'/1):
+end('$is_ready'/1):
 
 
 
@@ -2850,22 +2850,11 @@ end('$hash_string'/2):
 
 
 
-'$re_compile'/2:
-
-
-$1:
-	pseudo_instr2(137, 0, 2)
-	get_x_value(1, 2)
-	proceed
-end('$re_compile'/2):
-
-
-
 'file_directory_name'/2:
 
 
 $1:
-	pseudo_instr2(138, 0, 2)
+	pseudo_instr2(137, 0, 2)
 	get_x_value(1, 2)
 	proceed
 end('file_directory_name'/2):
@@ -2876,7 +2865,7 @@ end('file_directory_name'/2):
 
 
 $1:
-	pseudo_instr2(139, 0, 2)
+	pseudo_instr2(138, 0, 2)
 	get_x_value(1, 2)
 	proceed
 end('file_base_name'/2):

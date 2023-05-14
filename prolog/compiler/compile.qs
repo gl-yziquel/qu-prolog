@@ -462,6 +462,22 @@ end('$process_directive1'/1):
 
 '$is_dynamic_pred'/1:
 
+	switch_on_term(0, $6, 'fail', 'fail', $3, 'fail', 'fail')
+
+$3:
+	switch_on_structure(0, 4, ['$default':'fail', '$'/0:$4, '/'/2:$5])
+
+$4:
+	try(1, $1)
+	trust($2)
+
+$5:
+	try(1, $1)
+	trust($2)
+
+$6:
+	try(1, $1)
+	trust($2)
 
 $1:
 	get_structure('/', 2, 0)
@@ -469,7 +485,21 @@ $1:
 	unify_x_variable(2)
 	put_x_variable(0, 0)
 	pseudo_instr3(0, 0, 1, 2)
+	allocate(1)
+	get_y_level(0)
 	put_constant('dynamic', 1)
+	call_predicate('predicate_property', 2, 1)
+	cut(0)
+	deallocate
+	proceed
+
+$2:
+	get_structure('/', 2, 0)
+	unify_x_variable(1)
+	unify_x_variable(2)
+	put_x_variable(0, 0)
+	pseudo_instr3(0, 0, 1, 2)
+	put_constant('multifile', 1)
 	execute_predicate('predicate_property', 2)
 end('$is_dynamic_pred'/1):
 
@@ -883,26 +913,10 @@ end('$read_one'/3):
 
 '$is_compiler_call'/1:
 
-	switch_on_term(0, $18, 'fail', 'fail', $16, 'fail', $15)
-
-$16:
-	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$17, 'op'/3:$1, 'op'/4:$2, 'obvar_prefix'/1:$3, 'obvar_prefix'/2:$4, 'remove_obvar_prefix'/1:$5, 'remove_obvar_prefix'/2:$6, 'op_table'/1:$7, 'op_table_inherit'/2:$8, 'inline'/2:$9, 'inline'/3:$10, 'dynamic'/1:$11, 'abolish'/1:$12, 'index'/3:$13, 'compile_time_only'/1:$14])
+	switch_on_term(0, $19, 'fail', 'fail', $17, 'fail', $16)
 
 $17:
-	try(1, $1)
-	retry($2)
-	retry($3)
-	retry($4)
-	retry($5)
-	retry($6)
-	retry($7)
-	retry($8)
-	retry($9)
-	retry($10)
-	retry($11)
-	retry($12)
-	retry($13)
-	trust($14)
+	switch_on_structure(0, 32, ['$default':'fail', '$'/0:$18, 'op'/3:$1, 'op'/4:$2, 'obvar_prefix'/1:$3, 'obvar_prefix'/2:$4, 'remove_obvar_prefix'/1:$5, 'remove_obvar_prefix'/2:$6, 'op_table'/1:$7, 'op_table_inherit'/2:$8, 'inline'/2:$9, 'inline'/3:$10, 'dynamic'/1:$11, 'multifile'/1:$12, 'abolish'/1:$13, 'index'/3:$14, 'compile_time_only'/1:$15])
 
 $18:
 	try(1, $1)
@@ -920,6 +934,24 @@ $18:
 	retry($13)
 	retry($14)
 	trust($15)
+
+$19:
+	try(1, $1)
+	retry($2)
+	retry($3)
+	retry($4)
+	retry($5)
+	retry($6)
+	retry($7)
+	retry($8)
+	retry($9)
+	retry($10)
+	retry($11)
+	retry($12)
+	retry($13)
+	retry($14)
+	retry($15)
+	trust($16)
 
 $1:
 	get_structure('op', 3, 0)
@@ -977,21 +1009,26 @@ $11:
 	proceed
 
 $12:
-	get_structure('abolish', 1, 0)
+	get_structure('multifile', 1, 0)
 	unify_void(1)
 	proceed
 
 $13:
+	get_structure('abolish', 1, 0)
+	unify_void(1)
+	proceed
+
+$14:
 	get_structure('index', 3, 0)
 	unify_void(3)
 	proceed
 
-$14:
+$15:
 	get_structure('compile_time_only', 1, 0)
 	unify_void(1)
 	proceed
 
-$15:
+$16:
 	get_constant('chr_init', 0)
 	proceed
 end('$is_compiler_call'/1):

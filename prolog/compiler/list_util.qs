@@ -242,6 +242,7 @@ end('delete'/3):
 $1:
 	get_constant('[]', 1)
 	get_constant('[]', 2)
+	neck_cut
 	proceed
 
 $2:

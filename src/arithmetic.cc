@@ -949,7 +949,7 @@ Thread::psi_decrement(Object *& object1, Object *& object2)
      }
    else
      {
-      object2 = heap.newDouble(GET_DOUBLE_VAL(res1) + 1);
+      object2 = heap.newDouble(GET_DOUBLE_VAL(res1) - 1);
      }
 
   return RV_SUCCESS;

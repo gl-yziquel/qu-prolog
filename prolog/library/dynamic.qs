@@ -15,8 +15,11 @@ $1:
 	set_constant('/')
 	set_y_value(1)
 	set_y_value(0)
+	call_predicate('dynamic', 1, 2)
+	put_x_variable(0, 0)
+	pseudo_instr3(0, 0, 21, 20)
 	deallocate
-	execute_predicate('dynamic', 1)
+	execute_predicate('retractall', 1)
 end('multifile'/1):
 
 

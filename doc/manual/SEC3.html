@@ -4,7 +4,7 @@
 <!-- Edited by Michael Walters on 30 November 1999 -->
 
 <TITLE>
-Qu-Prolog 10.6 Reference Manual - Built-in Predicates
+Qu-Prolog 10.8 Reference Manual - Built-in Predicates
 </TITLE>
 </HEAD>
 
@@ -3468,7 +3468,7 @@ remaining in <KBD>String</KBD> after the end of <KBD>SubString</KBD>.
     On backtracking all matches will be found.
     <P> See <a href="http://www.pcre.org/current/doc/html/pcre2syntax.html">http://www.pcre.org/current/doc/html/pcre2syntax.html</a> for details of the syntax of the regular expression library PCRE2. NOTE: the pcre library needs to be installed before building QuProlog for this predicate to be accessable.
 
-    <P>Example:
+    <P>Example (there are 3 spaces between the 2 and 3):
       <KBD>
         <P>| ?- re_match("(\\d*)(\\s*)", "12   3 45", R).
           <BR>
@@ -3476,7 +3476,7 @@ remaining in <KBD>String</KBD> after the end of <KBD>SubString</KBD>.
           <BR>
           <BR>R = [5 : 7, 5 : 6, 6 : 7];
           <BR>
-          <BR>R = [7 : 9, 7 : 9, 9 : 9];
+          <BR>R = [7 : 9, 7 : 9, 7 : 7];
           <BR>
           <BR>R = [9 : 9, 9 : 9, 9 : 9];
           <BR>
@@ -3485,7 +3485,7 @@ remaining in <KBD>String</KBD> after the end of <KBD>SubString</KBD>.
       Note that the backslash of the regular expression needs to be escaped.
       For the first answer, 0 is the index of the beginning of the match and
       5 is the index of the end of the overall match. The next two ranges give
-      the matchs for the bracketed sub-RE: 0:2 matches the digits and 2:5 matches the spaces.
+      the matches for the bracketed sub-RE: 0:2 matches the digits and 2:5 matches the spaces. As in the last two cases, if there is a zero length match then the start and end values are the same as the start of the overall match.
       <P>The range values in combination with the use of <KBD>sub_string</KBD> can be used to extract the required substring.
   </BLOCKQUOTE>
     
@@ -5205,7 +5205,7 @@ predicate.
 
 <BLOCKQUOTE>
 Esentially the same as <KBD>dynamic(PredicateName/Arity)</KBD> and is to provide an
-approximation to multifile as used in other Prologs.
+approximation to multifile as used in other Prologs. When the file containing the multifile declaration is re-consulted all corresponding facts are retracted when the multifile call is made. 
 </BLOCKQUOTE>
 
 <P><KBD><a name="assert"></a>assert(Clause)</KBD>

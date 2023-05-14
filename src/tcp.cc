@@ -75,7 +75,7 @@ ip_to_ipnum(char* ip, wordlong& ipnum)
   int rv;
   rv = getaddrinfo(ip, 0, &hint, &ailist);
   if (rv != 0) {
-    freeaddrinfo(ailist);
+    //freeaddrinfo(ailist);
     return -1;
   }
   struct addrinfo *res;

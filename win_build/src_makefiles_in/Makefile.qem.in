@@ -12,7 +12,7 @@ export OBJECTS.qem	= $(addsuffix .o,$(BASES.qem))
 all.qem: $(COMMAND.qem)
 
 $(COMMAND.qem): $(OBJECTS.qem) $(BIG_LIBRARY)
-	$(CXX) $(LDFLAGS) -static-libgcc -static-libstdc++ -o $(COMMAND.qem) $(OBJECTS.qem) $(BIG_LIBRARY) -lwsock32 -lws2_32 -lwinmm -L. -lpcre $(BIG_LIBRARY) $(BIG_LIBRARY)
+	$(CXX) $(LDFLAGS) -static-libgcc -static-libstdc++ -o $(COMMAND.qem) $(OBJECTS.qem) $(BIG_LIBRARY) -lwsock32 -lws2_32 -lwinmm -L. -lpcre2-8 $(BIG_LIBRARY) $(BIG_LIBRARY)
 
 .PHONY: install.qem
 install.qem: @QPHOME@/bin/$(COMMAND.qem)

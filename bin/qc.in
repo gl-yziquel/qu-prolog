@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ## qc - a compiler for Qu-Prolog
-## Copyright (C) 2000-Thu 25 Jun 09:36:43 AEST 2020 
+## Copyright (C) 2000-Sun 14 May 2023 11:05:00 AEST 
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -197,7 +197,7 @@ def main():
         stem = arg.rsplit('.', 1)[0]
         newfile = stem+'.qi'
         try:
-            fp = open(arg, 'U')
+            fp = open(arg, 'r')
         except:
             printit("Can't open %s" % arg)
             sys.exit()

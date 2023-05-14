@@ -86,9 +86,9 @@ cp win32/qcc.bat bin
 cp win32/rm.bat bin
 cp win32/qc.exe bin
 
-cp win32/include/regex.h src
-cp win32/include/pcre.h src
-cp win32/include/pcreposix.h src
+#cp win32/include/regex.h src
+#cp win32/include/pcre.h src
+#cp win32/include/pcreposix.h src
 
 todos README
 todos examples/README
@@ -97,11 +97,14 @@ cp ../config.h .
 cp ../configure .
 cp ../src_makefiles_in/* src
 cp ../Makefile.in .
-cp ../pcre3.dll bin
+cp ../pcre2.h src
+cp ../libpcre2-8.a src
+#cp ../pcre3.dll bin
 cp ../libwinpthread-1.dll bin
-cp ../libpcre-1.dll bin
-cp ../pcre.lib src
-cp ../pcreposix.lib src
+#cp ../libpcre-1.dll bin
+#cp ../msys-pcre-1.dll bin
+#cp ../pcre.lib src
+#cp ../pcreposix.lib src
 
 cp ../modpath.iss .
 cp ../win_install.iss qpwin.iss

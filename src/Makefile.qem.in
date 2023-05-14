@@ -12,7 +12,7 @@ export OBJECTS.qem	= $(addsuffix .o,$(BASES.qem))
 all.qem: $(COMMAND.qem)
 
 $(COMMAND.qem): $(OBJECTS.qem) $(BIG_LIBRARY)
-	$(CXX) $(LDFLAGS) -o $(COMMAND.qem) $(OBJECTS.qem) $(BIG_LIBRARY) @LIBS@  `pkg-config --cflags --libs libpcre` $(BIG_LIBRARY)
+	$(CXX) $(LDFLAGS) -o $(COMMAND.qem) $(OBJECTS.qem) $(BIG_LIBRARY) @LIBS@  `pkg-config --cflags --libs libpcre2-8` $(BIG_LIBRARY)
 
 .PHONY: install.qem
 install.qem: @QPHOME@/bin/$(COMMAND.qem)

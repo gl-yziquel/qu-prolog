@@ -1,3 +1,4 @@
+
 echo "**** configure *****"
 ./configure
 echo "**** make ****"
@@ -53,3 +54,5 @@ cd ..
 
 mv README README.txt
 mv examples/README examples/README.txt
+
+cp Z:/qc.exe bin

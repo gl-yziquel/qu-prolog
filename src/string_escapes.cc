@@ -26,16 +26,19 @@
 #include "io_qp.h"
 #include "thread_qp.h"
 #include "hash_qp.h"
-#if defined(PCRE)
-  #include <regex.h>
-  #include <pcre.h>
-#endif
 #ifdef WIN32
-  #define PCRE_STATIC 1
+  #define PCRE2_STATIC 1
+  #define PCRE2_CODE_UNIT_WIDTH 8
   #include <string>
   #include <iostream>
-  #include "regex.h"
-  #include "pcre.h"
+  #include <regex.h>
+  #include "pcre2.h"
+#else
+#if defined(PCRE)
+  #define PCRE2_CODE_UNIT_WIDTH 8
+  #include <regex.h>
+  #include <pcre2.h>
+#endif
 #endif
 
 extern AtomTable *atoms;
@@ -350,89 +353,90 @@ Thread::psi_hash_string(Object *& object1, Object *& object2)
 }
 
 
-Thread::ReturnValue
-Thread::psi_re_free(Object *& object1)
-{
-#if defined(PCRE) ||  defined(WIN32)
-   pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
-  if (rptr != NULL) {
-    //cerr << "free re" << endl;
-    pcre_free(rptr);
-  }
-  return RV_SUCCESS;
-#else
-  cerr << "PCRE library not installed" << endl;
-  return RV_FAIL;
-#endif
-}
-
-Thread::ReturnValue
-Thread::psi_re_compile(Object *& object1, Object *& object2)
-{
-#if defined(PCRE) ||  defined(WIN32)
-  Object* string1_object = heap.dereference(object1);
-  char* restring = OBJECT_CAST(StringObject*, string1_object)->getChars();
-
-  const char *error;
-  int erroffset;
-  pcre* rptr = pcre_compile(restring,       
-                            0,                 
-                            &error,           
-                            &erroffset,      
-                            NULL);              
-
-  if (rptr == NULL) {
-    return(RV_FAIL);
-  }
-  object2 = heap.newInteger((qint64)(rptr));
-  return RV_SUCCESS;
-#else
-  cerr << "PCRE library not installed" << endl;
-  return RV_FAIL;
-#endif
-}
-
 
 Thread::ReturnValue
 Thread::psi_re_match(Object *& object1, Object *& object2,
                      Object *& object3, Object *& object4, Object *& object5)
 {
 #if defined(PCRE) ||  defined(WIN32)
-  pcre* rptr = (pcre*)(object1->variableDereference()->getInteger());
-  Object* string1_object = heap.dereference(object2);
-  char* subject = OBJECT_CAST(StringObject*, string1_object)->getChars();
+
+  // The first arg is the RE string
+  Object* string1_object = heap.dereference(object1);
+  PCRE2_SPTR restring = (PCRE2_SPTR)(OBJECT_CAST(StringObject*, string1_object)->getChars());
+
+  int error;
+  PCRE2_SIZE erroffset;
+  // Compile the RE string (rptr needs to be freed when finished)
+  pcre2_code* rptr = pcre2_compile(restring,
+                                   PCRE2_ZERO_TERMINATED,
+                                   0,                 
+                                   &error,           
+                                   &erroffset,      
+                                   NULL);              
+
+  // cannot compile RE string
+  if (rptr == NULL) {
+    return(RV_FAIL);
+  }
+
+  // The second argument is the string to match RE against
+  // On backtracking this string is the original string with the
+  // initial matched string removed
+  Object* string2_object = heap.dereference(object2);
+  PCRE2_SPTR subject = (PCRE2_SPTR)(OBJECT_CAST(StringObject*, string2_object)->getChars());
+  // The third arg is the starting position of the  search
+  // Initially 0 and is the position relative to the original string
   int startpos = object5->variableDereference()->getInteger();
-  const int oveccount = 30;
-  int ovector[oveccount];
-  int subject_length = (int)strlen(subject);
-  int rc = pcre_exec(rptr,                   
-                     NULL,                 
-                     subject,             
-                     subject_length,      
-                     0,                    
-                     0,                    
-                     ovector,              
-                     oveccount);
+  PCRE2_SIZE *ovector;
+  pcre2_match_data *match_data;
+
+  PCRE2_SIZE subject_length = (PCRE2_SIZE)strlen((char *)subject);
+
+  // Create match data to be used in pcre2_match
+  // needs to be freed when finished
+  match_data = pcre2_match_data_create_from_pattern(rptr, NULL);
+
+  // do the search
+  int rc = pcre2_match(rptr,                   
+                       subject,             
+                       subject_length,      
+                       0,                    
+                       0,
+                       match_data,
+                       NULL);
   
   if (rc < 0) {
-    //printf ("No matches.\n");
+    // no matches or error - free data and fail
+    pcre2_match_data_free(match_data); 
+    pcre2_code_free(rptr);
     return RV_FAIL;
   }
   if (rc == 0) {
-    //printf ("ovector not long enough.\n");
+    // vector of offsets too small - free data and fail
+    pcre2_match_data_free(match_data); 
+    pcre2_code_free(rptr);
     return RV_FAIL;
   }
 
+  ovector = pcre2_get_ovector_pointer(match_data);
+  // no longer need match_data - free it
+  pcre2_match_data_free(match_data);
+
+  // build up the match list - a list of start-end indices with the
+  // first being the overall match range
   Cons* list = heap.newCons();
   object4 = list;
   for (int i = 0; i < rc; i++) {
     int start;
     int finish;
-    if (ovector[2*i] < 0) {
-      return RV_FAIL;
+    if (ovector[2*i] == ovector[2*i+1]) {
+      // empty match - set both to startpos
+      start = startpos + ovector[0];
+      finish = start;
+    } else {
+      start = ovector[2*i]+startpos;
+      finish = ovector[2*i+1]+startpos;
     }
-    start = ovector[2*i]+startpos;
-    finish = ovector[2*i+1]+startpos;
     Structure* sterm = heap.newStructure(2);
     sterm->setFunctor(AtomTable::colon);
     sterm->setArgument(1, heap.newInteger(start));
@@ -446,8 +450,11 @@ Thread::psi_re_match(Object *& object1, Object *& object2,
     list->setTail(list_tmp);
     list = list_tmp;
   }
-  subject += ovector[1];
-  object3 = heap.newStringObject(subject);
+  if (ovector[0] != ovector[1] || subject_length > 0) {
+    subject += ovector[1];
+  }
+  object3 = heap.newStringObject((char *)subject);
+  pcre2_code_free(rptr);
   return RV_SUCCESS;
 #else
   cerr << "PCRE library not installed" << endl;

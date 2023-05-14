@@ -1056,22 +1056,25 @@ end('$consult_clause/4$0'/1):
 
 '$consult_clause/4$1'/3:
 
-	switch_on_term(0, $6, $1, $1, $3, $1, $1)
-
-$3:
-	switch_on_structure(0, 4, ['$default':$1, '$'/0:$4, '/'/2:$5])
+	switch_on_term(0, $7, $1, $1, $4, $1, $1)
 
 $4:
-	try(3, $1)
-	trust($2)
+	switch_on_structure(0, 4, ['$default':$1, '$'/0:$5, '/'/2:$6])
 
 $5:
 	try(3, $1)
-	trust($2)
+	retry($2)
+	trust($3)
 
 $6:
 	try(3, $1)
-	trust($2)
+	retry($2)
+	trust($3)
+
+$7:
+	try(3, $1)
+	retry($2)
+	trust($3)
 
 $1:
 	allocate(3)
@@ -1086,6 +1089,22 @@ $1:
 	proceed
 
 $2:
+	allocate(3)
+	get_y_variable(1, 1)
+	get_y_variable(0, 2)
+	get_structure('/', 2, 0)
+	unify_x_variable(0)
+	unify_x_variable(1)
+	get_y_level(2)
+	put_constant('multifile', 2)
+	call_predicate('$obtain_predicate_property', 3, 3)
+	cut(2)
+	put_y_value(0, 0)
+	get_y_value(1, 0)
+	deallocate
+	proceed
+
+$3:
 	get_list(2)
 	unify_x_value(0)
 	unify_x_value(1)
